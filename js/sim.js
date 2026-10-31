@@ -158,7 +158,7 @@
       priceIndex: 1, nextId: 1, staff: [], branches: [], activeBranch: null, loans: [], mods: [], tipRule: 'esit',
       ledger: { days: [], months: [] }, monthExtras: { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 }, journal: [], news: [], goals: {},
       phase: 'morning', rival: { power: 20, district: null }, market: [], workers: [], flags: {}, centralKitchen: false,
-      eventLog: [], pendingEvent: null, payLate: false, lastSummary: null, speed: 1, farm: null
+      eventLog: [], pendingEvent: null, payLate: false, lastSummary: null, speed: 1, farm: null, tut: opts.tut ? 0 : 99
     };
     const b = KE.makeBranch(G, opts.district);
     b.name = opts.shopName || b.name;
@@ -210,6 +210,7 @@
       G.cash -= cost;
       G.today[b.id] = { purchases: cost, farmKg: farm };
     });
+    KE.makeDaily(G);
     G.staff.forEach((s) => { s.energy = 100; s.task = null; if (!KE.POSITIONS[s.role].includes(s.pos) || s.pos === 'mola') s.pos = KE.POSITIONS[s.role][0]; });
     G.phase = 'morning';
   };
@@ -218,6 +219,48 @@
     G.cash -= c; b.stock[k] = (b.stock[k] || 0) + qty;
     G.today[b.id].purchases += c;
     return c;
+  };
+
+  /* ---------- Günün hedefleri ---------- */
+  KE.makeDaily = function (G) {
+    const open = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
+    const exp = open.reduce((a, b) => a + KE.expectedCustomers(G, b), 0);
+    if (!exp) { G.daily = []; return; }
+    const reward = Math.round(5000 * G.priceIndex / 500) * 500;
+    const pool = [
+      { kind: 'served', target: Math.max(20, Math.round(exp * 0.92 / 5) * 5), text: (t) => `${t} müşteriye servis yap` },
+      { kind: 'sat', target: 78, text: (t) => `Ortalama memnuniyet %${t} ve üstü` },
+      { kind: 'nocold', target: 0, text: () => 'Tezgâhta hiç tabak soğumasın' },
+      { kind: 'lost', target: 4, text: (t) => `En fazla ${t} müşteri kaçır` },
+      { kind: 'tips', target: Math.max(500, Math.round(exp * 14 * G.priceIndex / 100) * 100), text: (t) => `${KE.tl(t)} bahşiş topla` },
+      { kind: 'match', target: Math.max(4, Math.round(exp * 0.08)), text: (t) => `${t} kez "Ellerine sağlık!" duy` }
+    ];
+    const others = pool.slice(1).sort(() => Math.random() - 0.5).slice(0, 2);
+    G.daily = [pool[0]].concat(others).map((g) => ({ kind: g.kind, target: g.target, text: g.text(g.target), reward }));
+  };
+  function dailyTotals(G) {
+    const t = { served: 0, satS: 0, satN: 0, cold: 0, lost: 0, tips: 0, match: 0 };
+    G.branches.forEach((b) => {
+      const S = G.live && G.live[b.id] ? G.live[b.id].stats : (G.lastSummary && G.lastSummary.branches[b.id] ? G.lastSummary.branches[b.id].stats : null);
+      if (!S) return;
+      t.served += S.served; t.satS += S.satSum; t.satN += S.satN; t.cold += S.cold; t.lost += S.lost; t.tips += S.tips; t.match += S.matches;
+    });
+    return t;
+  }
+  /* Her hedef için: değer, ilerleme (0–1) ve durum (açık, tamam, kaçtı) */
+  KE.dailyProgress = function (G, final) {
+    const t = dailyTotals(G);
+    return (G.daily || []).map((g) => {
+      let v, p, state;
+      if (g.kind === 'served') { v = t.served; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }
+      else if (g.kind === 'tips') { v = t.tips; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }
+      else if (g.kind === 'match') { v = t.match; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }
+      else if (g.kind === 'sat') { v = t.satN ? t.satS / t.satN : 0; p = t.satN ? v / g.target : 0; state = !t.satN ? 'open' : v >= g.target ? (final ? 'done' : 'ok') : 'open'; }
+      else if (g.kind === 'nocold') { v = t.cold; p = v ? 0 : 1; state = v > 0 ? 'fail' : final ? 'done' : 'ok'; }
+      else { v = t.lost; p = Math.max(0, 1 - v / (g.target + 1)); state = v > g.target ? 'fail' : final ? 'done' : 'ok'; }
+      if (final && state !== 'done') state = 'fail';
+      return Object.assign({}, g, { value: v, p: Math.max(0, Math.min(1, p)), state });
+    });
   };
 
   /* ---------- Servis ---------- */
@@ -791,6 +834,8 @@
     if (G.journal.length > 60) G.journal.length = 60;
     G.mods.forEach((m) => { m.days -= 1; }); G.mods = G.mods.filter((m) => m.days > 0);
     if (KE.farmDay) out.farm = KE.farmDay(G);
+    out.daily = KE.dailyProgress(G, true);
+    out.daily.forEach((g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + 0.4, 0, 100); } });
     out.goals = KE.checkGoals(G);
     if (KE.isMonthEnd(G.day)) out.month = KE.closeMonth(G, G.day);
     if (KE.isWeekEnd(G.day)) { out.news = KE.writeNews(G); G.news.unshift(out.news); KE.refreshMarket(G); KE.refreshWorkers(G); G.rival.power += 3; }

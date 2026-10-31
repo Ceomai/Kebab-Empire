@@ -28,6 +28,10 @@ Sonra tarayıcıda `http://localhost:8000` adresine git.
 
 | Sistem | Ne yapar |
 |---|---|
+| Günün hedefleri | Her sabah üç küçük hedef (müşteri sayısı, memnuniyet, soğuyan tabak, bahşiş gibi). Tutturulan her hedef ek para ve itibar getirir. |
+| Ses | Kasa, zil, eşleşme arpeji, yoğun saat afişi ve hicaz makamında hafif bir fon ezgisi; hepsi tarayıcıda sentezlenir. Üst çubuktaki düğmeyle açılıp kapanır. |
+| İlk gün rehberi | Yeni oyunda sekiz adımlık kısa bir rehber ekibi, fiyatları, yoğunluk göstergesini ve molayı gösterir. |
+| Görünür gelişim | Ekipman yükseldikçe dükkân değişir: ışıklı ve sonra yaldızlı tabela, içecek dolabı, yeni zemin, daha çok ocak ve masa. |
 | Servis akışı | Ustalar yalnızca pişirir. Kasa sipariş ve ödemeyi alır, komi/garson hazır tabağı masaya götürür ve masaları toplar. Tezgâhta bekleyen tabak soğur, kirli masa yeni müşteri almaz. Çalışanların enerjisi iş yaptıkça düşer, molada dolar. |
 | Otomatik ekip | Her şubede açılıp kapanabilir. Müdür varsa yoğunluğa göre görev ve mola düzenler; yoksa yalnızca bitkin düşenleri molaya gönderir. |
 | Besi çiftliği | Dana, kuzu ve (dönercide) tavuk yetiştirilir. Olgunlaşan hayvan kesimhaneye gider, et her sabah şubelere sevk edilir; maliyet düşer, kalite artar. |
@@ -50,6 +54,7 @@ index.html          Giriş sayfası
 css/style.css       Görsel kimlik ve bileşenler
 js/data.js          Bütün oyun verisi: modlar, ürünler, ustalar, semtler, dekor, ekonomi ayarları
 js/characters.js    SVG karakter oluşturucu (portre ve tam boy) ve sabit hikâye karakterleri
+js/sound.js         Sentezlenen sesler ve fon müziği
 js/art.js           Vektör çizim kütüphanesi: yemekler, ocaklar, mobilya, hayvanlar, ikonlar
 js/map.js           İzometrik şehir haritası
 js/scene.js         Dükkân iç mekânı ve canlı servis sahnesi

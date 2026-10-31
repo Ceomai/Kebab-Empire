@@ -35,10 +35,13 @@
     if (G.mode === 'doner') {
       for (let i = 0; i < stations; i++) equipment += `<div class="eq-doner" style="left:${stationX(G, i, stations) - 7}%">${A().doner(i % 2 ? 'tavuk' : 'et')}</div>`;
     } else equipment = `<div class="eq-mangal">${A().mangal(Math.min(4, stations + 1))}${A().smoke()}</div>`;
+    const eqSum = b.equipment.cook + b.equipment.prep + b.equipment.cold + b.equipment.service;
+    const tier = eqSum >= 6 ? 2 : eqSum >= 2 ? 1 : 0;
+    const fridge = b.equipment.cold > 0 ? `<div class="st-fridge f${b.equipment.cold}">${'<i></i>'.repeat(b.equipment.cold * 6)}</div>` : '';
     const wallDecor = b.decor.filter((id) => !['dismasa', 'dinlenme', 'klima', 'taburet', 'kadife', 'mermer'].includes(id)).slice(0, 5);
-    return `<div class="stage mode-${G.mode} ${lux ? 'lux' : ''} ${amb.concept ? 'concept-' + amb.concept.style : ''}" id="stage">
+    return `<div class="stage mode-${G.mode} tier-${tier} floor-${b.equipment.service} ${lux ? 'lux' : ''} ${amb.concept ? 'concept-' + amb.concept.style : ''}" id="stage">
       <div class="st-wall"><div class="st-tiles"></div>
-        <div class="st-sign">${KE.ART.logo()}<span>${b.name}</span></div>
+        <div class="st-sign">${KE.ART.logo()}<span>${b.name}</span>${tier ? '<em class="bulbs"></em>' : ''}${tier === 2 ? '<b class="stars3">★★★</b>' : ''}</div>${fridge}
         <div class="st-menu"><div class="st-menu-h">MENÜ</div><div class="st-menu-items">${menuItems.map((p) => `<div class="mi">${A().dish(p.id)}<b>${KE.tl(b.prices[p.id]).replace(' ₺', '')}</b></div>`).join('')}</div></div>
         <div class="st-decor">${wallDecor.map((id) => `<div class="wd">${A().decor(id)}</div>`).join('')}</div>
         <div class="st-window"><div class="st-street"></div></div>
@@ -222,7 +225,11 @@
       let x = 50, y = 50;
       const e = f.cid != null ? ent['u' + f.cid] : f.sid ? ent['c' + f.sid] : null;
       if (e) { x = e.x; y = e.y - 4; }
-      if (f.t === 'pay') coinFly(stage, x, y);
+      if (f.t === 'pay') { coinFly(stage, x, y); KE.SND.play('cash'); }
+      else if (f.t === 'tip') KE.SND.play('tip');
+      else if (f.t === 'ready') KE.SND.play('ready');
+      else if (f.t === 'bad') KE.SND.play('bad');
+      else if (f.t === 'served' && f.match) KE.SND.play('match');
       const cls = f.t === 'bad' ? 'bad' : f.t === 'tip' ? 'tip' : f.t === 'pay' ? 'pay' : f.match ? 'match' : f.t === 'ready' ? 'ready' : '';
       const text = f.t === 'ready' ? 'Hazır!' : f.text;
       if (!text || f.t === 'pass') return;

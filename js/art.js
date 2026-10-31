@@ -141,6 +141,9 @@
 
   /* ---------------- Arayüz ikonları (24×24, çizgi) ---------------- */
   const IC = {
+    sound: '<path d="M4 9 h4 l5 -4 v14 l-5 -4 h-4z"/><path d="M16 9 q2 3 0 6 M18.5 7 q4 5 0 10"/>',
+    mute: '<path d="M4 9 h4 l5 -4 v14 l-5 -4 h-4z"/><path d="M16 9 l5 6 M21 9 l-5 6"/>',
+    target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
     cart: '<path d="M3 5 h2.5 l2 10 h10 l2 -7 h-13"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>',
     coin: '<circle cx="12" cy="12" r="8"/><path d="M9.5 9.5 h3.5 a2.2 2.2 0 0 1 0 4.4 h-3 M11 7.5 v9"/>',
     star: '<path d="M12 3.5 l2.6 5.3 5.9 .9 -4.3 4.1 1 5.8 -5.2 -2.7 -5.2 2.7 1 -5.8 -4.3 -4.1 5.9 -.9z"/>',

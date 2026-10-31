@@ -33,11 +33,52 @@
       if (g.econAsgari) KE.ECON.asgariBrut = g.econAsgari;
       if (g.phase === 'service') g.phase = 'morning';
       if (g.phase === 'closing' && !g.lastSummary) g.phase = 'morning';
+      if (g.tut == null) g.tut = 99;
       g.staff.forEach((s) => { s.task = null; if (s.energy == null) s.energy = 100; if (!s.pos) s.pos = KE.POSITIONS[s.role][0]; });
       return g;
     } catch (e) { return null; }
   };
   UI.hasSave = () => { try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } };
+
+  /* ---------- İlk gün rehberi ---------- */
+  const TUT = [
+    { phase: 'morning', sel: '.daypanel', text: 'Her gün üç küçük hedefin olur. Tutturdukça ek para ve itibar gelir.' },
+    { phase: 'morning', sel: '.crewlist', text: 'Ekibin burada. Usta yalnızca pişirir; kasiyer sipariş alır, komi yemeği masaya götürür. Görevi bu düğmelerle değiştirirsin.' },
+    { phase: 'morning', sel: '.dishgrid', text: 'Fiyatları buradan ayarla. Piyasanın çok üstü öğrenciyi ve işçiyi kaçırır.' },
+    { phase: 'morning', sel: '[data-a="openShop"]', text: 'Hazırsan kepengi aç. Bütün şubeler aynı anda çalışır.' },
+    { phase: 'service', sel: '.stagewrap', text: 'Müşteri kapıdan girer, kasada öder, usta pişirir, komi masaya götürür. Yemek bitince bahşiş kavanoza düşer.' },
+    { phase: 'service', sel: '.st-hud', text: 'Yoğunluk göstergesi. Kırmızıya dönen yere bir kişi daha ver: kuyruk uzarsa kasaya, tabak beklerse servise.' },
+    { phase: 'service', sel: '#crew', text: 'Yorulan çalışanı sakin saatte molaya gönder, yoğun saatte geri çağır. İstersen otomatik yönetimi açık bırak.' },
+    { phase: 'service', sel: '.speed', text: 'Hızı buradan ayarla. Gün bitince bahşişi dağıtıp günlüğünü okuyacaksın. Kolay gelsin!' }
+  ];
+  UI.tutor = function () {
+    document.querySelectorAll('.tut').forEach((x) => x.remove());
+    document.querySelectorAll('.tut-hl').forEach((x) => x.classList.remove('tut-hl'));
+    if (!G || G.tut == null || G.tut >= TUT.length || screen !== 'shop' || document.querySelector('.modal-bg')) return;
+    const st = TUT[G.tut];
+    if (st.phase !== G.phase) return;
+    const el = document.querySelector(st.sel);
+    if (!el) return;
+    el.classList.add('tut-hl');
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    const box = document.createElement('div');
+    box.className = 'tut';
+    box.innerHTML = `<div class="tut-in"><span class="kicker">İlk gün · ${G.tut + 1}/${TUT.length}</span><p>${st.text}</p><div class="row end"><button class="btn xs ghost" data-a="tutSkip">Rehberi geç</button><button class="btn sm green" data-a="tutNext">${G.tut === TUT.length - 1 ? 'Başlayalım' : 'Anladım'}</button></div></div>`;
+    document.body.appendChild(box);
+    const place = () => {
+      if (!box.isConnected) return;
+      const r = el.getBoundingClientRect();
+      const bw = Math.min(340, window.innerWidth - 32);
+      box.style.width = bw + 'px';
+      let top = r.bottom + 12;
+      if (top + box.offsetHeight > window.innerHeight - 10) top = Math.max(10, r.top - box.offsetHeight - 12);
+      if (top < 10) top = Math.min(window.innerHeight - box.offsetHeight - 10, r.top + 12);
+      box.style.top = top + 'px';
+      box.style.left = Math.max(16, Math.min(window.innerWidth - bw - 16, r.left + r.width / 2 - bw / 2)) + 'px';
+    };
+    place(); setTimeout(place, 400);
+  };
+  window.addEventListener('resize', () => { if (document.querySelector('.tut')) UI.tutor(); });
 
   /* ---------- Bildirim ---------- */
   UI.toast = function (msg, kind) {
@@ -46,7 +87,7 @@
     t.className = 'toast ' + (kind || '');
     t.innerHTML = (kind === 'gold' ? IC('star') : kind === 'bad' ? IC('bolt') : IC('check')) + `<span>${esc(msg)}</span>`;
     box.appendChild(t);
-    if (kind === 'gold' && UI.confetti) UI.confetti();
+    if (kind === 'gold' && UI.confetti) { UI.confetti(); KE.SND.play('goal'); }
     setTimeout(() => t.classList.add('out'), 3400);
     setTimeout(() => t.remove(), 3800);
   };
@@ -92,6 +133,7 @@
     app().innerHTML = (inGame ? topbar() : '') + fn();
     if (screen === 'shop' && G && G.phase !== 'morning') { KE.SCENE.reset(); if (G.live) UI.sceneTick(true); renderTezgah(); }
     if (G && G.phase !== 'service') UI.save();
+    if (inGame) setTimeout(UI.tutor, 60);
     if (inGame && !UI.holdEvent && G.pendingEvent && G.phase === 'morning' && !document.querySelector('.modal-bg')) showEvent();
   };
 
@@ -112,7 +154,7 @@
         <div class="tb-clock ${G.phase}">${IC('clock')}<b id="tb-clock">${clock}</b><span>${phase}</span></div>
         <div class="tb-money ${G.cash < 0 ? 'neg' : ''}">${IC('coin')}<span class="tbm"><b>${KE.tl(G.cash)}</b>${G.phase === 'service' ? `<small id="tb-today">Bugün +${KE.tl(todayRevenue())}</small>` : ''}</span></div>
         <div class="tb-rep" title="İtibar ${Math.round(G.reputation)}/100"><span class="repstars">${st}</span><small>İtibar ${Math.round(G.reputation)}</small></div>
-        <nav class="tb-nav">${nav.map(([s, ic, l]) => `<button class="navbtn ${screen === s ? 'on' : ''}" data-a="go" data-s="${s}">${IC(ic)}<span>${l}</span></button>`).join('')}<button class="navbtn" data-a="menu" aria-label="Menü">${IC('menu')}</button></nav>
+        <nav class="tb-nav">${nav.map(([s, ic, l]) => `<button class="navbtn ${screen === s ? 'on' : ''}" data-a="go" data-s="${s}">${IC(ic)}<span>${l}</span></button>`).join('')}<button class="navbtn snd ${KE.SND.on ? 'on2' : ''}" data-a="sound" aria-label="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}" title="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}">${IC(KE.SND.on ? 'sound' : 'mute')}</button><button class="navbtn" data-a="menu" aria-label="Menü">${IC('menu')}</button></nav>
       </div>
       <div class="branchbar" role="tablist" aria-label="Şubeler">${branchTabs()}</div>
     </header>`;
@@ -286,7 +328,7 @@
         <div class="pc-id"><h3>${esc(s.name)}</h3><div class="chips"><span class="chip or">${s.role === 'cirak' ? 'Çırak' : 'Usta'}</span><span class="chip">${s.region}</span>${tr ? `<span class="chip gd" title="${esc(tr.desc)}">${tr.name}</span>` : ''}</div>
         ${opts.own ? `<div class="statl"><span>Moral</span>${bar(s.morale, moodCls(s.morale))}<b>${Math.round(s.morale)}</b></div>` : ''}
         <div class="specs">${specs.map(([pid, st]) => `<div class="spec">${KE.ART.dish(pid)}<span><b>${pn(pid)}</b>${stars(st)}${opts.own && st < 5 ? `<em class="xp">${bar((s.xp[pid] || 0) / KE.STAR_NEED[st + 1] * 100, 'thin')}</em>` : ''}</span></div>`).join('') || '<span class="muted small">Henüz uzmanlık yok</span>'}</div></div></div>
-      <div class="pc-stats">${statl('Hız', (s.speed - 0.6) / 0.8)}${statl('Kalite', s.quality)}${statl('Tutarlılık', s.consistency)}${statl('Fire kontrol', 1.2 - s.waste)}${statl('Öğretme', s.teach)}</div>
+      <div class="pc-stats">${statl('Hız', (s.speed - 0.6) / 0.8)}${statl('Kalite', (s.quality + s.consistency) / 2)}${statl('Fire kontrol', 1.2 - s.waste)}</div>
       ${tr ? `<p class="small muted">${tr.desc}</p>` : ''}${opts.extra || ''}
       <div class="pc-foot"><div class="price"><b>${KE.tl(s.wage)}</b><small>brüt / ay${s.fee ? ` · transfer ${KE.tl(s.fee)}` : ''}</small></div><div class="row">${opts.actions || ''}</div></div>
     </article>`;
@@ -351,6 +393,7 @@
     return `<main class="screen">
       <div class="pagehead"><div class="ph-t"><span class="kicker">Sabah hazırlığı · ${KE.weekday(G.day)}</span><h1>${esc(b.name)}</h1><p>${KE.district(b).name} · Bugün yaklaşık ${Math.round(exp)} müşteri bekleniyor</p></div>
         <button class="btn big green" data-a="openShop">${IC('store')}${G.branches.length > 1 ? 'Bütün şubelerde kepengi aç' : 'Kepengi aç'}</button></div>
+      ${(G.daily || []).length ? `<section class="panel daypanel"><div class="sechead"><h2>Günün hedefleri</h2><span class="muted small">Tutturduğun her hedef ek para ve biraz itibar getirir.</span></div>${dailyHtml(false)}</section>` : ''}
       ${warn.length ? `<div class="alerts">${warn.map(([c, w]) => `<div class="alert ${c}">${IC(c === 'crit' ? 'bolt' : 'clock')}<span>${w}</span></div>`).join('')}</div>` : ''}
       <div class="kpis">
         <div class="kpi">${IC('users')}<small>Beklenen müşteri</small><b>~${Math.round(exp)}</b></div>
@@ -364,6 +407,13 @@
         <div class="dishgrid">${dishCards}</div></section>
 
     </main>`;
+  }
+
+  /* Günün hedefleri */
+  function dailyHtml(live) {
+    const list = live ? KE.dailyProgress(G, false) : (G.daily || []).map((g) => Object.assign({}, g, { p: 0, state: 'open' }));
+    if (!list.length) return '';
+    return `<div class="daily">${list.map((g) => `<div class="dg ${g.state}"><i>${IC(g.state === 'done' || g.state === 'ok' ? 'check' : g.state === 'fail' ? 'bolt' : 'target')}</i><span><b>${g.text}</b>${live && ['served', 'tips', 'match'].includes(g.kind) ? bar(g.p * 100, g.state === 'done' ? 'ok' : 'or') : ''}</span><em>+${KE.tl(g.reward)}</em></div>`).join('')}</div>`;
   }
 
   /* Ekip paneli: görev seçimi (sabah ve servis) */
@@ -403,6 +453,7 @@
           </div>
           <div class="panel" id="livestats"></div>
           ${closing ? '' : `<div class="panel stack"><button class="btn gold block" id="tezgahBtn" data-a="tezgah">${IC('chef')}<span>${L && L.player.active ? 'Tezgâhtan çık' : 'Tezgâha geç'}</span></button><p class="small muted">Tezgâhta mutfaktaki siparişleri sen pişirirsin. Doğru ve hızlı hazırlanan tabak daha çok bahşiş getirir.</p><button class="btn sm ghost block" data-a="fastForward">${IC('ff')}Günü hızlı bitir</button></div>`}
+          ${(G.daily || []).length && !closing ? '<div class="panel"><h3>Günün hedefleri</h3><div id="dailylive"></div></div>' : ''}
           ${G.branches.length > 1 ? '<div class="panel"><h3>Bütün şubeler</h3><div id="branchlive"></div></div>' : ''}
         </aside>
       </div></main>`;
@@ -419,7 +470,7 @@
     const now = performance.now();
     const dt = Math.min(200, now - lastT); lastT = now;
     if (!G || G.phase !== 'service' || !G.live) return;
-    if (document.querySelector('.modal-bg')) return;
+    if (document.querySelector('.modal-bg') || document.querySelector('.tut')) return;
     if (!G.speed) return;
     acc += dt * G.speed;
     let ticked = false;
@@ -462,6 +513,14 @@
         <div class="statl"><span>Memnuniyet</span>${bar(sat, sat < 60 ? 'crit' : sat < 72 ? 'warn' : 'ok')}<b>${S.satN ? Math.round(sat) : '–'}</b></div>
         ${outs.length ? `<div class="alert crit sm">${IC('bolt')}<span>Biten: ${outs.map(pn).join(', ')}</span></div>` : ''}`;
     }
+    const dl = document.getElementById('dailylive');
+    if (dl && (force || tickN % 3 === 0)) {
+      const html = dailyHtml(true);
+      const doneNow = (html.match(/dg done/g) || []).length;
+      if (UI.dailyDone != null && doneNow > UI.dailyDone) { UI.toast('Günün hedefi tamam!', 'gold'); }
+      UI.dailyDone = doneNow;
+      dl.innerHTML = html;
+    }
     const bl = document.getElementById('branchlive');
     if (bl) bl.innerHTML = G.branches.map((x) => { const l = G.live[x.id]; const s2 = l.stats; return `<button class="blrow ${x.id === b.id ? 'on' : ''}" data-a="viewBranch" data-id="${x.id}"><b>${esc(x.name)}</b><span>${l.closed ? 'Kapalı' : l.done ? 'Kapandı' : `${l.queue.length} sırada`}</span><span>${KE.tl(s2.revenue)}</span><span>${s2.satN ? '%' + Math.round(s2.satSum / s2.satN) : '–'}</span></button>`; }).join('');
     if (force || tickN % 3 === 0) {
@@ -475,7 +534,7 @@
     const st = document.getElementById('stage');
     if (!st) return;
     const d = document.createElement('div');
-    d.className = 'st-banner'; d.textContent = text;
+    d.className = 'st-banner'; d.textContent = text; KE.SND.play('banner');
     st.appendChild(d);
     setTimeout(() => d.remove(), 3200);
   }
@@ -563,6 +622,7 @@
       <div class="journal">${esc(out.journal)}</div>
       <div class="kpis"><div class="kpi">${IC('chart')}<small>Günlük net (tahmini)</small><b class="${tot >= 0 ? 'pos' : 'neg'}">${KE.tl(tot)}</b></div><div class="kpi">${IC('star')}<small>İtibar</small><b>${Math.round(G.reputation)}</b></div><div class="kpi">${IC('coin')}<small>Kasa</small><b>${KE.tl(G.cash)}</b></div></div>
       <h4>Ekibin morali</h4><div class="moodrow">${staff.map((s) => `<div class="mood">${avatar(KE.staffLook(s), KE.moodFromValue(s.morale), s.name)}<small>${esc(s.name.replace(' Usta', ''))}</small><b class="${(s.moraleDelta || 0) >= 0 ? 'pos' : 'neg'}">${(s.moraleDelta || 0) >= 0 ? '+' : ''}${KE.num(s.moraleDelta || 0, 1)}</b><em>${KE.tl(s.tipsToday || 0)}</em></div>`).join('')}</div>
+      ${(out.daily || []).length ? `<h4>Günün hedefleri</h4><div class="daily">${out.daily.map((g) => `<div class="dg ${g.state}"><i>${IC(g.state === 'done' ? 'check' : 'bolt')}</i><span><b>${g.text}</b></span><em>${g.state === 'done' ? '+' + KE.tl(g.reward) : 'Olmadı'}</em></div>`).join('')}</div>` : ''}
       ${ups || quits || goals || farm ? `<ul class="events">${goals}${farm}${ups}${quits}</ul>` : ''}
       <div class="acts"><button class="btn big green" data-a="closeAfterDay">${IC('play')}Yeni güne başla</button></div>`;
     UI.modal(html, { wide: true });
@@ -925,7 +985,7 @@
   A.startGame = () => {
     const ng = UI.ng;
     const m = ng.masters[ng.master];
-    G = KE.newGame({ mode: ng.mode, district: ng.district, master: Object.assign({}, m.tmpl, { look: m.look, gender: m.gender, age: m.age }), owner: ng.owner || 'Patron', shopName: ng.shopName || null });
+    G = KE.newGame({ tut: true, mode: ng.mode, district: ng.district, master: Object.assign({}, m.tmpl, { look: m.look, gender: m.gender, age: m.age }), owner: ng.owner || 'Patron', shopName: ng.shopName || null });
     KE.G = G;
     UI.go('map');
     const usta = G.staff[0];
@@ -935,12 +995,15 @@
       <div class="acts"><button class="btn big green" data-a="closeModal">Haydi bismillah</button></div></div></div>`, { cls: 'event' });
   };
   A.closeModal = () => UI.closeModal();
+  A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">Oyun her gün sonunda bu tarayıcıya kaydedilir.</p></div>
     <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
   A.toTitle = () => { UI.save(); UI.closeModal(); UI.go('title'); };
   A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Kayıtlı oyun silinecek ve yeni bir oyun başlayacak.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Evet, sıfırdan başla</button></div>`); };
   A.doNew = () => { try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* yok say */ } G = null; UI.closeModal(); UI.ng = {}; UI.go('newMode'); };
+  A.tutNext = () => { G.tut++; UI.tutor(); };
+  A.tutSkip = () => { G.tut = 99; UI.tutor(); };
   A.pickOpt = (d) => { const o = UI.pickOptions[+d.i]; UI.closeModal(); if (pickCb) pickCb(o); };
 
   A.viewBranch = (d) => {
@@ -949,6 +1012,7 @@
     if (['map', 'subeler', 'title'].includes(screen)) UI.go('shop'); else UI.render();
   };
   A.openShop = () => {
+    UI.dailyDone = null;
     if (!G.branches.some((b) => KE.branchStaff(G, b).some(KE.isCook))) { UI.toast('Hiçbir şubede usta yok. Usta Pazarı\'ndan birini işe al.', 'bad'); return; }
     KE.startService(G);
     if (!G.speed) G.speed = 1;
@@ -1055,7 +1119,7 @@
     const cost = next.cost * G.priceIndex;
     G.cash -= cost; KE.addExtra(G, 'capex', cost); b.equipment[d.k] += 1;
     if (G.live && G.live[b.id] && d.k === 'service') { const L = G.live[b.id]; while (L.tables.length < KE.tableCount(G, b)) L.tables.push({ id: L.tables.length, occ: null, dirty: false, by: null }); }
-    UI.toast(`${next.name} kuruldu.`, 'good'); UI.render();
+    UI.toast(`${next.name} kuruldu. Dükkân değişti!`, 'gold'); UI.render();
   };
   A.buyDecor = (d) => {
     const b = B(); const it = KE.DECOR.find((x) => x.id === d.id); const cost = it.cost * G.priceIndex;
