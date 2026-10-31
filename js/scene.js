@@ -39,12 +39,13 @@
     const tier = eqSum >= 6 ? 2 : eqSum >= 2 ? 1 : 0;
     const fridge = b.equipment.cold > 0 ? `<div class="st-fridge f${b.equipment.cold}">${'<i></i>'.repeat(b.equipment.cold * 6)}</div>` : '';
     const wallDecor = b.decor.filter((id) => !['dismasa', 'dinlenme', 'klima', 'taburet', 'kadife', 'mermer'].includes(id)).slice(0, 5);
-    return `<div class="stage mode-${G.mode} tier-${tier} floor-${b.equipment.service} ${lux ? 'lux' : ''} ${amb.concept ? 'concept-' + amb.concept.style : ''}" id="stage">
+    return `<div class="stage mode-${G.mode} tier-${tier} ${(KE.specialDay(G.day) || {}).theme ? 'theme-' + KE.specialDay(G.day).theme : ''} floor-${b.equipment.service} ${lux ? 'lux' : ''} ${amb.concept ? 'concept-' + amb.concept.style : ''}" id="stage">
       <div class="st-wall"><div class="st-tiles"></div>
         <div class="st-sign">${KE.ART.logo()}<span>${b.name}</span>${tier ? '<em class="bulbs"></em>' : ''}${tier === 2 ? '<b class="stars3">★★★</b>' : ''}</div>${fridge}
         <div class="st-menu"><div class="st-menu-h">MENÜ</div><div class="st-menu-items">${menuItems.map((p) => `<div class="mi">${A().dish(p.id)}<b>${KE.tl(b.prices[p.id]).replace(' ₺', '')}</b></div>`).join('')}</div></div>
         <div class="st-decor">${wallDecor.map((id) => `<div class="wd">${A().decor(id)}</div>`).join('')}</div>
         <div class="st-window"><div class="st-street"></div></div>
+        ${(() => { const sp = KE.specialDay(G.day); if (!sp || !sp.theme) return ''; const cols = sp.theme === 'ramazan' ? ['#ffc93c', '#d7263d', '#23a26d', '#2f6fb5'] : sp.theme === 'bayram' ? ['#d7263d', '#fff', '#d7263d', '#fff'] : ['#7d3c98', '#fff', '#ffc93c', '#1b2631']; return `<div class="st-bunting">${Array.from({ length: 22 }, (_, i) => `<i style="--c:${cols[i % cols.length]}"></i>`).join('')}</div>${sp.theme === 'ramazan' ? `<div class="st-mahya">Hoş geldin ya şehr-i Ramazan</div>` : ''}`; })()}
         <div class="st-lamp l1">${A().lamp()}</div><div class="st-lamp l2">${A().lamp()}</div>
         <div class="st-clock"><i class="hh" id="st-hh"></i><i class="mm" id="st-mm"></i></div>
         <div class="st-shelf">${['#c0392b', '#e67e22', '#7d3c98', '#27ae60', '#d4ac0d'].map((c, i) => `<span class="jar" style="--c:${c};--h:${[70, 90, 60, 80, 75][i]}%"></span>`).join('')}</div>
@@ -193,7 +194,8 @@
       const fig = (pose, mood) => `<div class="fig">${KE.figure(c.look, { mood, pose, label: KE.CUSTOMER_TYPES[c.type].name })}</div>`;
       const ratio = c.state === 'eat' ? 1 : clamp(1 - c.wait / (c.state === 'queue' ? c.patience : c.patience * 1.9), 0, 1);
       const mood = c.state === 'eat' ? (c.sat > 80 ? 'happy' : c.sat > 55 ? 'neutral' : 'sad') : ratio < 0.3 ? 'angry' : ratio < 0.6 ? 'neutral' : 'happy';
-      const bubble = c.state === 'eat' ? '' : `<div class="order-bubble ${c.ordering ? 'talk' : ''}">${A().dish(c.pid)}${patRing(ratio)}${c.count > 1 ? `<b>×${c.count}</b>` : ''}</div>`;
+      const tag = c.regular ? `<span class="regtag">${KE.ART.icon('heart')}${(KE.REGULARS.find((x) => x.id === c.regular) || {}).name}</span>` : '';
+      const bubble = tag + (c.state === 'eat' ? '' : `<div class="order-bubble ${c.ordering ? 'talk' : ''}">${A().dish(c.pid)}${patRing(ratio)}${c.count > 1 ? `<b>×${c.count}</b>` : ''}</div>`);
       if (c.state === 'queue') {
         const i = qIndex[c.id] || 0;
         if (i < 6) { x = QUEUE0.x + i * 4.6; y = QUEUE0.y + (i % 2) * 1.5; }
@@ -230,7 +232,8 @@
       else if (f.t === 'ready') KE.SND.play('ready');
       else if (f.t === 'bad') KE.SND.play('bad');
       else if (f.t === 'served' && f.match) KE.SND.play('match');
-      const cls = f.t === 'bad' ? 'bad' : f.t === 'tip' ? 'tip' : f.t === 'pay' ? 'pay' : f.match ? 'match' : f.t === 'ready' ? 'ready' : '';
+      if (f.t === 'regular') KE.SND.play('match');
+      const cls = f.t === 'regular' ? 'reg' : f.t === 'bad' ? 'bad' : f.t === 'tip' ? 'tip' : f.t === 'pay' ? 'pay' : f.match ? 'match' : f.t === 'ready' ? 'ready' : '';
       const text = f.t === 'ready' ? 'Hazır!' : f.text;
       if (!text || f.t === 'pass') return;
       const d = document.createElement('div');

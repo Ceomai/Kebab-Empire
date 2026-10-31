@@ -126,8 +126,9 @@
     return { score: a, concept };
   };
 
+  KE.isLocked = (G, p) => !!(p.unlock && !(G.flags && G.flags['tarif_' + p.id]));
   KE.canMake = function (G, b, p) {
-    if (!b.menu[p.id]) return false;
+    if (!b.menu[p.id] || KE.isLocked(G, p)) return false;
     if (p.requiresSpec && !KE.branchStaff(G, b).some((s) => KE.isCook(s) && (s.spec[p.id] || 0) >= 1)) return false;
     return true;
   };
@@ -148,7 +149,11 @@
     const hol = KE.holidayOf(G.day) ? 1.25 : 1;
     const rival = 1 - Math.min(0.25, d.rivals * 0.03 + (G.rival.district === d.id ? G.rival.power / 400 : 0));
     const ad = KE.modVal(G, 'traffic') * KE.modVal(G, 'traffic:' + b.id) * (b.signBoost || 1);
-    return d.traffic * mode.trafficMul * repF * ambF * wk * hol * rival * ad;
+    const sp = KE.specialDay(G.day);
+    const mac = sp && sp.id === 'mac' && b.district === 'besiktepe' ? 1.3 : 1;
+    const loyal = 1 + 0.025 * Object.values(G.regulars || {}).filter((r) => r.loyalty >= 8).length;
+    const champ = b.championUntil && G.day <= b.championUntil ? 1.06 : 1;
+    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
   };
 
   /* ---------- Yeni oyun ---------- */
@@ -160,6 +165,9 @@
       phase: 'morning', rival: { power: 20, district: null }, market: [], workers: [], flags: {}, centralKitchen: false,
       eventLog: [], pendingEvent: null, payLate: false, lastSummary: null, speed: 1, farm: null, tut: opts.tut ? 0 : 99
     };
+    KE.G = G;
+    G.regulars = {};
+    KE.REGULARS.forEach((r) => { G.regulars[r.id] = { loyalty: 0, visits: 0 }; });
     const b = KE.makeBranch(G, opts.district);
     b.name = opts.shopName || b.name;
     G.branches.push(b); G.activeBranch = b.id;
@@ -211,6 +219,13 @@
       G.today[b.id] = { purchases: cost, farmKg: farm };
     });
     KE.makeDaily(G);
+    if (!G.regulars) { G.regulars = {}; KE.REGULARS.forEach((r) => { G.regulars[r.id] = { loyalty: 0, visits: 0 }; }); }
+    G.regularVisits = [];
+    const openB = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
+    if (openB.length) KE.REGULARS.forEach((r) => {
+      const st = G.regulars[r.id];
+      if (Math.random() < 0.3 + st.loyalty * 0.04) G.regularVisits.push({ rid: r.id, branchId: openB[st.visits % openB.length === 0 ? 0 : Math.floor(Math.random() * openB.length)].id, minute: 60 + Math.floor(Math.random() * 600) });
+    });
     G.staff.forEach((s) => { s.energy = 100; s.task = null; if (!KE.POSITIONS[s.role].includes(s.pos) || s.pos === 'mola') s.pos = KE.POSITIONS[s.role][0]; });
     G.phase = 'morning';
   };
@@ -283,7 +298,8 @@
       stats: { arrivals: 0, served: 0, lost: 0, lostPrice: 0, lostWait: 0, lostFull: 0, lostStock: 0, lostFood: 0, revenue: 0, card: 0, cash: 0, tips: 0,
         satSum: 0, satN: 0, matches: 0, byProduct: {}, hourly: new Array(14).fill(0), hourlyCust: new Array(14).fill(0), stockouts: {}, byType: {},
         repDelta: 0, best: null, playerServed: 0, gurmeHappy: 0, paket: 0, paketRev: 0, cold: 0 },
-      fx: [], player: { active: false, tid: null, step: 0, errors: 0, start: 0, opts: [] }, done: false
+      fx: [], player: { active: false, tid: null, step: 0, errors: 0, start: 0, opts: [] }, done: false,
+      special: KE.specialDay(G.day)
     };
   };
 
@@ -302,6 +318,8 @@
       w *= Math.max(0.6, 1 + 0.15 * (best - 2));
       if (t === 'gurme') w *= best >= 5 ? 1.6 : best >= 4 ? 1 : 0.25;
       w *= KE.modVal(G, 'type:' + t);
+      const sp = KE.specialDay(G.day);
+      if (sp && sp.types[t]) w *= sp.types[t];
       weights.push([t, w]);
     });
     let r = Math.random() * weights.reduce((a, x) => a + x[1], 0);
@@ -326,12 +344,15 @@
   }
   function lose(L, c, reason, text) {
     L.stats.lost += c.count; L.stats[reason] += c.count;
+    if (c.regular && KE.G && KE.G.regulars) { const r = KE.G.regulars[c.regular]; r.loyalty = Math.max(0, r.loyalty - 2); (L.stats.regulars = L.stats.regulars || []).push({ id: c.regular, gain: -2 }); }
     if (text) L.fx.push({ t: 'bad', cid: c.id, text });
   }
 
   function spawn(G, b, L) {
     const hour = KE.OPEN_HOUR + Math.floor(L.minute / 60);
-    const rate = L.expected * (KE.HOUR_CURVE[hour] || 0.3) / L.curveSum / 60;
+    const spH = L.special && L.special.hours[hour] ? L.special.hours[hour] : 1;
+    const rate = L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH / L.curveSum / 60;
+    (G.regularVisits || []).filter((v) => v.branchId === b.id && v.minute === L.minute).forEach((v) => spawnRegular(G, b, L, v.rid));
     L.spawnAcc += rate * rnd(0.6, 1.4);
     while (L.spawnAcc >= 1) {
       L.spawnAcc -= 1;
@@ -357,6 +378,22 @@
       });
       L.custs[id] = c; L.queue.push(id);
     }
+  }
+  function spawnRegular(G, b, L, rid) {
+    const R = KE.REGULARS.find((x) => x.id === rid);
+    const st = G.regulars[rid];
+    const ct = KE.CUSTOMER_TYPES[R.type];
+    const count = st.loyalty >= 5 ? 2 : 1;
+    let p = KE.MODES[G.mode].products.find((x) => x.id === R.fav[G.mode]);
+    if (!p || !KE.canMake(G, b, p) || !KE.hasStock(b, p, count)) { const ch = chooseProduct(G, b, R.type, count); p = ch.p; }
+    if (!p) return;
+    const look = R.look || KE.CAST[R.cast].look;
+    const id = L.nextId++;
+    L.stats.arrivals += count;
+    L.custs[id] = { id, type: R.type, count, look, arrive: L.minute, pid: p.id, price: b.prices[p.id], ratio: 1, state: 'queue', wait: 0, takeaway: false,
+      patience: ct.patience * 1.4 * KE.equip(G, b, 'service').patience, eat: (ct.eat || 15) * (G.mode === 'kebap' ? 1.6 : 1), regular: rid };
+    L.queue.push(id);
+    L.fx.push({ t: 'regular', cid: id, text: R.name + ' geldi!' });
   }
   function spawnPaket(G, b, L) {
     const kuryes = KE.branchStaff(G, b).filter((s) => s.role === 'kurye').length;
@@ -554,6 +591,15 @@
     if (c.type === 'gurme' && sat > 85) S.gurmeHappy++;
     if (t.cookId === 'player') S.playerServed += c.count;
     L.fx.push({ t: 'served', cid: c.id, sat, match, text: match ? 'Ellerine sağlık!' : sat > 84 ? 'Harika!' : sat > 62 ? 'Güzel' : sat > 45 ? 'İdare eder' : 'Bir daha gelmem' });
+    if (c.regular) {
+      const R = KE.REGULARS.find((x) => x.id === c.regular), r = G.regulars[c.regular];
+      const gain = sat > 84 ? 2 : sat > 66 ? 1 : sat < 52 ? -2 : 0;
+      const before = r.loyalty;
+      r.loyalty = clamp(r.loyalty + gain, 0, 10); r.visits++;
+      if (before < 8 && r.loyalty >= 8) { G.reputation = clamp(G.reputation + 1.5, 0, 100); r.praised = G.day; }
+      (S.regulars = S.regulars || []).push({ id: c.regular, gain });
+      L.fx.push({ t: 'regular', cid: c.id, text: gain >= 0 ? R.says[Math.floor(Math.random() * R.says.length)] : 'Bu sefer olmadı evladım…' });
+    }
     if (c.takeaway) { leave(G, b, L, c); }
     else { c.state = 'eat'; c.eatLeft = c.eat; }
   }
@@ -568,6 +614,8 @@
     if (server) { const tr = KE.TRAITS[server.trait] || {}; mul *= (1 + (tr.tip || 0)) * (0.7 + server.friendly * 0.6) * (0.8 + server.morale / 250); }
     if (cook) { const tr = KE.TRAITS[cook.trait] || {}; mul *= 1 + (tr.tip || 0) * 0.5; if (cook.costume === 'yoresel' && c.match) mul *= 1.12; }
     if (c.cookId === 'player') mul *= 1.25;
+    if (L.special && L.special.tip) mul *= L.special.tip;
+    if (c.regular) mul *= 1.3;
     const tip = Math.round((c.paid || 0) * ct.tip * mul / 5) * 5;
     L.stats.tips += tip;
     if (!L.stats.best || tip > L.stats.best.tip) L.stats.best = { tip, type: c.type, pid: c.pid };
@@ -836,6 +884,14 @@
     if (KE.farmDay) out.farm = KE.farmDay(G);
     out.daily = KE.dailyProgress(G, true);
     out.daily.forEach((g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + 0.4, 0, 100); } });
+    out.unlocks = [];
+    KE.MODES[G.mode].products.filter((p) => p.unlock && !G.flags['tarif_' + p.id] && G.reputation >= p.unlock).forEach((p) => {
+      G.flags['tarif_' + p.id] = true; out.unlocks.push(p);
+      G.branches.forEach((b) => { b.menu[p.id] = true; b.prices[p.id] = KE.marketPrice(G, p); Object.entries(p.ing).forEach(([k, q]) => { b.usage[k] = Math.max(b.usage[k] || 0, KE.expectedCustomers(G, b) * 0.1 * q); }); });
+    });
+    out.regulars = [];
+    G.branches.forEach((b) => (S0.branches[b.id].stats.regulars || []).forEach((x) => out.regulars.push(x)));
+    if (KE.isMonthEnd(G.day)) out.champions = KE.championship(G);
     out.goals = KE.checkGoals(G);
     if (KE.isMonthEnd(G.day)) out.month = KE.closeMonth(G, G.day);
     if (KE.isWeekEnd(G.day)) { out.news = KE.writeNews(G); G.news.unshift(out.news); KE.refreshMarket(G); KE.refreshWorkers(G); G.rival.power += 3; }
@@ -857,6 +913,20 @@
     return false;
   };
 
+  /* Ay sonu semt şampiyonluğu: şubenin ay ortalaması memnuniyeti "Lüks Kebap"ın semtteki çıtasını geçerse */
+  KE.championship = function (G) {
+    const key = KE.monthKey(G.day);
+    return G.branches.map((b) => {
+      const days = G.ledger.days.filter((d) => d.month === key && d.branchId === b.id);
+      const served = days.reduce((a, d) => a + d.served, 0);
+      const sat = served ? days.reduce((a, d) => a + d.sat * d.served, 0) / served : 0;
+      const bar = Math.round(72 + G.rival.power * 0.08 + (G.rival.district === b.district ? 4 : 0));
+      const won = served >= 250 && sat >= bar;
+      if (won) { b.championUntil = G.day + 30; b.champions = (b.champions || 0) + 1; G.flags.champ = true; G.reputation = clamp(G.reputation + 2, 0, 100); }
+      return { id: b.id, name: b.name, district: KE.district(b).name, sat, bar, won, served };
+    });
+  };
+
   KE.checkGoals = function (G) {
     const done = [];
     const test = {
@@ -867,6 +937,7 @@
       konsept: () => G.branches.some((b) => KE.ambience(G, b).concept),
       sube2: () => G.branches.length >= 2,
       ciftlik: () => !!G.farm,
+      sampiyon: () => !!G.flags.champ,
       ciro1m: () => G.ledger.months.some((m) => m.revenue >= 1000000),
       itibar80: () => G.reputation >= 80,
       sube4: () => G.branches.length >= 4

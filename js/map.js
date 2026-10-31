@@ -5,7 +5,7 @@
 (function () {
   const M = KE.MAP = {};
   const INK = '#3b2417';
-  const OL = `stroke="${INK}" stroke-opacity=".45" stroke-width="1" stroke-linejoin="round"`;
+  const OL = `stroke="${INK}" stroke-opacity=".16" stroke-width=".8" stroke-linejoin="round"`;
   const shade = (h, a) => KE.shade(h, a);
   function rng(seed) { let s = seed % 2147483647; if (s <= 0) s += 2147483646; return () => (s = s * 16807 % 2147483647) / 2147483647; }
 
@@ -71,7 +71,7 @@
   }
   function tree(x, y, r, c) {
     c = c || '#4f9d4a';
-    return `<ellipse cx="${x + 2}" cy="${y + 2}" rx="${r * 0.9}" ry="${r * 0.45}" fill="#000" opacity=".14"/><path d="M${x} ${y} v-${r * 0.7}" stroke="#7a5230" stroke-width="2"/><circle cx="${x}" cy="${y - r * 1.1}" r="${r}" fill="${c}" ${OL}/><circle cx="${x - r * 0.35}" cy="${y - r * 1.35}" r="${r * 0.4}" fill="#fff" opacity=".18"/>`;
+    return `<ellipse cx="${x + 2}" cy="${y + 2}" rx="${r * 0.9}" ry="${r * 0.45}" fill="#2d5a1c" opacity=".22"/><g class="tr"><path d="M${x} ${y} v-${r * 0.7}" stroke="#7a5230" stroke-width="2.4"/><circle cx="${x}" cy="${y - r * 1.1}" r="${r}" fill="${c}"/><circle cx="${x + r * 0.3}" cy="${y - r * 0.85}" r="${r * 0.7}" fill="${shade(c, -22)}" opacity=".55"/><circle cx="${x - r * 0.35}" cy="${y - r * 1.4}" r="${r * 0.45}" fill="#fff" opacity=".28"/></g>`;
   }
   function cypress(x, y, h) { return `<ellipse cx="${x + 2}" cy="${y + 1}" rx="4" ry="2" fill="#000" opacity=".15"/><path d="M${x} ${y} q-5 -${h * 0.5} 0 -${h} q5 ${h * 0.5} 0 ${h}z" fill="#2f6b3a" ${OL}/>`; }
   function dome(x, y, r, c) { return `<path d="M${x - r} ${y} a${r} ${r * 0.95} 0 0 1 ${r * 2} 0z" fill="${c || '#9aa6ad'}" ${OL}/><path d="M${x} ${y - r * 0.95} v-${r * 0.4}" stroke="#d4ac0d" stroke-width="2"/><circle cx="${x}" cy="${y - r * 1.4}" r="1.8" fill="#d4ac0d"/>`; }
@@ -197,16 +197,19 @@
     ];
     let s = `<svg preserveAspectRatio="${opts.fill ? 'xMidYMid slice' : 'xMidYMid meet'}" class="citymap ${phase === 'closing' ? 'night' : phase === 'service' ? 'noon' : 'morning'} ${pick ? 'picking' : ''}" viewBox="0 0 1400 860" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" role="img" aria-label="Şehir haritası">
     <defs>
-      <linearGradient id="mLand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dbe9b5"/><stop offset=".55" stop-color="#cde0a2"/><stop offset="1" stop-color="#bfd690"/></linearGradient>
-      <linearGradient id="mSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f9be0"/><stop offset="1" stop-color="#1f6fb8"/></linearGradient>
-      <pattern id="mWave" width="60" height="30" patternUnits="userSpaceOnUse"><path d="M6 18 q6 -5 12 0 q6 5 12 0" stroke="#fff" stroke-opacity=".22" stroke-width="1.6" fill="none"/><path d="M36 6 q5 -4 10 0" stroke="#fff" stroke-opacity=".16" stroke-width="1.4" fill="none"/></pattern>
+      <linearGradient id="mLand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8efa6"/><stop offset=".55" stop-color="#c3e48e"/><stop offset="1" stop-color="#aed877"/></linearGradient>
+      <linearGradient id="mSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#36b4e8"/><stop offset="1" stop-color="#1d82c9"/></linearGradient>
+      <pattern id="mWave" width="60" height="30" patternUnits="userSpaceOnUse"><animateTransform attributeName="patternTransform" type="translate" from="0 0" to="60 0" dur="7s" repeatCount="indefinite"/><path d="M6 18 q6 -5 12 0 q6 5 12 0" stroke="#fff" stroke-opacity=".22" stroke-width="1.6" fill="none"/><path d="M36 6 q5 -4 10 0" stroke="#fff" stroke-opacity=".16" stroke-width="1.4" fill="none"/></pattern>
       <pattern id="mGrass" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="8" cy="10" r="1.3" fill="#9fbe6c" opacity=".55"/><circle cx="28" cy="26" r="1.1" fill="#9fbe6c" opacity=".5"/><path d="M18 34 l2 -4 l2 4" stroke="#a9c777" stroke-width="1" fill="none" opacity=".6"/></pattern>
-      <filter id="mMute"><feColorMatrix type="saturate" values="0.08"/><feComponentTransfer><feFuncA type="linear" slope=".55"/></feComponentTransfer></filter>
+      <filter id="mMute"><feColorMatrix type="saturate" values="0.35"/><feComponentTransfer><feFuncR type="linear" slope=".85" intercept=".12"/><feFuncG type="linear" slope=".85" intercept=".12"/><feFuncB type="linear" slope=".85" intercept=".12"/><feFuncA type="linear" slope=".8"/></feComponentTransfer></filter>
+      <filter id="mShadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="4" stdDeviation="3.5" flood-color="#0b2a52" flood-opacity=".35"/></filter>
+      <radialGradient id="mHill"><stop offset="0" stop-color="#b3d77c"/><stop offset="1" stop-color="#b3d77c" stop-opacity="0"/></radialGradient>
       <filter id="mGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       <radialGradient id="mSun" cx=".85" cy="0" r="1"><stop offset="0" stop-color="#fff6d5" stop-opacity=".55"/><stop offset=".5" stop-color="#fff6d5" stop-opacity="0"/></radialGradient>
       <linearGradient id="mNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1d3d" stop-opacity=".62"/><stop offset="1" stop-color="#1a1240" stop-opacity=".5"/></linearGradient>
     </defs>
-    <rect width="1400" height="860" fill="url(#mLand)"/><rect width="1400" height="860" fill="url(#mGrass)"/>`;
+    <rect width="1400" height="860" fill="url(#mLand)"/><rect width="1400" height="860" fill="url(#mGrass)"/>
+    ${[[200, 120, 260], [1180, 260, 240], [420, 300, 180], [980, 520, 220], [120, 520, 170], [700, 60, 150]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#mHill)" opacity=".7"/>`).join('')}`;
     /* parklar ve ormanlar */
     const forest = [[80, 60, 70, 40], [1300, 260, 60, 45], [880, 120, 50, 26], [70, 470, 40, 22], [1250, 560, 50, 24], [760, 40, 30, 16]];
     forest.forEach(([fx, fy, rx, ry]) => { s += `<ellipse cx="${fx}" cy="${fy}" rx="${rx}" ry="${ry}" fill="#a7cb79" opacity=".8"/>`; });
@@ -220,6 +223,7 @@
     s += `<path d="${strait}" fill="none" stroke="#7cc8ec" stroke-width="82" stroke-linecap="round"/><path d="${halic}" fill="none" stroke="#7cc8ec" stroke-width="40" stroke-linecap="round"/>`;
     s += `<g><path d="${sea}" fill="url(#mSea)"/><path d="${strait}" fill="none" stroke="url(#mSea)" stroke-width="72" stroke-linecap="round"/><path d="${halic}" fill="none" stroke="#3592d8" stroke-width="32" stroke-linecap="round"/></g>`;
     s += `<path d="${sea}" fill="url(#mWave)"/><path d="${strait}" fill="none" stroke="url(#mWave)" stroke-width="72"/>`;
+    s += `<path class="foam" d="${sea}" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="14 18" stroke-linecap="round" opacity=".55"/>`;
     /* adalar ve kule */
     [[1000, 780, 46, 18], [1110, 805, 34, 14], [1200, 772, 24, 10], [880, 820, 20, 9]].forEach(([ix, iy, rx, ry]) => {
       s += `<ellipse cx="${ix}" cy="${iy + 4}" rx="${rx + 6}" ry="${ry + 4}" fill="#7cc8ec"/><ellipse cx="${ix}" cy="${iy}" rx="${rx}" ry="${ry}" fill="#f1dca6"/><ellipse cx="${ix}" cy="${iy - 3}" rx="${rx - 6}" ry="${ry - 4}" fill="#b9d68c"/>`;
@@ -256,10 +260,16 @@
     if (!pick) {
       M.PLACES.forEach((p) => {
         const locked = p.id === 'ciftlik' && G && !G.farm;
+        const lbl = p.name + (locked ? ' · satılık' : '');
+        const W = lbl.length * 7.4 + 26;
         s += `<g class="place fac" data-a="go" data-s="${p.id}" tabindex="0" role="button" aria-label="${p.name}">
-          <ellipse cx="${p.x}" cy="${p.y + 10}" rx="46" ry="20" fill="#000" opacity=".0" class="hit"/>
-          <g class="lift">${facility(p)}
-          <g transform="translate(${p.x} ${p.y + 30})">${(() => { const lbl = p.name + (locked ? ' · satılık' : ''); const W = lbl.length * 7.3 + 40; return `<rect x="${-W / 2}" y="-12" width="${W}" height="24" rx="12" fill="#fffaf1" ${OL}/><circle cx="${-W / 2 + 13}" cy="0" r="9" fill="${p.roof}"/><g transform="translate(${-W / 2 + 6.4} -6.6) scale(.55)" color="#fff">${KE.ART.icon(p.icon).replace('<svg ', '<svg width="24" height="24" ')}</g><text x="${-W / 2 + 27}" y="4.5" class="plbl">${lbl}</text>`; })()}</g></g></g>`;
+          <ellipse cx="${p.x}" cy="${p.y + 10}" rx="52" ry="34" fill="#000" opacity="0"/>
+          <g class="lift">${facility(p)}</g>
+          <g class="poi" style="animation-delay:-${(p.x % 7) * 0.4}s"><g transform="translate(${p.x} ${p.y - 86})" filter="url(#mShadow)">
+            <path d="M0 30 l-9 -12 h18z" fill="${p.roof}"/><circle r="22" fill="#fff"/><circle r="18" fill="${p.roof}"/><circle r="18" fill="url(#mSun)" opacity=".5"/>
+            <g transform="translate(-13 -13) scale(1.08)" color="#fff">${KE.ART.icon(p.icon).replace('<svg ', '<svg width="24" height="24" ')}</g>${locked ? `<circle cx="16" cy="-14" r="8" fill="#ffc93c" stroke="#fff" stroke-width="2"/><text x="16" y="-10.5" text-anchor="middle" class="poi-tag">₺</text>` : ''}</g></g>
+          <ellipse class="poi-shadow" cx="${p.x}" cy="${p.y - 47}" rx="9" ry="3" fill="#0b2a52" opacity=".18"/>
+          <g transform="translate(${p.x} ${p.y + 32})"><rect x="${-W / 2}" y="-12" width="${W}" height="24" rx="12" fill="#fff" filter="url(#mShadow)"/><text y="4.5" text-anchor="middle" class="plbl">${lbl}</text></g></g>`;
       });
     }
     /* semt etiketleri ve dükkânlar */
@@ -275,19 +285,26 @@
         const L = G.live && G.live[b.id];
         const act = b.id === G.activeBranch;
         const status = G.phase === 'service' && L ? (L.done ? 'Kapandı' : `${L.queue.length} sırada · ${KE.tl(L.stats.revenue)}`) : G.phase === 'closing' ? 'Kepenk indi' : 'Hazırlık';
+        const champ = b.championUntil && G.day <= b.championUntil;
+        const NW = Math.max(b.name.length * 8.6, status.length * 6.4) + 30;
         s += `<g class="place shopmark ${act ? 'act' : ''}" data-a="viewBranch" data-id="${b.id}" tabindex="0" role="button" aria-label="${b.name}">
-          <g class="lift">${box(P.x - 14, P.y + 12, 34, 24, 24, '#fbe9cf', '#d7263d', { windows: false })}
-          ${[0, 1, 2, 3].map((i) => `<polygon points="${P.x - 14 + i * 8.5},${P.y - 4 - i * 4.25} ${P.x - 14 + (i + 1) * 8.5},${P.y - 4 - (i + 1) * 4.25} ${P.x - 14 + (i + 1) * 8.5},${P.y + 4 - (i + 1) * 4.25} ${P.x - 14 + i * 8.5},${P.y + 4 - i * 4.25}" fill="${i % 2 ? '#fff' : '#d7263d'}" ${OL}/>`).join('')}
-          <path d="M${P.x + 24} ${P.y - 20} v-34" stroke="#566573" stroke-width="2"/><path d="M${P.x + 24} ${P.y - 54} h18 l-4 5 l4 5 h-18z" fill="#ffc93c" ${OL}><animate attributeName="d" values="M${P.x + 24} ${P.y - 54} h18 l-4 5 l4 5 h-18z;M${P.x + 24} ${P.y - 54} h16 l-1 5 l5 5 h-20z;M${P.x + 24} ${P.y - 54} h18 l-4 5 l4 5 h-18z" dur="1.8s" repeatCount="indefinite"/></path>
-          <g transform="translate(${P.x} ${P.y - 72})"><rect x="-${Math.max(b.name.length, status.length * 0.85) * 4.2 + 14}" y="-22" width="${Math.max(b.name.length, status.length * 0.85) * 8.4 + 28}" height="40" rx="12" fill="${act ? '#7a1f3d' : '#fffaf1'}" ${OL}/>
-            <text y="-5" text-anchor="middle" class="shopname ${act ? 'on' : ''}">${b.name}</text><text y="11" text-anchor="middle" class="shopstat ${act ? 'on' : ''}">${status}</text>
-            <path d="M-6 18 l6 7 l6 -7z" fill="${act ? '#7a1f3d' : '#fffaf1'}"/></g></g></g>`;
+          <ellipse cx="${P.x}" cy="${P.y + 14}" rx="70" ry="40" fill="#000" opacity="0"/>
+          ${act ? `<ellipse class="halo" cx="${P.x + 2}" cy="${P.y + 6}" rx="46" ry="22" fill="#ffc93c" opacity=".45"/>` : ''}
+          <g class="lift">${box(P.x - 16, P.y + 14, 40, 28, 28, '#fff3dc', '#d7263d', { windows: false })}
+          ${[0, 1, 2, 3, 4].map((i) => `<polygon points="${P.x - 16 + i * 8},${P.y - 2 - i * 4} ${P.x - 16 + (i + 1) * 8},${P.y - 2 - (i + 1) * 4} ${P.x - 16 + (i + 1) * 8},${P.y + 7 - (i + 1) * 4} ${P.x - 16 + i * 8},${P.y + 7 - i * 4}" fill="${i % 2 ? '#fff' : '#d7263d'}"/>`).join('')}
+          <polygon points="${P.x - 12},${P.y + 8} ${P.x + 18},${P.y - 7} ${P.x + 18},${P.y + 3} ${P.x - 12},${P.y + 18}" fill="#ffe39a" opacity=".9"/>
+          <path d="M${P.x + 28} ${P.y - 26} v-30" stroke="#566573" stroke-width="2.5"/><path d="M${P.x + 28} ${P.y - 56} h20 l-5 6 l5 6 h-20z" fill="#d7263d"><animate attributeName="d" values="M${P.x + 28} ${P.y - 56} h20 l-5 6 l5 6 h-20z;M${P.x + 28} ${P.y - 56} h18 l-2 6 l6 6 h-22z;M${P.x + 28} ${P.y - 56} h20 l-5 6 l5 6 h-20z" dur="1.6s" repeatCount="indefinite"/></path></g>
+          <g class="poi big"><g transform="translate(${P.x} ${P.y - 92})" filter="url(#mShadow)">
+            <rect x="${-NW / 2}" y="-24" width="${NW}" height="44" rx="22" fill="${act ? '#d7263d' : '#fff'}"/><path d="M-9 19 l9 11 l9 -11z" fill="${act ? '#d7263d' : '#fff'}"/>
+            <text y="-3" text-anchor="middle" class="shopname ${act ? 'on' : ''}">${b.name}</text><text y="13" text-anchor="middle" class="shopstat ${act ? 'on' : ''}">${status}</text>
+            ${champ ? `<g transform="translate(${NW / 2 - 6} -24)"><circle r="14" fill="#ffc93c" stroke="#fff" stroke-width="3"/><g transform="translate(-9 -9) scale(.75)" color="#7a1f3d">${KE.ART.icon('crown').replace('<svg ', '<svg width="24" height="24" ')}</g></g>` : ''}</g></g></g>`;
       } else {
         s += `<g class="dname muted" pointer-events="none"><text x="${P.x}" y="${P.y + 72}" text-anchor="middle" class="dlbl mute">${d.name}</text></g>`;
       }
     });
     /* bulutlar ve martılar */
     const cloud = (x, y, k, dur, beg) => `<g class="cloud" style="animation-duration:${dur}s;animation-delay:${beg}s"><g transform="translate(${x} ${y}) scale(${k})"><ellipse cx="10" cy="40" rx="50" ry="10" fill="#1d3b5a" opacity=".1"/><g fill="#fff" opacity=".92"><ellipse cx="0" cy="0" rx="40" ry="14"/><ellipse cx="22" cy="-8" rx="24" ry="14"/><ellipse cx="-18" cy="-4" rx="18" ry="11"/></g></g></g>`;
+    s += `<g class="blimp"><g transform="translate(0 70)" filter="url(#mShadow)"><ellipse cx="0" cy="0" rx="58" ry="18" fill="#d7263d"/><ellipse cx="-6" cy="-6" rx="44" ry="7" fill="#fff" opacity=".25"/><path d="M50 0 l18 -14 v28z" fill="#9c1527"/><rect x="-14" y="16" width="28" height="9" rx="3" fill="#2c3e50"/><text y="5" text-anchor="middle" class="blimp-t">KEBAB EMPIRE</text></g><path d="M-62 70 q-30 6 -60 0" stroke="#fff" stroke-width="2" stroke-dasharray="4 5" fill="none" opacity=".7"/></g>`;
     s += cloud(-120, 90, 1, 90, 0) + cloud(-120, 520, 0.8, 120, -60) + cloud(-120, 300, 1.2, 140, -30);
     s += `<g class="gulls" fill="none" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"><path d="M0 0 q6 -6 12 0 q6 -6 12 0"/><path d="M26 12 q5 -5 10 0 q5 -5 10 0"/><path d="M8 22 q4 -4 8 0 q4 -4 8 0"/></g>`;
     /* yaka adları */

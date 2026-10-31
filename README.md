@@ -28,6 +28,10 @@ Sonra tarayıcıda `http://localhost:8000` adresine git.
 
 | Sistem | Ne yapar |
 |---|---|
+| Müdavimler | Altı isimli müdavim (Ayşe Teyze, öğrenci Elif, şantiye şefi Hakan…) belli günlerde gelir. Sevdiği yemeği iyi yaparsan gönlü dolar: 5 kalpte arkadaşını getirir, 8'de mahallede dükkânı över. |
+| Yeni tarifler | İtibar 40 ve 60'ta yeni ürünler açılır: dönercide tantuni ve künefe, kebapçıda içli köfte ve künefe. |
+| Özel günler | Ramazan'da iftar kalabalığı, bayramda aile akını ve bol bahşiş, maç akşamı gece yoğunluğu, cuma öğle kalabalığı. Dükkân da süslenir. |
+| Semt şampiyonluğu | Ay sonunda memnuniyet ortalaması "Lüks Kebap"ın çıtasını geçen şube bir ay boyunca taç takar: müşteri +%6, itibar +2. |
 | Günün hedefleri | Her sabah üç küçük hedef (müşteri sayısı, memnuniyet, soğuyan tabak, bahşiş gibi). Tutturulan her hedef ek para ve itibar getirir. |
 | Ses | Kasa, zil, eşleşme arpeji, yoğun saat afişi ve hicaz makamında hafif bir fon ezgisi; hepsi tarayıcıda sentezlenir. Üst çubuktaki düğmeyle açılıp kapanır. |
 | İlk gün rehberi | Yeni oyunda sekiz adımlık kısa bir rehber ekibi, fiyatları, yoğunluk göstergesini ve molayı gösterir. |

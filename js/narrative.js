@@ -58,6 +58,10 @@
     if (sat > 80) h.push({ title: `${b.name} mahallenin dilinde`, body: `Haftanın memnuniyet ortalaması %${Math.round(sat)}. Komşular "Böyle ${G.mode === 'doner' ? 'döner' : 'kebap'} yıllardır yenmedi" diyor.` });
     else if (sat > 60) h.push({ title: `${b.name} istikrarlı bir hafta geçirdi`, body: `Haftalık ciro ${KE.tl(rev)}. Esnaf, dükkânın kendini toparladığını söylüyor.` });
     else h.push({ title: `${b.name} zorlu bir hafta geçirdi`, body: 'Müşteriler bekleme sürelerinden ve fiyatlardan şikâyetçi. Esnaf "Toparlanırlar" diyor.' });
+    const champ = G.branches.find((x) => x.championUntil && x.championUntil - G.day >= 23);
+    if (champ) h.unshift({ title: `${KE.district(champ).name}'nin şampiyonu: ${champ.name}`, body: '"Lüks Kebap" bu ay semtte geride kaldı. Komşular kutlamaya pide getirdi.' });
+    const praised = KE.REGULARS.find((R) => G.regulars && G.regulars[R.id] && G.regulars[R.id].praised > G.day - 7);
+    if (praised) h.push({ title: `${praised.name}: "Şehrin en güzel sofrası"`, body: `Yıllardır müdavim olan ${praised.name}, dükkânı herkese öneriyor.` });
     const st5 = G.staff.find((s) => Object.values(s.spec).some((v) => v >= 5));
     if (st5) h.push({ title: `Usta sohbeti: ${st5.name}`, body: `${st5.region} kökenli usta, mesleğin inceliklerini anlattı: "Sabır, köz ve iyi malzeme. Gerisi el alışkanlığı."` });
     const city = [

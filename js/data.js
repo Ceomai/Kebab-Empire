@@ -127,6 +127,7 @@ KE.MODES = {
       sebze:   { name: 'Domates, marul, soğan', unit: 'kg', price: 48 },
       tereyag: { name: 'Tereyağı', unit: 'kg', price: 620 },
       yogurt:  { name: 'Yoğurt', unit: 'kg', price: 92 },
+      kadayif: { name: 'Künefe seti (kadayıf, peynir)', unit: 'adet', price: 95 },
       ayran:   { name: 'Ayran', unit: 'adet', price: 14 }
     },
     products: [
@@ -136,17 +137,19 @@ KE.MODES = {
       { id: 'iskender', name: 'İskender', base: 560, prep: 6, ing: { et: 0.16, pide: 1, tereyag: 0.03, yogurt: 0.1 }, steps: ['Pide', 'Et', 'Domates sosu', 'Yoğurt', 'Kızgın tereyağı'] },
       { id: 'pilav_ustu', name: 'Pilav Üstü Döner', base: 430, prep: 4, ing: { et: 0.15, pilav: 0.12, sebze: 0.05 }, steps: ['Pilav', 'Et', 'Közlenmiş biber', 'Servis'] },
       { id: 'tavuk_porsiyon', name: 'Tavuk Porsiyon', base: 300, prep: 4, ing: { tavuk: 0.2, pilav: 0.12, sebze: 0.05 }, steps: ['Pilav', 'Tavuk', 'Salata', 'Servis'] },
-      { id: 'cag', name: 'Cağ Kebabı', base: 520, prep: 5, ing: { kuzu: 0.15, lavas: 1, sebze: 0.05 }, requiresSpec: true, steps: ['Şişi çevir', 'Kes', 'Lavaş', 'Soğan', 'Servis'] }
+      { id: 'cag', name: 'Cağ Kebabı', base: 520, prep: 5, ing: { kuzu: 0.15, lavas: 1, sebze: 0.05 }, requiresSpec: true, steps: ['Şişi çevir', 'Kes', 'Lavaş', 'Soğan', 'Servis'] },
+      { id: 'tantuni', name: 'Tantuni', base: 290, prep: 3, unlock: 40, ing: { et: 0.11, lavas: 1, sebze: 0.06 }, steps: ['Saç yağla', 'Eti sotele', 'Lavaş', 'Maydanoz-soğan', 'Sar'] },
+      { id: 'kunefe', name: 'Künefe', base: 330, prep: 4, unlock: 60, ing: { kadayif: 1 }, steps: ['Kadayıf', 'Peynir', 'Kadayıf', 'Fırına ver', 'Şerbet', 'Fıstık'] }
     ],
     drink: { id: 'ayran', name: 'Ayran', base: 45, ing: { ayran: 1 } },
     favorites: {
-      ogrenci: ['tavuk_durum', 'tavuk_porsiyon', 'ekmek_arasi'],
-      beyaz: ['iskender', 'pilav_ustu', 'et_durum'],
-      aile: ['iskender', 'pilav_ustu', 'tavuk_porsiyon'],
-      gurme: ['cag', 'iskender'],
-      turist: ['iskender', 'et_durum', 'cag'],
+      ogrenci: ['tavuk_durum', 'tantuni', 'tavuk_porsiyon', 'ekmek_arasi'],
+      beyaz: ['iskender', 'tantuni', 'pilav_ustu', 'et_durum'],
+      aile: ['iskender', 'kunefe', 'pilav_ustu', 'tavuk_porsiyon'],
+      gurme: ['cag', 'kunefe', 'iskender'],
+      turist: ['iskender', 'kunefe', 'et_durum', 'cag'],
       isci: ['ekmek_arasi', 'et_durum', 'pilav_ustu'],
-      gece: ['et_durum', 'tavuk_durum', 'ekmek_arasi']
+      gece: ['et_durum', 'tantuni', 'tavuk_durum', 'ekmek_arasi']
     },
     equipment: {
       cook:    { name: 'Döner ocağı', levels: [
@@ -183,6 +186,8 @@ KE.MODES = {
       patlican:{ name: 'Patlıcan', unit: 'kg', price: 62 },
       yogurt:  { name: 'Yoğurt', unit: 'kg', price: 92 },
       komur:   { name: 'Mangal kömürü', unit: 'kg', price: 32 },
+      bulgur:  { name: 'İnce bulgur', unit: 'kg', price: 64 },
+      kadayif: { name: 'Künefe seti (kadayıf, peynir)', unit: 'adet', price: 95 },
       ayran:   { name: 'Ayran / şalgam', unit: 'adet', price: 15 }
     },
     products: [
@@ -192,15 +197,17 @@ KE.MODES = {
       { id: 'beyti', name: 'Beyti', base: 720, prep: 9, ing: { kiyma: 0.2, lavas: 2, yogurt: 0.1, komur: 0.15 }, steps: ['Közde pişir', 'Lavaşa sar', 'Dilimle', 'Domates sosu', 'Yoğurt'] },
       { id: 'ali_nazik', name: 'Ali Nazik', base: 690, prep: 9, ing: { kiyma: 0.18, patlican: 0.3, yogurt: 0.15, komur: 0.1 }, steps: ['Patlıcan közle', 'Yoğurtla ez', 'Kebap', 'Tereyağı'] },
       { id: 'lahmacun', name: 'Lahmacun', base: 140, prep: 4, ing: { hamur: 1, kiyma: 0.05, sebze: 0.05 }, requiresSpec: true, steps: ['Hamuru aç', 'İç harç', 'Fırına ver', 'Maydanoz-limon'] },
-      { id: 'ciger', name: 'Ciğer Şiş', base: 540, prep: 6, ing: { ciger: 0.2, lavas: 1, sebze: 0.1, komur: 0.1 }, requiresSpec: true, steps: ['Şişe diz', 'Közde çevir', 'Lavaşa al', 'Soğan-maydanoz'] }
+      { id: 'ciger', name: 'Ciğer Şiş', base: 540, prep: 6, ing: { ciger: 0.2, lavas: 1, sebze: 0.1, komur: 0.1 }, requiresSpec: true, steps: ['Şişe diz', 'Közde çevir', 'Lavaşa al', 'Soğan-maydanoz'] },
+      { id: 'icli_kofte', name: 'İçli Köfte', base: 360, prep: 5, unlock: 40, ing: { kiyma: 0.08, bulgur: 0.1, sebze: 0.03 }, steps: ['Bulgur hamuru', 'İç harç', 'Kapat', 'Kızart', 'Servis'] },
+      { id: 'kunefe', name: 'Künefe', base: 330, prep: 4, unlock: 60, ing: { kadayif: 1, komur: 0.05 }, steps: ['Kadayıf', 'Peynir', 'Kadayıf', 'Közde pişir', 'Şerbet', 'Fıstık'] }
     ],
     drink: { id: 'ayran', name: 'Ayran / Şalgam', base: 55, ing: { ayran: 1 } },
     favorites: {
-      ogrenci: ['lahmacun', 'adana', 'urfa'],
-      beyaz: ['beyti', 'adana', 'kuzu_sis'],
-      aile: ['ali_nazik', 'kuzu_sis', 'lahmacun'],
-      gurme: ['ciger', 'urfa', 'kuzu_sis'],
-      turist: ['adana', 'beyti', 'lahmacun'],
+      ogrenci: ['lahmacun', 'icli_kofte', 'adana', 'urfa'],
+      beyaz: ['beyti', 'icli_kofte', 'adana', 'kuzu_sis'],
+      aile: ['ali_nazik', 'kunefe', 'kuzu_sis', 'lahmacun'],
+      gurme: ['ciger', 'kunefe', 'urfa', 'kuzu_sis'],
+      turist: ['adana', 'kunefe', 'beyti', 'lahmacun'],
       isci: ['lahmacun', 'adana', 'urfa'],
       gece: ['adana', 'lahmacun', 'ciger']
     },
@@ -224,6 +231,35 @@ KE.MODES = {
         { name: '9 masalık geniş salon', patience: 1.3, queue: 10, tables: 9, cost: 110000 } ] }
     }
   }
+};
+
+/* ---------- Müdavimler ----------
+   Her birinin sevdiği bir yemek ve kendine has bir sözü var. İyi ağırlanan müdavimin gönlü (0–10) dolar;
+   5'te yanına arkadaşını getirir, 8'de mahallede dükkânı över (itibar ve müşteri). */
+KE.REGULARS = [
+  { id: 'ayse', name: 'Ayşe Teyze', type: 'aile', fav: { doner: 'iskender', kebap: 'ali_nazik' }, cast: 'ayse', says: ['Ellerine sağlık evladım!', 'Tıpkı rahmetlinin yaptığı gibi.', 'Torunlarımı da getireceğim.'] },
+  { id: 'kemal', name: 'Emekli Kemal Bey', type: 'aile', fav: { doner: 'pilav_ustu', kebap: 'kuzu_sis' }, look: { gender: 'e', age: 'yasli', skin: '#e8b98f', hairColor: '#c9c9c9', hair: 'kel', facial: 'gurbiyik', glasses: true, head: 'kasket', hatColor: '#4e342e', outfit: 'hirka', outfitColor: '#5d6d7e', shirt: '#fdfefe' }, says: ['Gazetemi de okurum, yemeğimi de yerim.', 'Bu dükkânı babanın zamanından bilirim.'] },
+  { id: 'elif', name: 'Öğrenci Elif', type: 'ogrenci', fav: { doner: 'tavuk_durum', kebap: 'lahmacun' }, look: { gender: 'k', age: 'genc', skin: '#f3d2b3', hairColor: '#6b4423', hair: 'uzun', facial: 'none', glasses: true, head: 'none', outfit: 'tisort', outfitColor: '#7d3c98', accent: '#f4d03f', print: true }, says: ['Final haftası beni siz kurtarıyorsunuz!', 'Bütün sınıfa önerdim.'] },
+  { id: 'hakan', name: 'Şantiye Şefi Hakan', type: 'isci', fav: { doner: 'ekmek_arasi', kebap: 'adana' }, look: { gender: 'e', age: 'orta', skin: '#c68b5c', hairColor: '#1c1410', hair: 'kisa', facial: 'sakal', glasses: false, head: 'baret', outfit: 'reflektif' }, says: ['Ekip seni soruyor usta!', 'Doyurdun, Allah da seni doyursun.'] },
+  { id: 'selin', name: 'Avukat Selin', type: 'beyaz', fav: { doner: 'et_durum', kebap: 'beyti' }, look: { gender: 'k', age: 'orta', skin: '#e8b98f', hairColor: '#2b1d14', hair: 'topuz', facial: 'none', glasses: false, head: 'none', outfit: 'takim', outfitColor: '#1b2631', accent: '#c0392b' }, says: ['On dakikam var, yine de buraya geldim.', 'Ofiste herkese anlattım.'] },
+  { id: 'mario', name: 'Gezgin Marco', type: 'turist', fav: { doner: 'iskender', kebap: 'adana' }, look: { gender: 'e', age: 'orta', skin: '#f5dcc4', hairColor: '#b5651d', hair: 'dalgali', facial: 'kirli', glasses: false, head: 'gunes', hatColor: '#fdebd0', outfit: 'gomlek', outfitColor: '#48c9b0', camera: true }, says: ['Çok lezzetli! Teşekkürler!', 'Blogumda yazacağım, söz.'] }
+];
+
+/* ---------- Özel günler ---------- */
+KE.SPECIAL = {
+  ramazan: { name: 'Ramazan', desc: 'Gündüz sakin, iftarda dükkân dolar taşar. Aileler akşam erken gelir.', hours: { 10: 0.45, 11: 0.45, 12: 0.5, 13: 0.5, 14: 0.5, 15: 0.5, 16: 0.6, 17: 1.0, 18: 2.1, 19: 2.0, 20: 1.4, 21: 1.2, 22: 1.1 }, types: { aile: 1.6 }, theme: 'ramazan' },
+  bayram: { name: 'Bayram', desc: 'Bayramlıklarıyla aileler sokakta. Bahşişler bol, herkes güler yüzlü.', hours: {}, types: { aile: 1.9, turist: 1.2, gece: 0.6 }, tip: 1.3, theme: 'bayram' },
+  mac: { name: 'Maç akşamı', desc: 'Derbi günü. Akşam taraftarlar akın eder, Beşiktepe yerinden oynar.', hours: { 19: 1.3, 20: 1.6, 21: 2.0, 22: 2.2 }, types: { gece: 1.9, ogrenci: 1.3 }, theme: 'mac' },
+  cuma: { name: 'Cuma', desc: 'Cuma namazından sonra öğle kalabalığı her zamankinden büyük.', hours: { 13: 1.5, 14: 1.4 }, types: { isci: 1.2 }, theme: null }
+};
+KE.specialDay = function (day) {
+  const d = KE.dateOf(day);
+  const iso = d.toISOString().slice(0, 10);
+  if (KE.holidayOf(day)) return Object.assign({ id: 'bayram' }, KE.SPECIAL.bayram, { name: KE.holidayOf(day) });
+  if ((iso >= '2026-02-18' && iso <= '2026-03-19') || (iso >= '2027-02-08' && iso <= '2027-03-08')) return Object.assign({ id: 'ramazan' }, KE.SPECIAL.ramazan);
+  if (d.getUTCDay() === 6 && Math.floor(day / 7) % 2 === 0) return Object.assign({ id: 'mac' }, KE.SPECIAL.mac);
+  if (d.getUTCDay() === 5) return Object.assign({ id: 'cuma' }, KE.SPECIAL.cuma);
+  return null;
 };
 
 /* ---------- Besi çiftliği ----------
@@ -297,6 +333,7 @@ KE.GOALS = [
   { id: 'kostum', name: 'Takım ruhu', desc: 'Bütün çalışanlarına temel önlük dışında bir kostüm giydir.', reward: 15000 },
   { id: 'konsept', name: 'Konsept sahibi', desc: 'Bir şubede aynı tarzdan 3 dekor öğesiyle konsept bonusunu aç.', reward: 30000 },
   { id: 'ciftlik', name: 'Kendi etimiz', desc: 'Besi çiftliğini satın al.', reward: 40000 },
+  { id: 'sampiyon', name: 'Semt şampiyonu', desc: 'Bir ay sonunda semtinde "Lüks Kebap"ı geride bırak.', reward: 50000 },
   { id: 'sube2', name: 'İkinci şube', desc: 'Başka bir semtte ikinci dükkânını aç.', reward: 60000 },
   { id: 'ciro1m', name: 'Milyonluk ay', desc: 'Bir ayda 1.000.000 ₺ konsolide ciroya ulaş.', reward: 80000 },
   { id: 'itibar80', name: 'Şehrin efsanesi', desc: 'İtibarı 80\'e çıkar.', reward: 100000 },

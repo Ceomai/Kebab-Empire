@@ -34,6 +34,7 @@
       if (g.phase === 'service') g.phase = 'morning';
       if (g.phase === 'closing' && !g.lastSummary) g.phase = 'morning';
       if (g.tut == null) g.tut = 99;
+      if (!g.regulars) { g.regulars = {}; KE.REGULARS.forEach((r) => { g.regulars[r.id] = { loyalty: 0, visits: 0 }; }); }
       g.staff.forEach((s) => { s.task = null; if (s.energy == null) s.energy = 100; if (!s.pos) s.pos = KE.POSITIONS[s.role][0]; });
       return g;
     } catch (e) { return null; }
@@ -168,7 +169,7 @@
     let status = 'Hazırlık', dot = 'idle';
     if (G.phase === 'service' && L) { if (L.closed) { status = 'Ustası yok, kapalı'; dot = 'off'; } else if (L.done) { status = 'Kapandı'; dot = 'off'; } else { status = `${L.queue.length} sırada · ${KE.tl(L.stats.revenue)}`; dot = L.queue.length > 5 ? 'busy' : 'open'; } }
     if (G.phase === 'closing') { status = 'Kepenk indi'; dot = 'off'; }
-    return `<button class="btab ${act ? 'on' : ''}" role="tab" aria-selected="${act}" data-a="viewBranch" data-id="${b.id}"><span class="btab-art">${KE.ART.storefront('', act ? '#d7263d' : '#9a8b7a', G.phase === 'service')}</span><span class="btab-t"><b>${esc(b.name)}</b><small><i class="dot ${dot}"></i>${status}</small></span></button>`;
+    return `<button class="btab ${act ? 'on' : ''}" role="tab" aria-selected="${act}" data-a="viewBranch" data-id="${b.id}"><span class="btab-art">${KE.ART.storefront('', act ? '#d7263d' : '#9a8b7a', G.phase === 'service')}</span><span class="btab-t"><b>${esc(b.name)}${b.championUntil && G.day <= b.championUntil ? ` <span class="crownic" title="Semt şampiyonu">${IC('crown')}</span>` : ''}</b><small><i class="dot ${dot}"></i>${status}</small></span></button>`;
   }
   function todayRevenue() { return G.live ? G.branches.reduce((a, b) => a + (G.live[b.id] ? G.live[b.id].stats.revenue : 0), 0) : 0; }
   UI.refreshBars = function () {
@@ -249,30 +250,44 @@
   /* =================== EKRANLAR =================== */
   const SCREENS = {};
 
+  function skyline(w, h, seed, col, hi) {
+    let r = seed; const rnd = () => (r = r * 16807 % 2147483647) / 2147483647;
+    let x = 0, d = '';
+    while (x < w) {
+      const t = rnd();
+      if (t < 0.12) { const R = 26 + rnd() * 30; d += `<rect x="${x}" y="${h - 40}" width="${R * 2 + 20}" height="40"/><path d="M${x + 10} ${h - 40} a${R} ${R} 0 0 1 ${R * 2} 0z"/><rect x="${x + 8 + R - 2}" y="${h - 40 - R - 14}" width="4" height="14"/>`; d += `<rect x="${x - 4}" y="${h - 40 - R * 2.4}" width="7" height="${R * 2.4}"/><path d="M${x - 4} ${h - 40 - R * 2.4} l3.5 -16 l3.5 16z"/><rect x="${x + R * 2 + 18}" y="${h - 40 - R * 2.4}" width="7" height="${R * 2.4}"/><path d="M${x + R * 2 + 18} ${h - 40 - R * 2.4} l3.5 -16 l3.5 16z"/>`; x += R * 2 + 34; }
+      else if (t < 0.18) { d += `<rect x="${x}" y="${h - 120}" width="26" height="120"/><path d="M${x - 3} ${h - 120} l16 -34 l16 34z"/>`; x += 34; }
+      else { const bw = 22 + rnd() * 40, bh = 30 + rnd() * 70; d += `<rect x="${x}" y="${h - bh}" width="${bw}" height="${bh}" rx="2"/>`; if (rnd() < 0.5) d += `<path d="M${x - 2} ${h - bh} l${bw / 2 + 2} -${10 + rnd() * 8} l${bw / 2 + 2} ${10 + rnd() * 8}z"/>`; x += bw + 2 + rnd() * 6; }
+    }
+    return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><g fill="${col}">${d}</g>${hi ? `<g fill="${hi}" opacity=".5">${d.replace(/<path[^>]*>/g, '')}</g>` : ''}</svg>`;
+  }
   SCREENS.title = () => {
     const has = UI.hasSave();
     if (!UI.heroCast) {
       UI.heroCast = {
         usta: { look: Object.assign(KE.randomLook('e', 'orta'), { facial: 'gurbiyik', skin: '#d9a273', hairColor: '#2b1d14', head: 'none' }), region: 'Adana', costume: 'yoresel', role: 'usta' },
-        komi: { look: Object.assign(KE.randomLook('k', 'genc'), { head: 'none', hair: 'topuz', skin: '#e8b98f' }), region: 'İstanbul', costume: 'markali', role: 'garson' }
+        komi: { look: Object.assign(KE.randomLook('k', 'genc'), { head: 'none', hair: 'topuz', skin: '#e8b98f' }), region: 'İstanbul', costume: 'markali', role: 'garson' },
+        walkers: ['ogrenci', 'turist', 'aile', 'isci', 'gece', 'beyaz'].map((t) => KE.customerLook(t))
       };
     }
     const hc = UI.heroCast;
-    return `<main class="title">
-      <div class="title-copy">
-        <span class="kicker">Döner ve kebap işletme oyunu</span>
-        <h1>Kebab<em>Empire</em></h1>
-        <p>Babandan kalan dükkânın kepengini kaldır. Ustanı seç, ekibini yoğunluğa göre yönet, kendi besi çiftliğini kur ve İstanbul'dan esinlenen şehirde şube şube büyü.</p>
-        <div class="row">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big" data-a="newgame">${IC('plus')}Yeni oyun</button></div>
-        <small>Kayıt bu tarayıcıda tutulur.</small>
+    return `<main class="title2">
+      <div class="t-sky"><div class="t-rays"></div><div class="t-sun"></div></div>
+      <div class="t-cloud c1"></div><div class="t-cloud c2"></div><div class="t-cloud c3"></div>
+      <div class="t-sky-far">${skyline(1600, 220, 7, '#9cc9ea')}</div>
+      <div class="t-sky-near">${skyline(1600, 200, 31, '#6aa2d3')}</div>
+      <div class="t-sea"><div class="t-ferry"><svg viewBox="0 0 90 40" aria-hidden="true"><path d="M4 22 h82 l-10 14 h-62z" fill="#fff"/><rect x="18" y="8" width="54" height="14" rx="3" fill="#d7263d"/><rect x="40" y="0" width="8" height="10" fill="#2c3e50"/><g fill="#bde3f7"><rect x="23" y="12" width="7" height="6"/><rect x="34" y="12" width="7" height="6"/><rect x="49" y="12" width="7" height="6"/><rect x="60" y="12" width="7" height="6"/></g></svg></div><div class="t-gulls">⌒⌒ ⌒</div></div>
+      <div class="t-street"><div class="t-walk w1">${KE.figure(hc.walkers[0], { pose: 'walk', mood: 'happy' })}</div><div class="t-walk w2">${KE.figure(hc.walkers[1], { pose: 'walk', mood: 'happy' })}</div><div class="t-walk w3">${KE.figure(hc.walkers[2], { pose: 'walk', mood: 'happy' })}</div><div class="t-walk w4">${KE.figure(hc.walkers[3], { pose: 'walk', mood: 'happy' })}</div></div>
+      <div class="t-shop">
+        <div class="t-store">${KE.ART.storefront('Kebab Empire', '#d7263d', true)}</div>
+        <div class="t-doner">${KE.ART.doner('et')}</div>
+        <div class="t-fig f1">${KE.figure(KE.staffLook(hc.usta), { mood: 'happy' })}</div>
+        <div class="t-fig f2">${KE.figure(KE.staffLook(hc.komi), { mood: 'happy', tray: true, trayDish: KE.ART.dish('iskender') })}</div>
       </div>
-      <div class="title-art" aria-hidden="true">
-        <div class="ta-sun"></div>
-        <div class="ta-store">${KE.ART.storefront('Kebab Empire', '#d7263d', true)}</div>
-        <div class="ta-doner">${KE.ART.doner('et')}</div>
-        <div class="ta-fig f1">${KE.figure(KE.staffLook(hc.usta), { mood: 'happy' })}</div>
-        <div class="ta-fig f2">${KE.figure(KE.staffLook(hc.komi), { mood: 'happy', tray: true, trayDish: KE.ART.dish('iskender') })}</div>
-        <div class="ta-dish d1">${KE.ART.dish('adana')}</div><div class="ta-dish d2">${KE.ART.dish('lahmacun')}</div><div class="ta-dish d3">${KE.ART.dish('et_durum')}</div>
+      <div class="t-dish d1">${KE.ART.dish('adana')}</div><div class="t-dish d2">${KE.ART.dish('lahmacun')}</div><div class="t-dish d3">${KE.ART.dish('et_durum')}</div><div class="t-dish d4">${KE.ART.dish('kunefe')}</div>
+      <div class="t-front">
+        <div class="t-logo"><span class="t-mark">${KE.ART.logo()}</span><h1><span>Kebab</span><em>Empire</em></h1><span class="t-ribbon">Döner ve kebap işletme oyunu</span></div>
+        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
       </div>
     </main>`;
   };
@@ -380,13 +395,14 @@
       const isDrink = p.id === M.drink.id;
       const mp = KE.marketPrice(G, p), price = b.prices[p.id], cost = KE.productCost(G, b, p);
       const best = isDrink ? null : KE.bestStar(G, b, p.id);
-      const locked = !isDrink && p.requiresSpec && best < 1;
+      const recipeLock = !isDrink && KE.isLocked(G, p);
+      const locked = !isDrink && (recipeLock || (p.requiresSpec && best < 1));
       const on = isDrink || b.menu[p.id];
       const margin = (price / 1.1 - cost) / (price / 1.1);
       const ratio = price / mp;
       return `<article class="dishcard ${on && !locked ? '' : 'off'}">
         <div class="dc-art">${KE.ART.dish(p.id)}${!isDrink ? `<label class="switch" title="Menüde"><input type="checkbox" id="menu-${p.id}" data-c="menuToggle" data-p="${p.id}" ${b.menu[p.id] ? 'checked' : ''} ${locked ? 'disabled' : ''} aria-label="${p.name} menüde"><i></i></label>` : ''}</div>
-        <div class="dc-b"><h4>${p.name}</h4>${isDrink ? '<small class="muted">Müşterilerin çoğu yanında alır</small>' : locked ? `<small class="lock">${IC('lock')}Bu ürünü bilen usta yok</small>` : `<span class="dc-star">${stars(best)}<small>en iyi usta</small></span>`}
+        <div class="dc-b"><h4>${p.name}</h4>${isDrink ? '<small class="muted">Müşterilerin çoğu yanında alır</small>' : locked ? `<small class="lock">${IC('lock')}${recipeLock ? `İtibar ${p.unlock} olunca açılır` : 'Bu ürünü bilen usta yok'}</small>` : `<span class="dc-star">${stars(best)}<small>en iyi usta</small></span>`}
           <div class="stepper"><button data-a="price" data-p="${p.id}" data-d="-1" aria-label="Fiyatı düşür">${IC('minus')}</button><input id="price-${p.id}" value="${price}" data-c="priceSet" data-p="${p.id}" inputmode="numeric" aria-label="${p.name} fiyatı"><span>₺</span><button data-a="price" data-p="${p.id}" data-d="1" aria-label="Fiyatı artır">${IC('plus')}</button></div>
           <div class="chips"><span class="chip ${ratio > 1.15 ? 'rd' : ratio < 0.97 ? 'gr' : ''}">Piyasa ${KE.tl(mp)}${Math.abs(ratio - 1) >= 0.01 ? ` · ${ratio > 1 ? '+' : ''}${Math.round((ratio - 1) * 100)}%` : ''}</span><span class="chip ${margin < 0.45 ? 'or' : ''}">Kâr %${Math.round(margin * 100)}</span></div>
           </div></article>`;
@@ -394,6 +410,7 @@
     return `<main class="screen">
       <div class="pagehead"><div class="ph-t"><span class="kicker">Sabah hazırlığı · ${KE.weekday(G.day)}</span><h1>${esc(b.name)}</h1><p class="ph-facts"><span>${IC('map')}${KE.district(b).name}</span><span>${IC('users')}~${Math.round(exp)} müşteri</span><span>${IC('fire')}${Math.min(stations, cooks.length)}/${stations} ocak</span><span>${IC('table')}${KE.tableCount(G, b)} masa</span>${amb.concept ? `<span>${IC('star')}${amb.concept.name}</span>` : ''}</p></div>
         <button class="btn big green" data-a="openShop">${IC('store')}${G.branches.length > 1 ? 'Bütün şubelerde kepengi aç' : 'Kepengi aç'}</button></div>
+      ${(() => { const sp = KE.specialDay(G.day); return sp ? `<section class="special sp-${sp.theme || 'cuma'}"><span class="sp-badge">${IC(sp.id === 'mac' ? 'fire' : sp.id === 'cuma' ? 'users' : 'star')}</span><div><span class="kicker">Bugün özel gün</span><h2>${sp.name}</h2><p>${sp.desc}</p></div></section>` : ''; })()}
       ${(G.daily || []).length ? `<section class="panel daypanel"><div class="sechead"><h2>Günün hedefleri</h2><span class="muted small">Tutturduğun her hedef ek para ve biraz itibar getirir.</span></div>${dailyHtml(false)}</section>` : ''}
       ${warn.length ? `<div class="alerts">${warn.map(([c, w]) => `<div class="alert ${c}">${IC(c === 'crit' ? 'bolt' : 'clock')}<span>${w}</span></div>`).join('')}</div>` : ''}
       <section class="panel"><div class="sechead"><h2>Ekip ve açılış görevleri</h2><button class="btn sm ghost" data-a="go" data-s="lonca">${IC('users')}Personeli yönet</button></div>
@@ -613,18 +630,26 @@
     const farm = out.farm && out.farm.done.length ? `<li>${IC('truck')}<span>Çiftlikten kesimhaneye: ${out.farm.done.map((d) => `${d.heads} ${KE.FARM[d.kind].unit} ${KE.FARM[d.kind].name.toLowerCase()} → ${Object.entries(d.got).map(([k, v]) => KE.num(v, 0) + ' kg ' + KE.MODES[G.mode].ingredients[k].name.toLowerCase()).join(', ')}`).join('; ')}</span></li>` : '';
     const tot = Object.values(out.branches).reduce((a, e) => a + e.net, 0);
     const staff = G.staff.slice(0, 12);
+    const regs = {};
+    (out.regulars || []).forEach((x) => { regs[x.id] = (regs[x.id] || 0) + x.gain; });
+    const regHtml = Object.entries(regs).map(([id, g]) => { const R = KE.REGULARS.find((x) => x.id === id); const r = G.regulars[id]; return `<li class="${g < 0 ? 'neg' : ''}"><span class="avatar sm">${KE.portrait(R.look || KE.CAST[R.cast].look, { mood: g < 0 ? 'sad' : 'happy' })}</span><span><b>${R.name}</b> uğradı. ${g > 0 ? 'Çok memnun kaldı' : g < 0 ? 'Kırıldı' : 'İdare etti'} · ${hearts(r.loyalty)}${r.praised === G.day - 1 ? ' <b>Mahallede dükkânı övüyor!</b>' : ''}</span></li>`; }).join('');
     const html = `<div class="mhead"><span class="kicker">${KE.dateStr(G.day - 1)}</span><h2>Günlük</h2></div>
       <div class="journal">${esc(out.journal)}</div>
       <div class="kpis"><div class="kpi">${IC('chart')}<small>Günlük net (tahmini)</small><b class="${tot >= 0 ? 'pos' : 'neg'}">${KE.tl(tot)}</b></div><div class="kpi">${IC('star')}<small>İtibar</small><b>${Math.round(G.reputation)}</b></div><div class="kpi">${IC('coin')}<small>Kasa</small><b>${KE.tl(G.cash)}</b></div></div>
       <h4>Ekibin morali</h4><div class="moodrow">${staff.map((s) => `<div class="mood">${avatar(KE.staffLook(s), KE.moodFromValue(s.morale), s.name)}<small>${esc(s.name.replace(' Usta', ''))}</small><b class="${(s.moraleDelta || 0) >= 0 ? 'pos' : 'neg'}">${(s.moraleDelta || 0) >= 0 ? '+' : ''}${KE.num(s.moraleDelta || 0, 1)}</b><em>${KE.tl(s.tipsToday || 0)}</em></div>`).join('')}</div>
       ${(out.daily || []).length ? `<h4>Günün hedefleri</h4><div class="daily">${out.daily.map((g) => `<div class="dg ${g.state}"><i>${IC(g.state === 'done' ? 'check' : 'bolt')}</i><span><b>${g.text}</b></span><em>${g.state === 'done' ? '+' + KE.tl(g.reward) : 'Olmadı'}</em></div>`).join('')}</div>` : ''}
-      ${ups || quits || goals || farm ? `<ul class="events">${goals}${farm}${ups}${quits}</ul>` : ''}
+      ${ups || quits || goals || farm || regHtml ? `<ul class="events">${goals}${regHtml}${farm}${ups}${quits}</ul>` : ''}
       <div class="acts"><button class="btn big green" data-a="closeAfterDay">${IC('play')}Yeni güne başla</button></div>`;
     UI.modal(html, { wide: true });
+    (out.unlocks || []).forEach((p) => queueModal(() => { UI.modal(`<div class="unlock"><span class="kicker">İtibar ${p.unlock} · Yeni tarif</span><div class="ul-dish">${KE.ART.dish(p.id)}</div><h2>${p.name} menüde!</h2><p class="lead">Bütün şubelerin menüsüne eklendi. Onu seven müşteriler kapıda.</p><div class="acts center"><button class="btn big green" data-a="closeModal">${IC('check')}Harika</button></div></div>`); UI.confetti(); KE.SND.play('goal'); }));
+    if (out.champions) queueModal(() => { UI.modal(`<div class="mhead"><span class="kicker">Ay sonu</span><h2>Semt şampiyonluğu</h2><p class="muted">Ayın memnuniyet ortalaması "Lüks Kebap"ın semtteki çıtasını geçen şube şampiyon olur: bir ay boyunca müşteri +%6, itibar +2.</p></div>
+      <div class="champs">${out.champions.map((c) => `<div class="champ ${c.won ? 'won' : ''}"><span class="cup">${IC(c.won ? 'crown' : 'bolt')}</span><span><b>${esc(c.name)}</b><small>${c.district} · memnuniyet %${Math.round(c.sat)} / çıta %${c.bar}</small></span><em>${c.won ? 'Şampiyon!' : c.served < 250 ? 'Yetersiz müşteri' : 'Lüks Kebap kazandı'}</em></div>`).join('')}</div>
+      <div class="acts"><button class="btn big green" data-a="closeModal">Tamam</button></div>`); if (out.champions.some((c) => c.won)) { UI.confetti(); KE.SND.play('goal'); } });
     if (out.month) queueModal(() => UI.modal(monthReportHtml(out.month) + `<div class="acts"><button class="btn big green" data-a="closeModal">Tamam</button></div>`, { wide: true }));
     if (out.news) queueModal(() => UI.modal(newsHtml(out.news) + `<div class="acts"><button class="btn big green" data-a="closeModal">Gazeteyi katla</button></div>`, { wide: true }));
   }
 
+  function hearts(n) { let h = '<span class="hearts" aria-label="Gönül ' + n + '/10">'; for (let i = 0; i < 5; i++) h += `<i style="--f:${Math.max(0, Math.min(1, n / 2 - i)) * 100}%">♥</i>`; return h + '</span>'; }
   function newsHtml(n) {
     return `<div class="paper"><div class="mast">Mahalle Postası</div><div class="mastline"><span>Sayı ${n.issue}</span><span>${n.date}</span><span>15 ₺</span></div>
       <div class="cols2">${n.headlines.map((h, i) => `<article class="${i === 0 ? 'lead' : ''}"><h4>${esc(h.title)}</h4><p>${esc(h.body)}</p></article>`).join('')}</div></div>`;
@@ -883,11 +908,12 @@
     const news = G.news[0];
 
     const done = Object.keys(G.goals).length;
-    return `<main class="screen">${head('Mahalle Kahvesi', 'Hedefler, günlük ve gazete', null, 'ayse')}
+    return `<main class="screen">${head('Mahalle Kahvesi', 'Hedefler, müdavimler, günlük ve gazete', null, 'ayse')}
       <div class="cols2"><div class="stack">
         <section class="panel"><div class="sechead"><h2>Hedefler</h2><span class="chip gd">${done} / ${KE.GOALS.length}</span></div><div class="goals">${KE.GOALS.map((g) => `<div class="goal ${G.goals[g.id] ? 'done' : ''}"><i>${G.goals[g.id] ? IC('check') : IC('star')}</i><span><b>${g.name}</b><small>${g.desc}</small></span><em>${G.goals[g.id] ? KE.dateStr(G.goals[g.id]) : KE.tl(g.reward)}</em></div>`).join('')}</div></section>
         <section class="panel"><h2>Günlük arşivi</h2><div class="stack">${G.journal.slice(0, 6).map((j) => `<div><span class="kicker">${j.date}</span><div class="journal sm">${esc(j.text)}</div></div>`).join('') || '<p class="muted">İlk gün bittiğinde günlüğün burada birikecek.</p>'}</div></section>
       </div><div class="stack">
+        <section class="panel"><div class="sechead"><h2>Müdavimler</h2><span class="small muted">Sevdiği yemeği iyi yap, gönlü dolsun. 5 kalpte arkadaşını getirir, 8'de mahallede seni över.</span></div><div class="regs">${KE.REGULARS.map((R) => { const r = G.regulars[R.id]; const pid = R.fav[G.mode]; return `<div class="reg"><span class="avatar lg">${KE.portrait(R.look || KE.CAST[R.cast].look, { mood: r.loyalty >= 5 ? 'happy' : 'neutral' })}</span><span class="reg-t"><b>${R.name}</b><small>${KE.CUSTOMER_TYPES[R.type].name} · ${r.visits} ziyaret</small>${hearts(r.loyalty)}</span><span class="reg-fav">${KE.ART.dish(pid)}<small>${pn(pid)}</small></span></div>`; }).join('')}</div></section>
 
         ${news ? `<section class="panel">${newsHtml(news)}</section>` : '<section class="panel"><h2>Mahalle Postası</h2><p class="muted">Gazete her pazar akşamı çıkar.</p></section>'}
       </div></div></main>`;
@@ -1013,6 +1039,8 @@
     if (!G.speed) G.speed = 1;
     UI.render();
     UI.startLoop();
+    const sp = KE.specialDay(G.day);
+    setTimeout(() => banner(sp ? sp.name + ' başladı!' : 'Kepenkler açıldı!'), 300);
   };
   A.speed = (d) => { G.speed = +d.v; document.querySelectorAll('.speed button').forEach((x) => x.classList.toggle('on', +x.dataset.v === G.speed)); };
   A.setPos = (d) => {

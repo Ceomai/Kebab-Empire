@@ -45,6 +45,14 @@
       <path d="M46 40 a7 7 0 0 1 10 -6 l-5 6z" fill="#f7e55c" ${OL}/>`,
     ciger: () => `<ellipse cx="32" cy="52" rx="27" ry="5" fill="#000" opacity=".12"/>${lavas(4, 36, 56, 14)}<path d="M2 31 h60" stroke="#9aa3ab" stroke-width="2.5" stroke-linecap="round"/>
       ${[0, 1, 2, 3, 4, 5, 6].map((i) => `<rect x="${8 + i * 7}" y="26" width="6.5" height="10" rx="2" fill="${i % 3 === 2 ? '#fdfefe' : '#5d2a1a'}" ${OL}/>`).join('')}${parsley(14, 45)}${parsley(44, 46)}`,
+    tantuni: () => `<g transform="rotate(-18 32 34)"><rect x="18" y="12" width="28" height="42" rx="12" fill="#f3d9a5" ${OL}/><path d="M20 22 q12 -10 24 0 l0 5 q-12 -5 -24 0z" fill="#9c4a22"/>
+      <g stroke="#7a3315" stroke-width="2.2" stroke-linecap="round"><path d="M24 17 l4 3 M30 15 l3 4 M36 16 l2 4"/></g>${parsley(26, 15)}<circle cx="38" cy="14" r="2.4" fill="#e2412d"/>
+      <path d="M17 36 h30 v14 a12 12 0 0 1 -30 0z" fill="#fdfefe" ${OL}/><path d="M17 40 h30" stroke="#f28c28" stroke-width="2.6"/><path d="M17 45 h30" stroke="#23a26d" stroke-width="2.6"/></g>`,
+    kunefe: () => `<ellipse cx="32" cy="44" rx="27" ry="12" fill="#000" opacity=".12"/><ellipse cx="32" cy="41" rx="27" ry="12" fill="#b87333" ${OL}/><ellipse cx="32" cy="38" rx="23" ry="9.5" fill="#e8892c" ${OL}/>
+      <path d="M14 37 q6 -4 12 0 t12 0 t12 0" stroke="#c76a12" stroke-width="1.6" fill="none"/><path d="M16 40 q6 -3 12 0 t12 0 t10 0" stroke="#f6b04f" stroke-width="1.3" fill="none"/>
+      <g fill="#7cc35d"><circle cx="26" cy="35" r="1.8"/><circle cx="32" cy="33" r="1.6"/><circle cx="38" cy="36" r="1.8"/><circle cx="30" cy="39" r="1.5"/><circle cx="35" cy="40" r="1.4"/></g>
+      <path d="M20 33 q8 -3 14 -1" stroke="#fff6c8" stroke-width="2" fill="none" opacity=".8"/>`,
+    icli_kofte: () => plate(26, 13, 42) + [[20, 38], [34, 34], [44, 40]].map(([x, y]) => `<g transform="rotate(-20 ${x} ${y})"><ellipse cx="${x}" cy="${y}" rx="9" ry="6" fill="#a8541f" ${OL}/><path d="M${x - 8} ${y} q8 -5 16 0" stroke="#d07a3a" stroke-width="1.6" fill="none"/></g>`).join('') + `<path d="M48 48 a5 5 0 0 1 8 -4 l-4 5z" fill="#f7e55c" ${OL}/>${parsley(14, 46)}`,
     ayran: () => `<ellipse cx="32" cy="58" rx="13" ry="3" fill="#000" opacity=".14"/><path d="M19 16 h26 l-3 40 h-20z" fill="#b87333" ${OL}/><path d="M21 22 h22" stroke="#e8a26a" stroke-width="2"/><path d="M19 16 h26 l-1 6 h-24z" fill="#fff" ${OL}/>
       <path d="M20 16 q4 -7 8 -1 q3 -6 7 0 q4 -6 9 1z" fill="#fff" ${OL}/><path d="M41 20 v30" stroke="#f3c08a" stroke-width="2" opacity=".6"/>`
   };
@@ -144,6 +152,7 @@
     sound: '<path d="M4 9 h4 l5 -4 v14 l-5 -4 h-4z"/><path d="M16 9 q2 3 0 6 M18.5 7 q4 5 0 10"/>',
     mute: '<path d="M4 9 h4 l5 -4 v14 l-5 -4 h-4z"/><path d="M16 9 l5 6 M21 9 l-5 6"/>',
     target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+    crown: '<path d="M4 17 l1.5 -9 l4.5 4 l2 -6 l2 6 l4.5 -4 l1.5 9z"/><path d="M4 20 h16"/>',
     cart: '<path d="M3 5 h2.5 l2 10 h10 l2 -7 h-13"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/>',
     coin: '<circle cx="12" cy="12" r="8"/><path d="M9.5 9.5 h3.5 a2.2 2.2 0 0 1 0 4.4 h-3 M11 7.5 v9"/>',
     star: '<path d="M12 3.5 l2.6 5.3 5.9 .9 -4.3 4.1 1 5.8 -5.2 -2.7 -5.2 2.7 1 -5.8 -4.3 -4.1 5.9 -.9z"/>',
