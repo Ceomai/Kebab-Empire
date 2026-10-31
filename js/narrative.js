@@ -178,12 +178,6 @@
         { label: 'Bu sefer olmaz', desc: 'İtibar −1', run: (G) => { G.reputation = clamp(G.reputation - 1, 0, 100); return 'Ayşe Teyze bozulmadı ama biraz kırıldı.'; } }
       ] }) });
 
-  ev.push({ id: 'yagmur', who: 'emre', w: 0.8,
-    build: (G) => ({ title: 'Sağanak geliyor', text: 'Meteoroloji yarın için sarı kod verdi. Kurye Emre: "Abi yarın herkes evden sipariş verir, kapıya kimse gelmez."', ctx: {},
-      choices: [
-        { label: 'Tamam, hazırlıklıyız', desc: 'Yarın kapı müşterisi −%25', run: (G) => { G.mods.push({ key: 'traffic', mult: 0.75, days: 1, label: 'Sağanak' }); return 'Kepenk önüne kum torbası koyduk.'; } }
-      ] }) });
-
   ev.push({ id: 'ogrenciIndirim', who: null, w: 0.6,
     when: (G) => ['kampustepe', 'kadiceşme', 'besiktepe'].includes(branch(G).district),
     build: (G) => ({ title: 'Öğrenci birliği teklifi', text: 'Üniversitenin öğrenci kulübü bir anlaşma öneriyor: öğrenci kartına %10 indirim, karşılığında kampüs panolarında reklam.', ctx: {},

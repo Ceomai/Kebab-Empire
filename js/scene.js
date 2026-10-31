@@ -43,6 +43,8 @@
         <div class="st-decor">${wallDecor.map((id) => `<div class="wd">${A().decor(id)}</div>`).join('')}</div>
         <div class="st-window"><div class="st-street"></div></div>
         <div class="st-lamp l1">${A().lamp()}</div><div class="st-lamp l2">${A().lamp()}</div>
+        <div class="st-clock"><i class="hh" id="st-hh"></i><i class="mm" id="st-mm"></i></div>
+        <div class="st-shelf">${['#c0392b', '#e67e22', '#7d3c98', '#27ae60', '#d4ac0d'].map((c, i) => `<span class="jar" style="--c:${c};--h:${[70, 90, 60, 80, 75][i]}%"></span>`).join('')}</div>
       </div>
       <div class="st-back"></div>
       <div class="st-equip">${equipment}</div>
@@ -53,6 +55,7 @@
       <div class="st-layer" id="st-cooks"></div>
       <div class="st-counter"><div class="st-counter-top"></div><div class="st-counter-front"></div></div>
       <div class="st-register">${A().register()}</div>
+      <div class="st-salad">${['#e2412d', '#5cb85c', '#c84bc0', '#f1c40f'].map((c) => `<span style="--c:${c}"></span>`).join('')}</div>
       <div class="st-layer" id="st-pass"></div>
       <div class="st-layer" id="st-people"></div>
       <div class="st-layer" id="st-fx"></div>
@@ -219,6 +222,7 @@
       let x = 50, y = 50;
       const e = f.cid != null ? ent['u' + f.cid] : f.sid ? ent['c' + f.sid] : null;
       if (e) { x = e.x; y = e.y - 4; }
+      if (f.t === 'pay') coinFly(stage, x, y);
       const cls = f.t === 'bad' ? 'bad' : f.t === 'tip' ? 'tip' : f.t === 'pay' ? 'pay' : f.match ? 'match' : f.t === 'ready' ? 'ready' : '';
       const text = f.t === 'ready' ? 'Hazır!' : f.text;
       if (!text || f.t === 'pass') return;
@@ -231,6 +235,10 @@
     });
     L.fx = [];
 
+    /* duvar saati ve para efekti */
+    const hh = document.getElementById('st-hh'), mm = document.getElementById('st-mm');
+    const tmin = KE.OPEN_HOUR * 60 + Math.min(L.minute, KE.MINUTES);
+    if (hh) { hh.style.transform = `rotate(${(tmin / 60 % 12) * 30}deg)`; mm.style.transform = `rotate(${(tmin % 60) * 6}deg)`; }
     /* yoğunluk göstergeleri */
     const waitT = L.tickets.filter((t) => t.state === 'wait').length;
     const readyT = ready.filter((t) => !t.paket).length;
@@ -246,6 +254,21 @@
     ].map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join('');
   };
 
+  let lastCoin = 0;
+  function coinFly(stage, x, y) {
+    const now = Date.now();
+    if (now - lastCoin < 350) return;
+    lastCoin = now;
+    const target = document.getElementById('tb-today');
+    if (!target) return;
+    const sr = stage.getBoundingClientRect(), tr = target.getBoundingClientRect();
+    const c = document.createElement('div');
+    c.className = 'coinfly';
+    c.style.left = (sr.left + sr.width * x / 100) + 'px'; c.style.top = (sr.top + sr.height * y / 100) + 'px';
+    document.body.appendChild(c);
+    requestAnimationFrame(() => requestAnimationFrame(() => { c.style.left = (tr.left + 10) + 'px'; c.style.top = (tr.top + 6) + 'px'; c.style.transform = 'scale(.5)'; c.style.opacity = '.4'; }));
+    setTimeout(() => c.remove(), 900);
+  }
   function ownerLook(G) {
     if (!G.ownerLook) G.ownerLook = Object.assign(KE.randomLook(Math.random() < 0.5 ? 'e' : 'k', 'orta'), { outfit: 'onluk', outfitColor: '#d7263d', shirt: '#fdfefe', logo: true, accent: '#ffc93c', head: 'none' });
     return G.ownerLook;
