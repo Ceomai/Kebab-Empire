@@ -293,7 +293,7 @@ KE.HAIR_COLORS = ['#1c1410', '#2b1d14', '#4a2f1d', '#6b4423', '#8d5a2b', '#a0a0a
 KE.GOALS = [
   { id: 'ilkhafta', name: 'İlk haftayı kârla kapat', desc: 'İlk 7 günün toplam net sonucu artıda olsun.', reward: 25000 },
   { id: 'itibar50', name: 'Mahallenin gözdesi', desc: 'İtibarı 50\'ye çıkar.', reward: 30000 },
-  { id: 'usta5', name: 'Ünlü usta', desc: 'Kadronda ★5 uzmanlığı olan bir usta olsun.', reward: 20000 },
+  { id: 'usta5', name: 'Usta yetiştir', desc: 'Bir çırağı mentor yanında yetiştirip ustalığa terfi ettir.', reward: 30000 },
   { id: 'kostum', name: 'Takım ruhu', desc: 'Bütün çalışanlarına temel önlük dışında bir kostüm giydir.', reward: 15000 },
   { id: 'konsept', name: 'Konsept sahibi', desc: 'Bir şubede aynı tarzdan 3 dekor öğesiyle konsept bonusunu aç.', reward: 30000 },
   { id: 'ciftlik', name: 'Kendi etimiz', desc: 'Besi çiftliğini satın al.', reward: 40000 },

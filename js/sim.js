@@ -862,7 +862,7 @@
     const test = {
       ilkhafta: () => G.day >= 7 && G.ledger.days.filter((d) => d.day <= 7).reduce((a, d) => a + d.net, 0) > 0,
       itibar50: () => G.reputation >= 50,
-      usta5: () => G.staff.some((s) => Object.values(s.spec).some((v) => v >= 5)),
+      usta5: () => !!G.flags.promoted,
       kostum: () => G.staff.length > 0 && G.staff.every((s) => s.costume !== 'temel'),
       konsept: () => G.branches.some((b) => KE.ambience(G, b).concept),
       sube2: () => G.branches.length >= 2,

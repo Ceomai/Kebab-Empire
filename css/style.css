@@ -787,3 +787,17 @@ table.fin tr.click:hover td { background: #fff6e6; }
 .floor-2 .st-floor { background: linear-gradient(180deg, rgba(0, 0, 0, .1), transparent 22%), repeating-conic-gradient(#f4ebdc 0 25%, #c9a77b 0 50%) 0 0 / 4cqw 4cqw; }
 .mode-kebap.floor-1 .st-floor { background: linear-gradient(180deg, rgba(0, 0, 0, .14), transparent 22%), repeating-linear-gradient(90deg, #c49364 0 4cqw, #b5845a 4cqw 8cqw); }
 .mode-kebap.floor-2 .st-floor { background: linear-gradient(180deg, rgba(0, 0, 0, .14), transparent 22%), radial-gradient(circle at 50% 50%, #a93226 0 .6cqw, transparent .7cqw) 0 0 / 6cqw 6cqw, repeating-linear-gradient(90deg, #c9986a 0 4cqw, #ba8a5e 4cqw 8cqw); }
+
+/* ---------- Sade başlık ve rol anahtarı ---------- */
+.ph-npc { display: flex; align-items: center; gap: 10px; margin-left: auto; max-width: 460px; }
+.ph-npc .bubble { margin: 0; font-size: 13.5px; padding: 9px 13px; color: var(--murekkep); }
+.ph-npc .bubble::after { left: auto; right: -9px; bottom: 50%; transform: translateY(50%); border-right-color: transparent; border-left: 9px solid #fff; border-right: 0; }
+.ph-npc .avatar { width: 64px; border-color: var(--altin); }
+@media (max-width: 760px) { .ph-npc { margin-left: 0; max-width: none; width: 100%; flex-direction: row-reverse; } .ph-npc .bubble::after { right: auto; left: -9px; border-left: 0; border-right: 9px solid #fff; } }
+.ph-facts { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 4px; }
+.ph-facts span { display: inline-flex; align-items: center; gap: 6px; }
+.ph-facts .ic { width: 16px; height: 16px; color: var(--altin); }
+.rolekey { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 8px; margin-bottom: 14px; }
+.rolekey span { display: flex; flex-direction: column; gap: 2px; background: var(--kagit-2); border-radius: 12px; padding: 8px 12px; font-size: 12.5px; color: var(--murekkep-2); }
+.rolekey b { font-family: var(--f-display); font-size: 15px; color: var(--murekkep); }
+.card.person .pc-fig { width: 72px; }
