@@ -109,14 +109,15 @@
     const rent = branches.reduce((a, b) => a + b.rent, 0);
     const util = branches.reduce((a, b) => a + b.util, 0);
     const accountant = E().muhasebeci + Math.max(0, G.branches.length - 1) * 2500;
+    const farmFixed = G.farm ? Math.round(KE.FARM_MONTHLY * G.priceIndex) : 0;
     const loan = G.loans.reduce((a, l) => a + (l.remaining > 0 ? l.monthly : 0), 0);
-    const opex = personnel + rent + util + accountant + kdv + loan;
+    const opex = personnel + rent + util + accountant + kdv + loan + farmFixed;
     const report = {
       key, name: KE.monthName(key), bonus: bonus ? KE.bonusMonths[key] : null, revenue, purchases, tips, kdvOut, kdvIn, kdv,
-      payroll, personnel, rent, rentNet: rent * (1 - E().kiraStopaj), stopaj: rent * E().kiraStopaj, util, accountant, loan,
+      payroll, personnel, farmFixed, farm: extras.farm || 0, rent, rentNet: rent * (1 - E().kiraStopaj), stopaj: rent * E().kiraStopaj, util, accountant, loan,
       ads: extras.ads || 0, capex: extras.capex || 0, fines: extras.fines || 0, other: extras.other || 0,
       branches, customers: sum((d) => d.served),
-      net: revenue - kdv - purchases - personnel - rent - util - accountant - loan - (extras.ads || 0) - (extras.fines || 0) - (extras.other || 0)
+      net: revenue - kdv - purchases - personnel - rent - util - accountant - loan - farmFixed - (extras.farm || 0) - (extras.ads || 0) - (extras.fines || 0) - (extras.other || 0)
     };
     G.cash -= opex;
     G.loans.forEach((l) => { if (l.remaining > 0) { l.remaining -= 1; } });
@@ -124,7 +125,7 @@
     G.staff.forEach((s) => { s.tipsMonth = 0; });
     if (monthNo === 12) G.staff.forEach((s) => { s.cumBase = 0; });
     G.ledger.months.push(report);
-    G.monthExtras = { ads: 0, capex: 0, fines: 0, other: 0 };
+    G.monthExtras = { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 };
     G.priceIndex *= 1 + E().aylikEnflasyon;
     if (monthNo === 12) KE.ECON.asgariBrut = Math.round(KE.ECON.asgariBrut * 1.27);
     return report;

@@ -55,13 +55,13 @@ KE.DISTRICTS = [
 
 /* ---------- Müşteri tipleri ---------- */
 KE.CUSTOMER_TYPES = {
-  ogrenci: { name: 'Öğrenci', patience: 22, priceSens: 0.9, tip: 0.01, hours: { 12: 1.2, 13: 1.2, 18: 1.2, 19: 1.2, 21: 1.1 } },
-  beyaz:   { name: 'Beyaz yaka', patience: 14, priceSens: 0.35, tip: 0.035, hours: { 12: 2.6, 13: 2.4, 14: 0.8, 18: 1.2, 19: 0.8, 20: 0.4, 21: 0.2, 22: 0.1 } },
-  aile:    { name: 'Aile', patience: 32, priceSens: 0.55, tip: 0.04, hours: { 10: 0.3, 11: 0.5, 13: 1.2, 18: 1.4, 19: 1.8, 20: 1.6, 22: 0.3 }, weekend: 1.8, group: [2, 4] },
-  gurme:   { name: 'Gurme', patience: 40, priceSens: 0.1, tip: 0.1, hours: { 13: 1.2, 19: 1.5, 20: 1.5 } },
-  turist:  { name: 'Turist', patience: 26, priceSens: 0.25, tip: 0.07, hours: { 11: 1.2, 12: 1.4, 13: 1.4, 14: 1.2, 17: 1.1, 18: 1.2 } },
-  isci:    { name: 'İnşaat ekibi', patience: 12, priceSens: 0.75, tip: 0.01, hours: { 10: 0.6, 11: 1, 12: 2.8, 13: 2.2, 14: 0.4, 17: 0.9, 18: 0.6, 19: 0.3, 20: 0.1, 21: 0.05, 22: 0.05 }, group: [2, 3] },
-  gece:    { name: 'Gece çıkışı', patience: 15, priceSens: 0.5, tip: 0.03, hours: { 10: 0.05, 11: 0.05, 12: 0.2, 13: 0.2, 14: 0.2, 15: 0.2, 16: 0.2, 17: 0.3, 18: 0.4, 19: 0.6, 20: 1, 21: 2.2, 22: 3.4 } }
+  ogrenci: { name: 'Öğrenci', takeaway: 0.45, eat: 12, patience: 22, priceSens: 0.9, tip: 0.01, hours: { 12: 1.2, 13: 1.2, 18: 1.2, 19: 1.2, 21: 1.1 } },
+  beyaz:   { name: 'Beyaz yaka', takeaway: 0.5, eat: 14, patience: 14, priceSens: 0.35, tip: 0.035, hours: { 12: 2.6, 13: 2.4, 14: 0.8, 18: 1.2, 19: 0.8, 20: 0.4, 21: 0.2, 22: 0.1 } },
+  aile:    { name: 'Aile', takeaway: 0.05, eat: 25, patience: 32, priceSens: 0.55, tip: 0.04, hours: { 10: 0.3, 11: 0.5, 13: 1.2, 18: 1.4, 19: 1.8, 20: 1.6, 22: 0.3 }, weekend: 1.8, group: [2, 4] },
+  gurme:   { name: 'Gurme', takeaway: 0, eat: 30, patience: 40, priceSens: 0.1, tip: 0.1, hours: { 13: 1.2, 19: 1.5, 20: 1.5 } },
+  turist:  { name: 'Turist', takeaway: 0.15, eat: 20, patience: 26, priceSens: 0.25, tip: 0.07, hours: { 11: 1.2, 12: 1.4, 13: 1.4, 14: 1.2, 17: 1.1, 18: 1.2 } },
+  isci:    { name: 'İnşaat ekibi', takeaway: 0.25, eat: 14, patience: 12, priceSens: 0.75, tip: 0.01, hours: { 10: 0.6, 11: 1, 12: 2.8, 13: 2.2, 14: 0.4, 17: 0.9, 18: 0.6, 19: 0.3, 20: 0.1, 21: 0.05, 22: 0.05 }, group: [2, 3] },
+  gece:    { name: 'Gece çıkışı', takeaway: 0.55, eat: 10, patience: 15, priceSens: 0.5, tip: 0.03, hours: { 10: 0.05, 11: 0.05, 12: 0.2, 13: 0.2, 14: 0.2, 15: 0.2, 16: 0.2, 17: 0.3, 18: 0.4, 19: 0.6, 20: 1, 21: 2.2, 22: 3.4 } }
 };
 
 /* Saatlik genel yoğunluk eğrisi (10:00–23:00) */
@@ -114,7 +114,7 @@ KE.MODES = {
   doner: {
     id: 'doner', name: 'Dönerci', icon: '🥙',
     tagline: 'Hızlı servis, kalabalık kuyruk, gece yarısına kadar dönen ocak.',
-    trafficMul: 1.0, drinkRate: 0.62,
+    trafficMul: 1.2, drinkRate: 0.62,
     cookRole: 'Döner ustası',
     ingredients: {
       et:      { name: 'Dana döner eti', unit: 'kg', price: 760 },
@@ -163,15 +163,15 @@ KE.MODES = {
         { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 45000 },
         { name: 'Soğuk oda', waste: 0.015, cost: 120000 } ] },
       service: { name: 'Servis', levels: [
-        { name: 'Klasik tezgâh', patience: 1.0, queue: 8, cost: 0 },
-        { name: 'Self servis tezgâh', patience: 1.15, queue: 10, cost: 35000 },
-        { name: 'Sipariş ekranı ve sıra numarası', patience: 1.3, queue: 12, cost: 85000 } ] }
+        { name: 'Klasik tezgâh ve 4 masa', patience: 1.0, queue: 8, tables: 4, cost: 0 },
+        { name: 'Self servis tezgâh ve 6 masa', patience: 1.15, queue: 10, tables: 6, cost: 35000 },
+        { name: 'Sipariş ekranı ve 8 masa', patience: 1.3, queue: 12, tables: 8, cost: 85000 } ] }
     }
   },
   kebap: {
     id: 'kebap', name: 'Kebapçı', icon: '🍢',
     tagline: 'Közün başında usta işi, masaya oturan müşteri, yüksek hesap.',
-    trafficMul: 0.58, drinkRate: 0.8,
+    trafficMul: 0.68, drinkRate: 0.8,
     cookRole: 'Kebap ustası',
     ingredients: {
       kiyma:   { name: 'Zırh kıyması', unit: 'kg', price: 820 },
@@ -219,11 +219,25 @@ KE.MODES = {
         { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 45000 },
         { name: 'Soğuk oda', waste: 0.015, cost: 120000 } ] },
       service: { name: 'Salon', levels: [
-        { name: '6 masalık salon', patience: 1.0, queue: 6, cost: 0 },
-        { name: '9 masa ve yer sofrası köşesi', patience: 1.15, queue: 9, cost: 45000 },
-        { name: '12 masalık geniş salon', patience: 1.3, queue: 12, cost: 110000 } ] }
+        { name: '5 masalık salon', patience: 1.0, queue: 6, tables: 5, cost: 0 },
+        { name: '7 masa ve yer sofrası köşesi', patience: 1.15, queue: 8, tables: 7, cost: 45000 },
+        { name: '9 masalık geniş salon', patience: 1.3, queue: 10, tables: 9, cost: 110000 } ] }
     }
   }
+};
+
+/* ---------- Besi çiftliği ----------
+   Hayvanlar parti halinde alınır, her gün yem yer, olgunlaşınca kesimhaneye gider; et çiftlik deposundan
+   her sabah şubelere sevk edilir. Kendi etimizle pişen ürünlerde kalite +0.25. */
+KE.FARM_COST = 650000;
+KE.FARM_MONTHLY = 38000;   // bakıcı ücreti, enerji, veteriner
+KE.FARM = {
+  dana:  { name: 'Dana', unit: 'baş', young: 52000, feed: 1050, days: 24, batch: 1, caps: [4, 8, 12], upCost: [0, 160000, 300000],
+           yield: { doner: { et: 135 }, kebap: { kiyma: 135 } }, desc: 'Döner ve kıyma için besi danası. Uzun büyür, çok et verir.' },
+  kuzu:  { name: 'Kuzu', unit: 'baş', young: 8800, feed: 230, days: 14, batch: 1, caps: [12, 24, 36], upCost: [0, 90000, 170000],
+           yield: { doner: { kuzu: 15 }, kebap: { kuzu: 11, kiyma: 4, ciger: 0.9 } }, desc: 'Şiş, cağ ve ciğer için kuzu.' },
+  tavuk: { name: 'Tavuk', unit: 'adet', young: 60, feed: 19, days: 8, batch: 50, caps: [150, 300, 450], upCost: [0, 60000, 120000],
+           yield: { doner: { tavuk: 1.05 } }, modes: ['doner'], desc: 'Tavuk döner için kümes. Hızlı döner, ucuz beslenir.' }
 };
 
 /* ---------- Usta şablonları (her mod için hazır ustalar; pazarda rastgele olanlar da üretilir) ---------- */
@@ -260,11 +274,11 @@ KE.TRAITS = {
 KE.ROLES = {
   usta:     { name: 'Usta', cooks: true },
   cirak:    { name: 'Çırak', cooks: true },
-  kasiyer:  { name: 'Kasiyer', baseWage: 36000, desc: 'Sipariş alır, kasayı yönetir. Yokken ustalar %30 yavaşlar.' },
-  garson:   { name: 'Garson', baseWage: 35000, desc: 'Masalara bakar. Sohbeti bahşişi artırır.', modes: ['kebap', 'doner'] },
-  kurye:    { name: 'Kurye', baseWage: 40000, desc: 'Paket siparişleri taşır. Günlük paket cirosu getirir.' },
-  temizlik: { name: 'Temizlik görevlisi', baseWage: 33030, desc: 'Temizlik puanını yüksek tutar. Denetimde hayat kurtarır.' },
-  mudur:    { name: 'Şube müdürü', baseWage: 70000, desc: 'Sen yokken şubeyi yönetir. Arka plan simülasyonunu belirler.' }
+  kasiyer:  { name: 'Kasiyer', baseWage: 36000, desc: 'Kasada siparişi ve ödemeyi alır. Gerekirse servise de geçer.' },
+  garson:   { name: 'Garson / Komi', baseWage: 35000, desc: 'Hazır yemeği tezgâhtan alıp masaya götürür, masaları toplar. Sohbeti bahşişi artırır.' },
+  kurye:    { name: 'Kurye', baseWage: 40000, desc: 'Paket siparişleri getirir ve taşır. Mutfağa ek iş, kasaya ek ciro.' },
+  temizlik: { name: 'Temizlik görevlisi', baseWage: 33030, desc: 'Salonu temiz tutar, kirli masaları toplar. Denetimde hayat kurtarır.' },
+  mudur:    { name: 'Şube müdürü', baseWage: 70000, desc: 'Ekibi yoğunluğa göre kendisi yönetir, mola düzenini kurar, herkesi biraz hızlandırır.' }
 };
 
 /* ---------- İsim ve görünüm havuzları ---------- */
@@ -282,6 +296,7 @@ KE.GOALS = [
   { id: 'usta5', name: 'Ünlü usta', desc: 'Kadronda ★5 uzmanlığı olan bir usta olsun.', reward: 20000 },
   { id: 'kostum', name: 'Takım ruhu', desc: 'Bütün çalışanlarına temel önlük dışında bir kostüm giydir.', reward: 15000 },
   { id: 'konsept', name: 'Konsept sahibi', desc: 'Bir şubede aynı tarzdan 3 dekor öğesiyle konsept bonusunu aç.', reward: 30000 },
+  { id: 'ciftlik', name: 'Kendi etimiz', desc: 'Besi çiftliğini satın al.', reward: 40000 },
   { id: 'sube2', name: 'İkinci şube', desc: 'Başka bir semtte ikinci dükkânını aç.', reward: 60000 },
   { id: 'ciro1m', name: 'Milyonluk ay', desc: 'Bir ayda 1.000.000 ₺ konsolide ciroya ulaş.', reward: 80000 },
   { id: 'itibar80', name: 'Şehrin efsanesi', desc: 'İtibarı 80\'e çıkar.', reward: 100000 },

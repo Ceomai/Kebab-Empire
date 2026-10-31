@@ -20,7 +20,7 @@ Sonra tarayıcıda `http://localhost:8000` adresine git.
 2. **Semt seç:** İlk dükkânın semtini haritadan seçersin. Semt; müşteri karışımını, kirayı ve rakip sayısını belirler.
 3. **Usta seç:** Üç adaydan biri ocağın başına geçer. Yanına bir çırak ve ön tezgâh personeli verilir.
 4. **Sabah hazırlığı:** Menüyü ve fiyatları ayarla, stoğu ve vardiyayı kontrol et.
-5. **Servis (10:00–23:00):** Servisi personel yürütür. İstersen "Tezgâha geç" diyerek siparişleri kendin hazırlarsın. Hız 1×, 2× ve 4× arasında değiştirilebilir.
+5. **Servis (10:00–23:00):** Bütün şubeler aynı anda açılır. Müşteri kapıdan girer, kasada sipariş verir, usta pişirir, komi/garson tabağı masaya götürür, müşteri yer, bahşiş bırakır ve çıkar; masa toplanır. Şube şeridinden şubeler arasında canlı geçiş yapabilir, ekibin görevini (ocak, kasa, servis, temizlik, paket, mola) yoğunluğa göre değiştirebilirsin. İstersen "Tezgâha geç" diyerek siparişleri kendin hazırlarsın.
 6. **Kapanış:** Gün sonu raporu, bahşiş dağıtımı, gün sonu günlüğü ve ekibin moral değişimi.
 7. **Hafta ve ay sonu:** Pazar akşamı mahalle gazetesi çıkar, usta pazarı yenilenir. Ay sonunda bordro, kira, stopaj, faturalar, KDV ve kredi taksitleri kasadan düşer.
 
@@ -28,6 +28,9 @@ Sonra tarayıcıda `http://localhost:8000` adresine git.
 
 | Sistem | Ne yapar |
 |---|---|
+| Servis akışı | Ustalar yalnızca pişirir. Kasa sipariş ve ödemeyi alır, komi/garson hazır tabağı masaya götürür ve masaları toplar. Tezgâhta bekleyen tabak soğur, kirli masa yeni müşteri almaz. Çalışanların enerjisi iş yaptıkça düşer, molada dolar. |
+| Otomatik ekip | Her şubede açılıp kapanabilir. Müdür varsa yoğunluğa göre görev ve mola düzenler; yoksa yalnızca bitkin düşenleri molaya gönderir. |
+| Besi çiftliği | Dana, kuzu ve (dönercide) tavuk yetiştirilir. Olgunlaşan hayvan kesimhaneye gider, et her sabah şubelere sevk edilir; maliyet düşer, kalite artar. |
 | Usta ve uzmanlık | Her ustanın ürün bazında ★1–5 uzmanlığı, hız, kalite, tutarlılık, fire ve öğretme değerleri, bir kişilik özelliği ve memleketi vardır. Ustalar pişirdikçe deneyim kazanır. |
 | Müşteri tercihleri | Yedi müşteri tipinin favori ürünü, sabrı, fiyat hassasiyeti ve bahşiş eğilimi vardır. Uzman usta, o ürünü seven müşterileri dükkâna çeker. |
 | Eşleşme bonusu | Müşterinin favori ürününü ★4+ usta hazırlarsa "Ellerine sağlık!" der: memnuniyet ve bahşiş artar. |
@@ -38,7 +41,7 @@ Sonra tarayıcıda `http://localhost:8000` adresine git.
 | Kişiselleştirme | Dört kostüm seviyesi (yöresel kostüm çalışanın memleketine göre), 15 dekor öğesi, dört ekipman kategorisi. Aynı tarzdan üç dekor konsept bonusunu açar. |
 | Şubeler | Yedi semtte şube açılabilir. Oyuncunun başında olmadığı şubeler arka planda simüle edilir; sonucu şube müdürü, ustalar ve semtin müşteri profili belirler. Üç şubeden sonra merkezi mutfak kurulabilir. |
 | Anlatı | Günün verilerinden yazılan gün sonu günlüğü, 15 olay kartı, haftalık mahalle gazetesi, karakter replikleri ve dokuz hikâye hedefi. |
-| Karakterler | Katmanlı SVG karakterler: ten, saç, bıyık/sakal, gözlük, başörtüsü ve yöresel başlıklar (puşi, takke, kalpak). Yüz ifadesi moral ve sabra göre değişir. |
+| Görseller | Bütün görseller vektör (SVG): yemek çizimleri, döner ocağı, mangal, izometrik şehir haritası, dükkân iç mekânı, çiftlik hayvanları. Karakterler tam boy çizilir, yürür, tepsi taşır; yüz ifadesi moral ve sabra göre değişir; yöresel başlıklar (puşi, takke, kalpak) ve kostümler vardır. |
 
 ## Dosya yapısı
 
@@ -46,9 +49,13 @@ Sonra tarayıcıda `http://localhost:8000` adresine git.
 index.html          Giriş sayfası
 css/style.css       Görsel kimlik ve bileşenler
 js/data.js          Bütün oyun verisi: modlar, ürünler, ustalar, semtler, dekor, ekonomi ayarları
-js/characters.js    SVG karakter oluşturucu ve sabit hikâye karakterleri
+js/characters.js    SVG karakter oluşturucu (portre ve tam boy) ve sabit hikâye karakterleri
+js/art.js           Vektör çizim kütüphanesi: yemekler, ocaklar, mobilya, hayvanlar, ikonlar
+js/map.js           İzometrik şehir haritası
+js/scene.js         Dükkân iç mekânı ve canlı servis sahnesi
+js/farm.js          Besi çiftliği
 js/economy.js       Para biçimi, takvim, fiyatlar, bordro, aylık kapanış, kredi
-js/sim.js           Servis simülasyonu, gün kapanışı, bahşiş/moral, şubeler, hedefler
+js/sim.js           Eşzamanlı şube simülasyonu, görevler ve enerji, gün kapanışı, bahşiş/moral, hedefler
 js/narrative.js     Günlük, gazete, olay kartları, replikler
 js/ui.js            Ekranlar, harita, dükkân sahnesi, modallar
 js/main.js          Açılış
