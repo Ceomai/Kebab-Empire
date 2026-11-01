@@ -26,7 +26,7 @@
     temizlik: ['temizlik', 'servis', 'mola'], kurye: ['paket', 'mola'],
     mudur: ['yonetim', 'kasa', 'servis', 'mola']
   };
-  KE.POS_NAMES = { ocak: 'Ocak', kasa: 'Kasa', servis: 'Servis', temizlik: 'Temizlik', paket: 'Paket', yonetim: 'Yönetim', mola: 'Mola' };
+  KE.POS_NAMES = { ocak: 'Ocakbaşı', kasa: 'Kasa', servis: 'Servis', temizlik: 'Temizlik', paket: 'Paket', yonetim: 'Yönetim', mola: 'Mola' };
   KE.TASK_NAMES = { cook: 'Pişiriyor', order: 'Sipariş alıyor', deliver: 'Servis ediyor', clear: 'Masa topluyor', clean: 'Temizlik', paket: 'Paket yolda' };
 
   /* ---------- Personel üretimi ---------- */

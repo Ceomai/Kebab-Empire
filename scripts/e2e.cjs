@@ -9,6 +9,10 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
   await page.goto(process.env.URL || 'http://localhost:4173/');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+  if (process.env.COLLECT) {
+    await page.waitForTimeout(300);
+    await page.evaluate(async () => { window.__cat = {}; KE.I18N.register('xx', {}); KE.I18N.langs.xx = 'xx'; KE.I18N.collect = (k, c) => { window.__cat[k] = window.__cat[k] || c; }; await KE.I18N.set('xx'); });
+  }
   const shot = (n, full) => page.screenshot({ path: OUT + '/' + n + '.png', fullPage: !!full });
   const click = async (sel) => { await page.click(sel); await page.waitForTimeout(200); };
   const mode = process.argv[2] || 'doner';
@@ -102,6 +106,33 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
   await page.evaluate(() => KE.UI.go('map')); await page.waitForTimeout(300); await shot('21-mobile-map');
   const sw2 = await page.evaluate(() => document.documentElement.scrollWidth);
   console.log('scrollWidth', sw, sw2);
+  if (process.env.COLLECT) {
+    await page.evaluate(() => {
+      const I = KE.I18N, add = (s) => { if (typeof s === 'string' && /[A-Za-zÇĞİÖŞÜçğıöşü]/.test(s)) I.t(s); };
+      const raw = (s) => { if (typeof s === 'string' && s.trim()) window.__cat[s.trim()] = s.trim(); };
+      // adlar: tam eşleşme anahtarı olarak
+      I.refreshEntities(); I.normalize('x');
+      Object.values(KE.MODES).forEach((m) => { m.products.forEach((p) => raw(p.name)); raw(m.drink.name); Object.values(m.ingredients).forEach((g) => raw(g.name)); });
+      Object.values(KE.CUSTOMER_TYPES).forEach((c) => raw(c.name)); (KE.AYLAR || []).forEach(raw); ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'].forEach(raw);
+      KE.MAP.PLACES.forEach((p) => raw(p.name)); KE.DISTRICTS.forEach((d) => raw(d.name));
+      // veri metinleri
+      const walk = (o, d) => { if (d > 6 || o == null) return; if (typeof o === 'string') return add(o); if (Array.isArray(o)) return o.forEach((x) => walk(x, d + 1)); if (typeof o === 'object') Object.entries(o).forEach(([k, v]) => { if (!/^(id|look|icon|color|c|theme|pid|steps|fav|kind|type|cast|outfit|hair|facial|head|skin|hairColor|outfitColor|accent|gender|age|scarf|roof|wall)$/.test(k)) walk(v, d + 1); }); };
+      ['MODES', 'DISTRICTS', 'TRAITS', 'COSTUMES', 'DECOR', 'GOALS', 'SPECIAL', 'REGULARS', 'LINES', 'CUSTOMER_TYPES', 'ROLES', 'TIERS', 'REGIONS', 'CAST', 'POSITIONS'].forEach((k) => walk(KE[k], 0));
+      // olay kartları ve seçim sonuçları (kopya oyun üzerinde)
+      const G0 = KE.G; const env = JSON.parse(JSON.stringify(KE.SAVE.envelope(G0)));
+      (KE.EVENTS || []).forEach((e) => {
+        try {
+          const g = KE.SAVE.open(JSON.parse(JSON.stringify(env)));
+          const card = e.build(g); add(card.title); add(card.text);
+          card.choices.forEach((c, i) => { add(c.label); add(c.desc); const g2 = KE.SAVE.open(JSON.parse(JSON.stringify(env))); const c2 = e.build(g2); try { add(c2.choices[i].run(g2, c2.ctx)); } catch (x) { /* yok */ } });
+        } catch (x) { /* bu oyunda kurulamayan olay */ }
+      });
+    });
+    const cat = await page.evaluate(() => window.__cat);
+    const fs = require('fs'); const prev = fs.existsSync(process.env.COLLECT) ? JSON.parse(fs.readFileSync(process.env.COLLECT, 'utf8')) : {};
+    fs.writeFileSync(process.env.COLLECT, JSON.stringify(Object.assign(prev, cat), null, 1));
+    console.log('collected', Object.keys(cat).length);
+  }
   console.log(errors.length ? [...new Set(errors)].join('\n') : 'NO ERRORS');
   await browser.close();
   if (errors.length) process.exit(1);

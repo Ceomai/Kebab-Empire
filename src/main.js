@@ -12,6 +12,7 @@ import '../js/farm.js';
 import '../js/narrative.js';
 import '../js/save.js';
 import '../js/config.js';
+import '../js/i18n.js';
 import '../js/map.js';
 import '../js/scene.js';
 import '../js/ui/core.js';
@@ -26,6 +27,7 @@ import '../js/main.js';
 import { registerSW } from 'virtual:pwa-register';
 
 KE.CLOUD.init().finally(() => KE.CONFIG.load());
+if (KE.I18N.preferred() !== 'tr') KE.I18N.set(KE.I18N.preferred());
 
 registerSW({
   immediate: true,

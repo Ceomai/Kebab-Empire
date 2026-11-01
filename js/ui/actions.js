@@ -28,7 +28,7 @@
   A.closeModal = () => UI.closeModal();
   A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">Oyun her gün sonunda bu tarayıcıya kaydedilir.</p></div>
-    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
+    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
   A.exportSave = () => { if (!KE.G) return; if (KE.G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; } KE.SAVE.exportFile(KE.G); UI.toast('Yedek dosyası indirildi.', 'good'); };
   A.importSave = () => {
@@ -217,6 +217,13 @@
     if (fn) fn(el, e);
   });
 
+  /* Dil seçimi */
+  A.lang = () => {
+    if (!KE.I18N) return;
+    UI.closeModal();
+    const cur = KE.I18N.lang;
+    UI.picker('Dil / Language / Sprache', null, Object.entries(KE.I18N.langs).map(([k, v]) => ({ label: v, sub: k === 'tr' ? 'Asıl dil' : k === 'en' ? 'Kültürel terimler korunur (iftar, usta, döner)' : 'Kulturelle Begriffe bleiben erhalten', sel: k === cur, key: k })), (o) => { KE.I18N.set(o.key).then(() => UI.render()); });
+  };
   /* Hesap ve gizlilik */
   A.privacy = () => { UI.closeModal(); UI.privacyModal(false); };
   A.consentSave = async () => {

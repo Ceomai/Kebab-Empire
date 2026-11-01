@@ -42,7 +42,7 @@
       <div class="t-dish d1">${KE.ART.dish('adana')}</div><div class="t-dish d2">${KE.ART.dish('lahmacun')}</div><div class="t-dish d3">${KE.ART.dish('et_durum')}</div><div class="t-dish d4">${KE.ART.dish('kunefe')}</div>
       <div class="t-front">
         <div class="t-logo"><span class="t-mark">${KE.ART.logo()}</span><h1><span>Kebab</span><em>Empire</em></h1><span class="t-ribbon">Döner ve kebap işletme oyunu</span></div>
-        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
+        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost round langbtn" data-a="lang" aria-label="Dil / Language" title="Dil / Language">${(KE.I18N ? KE.I18N.lang : 'tr').toUpperCase()}</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
       </div>
     </main>`;
   };

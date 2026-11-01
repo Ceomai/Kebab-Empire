@@ -1114,3 +1114,4 @@ body::before { background: var(--kart); }
 .rank li span { font-weight: 800; } .rank li em { font-style: normal; font-family: var(--f-display); font-weight: 800; } .rank li small { grid-column: 2 / 4; color: var(--murekkep-2); font-size: 12px; }
 .inp { font: 700 15px var(--f-body); padding: 8px 12px; border-radius: 10px; border: 2px solid var(--cizgi); min-width: 0; }
 .modal .stack .field { flex: none; }
+.langbtn { font-family: var(--f-display); font-weight: 800; font-size: 16px; min-width: 58px; }

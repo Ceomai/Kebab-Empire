@@ -191,6 +191,8 @@
     const pl = KE.MAP.place(UI.screen);
     return `<div class="pagehead ${pl ? 'placehead' : ''}" ${pl ? `style="--pc:${pl.color}"` : ''}><button class="btn sm ghost" data-a="go" data-s="map">${IC('arrow')}Harita</button>${pl ? `<span class="ph-ic">${IC(pl.icon)}</span>` : ''}<div class="ph-t">${pl ? `<span class="kicker">${pl.group}</span>` : ''}<h1>${title}</h1>${sub ? `<p>${sub}</p>` : ''}</div>${extra || ''}${c ? `<div class="ph-npc"><div class="bubble"><span class="who">${c.name}</span>${esc(KE.line(who))}</div><span class="avatar lg">${KE.portrait(c.look, { mood: 'happy', label: c.name })}</span></div>` : ''}</div>`;
   }
+  /* Günlük paragrafını cümle cümle sar (çeviri katmanı cümle kalıplarını tanısın) */
+  const sentences = (txt) => String(txt || '').split(/(?<=[.!?…])\s+(?=[A-ZÇĞİÖŞÜ"“0-9])/).map((x) => `<span>${esc(x)}</span>`).join(' ');
   const morningOnly = () => KE.G.phase !== 'morning' ? `<div class="note">${IC('clock')}<span>Transfer, işten çıkarma ve şube açma sabah hazırlığında yapılır.</span></div>` : '';
 
   /* ---------- Grafikler ---------- */
@@ -247,5 +249,5 @@
       <ul>${parts.map((p) => `<li><i style="background:${p.c}"></i><span>${esc(p.l)}</span><b>${Math.round(Math.max(0, p.v) / tot * 100)}%</b></li>`).join('')}</ul></div>`;
   }
 
-  Object.assign(H, { esc, clamp, IC, MODE, B, prod, pn, stars, roleName, bar, moodCls, CL, track, avatar, queueModal, npc, head, morningOnly, lineChart, barChart, donut });
+  Object.assign(H, { sentences, esc, clamp, IC, MODE, B, prod, pn, stars, roleName, bar, moodCls, CL, track, avatar, queueModal, npc, head, morningOnly, lineChart, barChart, donut });
 })();

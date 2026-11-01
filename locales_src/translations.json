@@ -1,0 +1,4034 @@
+{
+ "karakter": {
+  "en": "character",
+  "de": "Figur"
+ },
+ "Döner ve kebap işletme oyunu": {
+  "en": "Döner and kebab tycoon game",
+  "de": "Döner- und Kebab-Managementspiel"
+ },
+ "Yeni oyun": {
+  "en": "New game",
+  "de": "Neues Spiel"
+ },
+ "Yedek dosyasından yükle": {
+  "en": "Load from backup file",
+  "de": "Aus Sicherungsdatei laden"
+ },
+ "Ses": {
+  "en": "Sound",
+  "de": "Ton"
+ },
+ "Mod": {
+  "en": "Mode",
+  "de": "Modus"
+ },
+ "Semt": {
+  "en": "District",
+  "de": "Viertel"
+ },
+ "Usta": {
+  "en": "Master",
+  "de": "Meister"
+ },
+ "Ne olacaksın?": {
+  "en": "What will you be?",
+  "de": "Was willst du werden?"
+ },
+ "Dönerci": {
+  "en": "Döner shop",
+  "de": "Dönerladen"
+ },
+ "Hızlı servis, kalabalık kuyruk, gece yarısına kadar dönen ocak.": {
+  "en": "Fast service, long queues, a grill spinning until midnight.",
+  "de": "Schneller Service, lange Schlangen, ein Spieß, der bis Mitternacht dreht."
+ },
+ "Kalabalık kuyruk, hızlı servis": {
+  "en": "Long queues, fast service",
+  "de": "Lange Schlangen, schneller Service"
+ },
+ "Düşük kâr payı, çok müşteri": {
+  "en": "Low margins, lots of customers",
+  "de": "Kleine Marge, viele Kunden"
+ },
+ "Kebapçı": {
+  "en": "Kebab house",
+  "de": "Kebabhaus"
+ },
+ "Közün başında usta işi, masaya oturan müşteri, yüksek hesap.": {
+  "en": "Craftsmanship over the coals, seated guests, big bills.",
+  "de": "Meisterhandwerk über der Glut, Gäste am Tisch, hohe Rechnungen."
+ },
+ "Masaya oturan müşteri, uzun pişirme": {
+  "en": "Seated customers, long grilling",
+  "de": "Gäste am Tisch, lange Grillzeit"
+ },
+ "Yüksek hesap, yüksek bahşiş": {
+  "en": "Big bills, big tips",
+  "de": "Hohe Rechnungen, hohes Trinkgeld"
+ },
+ "Aileler, gurmeler, turistler": {
+  "en": "Families, foodies, tourists",
+  "de": "Familien, Feinschmecker, Touristen"
+ },
+ "Adın": {
+  "en": "Your name",
+  "de": "Dein Name"
+ },
+ "Dükkânının adı": {
+  "en": "Your shop's name",
+  "de": "Name deines Ladens"
+ },
+ "Örn. Yaprak Döner": {
+  "en": "E.g. Yaprak Döner",
+  "de": "Z. B. Yaprak Döner"
+ },
+ "Devam": {
+  "en": "Continue",
+  "de": "Weiter"
+ },
+ "İlk dükkânın hangi semtte?": {
+  "en": "Which district for your first shop?",
+  "de": "In welchem Viertel eröffnest du deinen ersten Laden?"
+ },
+ "Geri": {
+  "en": "Back",
+  "de": "Zurück"
+ },
+ "Şehir haritası": {
+  "en": "City map",
+  "de": "Stadtplan"
+ },
+ "MARMARA DENİZİ": {
+  "en": "SEA OF MARMARA",
+  "de": "MARMARAMEER"
+ },
+ "İSTANBUL BOĞAZI": {
+  "en": "BOSPHORUS",
+  "de": "BOSPORUS"
+ },
+ "HALİÇ": {
+  "en": "GOLDEN HORN",
+  "de": "GOLDENES HORN"
+ },
+ "Kız Kulesi": {
+  "en": "Maiden's Tower",
+  "de": "Leanderturm"
+ },
+ "AVRUPA YAKASI": {
+  "en": "EUROPEAN SIDE",
+  "de": "EUROPÄISCHE SEITE"
+ },
+ "ANADOLU YAKASI": {
+  "en": "ANATOLIAN SIDE",
+  "de": "ASIATISCHE SEITE"
+ },
+ "Haritadan seç": {
+  "en": "Pick on the map",
+  "de": "Auf der Karte wählen"
+ },
+ "Yedi semt, yedi ayrı müşteri": {
+  "en": "Seven districts, seven kinds of customers",
+  "de": "Sieben Viertel, sieben Kundschaften"
+ },
+ "Anadolu yakası · Kadıköy esintisi": {
+  "en": "Anatolian side · inspired by Kadıköy",
+  "de": "Asiatische Seite · nach Kadıköy"
+ },
+ "Aylık kira": {
+  "en": "Monthly rent",
+  "de": "Monatsmiete"
+ },
+ "Yaya trafiği": {
+  "en": "Foot traffic",
+  "de": "Laufkundschaft"
+ },
+ "Rakip": {
+  "en": "Rivals",
+  "de": "Konkurrenz"
+ },
+ "Baskın müşteri": {
+  "en": "Main customers",
+  "de": "Hauptkundschaft"
+ },
+ "Semt dükkânın görünümünü değiştirmez. Müşteri karışımını, kirayı ve rekabeti belirler.": {
+  "en": "The district doesn't change how your shop looks. It sets the customer mix, rent and competition.",
+  "de": "Das Viertel ändert nicht das Aussehen deines Ladens, sondern Kundenmix, Miete und Konkurrenz."
+ },
+ "Burada aç": {
+  "en": "Open here",
+  "de": "Hier eröffnen"
+ },
+ "Ocağın başına kim geçecek?": {
+  "en": "Who takes charge of the grill?",
+  "de": "Wer übernimmt den Grill?"
+ },
+ "Usta yalnızca pişirir; uzman olduğu ürünü seven müşteriyi dükkâna çeker. Yanına bir çırak, bir kasiyer ve bir komi veriliyor.": {
+  "en": "The master only cooks; customers who love their specialty follow them. You also get an apprentice, a cashier and a runner.",
+  "de": "Der Meister kocht nur; Kunden, die seine Spezialität lieben, folgen ihm. Dazu bekommst du einen Lehrling, einen Kassierer und einen Läufer."
+ },
+ "Yavaş ama kusursuz. Kalite +{0} hız -{1}": {
+  "en": "Slow but flawless. Quality +{0} speed -{1}",
+  "de": "Langsam, aber makellos. Qualität +{0} Tempo -{1}"
+ },
+ "Mükemmeliyetçi": {
+  "en": "Perfectionist",
+  "de": "Perfektionist"
+ },
+ "{0} yıldız": {
+  "en": "{0} stars",
+  "de": "{0} Sterne"
+ },
+ "Hız": {
+  "en": "Speed",
+  "de": "Tempo"
+ },
+ "Kalite": {
+  "en": "Quality",
+  "de": "Qualität"
+ },
+ "Fire kontrol": {
+  "en": "Waste control",
+  "de": "Ausschuss-Kontrolle"
+ },
+ "brüt / ay": {
+  "en": "gross / month",
+  "de": "brutto / Monat"
+ },
+ "Bu usta": {
+  "en": "This master",
+  "de": "Diesen Meister"
+ },
+ "Müşteri izlerken coşar. Bahşiş +{0} morali düşünce performansı da düşer.": {
+  "en": "Thrives with an audience. Tips +{0}, but performance drops with morale.",
+  "de": "Blüht vor Publikum auf. Trinkgeld +{0}, aber bei schlechter Laune sinkt die Leistung."
+ },
+ "Gösterişçi": {
+  "en": "Showman",
+  "de": "Showtalent"
+ },
+ "Moral dalgalanmalarından az etkilenir, çırak yetiştirmede iyidir.": {
+  "en": "Barely affected by mood swings; great at training apprentices.",
+  "de": "Kaum launisch; bildet Lehrlinge hervorragend aus."
+ },
+ "Sabırlı": {
+  "en": "Patient",
+  "de": "Geduldig"
+ },
+ "Kepengi kaldır": {
+  "en": "Raise the shutter",
+  "de": "Rollladen hoch"
+ },
+ "Seçildi": {
+  "en": "Selected",
+  "de": "Ausgewählt"
+ },
+ "Haritaya dön": {
+  "en": "Back to the map",
+  "de": "Zurück zur Karte"
+ },
+ "Sabah hazırlığı": {
+  "en": "Morning prep",
+  "de": "Vorbereitung am Morgen"
+ },
+ "İtibar {0}/{1}": {
+  "en": "Reputation {0}/{1}",
+  "de": "Ruf {0}/{1}"
+ },
+ "İtibar {0}": {
+  "en": "Reputation {0}",
+  "de": "Ruf {0}"
+ },
+ "Harita": {
+  "en": "Map",
+  "de": "Karte"
+ },
+ "Dükkân": {
+  "en": "Shop",
+  "de": "Laden"
+ },
+ "Sesi aç": {
+  "en": "Turn sound on",
+  "de": "Ton an"
+ },
+ "Menü": {
+  "en": "Menu",
+  "de": "Menü"
+ },
+ "Şubeler": {
+  "en": "Branches",
+  "de": "Filialen"
+ },
+ "Hazırlık": {
+  "en": "Getting ready",
+  "de": "In Vorbereitung"
+ },
+ "Şube aç": {
+  "en": "Open branch",
+  "de": "Filiale eröffnen"
+ },
+ "Günlük hedef {0}/{1}": {
+  "en": "Daily goal {0}/{1}",
+  "de": "Tagesziel {0}/{1}"
+ },
+ "Beklenen": {
+  "en": "Expected",
+  "de": "Erwartet"
+ },
+ "Müşteri": {
+  "en": "Customers",
+  "de": "Kunden"
+ },
+ "Bahşiş": {
+  "en": "Tips",
+  "de": "Trinkgeld"
+ },
+ "Hedefler": {
+  "en": "Goals",
+  "de": "Ziele"
+ },
+ "Yapılacaklar": {
+  "en": "To do",
+  "de": "Aufgaben"
+ },
+ "Akşam": {
+  "en": "Evening",
+  "de": "Abend"
+ },
+ "{0} müdavim bekleniyor, iyi ağırla": {
+  "en": "{0} regulars expected, treat them well",
+  "de": "{0} Stammgäste erwartet, bewirte sie gut"
+ },
+ "İftar {0}:{1}: masalar dolacak": {
+  "en": "Iftar {0}:{1}: tables will fill up",
+  "de": "Iftar {0}:{1}: die Tische füllen sich"
+ },
+ "Gündüz oruç, dükkân sakin. Paket ve masa hazırlığını iftardan önce bitir.": {
+  "en": "People fast during the day, the shop is quiet. Finish takeaway and table prep before iftar.",
+  "de": "Tagsüber wird gefastet, der Laden ist ruhig. Mitnahme- und Tischvorbereitung vor dem Iftar erledigen."
+ },
+ "Yerler": {
+  "en": "Places",
+  "de": "Orte"
+ },
+ "Dükkâna geç, kepengi aç": {
+  "en": "Go to the shop, raise the shutter",
+  "de": "Zum Laden, Rollladen hoch"
+ },
+ "Hikâye": {
+  "en": "Story",
+  "de": "Geschichte"
+ },
+ "Babadan kalan dükkân": {
+  "en": "The shop my father left",
+  "de": "Der Laden meines Vaters"
+ },
+ "Haritadaki binalara tıklayarak hal, muhasebe, usta pazarı ve çiftliğe gidersin.": {
+  "en": "Click the buildings on the map to visit the market, the accountant, the master market and the farm.",
+  "de": "Klicke auf die Gebäude der Karte, um Großmarkt, Buchhaltung, Meistermarkt und Bauernhof zu besuchen."
+ },
+ "Usta yalnızca pişirir. Kasa sipariş alır, komi/garson yemeği masaya götürür. Görevleri ve molaları sen ayarlarsın.": {
+  "en": "The master only cooks. The till takes orders, runners and waiters carry food to tables. You set the jobs and breaks.",
+  "de": "Der Meister kocht nur. Die Kasse nimmt Bestellungen an, Läufer und Kellner bringen das Essen. Aufgaben und Pausen bestimmst du."
+ },
+ "Gün sonunda bahşişi dağıtır, ay sonunda bordroyu ve vergileri ödersin.": {
+  "en": "At day's end you share out the tips; at month's end you pay payroll and taxes.",
+  "de": "Am Tagesende verteilst du das Trinkgeld, am Monatsende zahlst du Löhne und Steuern."
+ },
+ "Haydi bismillah": {
+  "en": "Let's do this!",
+  "de": "Auf geht's!"
+ },
+ "Çarşı": {
+  "en": "Bazaar",
+  "de": "Basar"
+ },
+ "Yaprak Döner için tedarik": {
+  "en": "Supplies for Yaprak Döner",
+  "de": "Einkauf für Yaprak Döner"
+ },
+ "Otomatik siparişini her sabah yediye kadar getiriyorum.": {
+  "en": "I deliver your standing order every morning by seven.",
+  "de": "Deine Daueranlieferung bringe ich jeden Morgen bis sieben."
+ },
+ "Tedarik kalitesi": {
+  "en": "Supply quality",
+  "de": "Lieferqualität"
+ },
+ "Ekonomik": {
+  "en": "Budget",
+  "de": "Günstig"
+ },
+ "Ucuz ama müşteri farkı anlar.": {
+  "en": "Cheap, but customers notice.",
+  "de": "Billig, aber die Kunden merken es."
+ },
+ "Fiyat ×{0}": {
+  "en": "Price ×{0}",
+  "de": "Preis ×{0}"
+ },
+ "Kalite {0}": {
+  "en": "Quality {0}",
+  "de": "Qualität {0}"
+ },
+ "Standart": {
+  "en": "Standard",
+  "de": "Standard"
+ },
+ "Mahallenin alıştığı kalite.": {
+  "en": "The quality the neighbourhood is used to.",
+  "de": "Die Qualität, die das Viertel gewohnt ist."
+ },
+ "Kalite +{0}": {
+  "en": "Quality +{0}",
+  "de": "Qualität +{0}"
+ },
+ "Premium": {
+  "en": "Premium",
+  "de": "Premium"
+ },
+ "Seçme et, günlük sebze. Gurmeler bayılır.": {
+  "en": "Prime meat, fresh vegetables. Foodies love it.",
+  "de": "Ausgesuchtes Fleisch, tagesfrisches Gemüse. Feinschmecker lieben es."
+ },
+ "Otomatik sabah siparişi": {
+  "en": "Automatic morning order",
+  "de": "Automatische Morgenbestellung"
+ },
+ "Az": {
+  "en": "Low",
+  "de": "Wenig"
+ },
+ "Normal": {
+  "en": "Normal",
+  "de": "Normal"
+ },
+ "Bol": {
+  "en": "Plenty",
+  "de": "Reichlich"
+ },
+ "Rıza her sabah stoğu son günlerin ortalama kullanımının bu katına tamamlar. Çiftliğin varsa et önce çiftlik deposundan gelir.": {
+  "en": "Every morning Rıza tops up stock to this multiple of recent average use. If you own the farm, meat comes from the farm store first.",
+  "de": "Rıza füllt jeden Morgen den Bestand auf dieses Vielfache des jüngsten Durchschnittsverbrauchs auf. Hast du den Hof, kommt Fleisch zuerst aus dem Hoflager."
+ },
+ "{0}/kg": {
+  "en": "{0}/kg",
+  "de": "{0}/kg"
+ },
+ "{0} / günlük {1} kg": {
+  "en": "{0} / daily {1} kg",
+  "de": "{0} / täglich {1} kg"
+ },
+ "+{0} kg": {
+  "en": "+{0} kg",
+  "de": "+{0} kg"
+ },
+ "{0}/adet": {
+  "en": "{0}/pc",
+  "de": "{0}/Stk."
+ },
+ "{0} / günlük {1} adet": {
+  "en": "{0} / daily {1} pcs",
+  "de": "{0} / täglich {1} Stk."
+ },
+ "+{0} adet": {
+  "en": "+{0} pcs",
+  "de": "+{0} Stk."
+ },
+ "Pazarda her pazartesi yeni ustalar olur.": {
+  "en": "New masters arrive at the market every Monday.",
+  "de": "Jeden Montag kommen neue Meister auf den Markt."
+ },
+ "Pazardaki ustalar": {
+  "en": "Masters on the market",
+  "de": "Meister auf dem Markt"
+ },
+ "Kadrom ({0})": {
+  "en": "My crew ({0})",
+  "de": "Mein Team ({0})"
+ },
+ "İşe aldığın usta": {
+  "en": "The master you hire",
+  "de": "Der eingestellte Meister"
+ },
+ "Kuyruk eritmede rakipsiz. Hız +{0}": {
+  "en": "Unbeatable at clearing the queue. Speed +{0}",
+  "de": "Unschlagbar beim Abbau der Schlange. Tempo +{0}"
+ },
+ "Seri": {
+  "en": "Quick",
+  "de": "Flink"
+ },
+ "brüt / ay · transfer {0}": {
+  "en": "gross / month · transfer {0}",
+  "de": "brutto / Monat · Ablöse {0}"
+ },
+ "İşe al · {0}": {
+  "en": "Hire · {0}",
+  "de": "Einstellen · {0}"
+ },
+ "İyi günde iyidir. Moral {0}'ın altına inince kalite sert düşer.": {
+  "en": "Good on good days. When morale drops below {0}, quality falls hard.",
+  "de": "An guten Tagen gut. Fällt die Laune unter {0}, sinkt die Qualität stark."
+ },
+ "Huysuz": {
+  "en": "Grumpy",
+  "de": "Mürrisch"
+ },
+ "Çırak": {
+  "en": "Apprentice",
+  "de": "Lehrling"
+ },
+ "İşe al": {
+  "en": "Hire",
+  "de": "Einstellen"
+ },
+ "Mahalle": {
+  "en": "Neighbourhood",
+  "de": "Viertel"
+ },
+ "Kasa, servis, temizlik, paket ve yönetim ekibi": {
+  "en": "Till, service, cleaning, delivery and management staff",
+  "de": "Kasse, Service, Reinigung, Lieferung und Leitung"
+ },
+ "Temizlikçi masrafına bakma, denetim cezası daha pahalı.": {
+  "en": "Don't skimp on cleaners; inspection fines cost more.",
+  "de": "Spar nicht an Reinigungskräften, Bußgelder kosten mehr."
+ },
+ "Adaylar": {
+  "en": "Candidates",
+  "de": "Bewerber"
+ },
+ "İşe aldığın kişi": {
+  "en": "The person you hire",
+  "de": "Die eingestellte Person"
+ },
+ "şubesinde başlar. Liste her pazar yenilenir.": {
+  "en": "starts at the branch. The list renews every Sunday.",
+  "de": "beginnt in der Filiale. Die Liste wird jeden Sonntag erneuert."
+ },
+ "Kasiyer": {
+  "en": "Cashier",
+  "de": "Kassierer"
+ },
+ "Kasada siparişi ve ödemeyi alır. Gerekirse servise de geçer.": {
+  "en": "Takes orders and payments at the till. Helps with service if needed.",
+  "de": "Nimmt an der Kasse Bestellung und Zahlung entgegen. Hilft bei Bedarf im Service."
+ },
+ "Komi": {
+  "en": "Runner",
+  "de": "Läufer"
+ },
+ "Hazır yemeği tezgâhtan alıp masaya götürür, masaları toplar. Sohbeti bahşişi artırır.": {
+  "en": "Carries ready food from the counter to tables and clears them. Friendly chat boosts tips.",
+  "de": "Bringt fertiges Essen an die Tische und räumt ab. Ein nettes Wort hebt das Trinkgeld."
+ },
+ "Temizlik görevlisi": {
+  "en": "Cleaner",
+  "de": "Reinigungskraft"
+ },
+ "Salonu temiz tutar, kirli masaları toplar. Denetimde hayat kurtarır.": {
+  "en": "Keeps the dining room clean and clears dirty tables. A lifesaver at inspections.",
+  "de": "Hält den Gastraum sauber und räumt Tische ab. Rettet dich bei Kontrollen."
+ },
+ "Kurye": {
+  "en": "Courier",
+  "de": "Kurier"
+ },
+ "Paket siparişleri getirir ve taşır. Mutfağa ek iş, kasaya ek ciro.": {
+  "en": "Picks up and delivers takeaway orders. Extra work for the kitchen, extra revenue for the till.",
+  "de": "Holt und liefert Bestellungen aus. Mehr Arbeit für die Küche, mehr Umsatz für die Kasse."
+ },
+ "Şube müdürü": {
+  "en": "Branch manager",
+  "de": "Filialleiter"
+ },
+ "Ekibi yoğunluğa göre kendisi yönetir, mola düzenini kurar, herkesi biraz hızlandırır.": {
+  "en": "Runs the crew by workload, organises breaks and speeds everyone up a little.",
+  "de": "Steuert das Team nach Auslastung, plant Pausen und macht alle etwas schneller."
+ },
+ "Güler yüz": {
+  "en": "Friendly smile",
+  "de": "Freundliches Lächeln"
+ },
+ "Müşteriyle hemen kaynaşır. Servisteyken bahşiş +{0}": {
+  "en": "Bonds with customers instantly. Tips +{0} when serving",
+  "de": "Kommt sofort mit Gästen ins Gespräch. Im Service Trinkgeld +{0}"
+ },
+ "Sohbet ehli": {
+  "en": "Chatterbox",
+  "de": "Plaudertasche"
+ },
+ "Yönetim": {
+  "en": "Management",
+  "de": "Leitung"
+ },
+ "Kadro (ustalar hariç)": {
+  "en": "Staff (excluding masters)",
+  "de": "Personal (ohne Meister)"
+ },
+ "Yaprak Döner · moral {0}": {
+  "en": "Yaprak Döner · morale {0}",
+  "de": "Yaprak Döner · Laune {0}"
+ },
+ "{0} zam": {
+  "en": "{0} raise",
+  "de": "{0} Gehaltserhöhung"
+ },
+ "Çıkar": {
+  "en": "Dismiss",
+  "de": "Entlassen"
+ },
+ "Ekibine yakışanı giydir": {
+  "en": "Dress your crew well",
+  "de": "Kleide dein Team passend ein"
+ },
+ "Yöresel kostüm ustanın memleketine göre dikilir; kumaşı ben seçerim.": {
+  "en": "Regional costumes are tailored to the master's hometown; I pick the fabric.",
+  "de": "Trachten werden nach der Heimat des Meisters geschneidert; den Stoff wähle ich."
+ },
+ "Kostüm morali yükseltir. Yöresel kostüm, çalışanın memleketine göre dikilir ve uyumlu ürünlerde ek bahşiş getirir.": {
+  "en": "Costumes boost morale. Regional costumes match the worker's hometown and earn extra tips on matching dishes.",
+  "de": "Kostüme heben die Laune. Trachten passen zur Heimat und bringen bei passenden Gerichten Extratrinkgeld."
+ },
+ "Döner ustası · Yaprak Döner · Memleket: Bursa (beyaz ceket ve papyon)": {
+  "en": "Döner master · Yaprak Döner · Hometown: Bursa (white jacket and bow tie)",
+  "de": "Dönermeister · Yaprak Döner · Heimat: Bursa (weiße Jacke und Fliege)"
+ },
+ "Temel önlük": {
+  "en": "Basic apron",
+  "de": "Einfache Schürze"
+ },
+ "Giyiyor": {
+  "en": "Wearing",
+  "de": "Trägt"
+ },
+ "Markalı önlük": {
+  "en": "Branded apron",
+  "de": "Markenschürze"
+ },
+ "Şef ceketi": {
+  "en": "Chef's jacket",
+  "de": "Kochjacke"
+ },
+ "Yöresel kostüm": {
+  "en": "Regional costume",
+  "de": "Tracht"
+ },
+ "Çırak · Yaprak Döner · Memleket: İstanbul (klasik beyaz ceket)": {
+  "en": "Apprentice · Yaprak Döner · Hometown: Istanbul (classic white jacket)",
+  "de": "Lehrling · Yaprak Döner · Heimat: Istanbul (klassische weiße Jacke)"
+ },
+ "Kasiyer · Yaprak Döner · Memleket: Gaziantep (yelek ve işlemeli takke)": {
+  "en": "Cashier · Yaprak Döner · Hometown: Gaziantep (vest and embroidered cap)",
+  "de": "Kassierer · Yaprak Döner · Heimat: Gaziantep (Weste und bestickte Kappe)"
+ },
+ "Komi · Yaprak Döner · Memleket: Erzurum (koyu yelek ve kalpak)": {
+  "en": "Runner · Yaprak Döner · Hometown: Erzurum (dark vest and kalpak)",
+  "de": "Läufer · Yaprak Döner · Heimat: Erzurum (dunkle Weste und Kalpak)"
+ },
+ "Mermer pahalıdır ama gurmeler görünce gözleri parlar.": {
+  "en": "Marble is pricey, but foodies light up when they see it.",
+  "de": "Marmor ist teuer, aber Feinschmecker strahlen, wenn sie ihn sehen."
+ },
+ "Ekipman": {
+  "en": "Equipment",
+  "de": "Ausstattung"
+ },
+ "Döner ocağı": {
+  "en": "Döner grill",
+  "de": "Dönergrill"
+ },
+ "Tek gazlı ocak": {
+  "en": "Single gas grill",
+  "de": "Einfacher Gasgrill"
+ },
+ "{0} ocak yeri": {
+  "en": "{0} grill slots",
+  "de": "{0} Grillplätze"
+ },
+ "Sonraki": {
+  "en": "Next",
+  "de": "Nächste Stufe"
+ },
+ "Elektrikli çift ocak": {
+  "en": "Electric double grill",
+  "de": "Elektrischer Doppelgrill"
+ },
+ "Yükselt": {
+  "en": "Upgrade",
+  "de": "Aufrüsten"
+ },
+ "El bıçağı": {
+  "en": "Hand knife",
+  "de": "Handmesser"
+ },
+ "Hız ×{0}": {
+  "en": "Speed ×{0}",
+  "de": "Tempo ×{0}"
+ },
+ "Elektrikli döner bıçağı": {
+  "en": "Electric döner knife",
+  "de": "Elektrisches Dönermesser"
+ },
+ "Soğutma": {
+  "en": "Refrigeration",
+  "de": "Kühlung"
+ },
+ "Tezgâh altı dolap": {
+  "en": "Under-counter fridge",
+  "de": "Unterthekenkühlschrank"
+ },
+ "Günlük fire {0}": {
+  "en": "Daily spoilage {0}",
+  "de": "Täglicher Verderb {0}"
+ },
+ "Dik tip endüstriyel dolap": {
+  "en": "Upright industrial fridge",
+  "de": "Industrie-Kühlschrank"
+ },
+ "Servis": {
+  "en": "Service",
+  "de": "Service"
+ },
+ "Klasik tezgâh ve {0} masa": {
+  "en": "Classic counter and {0} tables",
+  "de": "Klassische Theke und {0} Tische"
+ },
+ "{0} masa, kuyruk {1} sabır ×{2}": {
+  "en": "{0} tables, queue {1}, patience ×{2}",
+  "de": "{0} Tische, Schlange {1}, Geduld ×{2}"
+ },
+ "Self servis tezgâh ve {0} masa": {
+  "en": "Self-service counter and {0} tables",
+  "de": "Selbstbedienungstheke und {0} Tische"
+ },
+ "Dekor": {
+  "en": "Decor",
+  "de": "Dekor"
+ },
+ "Ortam puanı müşteri sayısını ve memnuniyeti artırır. Aynı tarzdan {0} parça konsept bonusunu açar; kostümler konsepti güçlendirir.": {
+  "en": "Ambience brings more customers and happier ones. {0} items in the same style unlock a concept bonus; costumes strengthen it.",
+  "de": "Ambiente bringt mehr und zufriedenere Gäste. {0} Teile im selben Stil schalten einen Konzeptbonus frei; Kostüme verstärken ihn."
+ },
+ "Çini pano": {
+  "en": "Tile panel",
+  "de": "Fliesenbild"
+ },
+ "geleneksel": {
+  "en": "traditional",
+  "de": "traditionell"
+ },
+ "Ortam +{0}": {
+  "en": "Ambience +{0}",
+  "de": "Ambiente +{0}"
+ },
+ "El boyaması İznik motifli duvar panosu.": {
+  "en": "Hand-painted İznik-pattern wall panel.",
+  "de": "Handbemaltes Wandbild mit İznik-Muster."
+ },
+ "Al": {
+  "en": "Buy",
+  "de": "Kaufen"
+ },
+ "Bakır sahan duvarı": {
+  "en": "Copper pan wall",
+  "de": "Kupferpfannen-Wand"
+ },
+ "Parlak bakır sahanlar ve cezveler.": {
+  "en": "Shiny copper pans and coffee pots.",
+  "de": "Glänzende Kupferpfannen und Mokkakännchen."
+ },
+ "Nostaljik fotoğraflar": {
+  "en": "Nostalgic photos",
+  "de": "Nostalgische Fotos"
+ },
+ "Eski İstanbul ve ustaların siyah beyaz kareleri.": {
+  "en": "Black-and-white shots of old Istanbul and its masters.",
+  "de": "Schwarzweißbilder des alten Istanbul und seiner Meister."
+ },
+ "Kilim minderli köşe": {
+  "en": "Kilim cushion corner",
+  "de": "Kelim-Kissenecke"
+ },
+ "Yer sofrası havasında rahat bir köşe.": {
+  "en": "A cosy corner with a floor-table feel.",
+  "de": "Gemütliche Ecke wie an einer Bodentafel."
+ },
+ "Neon tabela": {
+  "en": "Neon sign",
+  "de": "Leuchtreklame"
+ },
+ "sokak": {
+  "en": "street",
+  "de": "Straße"
+ },
+ "\"Gece de açığız\" diye parlayan tabela.": {
+  "en": "A sign glowing \"Open late too\".",
+  "de": "Ein Schild, das „Auch nachts geöffnet“ leuchtet."
+ },
+ "Duvar resmi": {
+  "en": "Mural",
+  "de": "Wandbild"
+ },
+ "Mahalleli bir sanatçının döner temalı duvar resmi.": {
+  "en": "A döner-themed mural by a local artist.",
+  "de": "Ein Döner-Wandbild eines Künstlers aus dem Viertel."
+ },
+ "Bar taburesi sırası": {
+  "en": "Bar stool row",
+  "de": "Barhocker-Reihe"
+ },
+ "Cama karşı hızlı yeme tezgâhı.": {
+  "en": "Quick-eat counter facing the window.",
+  "de": "Schnelltheke am Fenster."
+ },
+ "Dijital menü ekranı": {
+  "en": "Digital menu screen",
+  "de": "Digitale Menütafel"
+ },
+ "modern": {
+  "en": "modern",
+  "de": "modern"
+ },
+ "Fotoğraflı, hareketli menü panoları.": {
+  "en": "Animated menu boards with photos.",
+  "de": "Bewegte Menütafeln mit Fotos."
+ },
+ "Canlı bitki duvarı": {
+  "en": "Living plant wall",
+  "de": "Pflanzenwand"
+ },
+ "Yeşil, ferah, fotoğraf çekilesi bir köşe.": {
+  "en": "A green, airy, photogenic corner.",
+  "de": "Eine grüne, luftige, fotogene Ecke."
+ },
+ "Sarkıt aydınlatma": {
+  "en": "Pendant lighting",
+  "de": "Pendelleuchten"
+ },
+ "Sıcak tonlu sarkıt lambalar.": {
+  "en": "Warm-toned pendant lamps.",
+  "de": "Pendelleuchten in warmen Tönen."
+ },
+ "Mermer tezgâh": {
+  "en": "Marble counter",
+  "de": "Marmortheke"
+ },
+ "lüks": {
+  "en": "luxury",
+  "de": "Luxus"
+ },
+ "Damarlı beyaz mermer, pirinç detaylar.": {
+  "en": "Veined white marble with brass details.",
+  "de": "Weißer Marmor mit Messingdetails."
+ },
+ "Kadife oturma grubu": {
+  "en": "Velvet seating",
+  "de": "Samt-Sitzgruppe"
+ },
+ "Bordo kadife koltuklar.": {
+  "en": "Burgundy velvet armchairs.",
+  "de": "Bordeauxrote Samtsessel."
+ },
+ "Dış masalar": {
+  "en": "Outdoor tables",
+  "de": "Außentische"
+ },
+ "Kaldırımda ek oturma alanı. Kapasite artar.": {
+  "en": "Extra seating on the pavement. Capacity goes up.",
+  "de": "Zusätzliche Plätze auf dem Gehweg. Mehr Kapazität."
+ },
+ "Personel dinlenme odası": {
+  "en": "Staff break room",
+  "de": "Pausenraum"
+ },
+ "personel": {
+  "en": "staff",
+  "de": "Personal"
+ },
+ "Moral +{0}/gün": {
+  "en": "Morale +{0}/day",
+  "de": "Laune +{0}/Tag"
+ },
+ "Çalışanların günlük moralini artırır.": {
+  "en": "Raises staff morale every day.",
+  "de": "Hebt täglich die Laune des Personals."
+ },
+ "Mutfak kliması": {
+  "en": "Kitchen air conditioning",
+  "de": "Küchenklimaanlage"
+ },
+ "Sıcak mutfakta yorgunluğu azaltır.": {
+  "en": "Less fatigue in a hot kitchen.",
+  "de": "Weniger Erschöpfung in der heißen Küche."
+ },
+ "Resmî": {
+  "en": "Official",
+  "de": "Behörden"
+ },
+ "Esnaf kredisi · aylık {0} faiz, eşit taksit": {
+  "en": "Small-business loan · monthly {0} interest, equal instalments",
+  "de": "Gewerbekredit · monatlich {0} Zinsen, gleiche Raten"
+ },
+ "Esnaf kredisinde aylık faiz şu an {0} civarında.": {
+  "en": "Monthly interest on small-business loans is around {0} right now.",
+  "de": "Der Monatszins für Gewerbekredite liegt derzeit bei etwa {0}."
+ },
+ "Kredi teklifleri": {
+  "en": "Loan offers",
+  "de": "Kreditangebote"
+ },
+ "{0} ay vade": {
+  "en": "{0} months",
+  "de": "{0} Monate"
+ },
+ "Taksit": {
+  "en": "Instalment",
+  "de": "Rate"
+ },
+ "Toplam": {
+  "en": "Total",
+  "de": "Gesamt"
+ },
+ "Kullan": {
+  "en": "Take",
+  "de": "Annehmen"
+ },
+ "Kredilerim": {
+  "en": "My loans",
+  "de": "Meine Kredite"
+ },
+ "Kredi yok.": {
+  "en": "No loans.",
+  "de": "Keine Kredite."
+ },
+ "Ruhsat, hijyen ve denetim": {
+  "en": "Licences, hygiene and inspections",
+  "de": "Genehmigungen, Hygiene und Kontrollen"
+ },
+ "Tezgâh altı temizliği her gün yapılacak.": {
+  "en": "Under-counter cleaning every single day.",
+  "de": "Unter der Theke wird jeden Tag geputzt."
+ },
+ "Temizlik": {
+  "en": "Cleanliness",
+  "de": "Sauberkeit"
+ },
+ "Denetimden rahat geçer.": {
+  "en": "Passes inspection easily.",
+  "de": "Besteht die Kontrolle problemlos."
+ },
+ "Hijyen eğitimi ve derin temizlik": {
+  "en": "Hygiene training and deep clean",
+  "de": "Hygieneschulung und Grundreinigung"
+ },
+ "Temizlik her müşteriyle düşer; masa toplamak ve temizlik görevlisi yükseltir. Denetimde {0}'in altı cezadır. Bugüne kadar ödenen ceza: {1}": {
+  "en": "Cleanliness drops with every customer; clearing tables and cleaners raise it. Below {0} at inspection means a fine. Fines paid so far: {1}",
+  "de": "Die Sauberkeit sinkt mit jedem Gast; Abräumen und Reinigungskräfte heben sie. Unter {0} bei einer Kontrolle gibt es ein Bußgeld. Bisher gezahlt: {1}"
+ },
+ "Doğru semte doğru kampanya": {
+  "en": "The right campaign for the right district",
+  "de": "Die richtige Kampagne fürs richtige Viertel"
+ },
+ "Doğru semte doğru kampanya, kuyruğun yarısı reklamdan gelir.": {
+  "en": "Right campaign, right district: half the queue comes from ads.",
+  "de": "Richtige Kampagne, richtiges Viertel: Die halbe Schlange kommt von der Werbung."
+ },
+ "{0} gün": {
+  "en": "{0} days",
+  "de": "{0} Tage"
+ },
+ "El ilanı dağıtımı": {
+  "en": "Flyer drop",
+  "de": "Flyer verteilen"
+ },
+ "Sanayi ve konut sokaklarına ilan. Müşteri +{0} işçi ve aile +{1}": {
+  "en": "Flyers in industrial and residential streets. Customers +{0}, workers and families +{1}",
+  "de": "Flyer in Gewerbe- und Wohnstraßen. Kunden +{0}, Arbeiter und Familien +{1}"
+ },
+ "Başlat": {
+  "en": "Start",
+  "de": "Starten"
+ },
+ "Sosyal medya kampanyası": {
+  "en": "Social media campaign",
+  "de": "Social-Media-Kampagne"
+ },
+ "Kısa videolar ve fenomen paylaşımları. Müşteri +{0} öğrenci ve gece +{1}": {
+  "en": "Short videos and influencer posts. Customers +{0}, students and night owls +{1}",
+  "de": "Kurzvideos und Influencer-Posts. Kunden +{0}, Studierende und Nachtschwärmer +{1}"
+ },
+ "Radyo reklamı": {
+  "en": "Radio ad",
+  "de": "Radiowerbung"
+ },
+ "Sabah trafiğinde jingle. Bütün şubelerde müşteri +{0} beyaz yaka +{1}": {
+  "en": "A jingle in the morning rush. Customers +{0} at all branches, office workers +{1}",
+  "de": "Ein Jingle im Berufsverkehr. Kunden +{0} in allen Filialen, Büroangestellte +{1}"
+ },
+ "Kalıcı": {
+  "en": "Permanent",
+  "de": "Dauerhaft"
+ },
+ "Işıklı tabela yenileme": {
+  "en": "New illuminated sign",
+  "de": "Neue Leuchtreklame"
+ },
+ "Seçili şubede kalıcı olarak müşteri +{0} Şube başına bir kez.": {
+  "en": "Permanently +{0} customers at the selected branch. Once per branch.",
+  "de": "Dauerhaft +{0} Kunden in der gewählten Filiale. Einmal pro Filiale."
+ },
+ "Hedefler, müdavimler, günlük ve gazete": {
+  "en": "Goals, regulars, journal and newspaper",
+  "de": "Ziele, Stammgäste, Tagebuch und Zeitung"
+ },
+ "Benim zamanımda döner odun ateşinde pişerdi, ama seninki de fena değil.": {
+  "en": "In my day döner was cooked over a wood fire, but yours isn't bad either.",
+  "de": "Zu meiner Zeit wurde Döner über Holzfeuer gegart, aber deiner ist auch nicht übel."
+ },
+ "İlk haftayı kârla kapat": {
+  "en": "Close the first week in profit",
+  "de": "Erste Woche mit Gewinn"
+ },
+ "İlk {0} günün toplam net sonucu artıda olsun.": {
+  "en": "The total net result of the first {0} days is positive.",
+  "de": "Das Nettoergebnis der ersten {0} Tage ist positiv."
+ },
+ "Mahallenin gözdesi": {
+  "en": "Darling of the neighbourhood",
+  "de": "Liebling des Viertels"
+ },
+ "İtibarı {0}'ye çıkar.": {
+  "en": "Raise your reputation to {0}.",
+  "de": "Steigere deinen Ruf auf {0}."
+ },
+ "Usta yetiştir": {
+  "en": "Train a master",
+  "de": "Einen Meister ausbilden"
+ },
+ "Bir çırağı mentor yanında yetiştirip ustalığa terfi ettir.": {
+  "en": "Train an apprentice beside a mentor and promote them to master.",
+  "de": "Bilde einen Lehrling bei einem Mentor aus und befördere ihn zum Meister."
+ },
+ "Takım ruhu": {
+  "en": "Team spirit",
+  "de": "Teamgeist"
+ },
+ "Bütün çalışanlarına temel önlük dışında bir kostüm giydir.": {
+  "en": "Dress all your staff in a costume other than the basic apron.",
+  "de": "Gib allen Mitarbeitern ein Kostüm statt der einfachen Schürze."
+ },
+ "Konsept sahibi": {
+  "en": "Concept owner",
+  "de": "Konzeptinhaber"
+ },
+ "Bir şubede aynı tarzdan {0} dekor öğesiyle konsept bonusunu aç.": {
+  "en": "Unlock the concept bonus in a branch with {0} decor items of the same style.",
+  "de": "Schalte in einer Filiale mit {0} Dekorteilen im selben Stil den Konzeptbonus frei."
+ },
+ "Kendi etimiz": {
+  "en": "Our own meat",
+  "de": "Unser eigenes Fleisch"
+ },
+ "Besi çiftliğini satın al.": {
+  "en": "Buy the livestock farm.",
+  "de": "Kaufe den Mastbetrieb."
+ },
+ "Semt şampiyonu": {
+  "en": "District champion",
+  "de": "Viertel-Champion"
+ },
+ "Bir ay sonunda semtinde \"Lüks Kebap\"ı geride bırak.": {
+  "en": "Beat \"Lüks Kebap\" in your district at the end of a month.",
+  "de": "Schlage am Monatsende „Lüks Kebap“ in deinem Viertel."
+ },
+ "İkinci şube": {
+  "en": "Second branch",
+  "de": "Zweite Filiale"
+ },
+ "Başka bir semtte ikinci dükkânını aç.": {
+  "en": "Open your second shop in another district.",
+  "de": "Eröffne deinen zweiten Laden in einem anderen Viertel."
+ },
+ "Milyonluk ay": {
+  "en": "Million month",
+  "de": "Millionenmonat"
+ },
+ "Bir ayda {0} konsolide ciroya ulaş.": {
+  "en": "Reach {0} consolidated revenue in a month.",
+  "de": "Erreiche {0} Gesamtumsatz in einem Monat."
+ },
+ "Şehrin efsanesi": {
+  "en": "Legend of the city",
+  "de": "Legende der Stadt"
+ },
+ "İtibarı {0}'e çıkar.": {
+  "en": "Raise your reputation to {0}.",
+  "de": "Steigere deinen Ruf auf {0}."
+ },
+ "Dört şubeli bir zincir kur.": {
+  "en": "Build a chain with four branches.",
+  "de": "Baue eine Kette mit vier Filialen auf."
+ },
+ "Günlük arşivi": {
+  "en": "Journal archive",
+  "de": "Tagebucharchiv"
+ },
+ "İlk gün bittiğinde günlüğün burada birikecek.": {
+  "en": "Your journal will collect here after the first day.",
+  "de": "Nach dem ersten Tag sammelt sich hier dein Tagebuch."
+ },
+ "Müdavimler": {
+  "en": "Regulars",
+  "de": "Stammgäste"
+ },
+ "Sevdiği yemeği iyi yap, gönlü dolsun. {0} kalpte arkadaşını getirir, {1}'de mahallede seni över.": {
+  "en": "Cook their favourite dish well and win their heart. At {0} hearts they bring a friend, at {1} they praise you around the neighbourhood.",
+  "de": "Koch ihr Lieblingsgericht gut und gewinne ihr Herz. Ab {0} Herzen bringen sie Freunde mit, ab {1} loben sie dich im ganzen Viertel."
+ },
+ "Gönül {0}/{1}": {
+  "en": "Heart {0}/{1}",
+  "de": "Herz {0}/{1}"
+ },
+ "Mahalle Postası": {
+  "en": "Neighbourhood Post",
+  "de": "Viertelpost"
+ },
+ "Gazete her pazar akşamı çıkar.": {
+  "en": "The paper comes out every Sunday evening.",
+  "de": "Die Zeitung erscheint jeden Sonntagabend."
+ },
+ "Şirket": {
+  "en": "Company",
+  "de": "Unternehmen"
+ },
+ "Şubeler aynı anda çalışır; şube şeridinden canlı izleyebilirsin": {
+  "en": "Branches run at the same time; watch them live from the branch bar",
+  "de": "Filialen laufen gleichzeitig; über die Filialleiste siehst du sie live"
+ },
+ "{0} kişi": {
+  "en": "{0} people",
+  "de": "{0} Personen"
+ },
+ "Müdür yok": {
+  "en": "No manager",
+  "de": "Kein Filialleiter"
+ },
+ "Temizlik {0}": {
+  "en": "Cleanliness {0}",
+  "de": "Sauberkeit {0}"
+ },
+ "Henüz yeterli veri yok.": {
+  "en": "Not enough data yet.",
+  "de": "Noch nicht genug Daten."
+ },
+ "Dükkâna git": {
+  "en": "Go to the shop",
+  "de": "Zum Laden"
+ },
+ "Avrupa yakası · Eminönü / Sultanahmet esintisi": {
+  "en": "European side · inspired by Eminönü / Sultanahmet",
+  "de": "Europäische Seite · nach Eminönü / Sultanahmet"
+ },
+ "Tarihi çarşının göbeği. Turistler ve gurmeler otantik lezzet arar.": {
+  "en": "The heart of the old bazaar. Tourists and foodies look for authentic flavour.",
+  "de": "Das Herz des alten Basars. Touristen und Feinschmecker suchen echten Geschmack."
+ },
+ "Kira {0}": {
+  "en": "Rent {0}",
+  "de": "Miete {0}"
+ },
+ "Trafik {0}": {
+  "en": "Traffic {0}",
+  "de": "Verkehr {0}"
+ },
+ "Rakip {0}": {
+  "en": "Rivals {0}",
+  "de": "Konkurrenz {0}"
+ },
+ "{0} aylık depozito + tadilat ve ekipman": {
+  "en": "{0} months' deposit + renovation and equipment",
+  "de": "{0} Monatsmieten Kaution + Umbau und Ausstattung"
+ },
+ "Avrupa yakası · Levent / Maslak esintisi": {
+  "en": "European side · inspired by Levent / Maslak",
+  "de": "Europäische Seite · nach Levent / Maslak"
+ },
+ "Plazalar arasında öğle arası yarışı. Hız her şeydir, fiyat ikinci planda.": {
+  "en": "A lunch-break race between office towers. Speed is everything, price comes second.",
+  "de": "Mittagspausen-Rennen zwischen Bürotürmen. Tempo ist alles, der Preis zweitrangig."
+ },
+ "Anadolu yakası · Caddebostan esintisi": {
+  "en": "Anatolian side · inspired by Caddebostan",
+  "de": "Asiatische Seite · nach Caddebostan"
+ },
+ "Sahil yolu, hafta sonu kalabalığı ve uzun aile sofraları.": {
+  "en": "Seaside road, weekend crowds and long family tables.",
+  "de": "Küstenstraße, Wochenend-Trubel und lange Familientafeln."
+ },
+ "Avrupa yakası · Merter / İkitelli esintisi": {
+  "en": "European side · inspired by Merter / İkitelli",
+  "de": "Europäische Seite · nach Merter / İkitelli"
+ },
+ "Atölyeler, inşaatlar, toptancılar. Bol porsiyon ve hızlı servis ister.": {
+  "en": "Workshops, building sites, wholesalers. They want big portions and fast service.",
+  "de": "Werkstätten, Baustellen, Großhändler. Gefragt sind große Portionen und schneller Service."
+ },
+ "Avrupa yakası · Avcılar / Beyazıt esintisi": {
+  "en": "European side · inspired by Avcılar / Beyazıt",
+  "de": "Europäische Seite · nach Avcılar / Beyazıt"
+ },
+ "Üniversite yokuşu. Bütçe dar, iştah geniş.": {
+  "en": "The university hill. Tight budgets, big appetites.",
+  "de": "Der Uni-Hügel. Kleines Budget, großer Hunger."
+ },
+ "Avrupa yakası · Beşiktaş esintisi": {
+  "en": "European side · inspired by Beşiktaş",
+  "de": "Europäische Seite · nach Beşiktaş"
+ },
+ "Çarşı, iskele ve stat. Maç günleri sokaklar dolup taşar.": {
+  "en": "Bazaar, ferry pier and stadium. On match days the streets overflow.",
+  "de": "Basar, Fähranleger und Stadion. An Spieltagen platzen die Straßen aus allen Nähten."
+ },
+ "Kendi etini kendin yetiştir": {
+  "en": "Raise your own meat",
+  "de": "Züchte dein eigenes Fleisch"
+ },
+ "SATILIK": {
+  "en": "FOR SALE",
+  "de": "ZU VERKAUFEN"
+ },
+ "Satılık · Yeşilova": {
+  "en": "For sale · Yeşilova",
+  "de": "Zu verkaufen · Yeşilova"
+ },
+ "Kendi etimiz, kendi lezzetimiz": {
+  "en": "Our own meat, our own flavour",
+  "de": "Unser Fleisch, unser Geschmack"
+ },
+ "Çiftlikte dana, kuzu, tavuk yetiştirirsin. Olgunlaşan hayvanlar kesimhaneye gider, et her sabah şubelere sevk edilir. Kendi etimizle pişen tabaklarda kalite artar, et maliyeti düşer.": {
+  "en": "Raise cattle, lambs and chickens on the farm. Mature animals go to the slaughterhouse and meat ships to the branches every morning. Dishes cooked with our own meat taste better and meat costs drop.",
+  "de": "Auf dem Hof ziehst du Rinder, Lämmer und Hühner auf. Ausgewachsene Tiere gehen zum Schlachthof, das Fleisch geht jeden Morgen an die Filialen. Mit eigenem Fleisch steigt die Qualität und die Fleischkosten sinken."
+ },
+ "Dana": {
+  "en": "Cattle",
+  "de": "Rind"
+ },
+ "· {0} günde büyür · yaklaşık {1}/kg": {
+  "en": "· grows in {0} days · about {1}/kg",
+  "de": "· wächst in {0} Tagen · etwa {1}/kg"
+ },
+ "Kuzu": {
+  "en": "Lamb",
+  "de": "Lamm"
+ },
+ "Tavuk": {
+  "en": "Chicken",
+  "de": "Huhn"
+ },
+ "+ aylık {0} işletme gideri": {
+  "en": "+ {0} monthly running cost",
+  "de": "+ {0} monatliche Betriebskosten"
+ },
+ "Çiftliği satın al": {
+  "en": "Buy the farm",
+  "de": "Hof kaufen"
+ },
+ "Günlük, haftalık ve aylık rakamlar; bordro ve vergiler": {
+  "en": "Daily, weekly and monthly figures; payroll and taxes",
+  "de": "Tages-, Wochen- und Monatszahlen; Löhne und Steuern"
+ },
+ "Bordroyu hazırladım. SGK primlerini gününde yatırırsak {0} puanlık teşviki kaçırmayız.": {
+  "en": "Payroll is ready. If we pay social security on time we keep the {0}-point incentive.",
+  "de": "Die Lohnabrechnung ist fertig. Zahlen wir die Sozialbeiträge pünktlich, behalten wir den {0}-Punkte-Zuschuss."
+ },
+ "Özet": {
+  "en": "Overview",
+  "de": "Übersicht"
+ },
+ "Günlük": {
+  "en": "Daily",
+  "de": "Täglich"
+ },
+ "Haftalık": {
+  "en": "Weekly",
+  "de": "Wöchentlich"
+ },
+ "Aylık": {
+  "en": "Monthly",
+  "de": "Monatlich"
+ },
+ "Bordro": {
+  "en": "Payroll",
+  "de": "Lohnabrechnung"
+ },
+ "Kasa": {
+  "en": "Till",
+  "de": "Kasse"
+ },
+ "Ay içi malzeme": {
+  "en": "Supplies this month",
+  "de": "Einkauf diesen Monat"
+ },
+ "Aylık bordro (tahmini)": {
+  "en": "Monthly payroll (estimate)",
+  "de": "Monatliche Löhne (geschätzt)"
+ },
+ "Kira ve fatura": {
+  "en": "Rent and bills",
+  "de": "Miete und Nebenkosten"
+ },
+ "İlk günü bitirince grafikler burada görünecek.": {
+  "en": "Charts appear here after your first day.",
+  "de": "Nach dem ersten Tag erscheinen hier Diagramme."
+ },
+ "~{0} müşteri": {
+  "en": "~{0} customers",
+  "de": "~{0} Kunden"
+ },
+ "{0}/{1} ocak": {
+  "en": "{0}/{1} grills",
+  "de": "{0}/{1} Grills"
+ },
+ "{0} masa": {
+  "en": "{0} tables",
+  "de": "{0} Tische"
+ },
+ "Kepengi aç": {
+  "en": "Raise the shutter",
+  "de": "Rollladen hoch"
+ },
+ "Bugün özel gün": {
+  "en": "Special day today",
+  "de": "Heute ist ein besonderer Tag"
+ },
+ "Ramazan": {
+  "en": "Ramadan",
+  "de": "Ramadan"
+ },
+ "Gündüz oruç: yalnızca turistler ve oruç tutmayanlar gelir. İftardan önce paket kuyruğu, ezanla birlikte bütün masalar aynı anda dolar; teravihten sonra tatlı ve çay kalabalığı.": {
+  "en": "People fast by day: only tourists and those not fasting come in. Before iftar there's a takeaway queue, at the call to prayer every table fills at once; after tarawih comes the dessert and tea crowd.",
+  "de": "Tagsüber wird gefastet: Nur Touristen und Nichtfastende kommen. Vor dem Iftar bildet sich eine Abholschlange, mit dem Gebetsruf füllen sich alle Tische gleichzeitig; nach dem Tarawih kommt die Dessert- und Tee-Runde."
+ },
+ "Günün hedefleri": {
+  "en": "Today's goals",
+  "de": "Ziele des Tages"
+ },
+ "Tutturduğun her hedef ek para ve biraz itibar getirir.": {
+  "en": "Every goal you hit brings extra cash and a little reputation.",
+  "de": "Jedes erreichte Ziel bringt Extrageld und etwas Ruf."
+ },
+ "{0} müşteriye servis yap": {
+  "en": "Serve {0} customers",
+  "de": "Bediene {0} Kunden"
+ },
+ "{0} kez \"Ellerine sağlık!\" duy": {
+  "en": "Hear \"Bless your hands!\" {0} times",
+  "de": "Höre {0}-mal „Gesegnete Hände!“"
+ },
+ "Ortalama memnuniyet {0} ve üstü": {
+  "en": "Average satisfaction {0} or more",
+  "de": "Durchschnittliche Zufriedenheit {0} oder mehr"
+ },
+ "Ekip ve açılış görevleri": {
+  "en": "Crew and opening jobs",
+  "de": "Team und Aufgaben zur Öffnung"
+ },
+ "Personeli yönet": {
+  "en": "Manage staff",
+  "de": "Personal verwalten"
+ },
+ "Otomatik ekip yönetimi": {
+  "en": "Automatic crew management",
+  "de": "Automatische Teamsteuerung"
+ },
+ "Müdür yok: yalnızca bitkin düşenleri molaya gönderir. Görevleri sen ayarla.": {
+  "en": "No manager: only sends exhausted staff on break. Set the jobs yourself.",
+  "de": "Kein Filialleiter: Nur Erschöpfte werden in die Pause geschickt. Aufgaben verteilst du selbst."
+ },
+ "Döner ustası ·": {
+  "en": "Döner master ·",
+  "de": "Dönermeister ·"
+ },
+ "Hazır": {
+  "en": "Ready",
+  "de": "Bereit"
+ },
+ "Enerji {0}": {
+  "en": "Energy {0}",
+  "de": "Energie {0}"
+ },
+ "Moral {0}": {
+  "en": "Morale {0}",
+  "de": "Laune {0}"
+ },
+ "İsmail Usta görevi": {
+  "en": "Master İsmail's job",
+  "de": "Aufgabe von Meister İsmail"
+ },
+ "Mola": {
+  "en": "Break",
+  "de": "Pause"
+ },
+ "Çırak ·": {
+  "en": "Apprentice ·",
+  "de": "Lehrling ·"
+ },
+ "Çırak Burak görevi": {
+  "en": "Apprentice Burak's job",
+  "de": "Aufgabe von Lehrling Burak"
+ },
+ "Kasiyer ·": {
+  "en": "Cashier ·",
+  "de": "Kassierer ·"
+ },
+ "Seda görevi": {
+  "en": "Seda's job",
+  "de": "Aufgabe von Seda"
+ },
+ "Komi ·": {
+  "en": "Runner ·",
+  "de": "Läufer ·"
+ },
+ "Erkan görevi": {
+  "en": "Erkan's job",
+  "de": "Aufgabe von Erkan"
+ },
+ "Menü ve fiyatlar": {
+  "en": "Menu and prices",
+  "de": "Speisekarte und Preise"
+ },
+ "Fiyatlar KDV dahil. Pahalı fiyat öğrenci ve işçiyi kaçırır; gurmeler ve plaza çalışanları fiyata pek bakmaz.": {
+  "en": "Prices include VAT. High prices scare off students and workers; foodies and office workers barely look at prices.",
+  "de": "Preise inkl. MwSt. Hohe Preise vertreiben Studierende und Arbeiter; Feinschmecker und Büroleute achten kaum darauf."
+ },
+ "Menüde": {
+  "en": "On the menu",
+  "de": "Auf der Karte"
+ },
+ "en iyi usta": {
+  "en": "best master",
+  "de": "bester Meister"
+ },
+ "Fiyatı düşür": {
+  "en": "Lower price",
+  "de": "Preis senken"
+ },
+ "Fiyatı artır": {
+  "en": "Raise price",
+  "de": "Preis erhöhen"
+ },
+ "Piyasa {0}": {
+  "en": "Market {0}",
+  "de": "Markt {0}"
+ },
+ "Kâr {0}": {
+  "en": "Margin {0}",
+  "de": "Marge {0}"
+ },
+ "Bu ürünü bilen usta yok": {
+  "en": "No master knows this dish",
+  "de": "Kein Meister kann dieses Gericht"
+ },
+ "İtibar {0} olunca açılır": {
+  "en": "Unlocks at reputation {0}",
+  "de": "Ab Ruf {0} verfügbar"
+ },
+ "Müşterilerin çoğu yanında alır": {
+  "en": "Most customers take one on the side",
+  "de": "Die meisten Gäste nehmen eins dazu"
+ },
+ "İlk gün · {0}/{1}": {
+  "en": "First day · {0}/{1}",
+  "de": "Erster Tag · {0}/{1}"
+ },
+ "Her gün üç küçük hedefin olur. Tutturdukça ek para ve itibar gelir.": {
+  "en": "Every day you get three small goals. Hit them for extra cash and reputation.",
+  "de": "Jeden Tag gibt es drei kleine Ziele. Erreichst du sie, gibt es Extrageld und Ruf."
+ },
+ "Rehberi geç": {
+  "en": "Skip guide",
+  "de": "Anleitung überspringen"
+ },
+ "Anladım": {
+  "en": "Got it",
+  "de": "Verstanden"
+ },
+ "Ekibin burada. Usta yalnızca pişirir; kasiyer sipariş alır, komi yemeği masaya götürür. Görevi bu düğmelerle değiştirirsin.": {
+  "en": "Here's your crew. The master only cooks; the cashier takes orders, the runner carries food to tables. Change jobs with these buttons.",
+  "de": "Das ist dein Team. Der Meister kocht nur; der Kassierer nimmt Bestellungen an, der Läufer bringt das Essen. Mit diesen Knöpfen änderst du die Aufgaben."
+ },
+ "Bugün +{0}": {
+  "en": "Today +{0}",
+  "de": "Heute +{0}"
+ },
+ "{0} sırada · {1}": {
+  "en": "{0} in queue · {1}",
+  "de": "{0} in der Schlange · {1}"
+ },
+ "MENÜ": {
+  "en": "MENU",
+  "de": "MENÜ"
+ },
+ "Hoş geldin ya şehr-i Ramazan": {
+  "en": "Welcome, O month of Ramadan",
+  "de": "Willkommen, Monat Ramadan"
+ },
+ "AÇIK": {
+  "en": "OPEN",
+  "de": "OFFEN"
+ },
+ "Kuyruk": {
+  "en": "Queue",
+  "de": "Schlange"
+ },
+ "Mutfakta": {
+  "en": "In the kitchen",
+  "de": "In der Küche"
+ },
+ "Bekleyen tabak": {
+  "en": "Plates waiting",
+  "de": "Wartende Teller"
+ },
+ "Masa": {
+  "en": "Tables",
+  "de": "Tische"
+ },
+ "Kirli": {
+  "en": "Dirty",
+  "de": "Schmutzig"
+ },
+ "İftar {0}:{1}": {
+  "en": "Iftar {0}:{1}",
+  "de": "Iftar {0}:{1}"
+ },
+ "{0} sa {1} dk": {
+  "en": "{0} h {1} min",
+  "de": "{0} Std. {1} Min."
+ },
+ "İftara": {
+  "en": "Until iftar",
+  "de": "Bis zum Iftar"
+ },
+ "Ekip": {
+  "en": "Crew",
+  "de": "Team"
+ },
+ "Boşta": {
+  "en": "Idle",
+  "de": "Frei"
+ },
+ "Bahşiş kavanozu": {
+  "en": "Tip jar",
+  "de": "Trinkgeldglas"
+ },
+ "Oyun hızı": {
+  "en": "Game speed",
+  "de": "Spieltempo"
+ },
+ "Dur": {
+  "en": "Pause",
+  "de": "Pause"
+ },
+ "Ciro": {
+  "en": "Revenue",
+  "de": "Umsatz"
+ },
+ "Kaçan": {
+  "en": "Lost",
+  "de": "Verloren"
+ },
+ "Memnuniyet": {
+  "en": "Satisfaction",
+  "de": "Zufriedenheit"
+ },
+ "Tezgâha geç": {
+  "en": "Step behind the counter",
+  "de": "Hinter die Theke"
+ },
+ "Günü hızlı bitir": {
+  "en": "Finish the day fast",
+  "de": "Tag schnell beenden"
+ },
+ "Müşteri kapıdan girer, kasada öder, usta pişirir, komi masaya götürür. Yemek bitince bahşiş kavanoza düşer.": {
+  "en": "Customers come in, pay at the till, the master cooks, the runner brings it to the table. When they finish, the tip drops in the jar.",
+  "de": "Gäste kommen herein, zahlen an der Kasse, der Meister kocht, der Läufer serviert. Nach dem Essen landet das Trinkgeld im Glas."
+ },
+ "Ramazan başladı!": {
+  "en": "Ramadan has begun!",
+  "de": "Der Ramadan hat begonnen!"
+ },
+ "Hazır!": {
+  "en": "Ready!",
+  "de": "Fertig!"
+ },
+ "Ellerine sağlık!": {
+  "en": "Bless your hands!",
+  "de": "Gesegnete Hände!"
+ },
+ "Bahşiş {0}": {
+  "en": "Tip {0}",
+  "de": "Trinkgeld {0}"
+ },
+ "Masa topluyor": {
+  "en": "Clearing tables",
+  "de": "Räumt Tische ab"
+ },
+ "Servis ediyor": {
+  "en": "Serving",
+  "de": "Serviert"
+ },
+ "Güzel": {
+  "en": "Nice",
+  "de": "Gut"
+ },
+ "Tezgâhtasın.": {
+  "en": "You're behind the counter.",
+  "de": "Du stehst hinter der Theke."
+ },
+ "Mutfağa sipariş düşünce burada belirecek.": {
+  "en": "Kitchen orders will show up here.",
+  "de": "Küchenbestellungen erscheinen hier."
+ },
+ "Tezgâhtan çık": {
+  "en": "Leave the counter",
+  "de": "Theke verlassen"
+ },
+ "Masa siparişi": {
+  "en": "Table order",
+  "de": "Tischbestellung"
+ },
+ "Hata {0}": {
+  "en": "Mistakes {0}",
+  "de": "Fehler {0}"
+ },
+ "Sar": {
+  "en": "Wrap",
+  "de": "Einrollen"
+ },
+ "Kadayıf": {
+  "en": "Kadayıf pastry",
+  "de": "Kadayıf-Teig"
+ },
+ "Sos": {
+  "en": "Sauce",
+  "de": "Soße"
+ },
+ "Et": {
+  "en": "Meat",
+  "de": "Fleisch"
+ },
+ "Domates-marul": {
+  "en": "Tomato & lettuce",
+  "de": "Tomate & Salat"
+ },
+ "Görevleri elle ayarladın; otomatik ekip yönetimi kapatıldı.": {
+  "en": "You set jobs by hand; automatic crew management is off.",
+  "de": "Du hast Aufgaben selbst verteilt; die automatische Teamsteuerung ist aus."
+ },
+ "Molada, dinleniyor": {
+  "en": "On break, resting",
+  "de": "In der Pause"
+ },
+ "Açık · {0} sırada · {1}": {
+  "en": "Open · {0} in queue · {1}",
+  "de": "Offen · {0} in der Schlange · {1}"
+ },
+ "Bugün": {
+  "en": "Today",
+  "de": "Heute"
+ },
+ "Dükkâna bak": {
+  "en": "Look at the shop",
+  "de": "Zum Laden"
+ },
+ "Kapanış": {
+  "en": "Closing",
+  "de": "Feierabend"
+ },
+ "Kepenk indi": {
+  "en": "Shutter down",
+  "de": "Rollladen unten"
+ },
+ "İdare eder": {
+  "en": "It'll do",
+  "de": "Geht so"
+ },
+ "Çok lezzetli! Teşekkürler!": {
+  "en": "Delicious! Thank you!",
+  "de": "Köstlich! Danke!"
+ },
+ "Ekip seni soruyor usta!": {
+  "en": "The crew asks after you, boss!",
+  "de": "Das Team fragt nach dir, Chef!"
+ },
+ "Bütün sınıfa önerdim.": {
+  "en": "I recommended you to the whole class.",
+  "de": "Ich habe euch der ganzen Klasse empfohlen."
+ },
+ "Çok kalabalık!": {
+  "en": "Too crowded!",
+  "de": "Zu voll!"
+ },
+ "Bekletmeyin bizi!": {
+  "en": "Don't keep us waiting!",
+  "de": "Lasst uns nicht warten!"
+ },
+ "Bu sefer olmadı evladım…": {
+  "en": "Not this time, dear…",
+  "de": "Diesmal nicht, mein Kind…"
+ },
+ "İftar hazırlığı: paket kuyruğu başladı": {
+  "en": "Iftar prep: the takeaway queue has started",
+  "de": "Iftar-Vorbereitung: Die Abholschlange beginnt"
+ },
+ "İftara az kaldı, masalar doluyor!": {
+  "en": "Iftar is near, tables are filling up!",
+  "de": "Bald ist Iftar, die Tische füllen sich!"
+ },
+ "Ezan okundu, afiyet olsun!": {
+  "en": "The call to prayer! Enjoy your meal!",
+  "de": "Der Gebetsruf! Guten Appetit!"
+ },
+ "Teravih çıktı: tatlı ve çay saati": {
+  "en": "Tarawih is over: dessert and tea time",
+  "de": "Das Tarawih ist vorbei: Zeit für Dessert und Tee"
+ },
+ "Son siparişler!": {
+  "en": "Last orders!",
+  "de": "Letzte Bestellungen!"
+ },
+ "Kapanış raporu": {
+  "en": "Closing report",
+  "de": "Tagesabschluss"
+ },
+ "Gün sonu raporu": {
+  "en": "End-of-day report",
+  "de": "Tagesbericht"
+ },
+ "Muhasebeci": {
+  "en": "Accountant",
+  "de": "Buchhalterin"
+ },
+ "Rakamlara birlikte bakalım; düzeltecek şeyler var.": {
+  "en": "Let's look at the numbers together; there are things to fix.",
+  "de": "Schauen wir uns die Zahlen an; es gibt einiges zu verbessern."
+ },
+ "{0} müşteri yer bulamadı.": {
+  "en": "{0} customers found no seat.",
+  "de": "{0} Gäste fanden keinen Platz."
+ },
+ "Satılan ürünler": {
+  "en": "Products sold",
+  "de": "Verkaufte Gerichte"
+ },
+ "Bahşiş dağıtımı": {
+  "en": "Tip sharing",
+  "de": "Trinkgeldverteilung"
+ },
+ "Bütün şubelerde uygulanır": {
+  "en": "Applies to all branches",
+  "de": "Gilt für alle Filialen"
+ },
+ "Eşit paylaşım (varsayılan)": {
+  "en": "Equal share (default)",
+  "de": "Gleich verteilen (Standard)"
+ },
+ "Ustaya ağırlık": {
+  "en": "Master gets more",
+  "de": "Mehr für den Meister"
+ },
+ "Performansa göre": {
+  "en": "By performance",
+  "de": "Nach Leistung"
+ },
+ "Kasaya al": {
+  "en": "Keep in the till",
+  "de": "In die Kasse"
+ },
+ "Kavanoz herkese eşit bölünür. Ekip morali dengeli artar.": {
+  "en": "The jar is split equally. Crew morale rises evenly.",
+  "de": "Das Glas wird gleich aufgeteilt. Die Laune steigt gleichmäßig."
+ },
+ "Döner ustası · {0} iş": {
+  "en": "Döner master · {0} jobs",
+  "de": "Dönermeister · {0} Aufträge"
+ },
+ "Çırak · {0} iş": {
+  "en": "Apprentice · {0} jobs",
+  "de": "Lehrling · {0} Aufträge"
+ },
+ "Kasiyer · {0} iş": {
+  "en": "Cashier · {0} jobs",
+  "de": "Kassierer · {0} Aufträge"
+ },
+ "Komi · {0} iş": {
+  "en": "Runner · {0} jobs",
+  "de": "Läufer · {0} Aufträge"
+ },
+ "Bahşişi dağıt ve günü kapat": {
+  "en": "Share the tips and close the day",
+  "de": "Trinkgeld verteilen und Tag abschließen"
+ },
+ "Kim çok iş çıkardıysa o çok alır. Rekabet yaratır.": {
+  "en": "Whoever did the most gets the most. Creates competition.",
+  "de": "Wer am meisten geschafft hat, bekommt am meisten. Fördert Wettbewerb."
+ },
+ "Yalnızca bugün için.": {
+  "en": "Just for today.",
+  "de": "Nur für heute."
+ },
+ "Hep böyle yap": {
+  "en": "Always do this",
+  "de": "Immer so machen"
+ },
+ "{0} bahşiş topla": {
+  "en": "Collect {0} in tips",
+  "de": "Sammle {0} Trinkgeld"
+ },
+ "Tezgâhta hiç tabak soğumasın": {
+  "en": "Let no plate go cold on the counter",
+  "de": "Kein Teller wird auf der Theke kalt"
+ },
+ "Günlük net (tahmini)": {
+  "en": "Daily net (estimate)",
+  "de": "Tagesergebnis (geschätzt)"
+ },
+ "İtibar": {
+  "en": "Reputation",
+  "de": "Ruf"
+ },
+ "Ekibin morali": {
+  "en": "Crew morale",
+  "de": "Teamlaune"
+ },
+ "Olmadı": {
+  "en": "Didn't work out",
+  "de": "Hat nicht geklappt"
+ },
+ "uğradı. İdare etti ·": {
+  "en": "dropped by. It was alright ·",
+  "de": "kam vorbei. War in Ordnung ·"
+ },
+ "uğradı. Kırıldı ·": {
+  "en": "dropped by. Left upset ·",
+  "de": "kam vorbei. War gekränkt ·"
+ },
+ "Yeni güne başla": {
+  "en": "Start a new day",
+  "de": "Neuen Tag beginnen"
+ },
+ "Yeşilova · otomatik besi açık": {
+  "en": "Yeşilova · automatic farming on",
+  "de": "Yeşilova · automatische Mast an"
+ },
+ "TAZE ET": {
+  "en": "FRESH MEAT",
+  "de": "FRISCHFLEISCH"
+ },
+ "Bugüne kadar sevk": {
+  "en": "Shipped so far",
+  "de": "Bisher geliefert"
+ },
+ "{0} kg": {
+  "en": "{0} kg",
+  "de": "{0} kg"
+ },
+ "Depoda tavuk döner eti": {
+  "en": "Chicken döner meat in stock",
+  "de": "Hähnchen-Dönerfleisch auf Lager"
+ },
+ "Depoda kuzu eti (cağ)": {
+  "en": "Lamb meat (cağ) in stock",
+  "de": "Lammfleisch (Cağ) auf Lager"
+ },
+ "Depoda dana döner eti": {
+  "en": "Beef döner meat in stock",
+  "de": "Rind-Dönerfleisch auf Lager"
+ },
+ "Otomatik besi": {
+  "en": "Automatic farming",
+  "de": "Automatische Mast"
+ },
+ "Olgunlaşanı keser, talebe göre yenisini alır": {
+  "en": "Slaughters mature animals and buys new ones by demand",
+  "de": "Schlachtet ausgewachsene Tiere und kauft nach Bedarf neue"
+ },
+ "{0} / {1} baş": {
+  "en": "{0} / {1} head",
+  "de": "{0} / {1} Tiere"
+ },
+ "Döner ve kıyma için besi danası. Uzun büyür, çok et verir.": {
+  "en": "Beef cattle for döner and mince. Slow to grow, lots of meat.",
+  "de": "Mastrinder für Döner und Hackfleisch. Wachsen langsam, viel Fleisch."
+ },
+ "{0} baş": {
+  "en": "{0} head",
+  "de": "{0} Tiere"
+ },
+ "Yavru {0}": {
+  "en": "Young stock {0}",
+  "de": "Jungtiere {0}"
+ },
+ "Yem {0}/baş/gün": {
+  "en": "Feed {0}/head/day",
+  "de": "Futter {0}/Tier/Tag"
+ },
+ "Yavru al": {
+  "en": "Buy young stock",
+  "de": "Jungtiere kaufen"
+ },
+ "Ağılı büyüt · {0}": {
+  "en": "Expand the pen · {0}",
+  "de": "Stall vergrößern · {0}"
+ },
+ "Şiş, cağ ve ciğer için kuzu.": {
+  "en": "Lambs for shish, cağ and liver.",
+  "de": "Lämmer für Spieß, Cağ und Leber."
+ },
+ "Ağıl boş.": {
+  "en": "The pen is empty.",
+  "de": "Der Stall ist leer."
+ },
+ "{0} / {1} adet": {
+  "en": "{0} / {1} birds",
+  "de": "{0} / {1} Tiere"
+ },
+ "Tavuk döner için kümes. Hızlı döner, ucuz beslenir.": {
+  "en": "Coop for chicken döner. Grows fast, cheap to feed.",
+  "de": "Stall für Hähnchendöner. Wächst schnell, günstiges Futter."
+ },
+ "{0} adet": {
+  "en": "{0} birds",
+  "de": "{0} Tiere"
+ },
+ "Yavru {0} / {1}": {
+  "en": "Chicks {0} / {1}",
+  "de": "Küken {0} / {1}"
+ },
+ "Yem {0}/adet/gün": {
+  "en": "Feed {0}/bird/day",
+  "de": "Futter {0}/Tier/Tag"
+ },
+ "KDV beyannamesi ayın {0}'inde, unutmayalım.": {
+  "en": "VAT return is due on the {0}th; let's not forget.",
+  "de": "Die MwSt.-Erklärung ist am {0}. fällig, nicht vergessen."
+ },
+ "Bütün aylar": {
+  "en": "All months",
+  "de": "Alle Monate"
+ },
+ "Aylık kapanış": {
+  "en": "Month-end close",
+  "de": "Monatsabschluss"
+ },
+ "Ciro (KDV dahil)": {
+  "en": "Revenue (incl. VAT)",
+  "de": "Umsatz (inkl. MwSt.)"
+ },
+ "Personel maliyeti": {
+  "en": "Staff cost",
+  "de": "Personalkosten"
+ },
+ "Aylık net": {
+  "en": "Monthly net",
+  "de": "Monatsergebnis"
+ },
+ "Brüt ciro (KDV dahil)": {
+  "en": "Gross revenue (incl. VAT)",
+  "de": "Bruttoumsatz (inkl. MwSt.)"
+ },
+ "− Hesaplanan KDV ({0})": {
+  "en": "− Output VAT ({0})",
+  "de": "− Umsatzsteuer ({0})"
+ },
+ "+ İndirilecek KDV (gıda alımları, {0})": {
+  "en": "+ Input VAT (food purchases, {0})",
+  "de": "+ Vorsteuer (Lebensmitteleinkauf, {0})"
+ },
+ "= Ödenecek KDV": {
+  "en": "= VAT payable",
+  "de": "= Zu zahlende MwSt."
+ },
+ "− Malzeme ve sarf": {
+  "en": "− Supplies and consumables",
+  "de": "− Waren und Verbrauchsmaterial"
+ },
+ "− Personel (bordro toplam maliyeti)": {
+  "en": "− Staff (total payroll cost)",
+  "de": "− Personal (gesamte Lohnkosten)"
+ },
+ "− Kira (ev sahibine net)": {
+  "en": "− Rent (net to landlord)",
+  "de": "− Miete (netto an Vermieter)"
+ },
+ "− Kira stopajı ({0})": {
+  "en": "− Rent withholding ({0})",
+  "de": "− Mietquellensteuer ({0})"
+ },
+ "− Elektrik, su, doğalgaz, internet": {
+  "en": "− Electricity, water, gas, internet",
+  "de": "− Strom, Wasser, Gas, Internet"
+ },
+ "− Muhasebeci": {
+  "en": "− Accountant",
+  "de": "− Buchhaltung"
+ },
+ "− İdari para cezaları": {
+  "en": "− Administrative fines",
+  "de": "− Bußgelder"
+ },
+ "− Çiftlik: hayvan ve yem": {
+  "en": "− Farm: animals and feed",
+  "de": "− Hof: Tiere und Futter"
+ },
+ "− Çiftlik işletme gideri": {
+  "en": "− Farm running cost",
+  "de": "− Hof-Betriebskosten"
+ },
+ "= Aylık net sonuç": {
+  "en": "= Monthly net result",
+  "de": "= Monatsergebnis"
+ },
+ "Yatırım harcamaları (ekipman, dekor, şube)": {
+  "en": "Capital spending (equipment, decor, branches)",
+  "de": "Investitionen (Ausstattung, Dekor, Filialen)"
+ },
+ "Dağıtılan bahşiş": {
+  "en": "Tips paid out",
+  "de": "Ausgezahltes Trinkgeld"
+ },
+ "Giderler": {
+  "en": "Costs",
+  "de": "Kosten"
+ },
+ "Malzeme": {
+  "en": "Supplies",
+  "de": "Waren"
+ },
+ "Personel": {
+  "en": "Staff",
+  "de": "Personal"
+ },
+ "Kira": {
+  "en": "Rent",
+  "de": "Miete"
+ },
+ "KDV": {
+  "en": "VAT",
+  "de": "MwSt."
+ },
+ "Fatura": {
+  "en": "Bills",
+  "de": "Nebenkosten"
+ },
+ "Diğer": {
+  "en": "Other",
+  "de": "Sonstiges"
+ },
+ "Şube bazında": {
+  "en": "By branch",
+  "de": "Nach Filiale"
+ },
+ "Ciro {0} · personel {1} · kira {2}": {
+  "en": "Revenue {0} · staff {1} · rent {2}",
+  "de": "Umsatz {0} · Personal {1} · Miete {2}"
+ },
+ "Ramazan Bayramı ikramiyesi ödendi": {
+  "en": "Eid al-Fitr bonus paid",
+  "de": "Bonus zum Zuckerfest gezahlt"
+ },
+ "Çalışan": {
+  "en": "Employee",
+  "de": "Mitarbeiter"
+ },
+ "Rol": {
+  "en": "Role",
+  "de": "Rolle"
+ },
+ "Temel brüt": {
+  "en": "Base gross",
+  "de": "Grundlohn brutto"
+ },
+ "Fazla mesai": {
+  "en": "Overtime",
+  "de": "Überstunden"
+ },
+ "Toplam brüt": {
+  "en": "Total gross",
+  "de": "Brutto gesamt"
+ },
+ "SGK işçi {0}": {
+  "en": "Employee SSI {0}",
+  "de": "Sozialversicherung AN {0}"
+ },
+ "İşsizlik işçi {0}": {
+  "en": "Unemployment (employee) {0}",
+  "de": "Arbeitslosenvers. AN {0}"
+ },
+ "Gelir vergisi": {
+  "en": "Income tax",
+  "de": "Lohnsteuer"
+ },
+ "Damga": {
+  "en": "Stamp duty",
+  "de": "Stempelsteuer"
+ },
+ "Net ele geçen": {
+  "en": "Net pay",
+  "de": "Netto ausgezahlt"
+ },
+ "SGK işveren": {
+  "en": "Employer SSI",
+  "de": "Sozialversicherung AG"
+ },
+ "İşsizlik işveren {0}": {
+  "en": "Unemployment (employer) {0}",
+  "de": "Arbeitslosenvers. AG {0}"
+ },
+ "Yol": {
+  "en": "Travel",
+  "de": "Fahrtgeld"
+ },
+ "İkramiye": {
+  "en": "Bonus",
+  "de": "Bonus"
+ },
+ "Toplam maliyet": {
+  "en": "Total cost",
+  "de": "Gesamtkosten"
+ },
+ "Bahşiş (ay)": {
+  "en": "Tips (month)",
+  "de": "Trinkgeld (Monat)"
+ },
+ "Garson / Komi": {
+  "en": "Waiter / Runner",
+  "de": "Kellner / Läufer"
+ },
+ "Fazla mesai haftada yaklaşık {0} saat, {1} zamlı varsayılır. Gelir vergisi kümülatif matraha göre dilimli hesaplanır; asgari ücrete isabet eden gelir ve damga vergisi istisna edilir. SGK işveren payında {2} puanlık hazine teşviki primler zamanında ödendiğinde düşülür. Oranlar {3} için tahmini, ayar tablosundan güncellenebilir.": {
+  "en": "Overtime is assumed at about {0} hours a week, paid at {1} extra. Income tax uses cumulative brackets; tax and stamp duty on the minimum wage portion are exempt. The {2}-point treasury incentive on employer SSI applies when premiums are paid on time. Rates are estimates for {3} and can be updated from the settings table.",
+  "de": "Überstunden: etwa {0} Stunden pro Woche mit {1} Zuschlag. Die Lohnsteuer folgt kumulativen Stufen; auf den Mindestlohnanteil fallen keine Lohn- und Stempelsteuer an. Der {2}-Punkte-Staatszuschuss zur AG-Sozialversicherung gilt bei pünktlicher Zahlung. Sätze für {3} sind Schätzungen und über die Einstellungstabelle aktualisierbar."
+ },
+ "Dükkâna geç, kepenkleri aç": {
+  "en": "Go to the shop, raise the shutters",
+  "de": "Zu den Läden, Rollläden hoch"
+ },
+ "Bütün şubelerde kepengi aç": {
+  "en": "Raise the shutters at all branches",
+  "de": "Rollläden in allen Filialen hoch"
+ },
+ "En fazla {0} müşteri kaçır": {
+  "en": "Lose at most {0} customers",
+  "de": "Verliere höchstens {0} Gäste"
+ },
+ "Temizlik puanı düşük. Denetimde ceza riski var.": {
+  "en": "Cleanliness score is low. Risk of a fine at inspection.",
+  "de": "Die Sauberkeit ist niedrig. Bei einer Kontrolle droht ein Bußgeld."
+ },
+ "Piyasa {0} · {1}%": {
+  "en": "Market {0} · {1}%",
+  "de": "Markt {0} · {1}%"
+ },
+ "Bütün şubeler": {
+  "en": "All branches",
+  "de": "Alle Filialen"
+ },
+ "{0} sırada": {
+  "en": "{0} in queue",
+  "de": "{0} in der Schlange"
+ },
+ "Kepenkler açıldı!": {
+  "en": "Shutters up!",
+  "de": "Rollläden hoch!"
+ },
+ "Müdür Yeşim yoğunluğa göre görev ve mola düzenler.": {
+  "en": "Manager Yeşim assigns jobs and breaks by workload.",
+  "de": "Filialleiterin Yeşim verteilt Aufgaben und Pausen nach Auslastung."
+ },
+ "Selim Usta görevi": {
+  "en": "Master Selim's job",
+  "de": "Aufgabe von Meister Selim"
+ },
+ "Ahmet görevi": {
+  "en": "Ahmet's job",
+  "de": "Aufgabe von Ahmet"
+ },
+ "Gizem görevi": {
+  "en": "Gizem's job",
+  "de": "Aufgabe von Gizem"
+ },
+ "Şube müdürü ·": {
+  "en": "Branch manager ·",
+  "de": "Filialleiter ·"
+ },
+ "Yeşim görevi": {
+  "en": "Yeşim's job",
+  "de": "Aufgabe von Yeşim"
+ },
+ "Tavuk Dürüm": {
+  "en": "Chicken Dürüm",
+  "de": "Hähnchen-Dürüm"
+ },
+ "Et Dürüm": {
+  "en": "Beef Dürüm",
+  "de": "Rind-Dürüm"
+ },
+ "Yarım Ekmek Döner": {
+  "en": "Half-Loaf Döner",
+  "de": "Döner im halben Brot"
+ },
+ "İskender": {
+  "en": "İskender",
+  "de": "İskender"
+ },
+ "Pilav Üstü Döner": {
+  "en": "Döner over Rice",
+  "de": "Döner auf Reis"
+ },
+ "Tavuk Porsiyon": {
+  "en": "Chicken Plate",
+  "de": "Hähnchenteller"
+ },
+ "Cağ Kebabı": {
+  "en": "Cağ Kebab",
+  "de": "Cağ-Kebab"
+ },
+ "Tantuni": {
+  "en": "Tantuni",
+  "de": "Tantuni"
+ },
+ "Künefe": {
+  "en": "Künefe",
+  "de": "Künefe"
+ },
+ "Ayran": {
+  "en": "Ayran",
+  "de": "Ayran"
+ },
+ "Dana döner eti": {
+  "en": "Beef döner meat",
+  "de": "Rind-Dönerfleisch"
+ },
+ "Tavuk döner eti": {
+  "en": "Chicken döner meat",
+  "de": "Hähnchen-Dönerfleisch"
+ },
+ "Kuzu eti (cağ)": {
+  "en": "Lamb meat (cağ)",
+  "de": "Lammfleisch (Cağ)"
+ },
+ "Lavaş": {
+  "en": "Lavash",
+  "de": "Lavash"
+ },
+ "Somun ekmek": {
+  "en": "Loaf bread",
+  "de": "Brotlaib"
+ },
+ "Tırnak pide": {
+  "en": "Pide bread",
+  "de": "Pidebrot"
+ },
+ "Pilavlık pirinç": {
+  "en": "Rice",
+  "de": "Reis"
+ },
+ "Domates, marul, soğan": {
+  "en": "Tomato, lettuce, onion",
+  "de": "Tomate, Salat, Zwiebel"
+ },
+ "Tereyağı": {
+  "en": "Butter",
+  "de": "Butter"
+ },
+ "Yoğurt": {
+  "en": "Yoghurt",
+  "de": "Joghurt"
+ },
+ "Künefe seti (kadayıf, peynir)": {
+  "en": "Künefe set (kadayıf, cheese)",
+  "de": "Künefe-Set (Kadayıf, Käse)"
+ },
+ "Adana Kebap": {
+  "en": "Adana Kebab",
+  "de": "Adana-Kebab"
+ },
+ "Urfa Kebap": {
+  "en": "Urfa Kebab",
+  "de": "Urfa-Kebab"
+ },
+ "Kuzu Şiş": {
+  "en": "Lamb Shish",
+  "de": "Lammspieß"
+ },
+ "Beyti": {
+  "en": "Beyti",
+  "de": "Beyti"
+ },
+ "Ali Nazik": {
+  "en": "Ali Nazik",
+  "de": "Ali Nazik"
+ },
+ "Lahmacun": {
+  "en": "Lahmacun",
+  "de": "Lahmacun"
+ },
+ "Ciğer Şiş": {
+  "en": "Liver Shish",
+  "de": "Leberspieß"
+ },
+ "İçli Köfte": {
+  "en": "İçli Köfte",
+  "de": "İçli Köfte"
+ },
+ "Ayran / Şalgam": {
+  "en": "Ayran / Şalgam",
+  "de": "Ayran / Şalgam"
+ },
+ "Zırh kıyması": {
+  "en": "Hand-chopped mince",
+  "de": "Handgehacktes"
+ },
+ "Kuzu şişlik": {
+  "en": "Lamb for shish",
+  "de": "Lamm für Spieße"
+ },
+ "Kuzu ciğeri": {
+  "en": "Lamb liver",
+  "de": "Lammleber"
+ },
+ "Lahmacun hamuru": {
+  "en": "Lahmacun dough",
+  "de": "Lahmacun-Teig"
+ },
+ "Közlük sebze, yeşillik": {
+  "en": "Vegetables for the coals, greens",
+  "de": "Grillgemüse, Kräuter"
+ },
+ "Patlıcan": {
+  "en": "Aubergine",
+  "de": "Aubergine"
+ },
+ "Mangal kömürü": {
+  "en": "Charcoal",
+  "de": "Grillkohle"
+ },
+ "İnce bulgur": {
+  "en": "Fine bulgur",
+  "de": "Feiner Bulgur"
+ },
+ "Ayran / şalgam": {
+  "en": "Ayran / şalgam",
+  "de": "Ayran / Şalgam"
+ },
+ "Öğrenci": {
+  "en": "Student",
+  "de": "Studierende"
+ },
+ "Beyaz yaka": {
+  "en": "Office worker",
+  "de": "Büroangestellte"
+ },
+ "Aile": {
+  "en": "Family",
+  "de": "Familie"
+ },
+ "Gurme": {
+  "en": "Foodie",
+  "de": "Feinschmecker"
+ },
+ "Turist": {
+  "en": "Tourist",
+  "de": "Tourist"
+ },
+ "İnşaat ekibi": {
+  "en": "Construction crew",
+  "de": "Bautrupp"
+ },
+ "Gece çıkışı": {
+  "en": "Night owl",
+  "de": "Nachtschwärmer"
+ },
+ "Ocak": {
+  "en": "January",
+  "de": "Januar"
+ },
+ "Şubat": {
+  "en": "February",
+  "de": "Februar"
+ },
+ "Mart": {
+  "en": "March",
+  "de": "März"
+ },
+ "Nisan": {
+  "en": "April",
+  "de": "April"
+ },
+ "Mayıs": {
+  "en": "May",
+  "de": "Mai"
+ },
+ "Haziran": {
+  "en": "June",
+  "de": "Juni"
+ },
+ "Temmuz": {
+  "en": "July",
+  "de": "Juli"
+ },
+ "Ağustos": {
+  "en": "August",
+  "de": "August"
+ },
+ "Eylül": {
+  "en": "September",
+  "de": "September"
+ },
+ "Ekim": {
+  "en": "October",
+  "de": "Oktober"
+ },
+ "Kasım": {
+  "en": "November",
+  "de": "November"
+ },
+ "Aralık": {
+  "en": "December",
+  "de": "Dezember"
+ },
+ "Pazar": {
+  "en": "Sunday",
+  "de": "Sonntag"
+ },
+ "Pazartesi": {
+  "en": "Monday",
+  "de": "Montag"
+ },
+ "Salı": {
+  "en": "Tuesday",
+  "de": "Dienstag"
+ },
+ "Çarşamba": {
+  "en": "Wednesday",
+  "de": "Mittwoch"
+ },
+ "Perşembe": {
+  "en": "Thursday",
+  "de": "Donnerstag"
+ },
+ "Cuma": {
+  "en": "Friday",
+  "de": "Freitag"
+ },
+ "Cumartesi": {
+  "en": "Saturday",
+  "de": "Samstag"
+ },
+ "Hal ve Kasap": {
+  "en": "Market & Butcher",
+  "de": "Großmarkt & Metzger"
+ },
+ "Usta Pazarı": {
+  "en": "Master Market",
+  "de": "Meistermarkt"
+ },
+ "Terzi": {
+  "en": "Tailor",
+  "de": "Schneider"
+ },
+ "Mobilya ve Dekor": {
+  "en": "Furniture & Decor",
+  "de": "Möbel & Dekor"
+ },
+ "Banka": {
+  "en": "Bank",
+  "de": "Bank"
+ },
+ "Belediye": {
+  "en": "Town Hall",
+  "de": "Rathaus"
+ },
+ "Muhasebe": {
+  "en": "Accounting",
+  "de": "Buchhaltung"
+ },
+ "Mahalle Kahvesi": {
+  "en": "Neighbourhood Café",
+  "de": "Viertelcafé"
+ },
+ "Reklam Ajansı": {
+  "en": "Ad Agency",
+  "de": "Werbeagentur"
+ },
+ "Eleman Bürosu": {
+  "en": "Staffing Office",
+  "de": "Personalbüro"
+ },
+ "Merkez Ofis": {
+  "en": "Head Office",
+  "de": "Zentrale"
+ },
+ "Besi Çiftliği": {
+  "en": "Livestock Farm",
+  "de": "Mastbetrieb"
+ },
+ "Merterli Sanayi": {
+  "en": "Merterli Industrial",
+  "de": "Merterli Gewerbegebiet"
+ },
+ "Döner ustası": {
+  "en": "Döner master",
+  "de": "Dönermeister"
+ },
+ "kg": {
+  "en": "kg",
+  "de": "kg"
+ },
+ "adet": {
+  "en": "pcs",
+  "de": "Stk."
+ },
+ "Üçlü profesyonel ocak": {
+  "en": "Triple professional grill",
+  "de": "Professioneller Dreifachgrill"
+ },
+ "Dört ocaklı döner hattı": {
+  "en": "Four-grill döner line",
+  "de": "Dönerlinie mit vier Grills"
+ },
+ "Döner kesme robotu": {
+  "en": "Döner slicing robot",
+  "de": "Döner-Schneideroboter"
+ },
+ "Soğuk oda": {
+  "en": "Cold room",
+  "de": "Kühlraum"
+ },
+ "Sipariş ekranı ve {0} masa": {
+  "en": "Order screen and {0} tables",
+  "de": "Bestellbildschirm und {0} Tische"
+ },
+ "Kebap ustası": {
+  "en": "Kebab master",
+  "de": "Kebabmeister"
+ },
+ "Mangal": {
+  "en": "Grill",
+  "de": "Grill"
+ },
+ "Kömür mangalı": {
+  "en": "Charcoal grill",
+  "de": "Holzkohlegrill"
+ },
+ "Uzun ocakbaşı mangalı": {
+  "en": "Long ocakbaşı grill",
+  "de": "Langer Ocakbaşı-Grill"
+ },
+ "Bakır ocakbaşı tezgâhı": {
+  "en": "Copper ocakbaşı counter",
+  "de": "Kupfer-Ocakbaşı-Theke"
+ },
+ "Odun fırını ve çift ocakbaşı": {
+  "en": "Wood oven and double ocakbaşı",
+  "de": "Holzofen und doppelter Ocakbaşı"
+ },
+ "Kıyma makinesi": {
+  "en": "Mincing machine",
+  "de": "Fleischwolf"
+ },
+ "Zırh tezgâhı (el kıyması)": {
+  "en": "Zırh bench (hand-chopped mince)",
+  "de": "Zırh-Bank (handgehacktes Fleisch)"
+ },
+ "Zırh tezgâhı ve hazırlık mutfağı": {
+  "en": "Zırh bench and prep kitchen",
+  "de": "Zırh-Bank und Vorbereitungsküche"
+ },
+ "Salon": {
+  "en": "Dining room",
+  "de": "Gastraum"
+ },
+ "{0} masalık salon": {
+  "en": "Dining room with {0} tables",
+  "de": "Gastraum mit {0} Tischen"
+ },
+ "{0} masa ve yer sofrası köşesi": {
+  "en": "{0} tables and a floor-table corner",
+  "de": "{0} Tische und eine Bodentafel-Ecke"
+ },
+ "{0} masalık geniş salon": {
+  "en": "Large dining room with {0} tables",
+  "de": "Großer Gastraum mit {0} Tischen"
+ },
+ "Anadolu": {
+  "en": "Anatolian",
+  "de": "Asiatisch"
+ },
+ "Avrupa": {
+  "en": "European",
+  "de": "Europäisch"
+ },
+ "Hevesli": {
+  "en": "Eager",
+  "de": "Eifrig"
+ },
+ "Hızlı öğrenir. Deneyim kazancı +{0}": {
+  "en": "Learns fast. Experience gain +{0}",
+  "de": "Lernt schnell. Erfahrung +{0}"
+ },
+ "Herkesin ilk günü giydiği sade önlük.": {
+  "en": "The plain apron everyone wears on day one.",
+  "de": "Die schlichte Schürze für den ersten Tag."
+ },
+ "Dükkân logolu, cepli, kaliteli kumaş.": {
+  "en": "Logo apron with pockets, quality fabric.",
+  "de": "Schürze mit Logo und Taschen, hochwertiger Stoff."
+ },
+ "Çift düğmeli, nefes alan şef ceketi.": {
+  "en": "Double-breasted, breathable chef's jacket.",
+  "de": "Zweireihige, atmungsaktive Kochjacke."
+ },
+ "Çalışanın memleketine özel kıyafet. Uyumlu ürünlerde ek bahşiş.": {
+  "en": "Outfit from the worker's hometown. Extra tips on matching dishes.",
+  "de": "Kleidung aus der Heimat. Extratrinkgeld bei passenden Gerichten."
+ },
+ "Bayram": {
+  "en": "Eid",
+  "de": "Bayram"
+ },
+ "Bayramlıklarıyla aileler sokakta. Bahşişler bol, herkes güler yüzlü.": {
+  "en": "Families out in their Eid best. Generous tips, smiling faces everywhere.",
+  "de": "Familien in Festtagskleidung auf den Straßen. Großzügiges Trinkgeld, überall Lächeln."
+ },
+ "Maç akşamı": {
+  "en": "Match night",
+  "de": "Spielabend"
+ },
+ "Ellerine sağlık evladım!": {
+  "en": "Bless your hands, dear!",
+  "de": "Gesegnete Hände, mein Kind!"
+ },
+ "Tıpkı rahmetlinin yaptığı gibi.": {
+  "en": "Just like my late husband made it.",
+  "de": "Genau wie mein Seliger es gemacht hat."
+ },
+ "Torunlarımı da getireceğim.": {
+  "en": "I'll bring my grandchildren too.",
+  "de": "Ich bringe auch meine Enkel mit."
+ },
+ "Gazetemi de okurum, yemeğimi de yerim.": {
+  "en": "I read my paper and eat my meal here.",
+  "de": "Hier lese ich meine Zeitung und esse mein Essen."
+ },
+ "Bu dükkânı babanın zamanından bilirim.": {
+  "en": "I've known this shop since your father's day.",
+  "de": "Ich kenne den Laden noch aus der Zeit deines Vaters."
+ },
+ "Final haftası beni siz kurtarıyorsunuz!": {
+  "en": "You're saving me in finals week!",
+  "de": "Ihr rettet mich in der Prüfungswoche!"
+ },
+ "Doyurdun, Allah da seni doyursun.": {
+  "en": "You fed me well; may God feed you too.",
+  "de": "Du hast mich satt gemacht, Gott möge dich auch sättigen."
+ },
+ "On dakikam var, yine de buraya geldim.": {
+  "en": "I only had ten minutes, and I still came here.",
+  "de": "Ich hatte nur zehn Minuten und kam trotzdem her."
+ },
+ "Ofiste herkese anlattım.": {
+  "en": "I told the whole office.",
+  "de": "Ich habe es dem ganzen Büro erzählt."
+ },
+ "Blogumda yazacağım, söz.": {
+  "en": "I'll write about it on my blog, promise.",
+  "de": "Ich schreibe darüber in meinem Blog, versprochen."
+ },
+ "Rakamlar yalan söylemez, patron. Ama bazen insanı üzer.": {
+  "en": "Numbers don't lie, boss. But sometimes they hurt.",
+  "de": "Zahlen lügen nicht, Chef. Aber manchmal tun sie weh."
+ },
+ "Fireyi azaltırsak ay sonunda fark edersin.": {
+  "en": "Cut the waste and you'll see it at month-end.",
+  "de": "Weniger Ausschuss merkst du am Monatsende."
+ },
+ "Evladım, dürümün tuzu tam kararında. Ellerine sağlık.": {
+  "en": "My dear, the salt in your dürüm is just right. Bless your hands.",
+  "de": "Mein Kind, dein Dürüm ist genau richtig gesalzen. Gesegnete Hände."
+ },
+ "Fiyatları biraz yükseltmişsin gibi, emekliyiz biz.": {
+  "en": "Looks like you've raised prices a bit; we're pensioners, you know.",
+  "de": "Du hast die Preise wohl etwas erhöht; wir sind Rentner."
+ },
+ "Ustana iyi bak, iyi usta altın değerindedir.": {
+  "en": "Look after your master; a good master is worth gold.",
+  "de": "Pass auf deinen Meister auf, ein guter Meister ist Gold wert."
+ },
+ "En iyi parçayı sana ayırdım kardeşim.": {
+  "en": "I saved the best cut for you, brother.",
+  "de": "Das beste Stück habe ich dir aufgehoben, Bruder."
+ },
+ "Premium etle ustan şov yapar, söyleyeyim.": {
+  "en": "With premium meat your master puts on a show, I'm telling you.",
+  "de": "Mit Premiumfleisch zeigt dein Meister, was er kann."
+ },
+ "Halde fiyatlar her hafta oynuyor, ben ne yapayım.": {
+  "en": "Market prices move every week; what can I do.",
+  "de": "Die Großmarktpreise ändern sich jede Woche, was soll ich machen."
+ },
+ "Davlumbaz filtreleri haftada bir değişmeli.": {
+  "en": "Hood filters must be changed every week.",
+  "de": "Die Haubenfilter müssen wöchentlich gewechselt werden."
+ },
+ "Personelin portör muayeneleri tam mı?": {
+  "en": "Are the staff's health checks up to date?",
+  "de": "Sind die Gesundheitszeugnisse des Personals aktuell?"
+ },
+ "Abi paketler sıcak gidiyor, müşteri memnun.": {
+  "en": "Boss, deliveries arrive hot, customers are happy.",
+  "de": "Chef, die Lieferungen kommen heiß an, die Kunden sind zufrieden."
+ },
+ "Yağmurlu günler bizim bayramımız.": {
+  "en": "Rainy days are our holiday.",
+  "de": "Regentage sind unser Feiertag."
+ },
+ "Motorun lastiği eskidi, ama idare ederiz.": {
+  "en": "The scooter's tyre is worn, but we'll manage.",
+  "de": "Der Rollerreifen ist abgefahren, aber wir kommen klar."
+ },
+ "Nakit akışı her şeydir. Şube açmadan önce üç aylık kira kenarda olmalı.": {
+  "en": "Cash flow is everything. Keep three months' rent aside before opening a branch.",
+  "de": "Liquidität ist alles. Vor einer neuen Filiale drei Monatsmieten zurücklegen."
+ },
+ "Gençlere sosyal medya, ailelere tabela, işçilere el ilanı.": {
+  "en": "Social media for the young, signs for families, flyers for workers.",
+  "de": "Social Media für Junge, Schilder für Familien, Flyer für Arbeiter."
+ },
+ "Güzel giyinen usta daha çok bahşiş alır, otuz yıllık tecrübe.": {
+  "en": "A well-dressed master earns more tips: thirty years of experience talking.",
+  "de": "Ein gut gekleideter Meister bekommt mehr Trinkgeld: dreißig Jahre Erfahrung."
+ },
+ "Aynı tarzdan üç parça koyarsan dükkânın bir kimliği olur.": {
+  "en": "Three pieces in the same style give your shop an identity.",
+  "de": "Drei Teile im selben Stil geben deinem Laden Charakter."
+ },
+ "Kasiyer olmazsa ustalar hem sipariş alır hem pişirir; her şey yavaşlar.": {
+  "en": "Without a cashier, masters take orders and cook; everything slows down.",
+  "de": "Ohne Kassierer nehmen die Meister Bestellungen auf und kochen; alles wird langsamer."
+ },
+ "Her usta bir ekoldür. Uzmanlığına göre müşteri gelir.": {
+  "en": "Every master is a school of their own. Customers come for their specialty.",
+  "de": "Jeder Meister hat seine eigene Schule. Die Kunden kommen wegen seiner Spezialität."
+ },
+ "Çırağı iyi bir ustanın yanına ver, üç ayda adam olur.": {
+  "en": "Put an apprentice beside a good master and in three months they're ready.",
+  "de": "Stell einen Lehrling neben einen guten Meister, in drei Monaten ist er bereit."
+ },
+ "Bu şehirde tek bir kebap imparatorluğu olur, o da benimki.": {
+  "en": "There'll be only one kebab empire in this city, and it's mine.",
+  "de": "In dieser Stadt gibt es nur ein Kebab-Imperium, und das ist meins."
+ },
+ "Ustanı bir gün ben de isterim, haberin olsun.": {
+  "en": "I'll want your master one day, just so you know.",
+  "de": "Deinen Meister will ich eines Tages auch, nur dass du es weißt."
+ },
+ "şalvar ve kırmızı kuşak": {
+  "en": "shalwar and red sash",
+  "de": "Pluderhose und rote Schärpe"
+ },
+ "puşi ve işlemeli yelek": {
+  "en": "puşi scarf and embroidered vest",
+  "de": "Puşi-Tuch und bestickte Weste"
+ },
+ "yelek ve işlemeli takke": {
+  "en": "vest and embroidered cap",
+  "de": "Weste und bestickte Kappe"
+ },
+ "beyaz ceket ve papyon": {
+  "en": "white jacket and bow tie",
+  "de": "weiße Jacke und Fliege"
+ },
+ "koyu yelek ve kalpak": {
+  "en": "dark vest and kalpak",
+  "de": "dunkle Weste und Kalpak"
+ },
+ "yeşil keten gömlek": {
+  "en": "green linen shirt",
+  "de": "grünes Leinenhemd"
+ },
+ "kahve yelek": {
+  "en": "brown vest",
+  "de": "braune Weste"
+ },
+ "mor yazma yelek": {
+  "en": "purple printed vest",
+  "de": "lila bedruckte Weste"
+ },
+ "klasik beyaz ceket": {
+  "en": "classic white jacket",
+  "de": "klassische weiße Jacke"
+ },
+ "kayısı tonlu yelek": {
+  "en": "apricot-toned vest",
+  "de": "aprikosenfarbene Weste"
+ },
+ "Müdavim": {
+  "en": "Regular",
+  "de": "Stammgast"
+ },
+ "Tedarikçi": {
+  "en": "Supplier",
+  "de": "Lieferant"
+ },
+ "\"Lüks Kebap\" sahibi": {
+  "en": "Owner of \"Lüks Kebap\"",
+  "de": "Inhaber von „Lüks Kebap“"
+ },
+ "Reklam ajansı": {
+  "en": "Ad agency",
+  "de": "Werbeagentur"
+ },
+ "Dekoratör": {
+  "en": "Decorator",
+  "de": "Dekorateurin"
+ },
+ "Eleman bürosu": {
+  "en": "Staffing office",
+  "de": "Personalbüro"
+ },
+ "Usta pazarı": {
+  "en": "Master market",
+  "de": "Meistermarkt"
+ },
+ "ocak": {
+  "en": "grill",
+  "de": "Grill"
+ },
+ "mola": {
+  "en": "break",
+  "de": "Pause"
+ },
+ "kasa": {
+  "en": "till",
+  "de": "Kasse"
+ },
+ "servis": {
+  "en": "service",
+  "de": "Service"
+ },
+ "temizlik": {
+  "en": "cleaning",
+  "de": "Reinigung"
+ },
+ "paket": {
+  "en": "delivery",
+  "de": "Lieferung"
+ },
+ "yonetim": {
+  "en": "management",
+  "de": "Leitung"
+ },
+ "Maaşına {0} zam yap": {
+  "en": "Give a {0} raise",
+  "de": "{0} Gehaltserhöhung geben"
+ },
+ "Moral +{0} maaş +{1}": {
+  "en": "Morale +{0}, salary +{1}",
+  "de": "Laune +{0}, Gehalt +{1}"
+ },
+ "Oturup gönlünü al": {
+  "en": "Sit down and win them over",
+  "de": "Hinsetzen und überzeugen"
+ },
+ "{0} ihtimalle kalır": {
+  "en": "Stays with {0} chance",
+  "de": "Bleibt mit {0} Wahrscheinlichkeit"
+ },
+ "Gitmek isteyen gider": {
+  "en": "Whoever wants to go, goes",
+  "de": "Wer gehen will, geht"
+ },
+ "Usta ayrılır": {
+  "en": "The master leaves",
+  "de": "Der Meister geht"
+ },
+ "Denetime hemen gir": {
+  "en": "Go into the inspection now",
+  "de": "Sofort zur Kontrolle"
+ },
+ "Temizlik puanına göre sonuç": {
+  "en": "Result depends on cleanliness",
+  "de": "Ergebnis hängt von der Sauberkeit ab"
+ },
+ "Tezgâh altı ve davlumbazda eksikler bulundu. {0} idari para cezası. İtibar {1}": {
+  "en": "Shortcomings found under the counter and in the hood. {0} administrative fine. Reputation {1}",
+  "de": "Mängel unter der Theke und an der Haube. {0} Bußgeld. Ruf {1}"
+ },
+ "Yarım saat bekletip acil temizlik yap": {
+  "en": "Stall half an hour and clean urgently",
+  "de": "Eine halbe Stunde hinhalten und schnell putzen"
+ },
+ "{0} ekstra mesai": {
+  "en": "{0} overtime",
+  "de": "{0} Überstunden"
+ },
+ "Yetişmedi. Daha hafif bir ceza: {0}.": {
+  "en": "Not quite in time. A lighter fine: {0}.",
+  "de": "Nicht ganz geschafft. Ein milderes Bußgeld: {0}."
+ },
+ "Ünlü yemek yazarı geldi!": {
+  "en": "A famous food writer is here!",
+  "de": "Ein berühmter Foodkritiker ist da!"
+ },
+ "İkramımızdır deyip künefe gönder": {
+  "en": "Send künefe on the house",
+  "de": "Künefe aufs Haus schicken"
+ },
+ "{0}, itibar +{1} {2} gün gurme akını": {
+  "en": "{0}, reputation +{1}, {2} days of foodie rush",
+  "de": "{0}, Ruf +{1}, {2} Tage Feinschmecker-Ansturm"
+ },
+ "Ertesi gün köşe yazısı çıktı: \"Şehrin en dürüst lezzeti.\" Gurmeler yolda.": {
+  "en": "The next day's column read: \"The city's most honest flavour.\" Foodies are on their way.",
+  "de": "Am nächsten Tag stand in der Kolumne: „Der ehrlichste Geschmack der Stadt.“ Die Feinschmecker sind unterwegs."
+ },
+ "Normal davran": {
+  "en": "Act normal",
+  "de": "Normal verhalten"
+ },
+ "İtibar +{0}": {
+  "en": "Reputation +{0}",
+  "de": "Ruf +{0}"
+ },
+ "Yazı kısa ama olumlu çıktı.": {
+  "en": "The piece was short but positive.",
+  "de": "Der Artikel war kurz, aber positiv."
+ },
+ "Bahşiş kavanozu kayboldu": {
+  "en": "The tip jar is missing",
+  "de": "Das Trinkgeldglas ist verschwunden"
+ },
+ "Kasadan herkese öde": {
+  "en": "Pay everyone from the till",
+  "de": "Allen aus der Kasse zahlen"
+ },
+ "{0}, moral +{1}": {
+  "en": "{0}, morale +{1}",
+  "de": "{0}, Laune +{1}"
+ },
+ "\"Patron bizi yarı yolda bırakmadı.\" Ekip rahatladı.": {
+  "en": "\"The boss didn't let us down.\" The crew relaxed.",
+  "de": "„Der Chef hat uns nicht im Stich gelassen.“ Das Team ist erleichtert."
+ },
+ "Soruşturma başlat": {
+  "en": "Start an investigation",
+  "de": "Untersuchung einleiten"
+ },
+ "Moral {0} kavanoz belki bulunur": {
+  "en": "Morale {0}, the jar might turn up",
+  "de": "Laune {0}, vielleicht taucht das Glas auf"
+ },
+ "Kavanoz depoda, un çuvallarının arkasında bulundu. Komi yanlışlıkla kaldırmış.": {
+  "en": "The jar was found in the storeroom behind the flour sacks. The runner had put it away by mistake.",
+  "de": "Das Glas stand im Lager hinter den Mehlsäcken. Der Läufer hatte es versehentlich weggeräumt."
+ },
+ "Boş ver": {
+  "en": "Let it go",
+  "de": "Lass es gut sein"
+ },
+ "Ekip sessizce işine döndü ama kırgınlar.": {
+  "en": "The crew quietly went back to work, but they're hurt.",
+  "de": "Das Team arbeitet still weiter, ist aber gekränkt."
+ },
+ "{0} zam yap": {
+  "en": "Give a {0} raise",
+  "de": "{0} Gehaltserhöhung geben"
+ },
+ "Moral +{0}": {
+  "en": "Morale +{0}",
+  "de": "Laune +{0}"
+ },
+ "Şimdilik olmaz": {
+  "en": "Not right now",
+  "de": "Im Moment nicht"
+ },
+ "\"Kusura bakma kardeşim, halde fiyatlar uçtu. Bu hafta et kalemlerine {0} zam yapmak zorundayım.\"": {
+  "en": "\"Sorry, brother, market prices have shot up. This week I have to raise meat prices by {0}.\"",
+  "de": "„Tut mir leid, Bruder, die Großmarktpreise sind explodiert. Diese Woche muss ich das Fleisch um {0} teurer machen.“"
+ },
+ "Pazarlık et": {
+  "en": "Haggle",
+  "de": "Verhandeln"
+ },
+ "{0} ihtimalle {1}'e iner": {
+  "en": "{0} chance it drops to {1}",
+  "de": "{0} Wahrscheinlichkeit, dass es auf {1} sinkt"
+ },
+ "\"Senin hatırın için {0} olsun.\" Rıza sözünün eri.": {
+  "en": "\"For your sake, make it {0}.\" Rıza keeps his word.",
+  "de": "„Dir zuliebe {0}.“ Rıza hält Wort."
+ },
+ "Kabul et": {
+  "en": "Accept",
+  "de": "Annehmen"
+ },
+ "{0} gün malzeme +{1} ilişki iyi": {
+  "en": "{0} days supplies +{1}, good relations",
+  "de": "{0} Tage Waren +{1}, gute Beziehung"
+ },
+ "Rıza memnun. \"Senin için en iyi parçaları ayıracağım.\" Zam {0}'de kaldı.": {
+  "en": "Rıza is pleased. \"I'll keep the best cuts for you.\" The rise stayed at {0}.",
+  "de": "Rıza ist zufrieden. „Die besten Stücke halte ich für dich zurück.“ Die Erhöhung blieb bei {0}."
+ },
+ "Sosyal medya fenomeni geldi": {
+  "en": "A social media influencer is here",
+  "de": "Ein Social-Media-Star ist da"
+ },
+ "Yüz binlerce takipçisi olan bir fenomen telefonunu tezgâha doğrulttu: \"Bugün bu dükkânı deniyoruz!\"": {
+  "en": "An influencer with hundreds of thousands of followers pointed their phone at the counter: \"Today we're trying this shop!\"",
+  "de": "Eine Influencerin mit Hunderttausenden Followern richtet das Handy auf die Theke: „Heute testen wir diesen Laden!“"
+ },
+ "Ustayı kameraya çıkar": {
+  "en": "Put the master on camera",
+  "de": "Den Meister vor die Kamera holen"
+ },
+ "Kalite iyiyse {0} gün +{1} müşteri": {
+  "en": "If quality is good, {0} days +{1} customers",
+  "de": "Bei guter Qualität {0} Tage +{1} Kunden"
+ },
+ "Video bir gecede milyon izlendi. Kuyruk sokağın köşesine kadar uzayacak.": {
+  "en": "The video hit a million views overnight. The queue will reach the corner of the street.",
+  "de": "Das Video hatte über Nacht eine Million Aufrufe. Die Schlange wird bis zur Straßenecke reichen."
+ },
+ "Kibarca reddet": {
+  "en": "Politely decline",
+  "de": "Höflich ablehnen"
+ },
+ "Bir şey olmaz": {
+  "en": "Nothing happens",
+  "de": "Nichts passiert"
+ },
+ "Fenomen omuz silkip başka dükkâna gitti.": {
+  "en": "The influencer shrugged and went to another shop.",
+  "de": "Die Influencerin zuckte mit den Schultern und ging zum nächsten Laden."
+ },
+ "Yarın derbi var!": {
+  "en": "Derby tomorrow!",
+  "de": "Morgen ist Derby!"
+ },
+ "Stoku ikiye katla": {
+  "en": "Double the stock",
+  "de": "Bestand verdoppeln"
+ },
+ "Gece müşterisi +{0} {1} gün": {
+  "en": "Night customers +{0}, {1} day",
+  "de": "Nachtschwärmer +{0}, {1} Tag"
+ },
+ "Depo tıklım tıklım. Haydi bakalım!": {
+  "en": "The store is packed. Let's go!",
+  "de": "Das Lager ist rappelvoll. Los geht's!"
+ },
+ "Normal hazırlan": {
+  "en": "Prepare as usual",
+  "de": "Normal vorbereiten"
+ },
+ "Gece müşterisi +{0} ama stok normal": {
+  "en": "Night customers +{0} but normal stock",
+  "de": "Nachtschwärmer +{0}, aber normaler Bestand"
+ },
+ "Bakalım stok yetecek mi...": {
+  "en": "Let's see if the stock holds...",
+  "de": "Mal sehen, ob der Bestand reicht..."
+ },
+ "Düğün siparişi": {
+  "en": "Wedding order",
+  "de": "Hochzeitsbestellung"
+ },
+ "Mahalleden bir aile kızlarının kına gecesi için {0} porsiyon kebap istiyor. Teklif: {1}. Ekip gece yarısına kadar çalışmak zorunda kalacak.": {
+  "en": "A local family wants {0} portions of kebab for their daughter's henna night. Offer: {1}. The crew will have to work until midnight.",
+  "de": "Eine Familie aus dem Viertel möchte {0} Portionen Kebab für den Henna-Abend ihrer Tochter. Angebot: {1}. Das Team muss bis Mitternacht arbeiten."
+ },
+ "Büyük ciro, moral {0} itibar +{1}": {
+  "en": "Big revenue, morale {0}, reputation +{1}",
+  "de": "Großer Umsatz, Laune {0}, Ruf +{1}"
+ },
+ "Kömür krizi": {
+  "en": "Charcoal crisis",
+  "de": "Kohlekrise"
+ },
+ "Toptancıda mangal kömürü kalmadı. Elde kalanların fiyatı iki katına çıktı.": {
+  "en": "The wholesaler is out of charcoal. What's left costs double.",
+  "de": "Der Großhändler hat keine Grillkohle mehr. Der Rest kostet das Doppelte."
+ },
+ "Pahalı da olsa kömür al": {
+  "en": "Buy charcoal, even if it's expensive",
+  "de": "Kohle kaufen, auch wenn es teuer ist"
+ },
+ "{0} gün kömür ×{1}": {
+  "en": "{0} days charcoal ×{1}",
+  "de": "{0} Tage Kohle ×{1}"
+ },
+ "Közün tadından taviz yok.": {
+  "en": "No compromise on the taste of the coals.",
+  "de": "Beim Geschmack der Glut gibt es keine Kompromisse."
+ },
+ "Bir haftalığına gaza geç": {
+  "en": "Switch to gas for a week",
+  "de": "Eine Woche auf Gas umstellen"
+ },
+ "{0} gün müşteri memnuniyeti düşer": {
+  "en": "Customer satisfaction drops for {0} days",
+  "de": "Kundenzufriedenheit sinkt {0} Tage lang"
+ },
+ "Müdavimler farkı hemen anladı: \"Usta, bunda köz tadı yok.\"": {
+  "en": "The regulars noticed at once: \"Master, this has no taste of the coals.\"",
+  "de": "Die Stammgäste merkten es sofort: „Meister, das schmeckt nicht nach Glut.“"
+ },
+ "İftar sofrası": {
+  "en": "Iftar table",
+  "de": "Iftar-Tafel"
+ },
+ "{0} porsiyon gönder": {
+  "en": "Send {0} portions",
+  "de": "{0} Portionen schicken"
+ },
+ "{0}, itibar +{1} moral +{2}": {
+  "en": "{0}, reputation +{1}, morale +{2}",
+  "de": "{0}, Ruf +{1}, Laune +{2}"
+ },
+ "Bu sefer olmaz": {
+  "en": "Not this time",
+  "de": "Diesmal nicht"
+ },
+ "Üniversitenin öğrenci kulübü bir anlaşma öneriyor: öğrenci kartına {0} indirim, karşılığında kampüs panolarında reklam.": {
+  "en": "The university's student club proposes a deal: {0} off for student cards, in return for ads on campus boards.",
+  "de": "Der Studentenclub der Uni schlägt einen Deal vor: {0} Rabatt auf den Studentenausweis, dafür Werbung an den Campus-Tafeln."
+ },
+ "Anlaşmayı imzala": {
+  "en": "Sign the deal",
+  "de": "Vertrag unterschreiben"
+ },
+ "{0} gün öğrenci +{1} fiyat algısı iyileşir": {
+  "en": "{0} days students +{1}, price perception improves",
+  "de": "{0} Tage Studierende +{1}, besseres Preisimage"
+ },
+ "Kampüs panolarında logon parlıyor.": {
+  "en": "Your logo shines on the campus boards.",
+  "de": "Dein Logo leuchtet an den Campus-Tafeln."
+ },
+ "Teşekkürler, gerek yok": {
+  "en": "Thanks, no need",
+  "de": "Danke, nicht nötig"
+ },
+ "Kulüp başkanı kartını bırakıp gitti.": {
+  "en": "The club president left a card and went.",
+  "de": "Der Clubvorsitzende ließ eine Karte da und ging."
+ },
+ "\"Lüks Kebap\" semtine geliyor": {
+  "en": "\"Lüks Kebap\" is coming to your district",
+  "de": "„Lüks Kebap“ kommt in dein Viertel"
+ },
+ "Reklama yüklen": {
+  "en": "Push the advertising",
+  "de": "Mit Werbung kontern"
+ },
+ "{0}, {1} gün müşteri +{2}": {
+  "en": "{0}, {1} days customers +{2}",
+  "de": "{0}, {1} Tage Kunden +{2}"
+ },
+ "Mahalleyi el ilanıyla donattık. \"Asıl lezzet burada!\"": {
+  "en": "We covered the neighbourhood in flyers. \"The real flavour is here!\"",
+  "de": "Wir haben das Viertel mit Flyern gepflastert. „Der echte Geschmack ist hier!“"
+ },
+ "Kalitemize güveniyoruz": {
+  "en": "We trust our quality",
+  "de": "Wir vertrauen auf unsere Qualität"
+ },
+ "Rakip semtte, müşteri biraz azalır": {
+  "en": "Rival in the district, slightly fewer customers",
+  "de": "Konkurrenz im Viertel, etwas weniger Kunden"
+ },
+ "Müdavimler sözünü verdi: \"Biz seni bırakmayız.\"": {
+  "en": "The regulars promised: \"We won't leave you.\"",
+  "de": "Die Stammgäste versprachen: „Wir lassen dich nicht im Stich.“"
+ },
+ "Örn. Köz Ocakbaşı": {
+  "en": "E.g. Köz Ocakbaşı",
+  "de": "Z. B. Köz Ocakbaşı"
+ },
+ "Usta yalnızca pişirir; uzman olduğu ürünü seven müşteriyi dükkâna çeker. Yanına bir çırak, bir kasiyer ve bir garson veriliyor.": {
+  "en": "The master only cooks; customers who love their specialty follow them. You also get an apprentice, a cashier and a waiter.",
+  "de": "Der Meister kocht nur; Kunden, die seine Spezialität lieben, folgen ihm. Dazu bekommst du einen Lehrling, einen Kassierer und einen Kellner."
+ },
+ "Köz Ocakbaşı için tedarik": {
+  "en": "Supplies for Köz Ocakbaşı",
+  "de": "Einkauf für Köz Ocakbaşı"
+ },
+ "Garson": {
+  "en": "Waiter",
+  "de": "Kellner"
+ },
+ "Köz Ocakbaşı · moral {0}": {
+  "en": "Köz Ocakbaşı · morale {0}",
+  "de": "Köz Ocakbaşı · Laune {0}"
+ },
+ "Kebap ustası · Köz Ocakbaşı · Memleket: Gaziantep (yelek ve işlemeli takke)": {
+  "en": "Kebab master · Köz Ocakbaşı · Hometown: Gaziantep (vest and embroidered cap)",
+  "de": "Kebabmeister · Köz Ocakbaşı · Heimat: Gaziantep (Weste und bestickte Kappe)"
+ },
+ "Çırak · Köz Ocakbaşı · Memleket: Hatay (yeşil keten gömlek)": {
+  "en": "Apprentice · Köz Ocakbaşı · Hometown: Hatay (green linen shirt)",
+  "de": "Lehrling · Köz Ocakbaşı · Heimat: Hatay (grünes Leinenhemd)"
+ },
+ "Kasiyer · Köz Ocakbaşı · Memleket: Hatay (yeşil keten gömlek)": {
+  "en": "Cashier · Köz Ocakbaşı · Hometown: Hatay (green linen shirt)",
+  "de": "Kassierer · Köz Ocakbaşı · Heimat: Hatay (grünes Leinenhemd)"
+ },
+ "Garson · Köz Ocakbaşı · Memleket: Hatay (yeşil keten gömlek)": {
+  "en": "Waiter · Köz Ocakbaşı · Hometown: Hatay (green linen shirt)",
+  "de": "Kellner · Köz Ocakbaşı · Heimat: Hatay (grünes Leinenhemd)"
+ },
+ "Hız ×{0} kalite +{1}": {
+  "en": "Speed ×{0}, quality +{1}",
+  "de": "Tempo ×{0}, Qualität +{1}"
+ },
+ "Çiftlikte dana, kuzu yetiştirirsin. Olgunlaşan hayvanlar kesimhaneye gider, et her sabah şubelere sevk edilir. Kendi etimizle pişen tabaklarda kalite artar, et maliyeti düşer.": {
+  "en": "Raise cattle and lambs on the farm. Mature animals go to the slaughterhouse and meat ships to the branches every morning. Dishes cooked with our own meat taste better and meat costs drop.",
+  "de": "Auf dem Hof ziehst du Rinder und Lämmer auf. Ausgewachsene Tiere gehen zum Schlachthof, das Fleisch geht jeden Morgen an die Filialen. Mit eigenem Fleisch steigt die Qualität und die Fleischkosten sinken."
+ },
+ "Kebap ustası ·": {
+  "en": "Kebab master ·",
+  "de": "Kebabmeister ·"
+ },
+ "Garson ·": {
+  "en": "Waiter ·",
+  "de": "Kellner ·"
+ },
+ "Harika!": {
+  "en": "Great!",
+  "de": "Großartig!"
+ },
+ "Kebap ustası · {0} iş": {
+  "en": "Kebab master · {0} jobs",
+  "de": "Kebabmeister · {0} Aufträge"
+ },
+ "Garson · {0} iş": {
+  "en": "Waiter · {0} jobs",
+  "de": "Kellner · {0} Aufträge"
+ },
+ "Depoda kuzu şişlik": {
+  "en": "Lamb for shish in stock",
+  "de": "Lamm für Spieße auf Lager"
+ },
+ "Depoda zırh kıyması": {
+  "en": "Hand-chopped mince in stock",
+  "de": "Handgehacktes auf Lager"
+ },
+ "Depoda kuzu ciğeri": {
+  "en": "Lamb liver in stock",
+  "de": "Lammleber auf Lager"
+ },
+ "− Reklam": {
+  "en": "− Advertising",
+  "de": "− Werbung"
+ },
+ "− Diğer giderler / gelirler": {
+  "en": "− Other costs / income",
+  "de": "− Sonstige Kosten / Erträge"
+ },
+ "Öğleden sonra": {
+  "en": "Afternoon",
+  "de": "Nachmittag"
+ },
+ "Sipariş alıyor": {
+  "en": "Taking orders",
+  "de": "Nimmt Bestellungen auf"
+ },
+ "Müdür Pınar yoğunluğa göre görev ve mola düzenler.": {
+  "en": "Manager Pınar assigns jobs and breaks by workload.",
+  "de": "Filialleiterin Pınar verteilt Aufgaben und Pausen nach Auslastung."
+ },
+ "\"Elimden gelen bu kadar.\" Zam {0} kaldı.": {
+  "en": "\"That's all I can do.\" The rise stayed at {0}.",
+  "de": "„Mehr geht nicht.“ Die Erhöhung blieb bei {0}."
+ },
+ "Kına gecesi efsane oldu. Net kazanç {0}. Ekip yorgun ama gururlu.": {
+  "en": "The henna night was legendary. Net profit {0}. The crew is tired but proud.",
+  "de": "Der Henna-Abend war legendär. Nettogewinn {0}. Das Team ist müde, aber stolz."
+ },
+ "{0}.": {
+  "en": "{0}.",
+  "de": "{0}."
+ },
+ "Hava güneşliydi.": {
+  "en": "It was sunny.",
+  "de": "Es war sonnig."
+ },
+ "Sabah çiseledi, öğlene doğru açtı.": {
+  "en": "It drizzled in the morning and cleared up by noon.",
+  "de": "Morgens nieselte es, gegen Mittag klarte es auf."
+ },
+ "Lodos vardı, martılar alçaktan uçuyordu.": {
+  "en": "The south wind blew and the gulls flew low.",
+  "de": "Der Lodos wehte, die Möwen flogen tief."
+ },
+ "Serin ama berrak bir gündü.": {
+  "en": "A cool but clear day.",
+  "de": "Ein kühler, aber klarer Tag."
+ },
+ "Boğazdan ılık bir rüzgâr esiyordu.": {
+  "en": "A warm breeze blew in from the Bosphorus.",
+  "de": "Vom Bosporus wehte ein lauer Wind."
+ },
+ "Gökyüzü kurşuni, sokak ıslaktı.": {
+  "en": "The sky was leaden, the street wet.",
+  "de": "Der Himmel war bleigrau, die Straße nass."
+ },
+ "Ramazan Bayramı, {0}.": {
+  "en": "Eid al-Fitr, {0}.",
+  "de": "Zuckerfest, {0}."
+ },
+ "Kurban Bayramı, {0}.": {
+  "en": "Eid al-Adha, {0}.",
+  "de": "Opferfest, {0}."
+ },
+ "Sokaklar bayramlıklarla doluydu.": {
+  "en": "The streets were full of people in their holiday best.",
+  "de": "Die Straßen waren voller Menschen in Festtagskleidung."
+ },
+ "{0} sabah erkenden gelip ocağı yaktı, ilk yaprağı ustalıkla kesti.": {
+  "en": "{0} came in early, lit the grill and expertly carved the first slice.",
+  "de": "{0} kam früh, zündete den Grill an und schnitt meisterhaft die erste Scheibe."
+ },
+ "{0} döneri şişe dizerken radyoda eski bir şarkı çalıyordu.": {
+  "en": "An old song played on the radio as {0} stacked the döner on the skewer.",
+  "de": "Im Radio lief ein altes Lied, während {0} den Döner auf den Spieß schichtete."
+ },
+ "{0} bıçağı bileyleyip \"Haydi bismillah\" dedi.": {
+  "en": "{0} sharpened the knife and said, \"Here we go, in God's name.\"",
+  "de": "{0} schärfte das Messer und sagte: „Auf geht's, in Gottes Namen.“"
+ },
+ "{0} kömürü erkenden tutuşturdu, köz kıvamını bekledi.": {
+  "en": "{0} lit the charcoal early and waited for the embers to be just right.",
+  "de": "{0} zündete früh die Kohle an und wartete auf die perfekte Glut."
+ },
+ "{0} zırhla kıymayı çekerken dükkâna mis gibi kokular yayıldı.": {
+  "en": "As {0} chopped the mince by hand, wonderful smells filled the shop.",
+  "de": "Während {0} das Fleisch von Hand hackte, zogen herrliche Düfte durch den Laden."
+ },
+ "{0} şişleri sıraya dizip \"Bugün işimiz rast gitsin\" dedi.": {
+  "en": "{0} lined up the skewers and said, \"May today go well.\"",
+  "de": "{0} reihte die Spieße auf und sagte: „Möge heute alles gut laufen.“"
+ },
+ "En yoğun saat {0}:{1} civarıydı; öğrenciler akın etti.": {
+  "en": "The busiest hour was around {0}:{1}; students poured in.",
+  "de": "Die vollste Stunde war gegen {0}:{1}; Studierende strömten herein."
+ },
+ "En yoğun saat {0}:{1} civarıydı; plaza çalışanları öğle arasında kapıyı aşındırdı.": {
+  "en": "The busiest hour was around {0}:{1}; office workers wore out the door at lunch.",
+  "de": "Die vollste Stunde war gegen {0}:{1}; Büroleute rannten mittags die Tür ein."
+ },
+ "En yoğun saat {0}:{1} civarıydı; aileler masaları doldurdu.": {
+  "en": "The busiest hour was around {0}:{1}; families filled the tables.",
+  "de": "Die vollste Stunde war gegen {0}:{1}; Familien füllten die Tische."
+ },
+ "En yoğun saat {0}:{1} civarıydı; gurmeler tabakları fotoğrafladı.": {
+  "en": "The busiest hour was around {0}:{1}; foodies photographed their plates.",
+  "de": "Die vollste Stunde war gegen {0}:{1}; Feinschmecker fotografierten ihre Teller."
+ },
+ "En yoğun saat {0}:{1} civarıydı; turistler haritalarıyla kapıda belirdi.": {
+  "en": "The busiest hour was around {0}:{1}; tourists showed up with their maps.",
+  "de": "Die vollste Stunde war gegen {0}:{1}; Touristen standen mit Stadtplänen vor der Tür."
+ },
+ "En yoğun saat {0}:{1} civarıydı; inşaat ekibi kalabalık geldi.": {
+  "en": "The busiest hour was around {0}:{1}; the construction crew came in force.",
+  "de": "Die vollste Stunde war gegen {0}:{1}; der Bautrupp kam in voller Stärke."
+ },
+ "En yoğun saat {0}:{1} civarıydı; gece çıkışı kalabalığı dükkânı doldurdu.": {
+  "en": "The busiest hour was around {0}:{1}; the late-night crowd packed the shop.",
+  "de": "Die vollste Stunde war gegen {0}:{1}; die Nachtschwärmer füllten den Laden."
+ },
+ "Kapıdan neredeyse kimse girmedi.": {
+  "en": "Hardly anyone came through the door.",
+  "de": "Kaum jemand kam zur Tür herein."
+ },
+ "Sessizlik insanın içine işliyordu.": {
+  "en": "The silence got under your skin.",
+  "de": "Die Stille ging einem unter die Haut."
+ },
+ "{0} {1}:{2}'da bitti.": {
+  "en": "We ran out of {0} at {1}:{2}.",
+  "de": "{0} war um {1}:{2} aus."
+ },
+ "{0} {1}:{2}'da bitti, ardından {3} da tükendi.": {
+  "en": "We ran out of {0} at {1}:{2}, then {3} was gone too.",
+  "de": "{0} war um {1}:{2} aus, danach auch {3}."
+ },
+ "Yarın stoğu artırmak lazım.": {
+  "en": "Need more stock tomorrow.",
+  "de": "Morgen brauchen wir mehr Vorrat."
+ },
+ "Günün yıldızı {0} oldu: {1} porsiyon.": {
+  "en": "Star of the day: {0}, {1} portions.",
+  "de": "Star des Tages: {0}, {1} Portionen."
+ },
+ "\"Ellerine sağlık usta!\" sesi gün boyu {0} kez yankılandı.": {
+  "en": "\"Bless your hands, master!\" rang out {0} times today.",
+  "de": "„Gesegnete Hände, Meister!“ hallte heute {0}-mal durch den Laden."
+ },
+ "En cömert bahşişi bir öğrenci müşteri bıraktı: {0}.": {
+  "en": "The most generous tip came from a student: {0}.",
+  "de": "Das großzügigste Trinkgeld gab ein Student: {0}."
+ },
+ "En cömert bahşişi bir beyaz yaka müşteri bıraktı: {0}.": {
+  "en": "The most generous tip came from an office worker: {0}.",
+  "de": "Das großzügigste Trinkgeld gab ein Büroangestellter: {0}."
+ },
+ "En cömert bahşişi bir aile müşteri bıraktı: {0}.": {
+  "en": "The most generous tip came from a family: {0}.",
+  "de": "Das großzügigste Trinkgeld gab eine Familie: {0}."
+ },
+ "En cömert bahşişi bir gurme müşteri bıraktı: {0}.": {
+  "en": "The most generous tip came from a foodie: {0}.",
+  "de": "Das großzügigste Trinkgeld gab ein Feinschmecker: {0}."
+ },
+ "En cömert bahşişi bir turist müşteri bıraktı: {0}.": {
+  "en": "The most generous tip came from a tourist: {0}.",
+  "de": "Das großzügigste Trinkgeld gab ein Tourist: {0}."
+ },
+ "En cömert bahşişi bir inşaat ekibi müşteri bıraktı: {0}.": {
+  "en": "The most generous tip came from the construction crew: {0}.",
+  "de": "Das großzügigste Trinkgeld gab der Bautrupp: {0}."
+ },
+ "En cömert bahşişi bir gece çıkışı müşteri bıraktı: {0}.": {
+  "en": "The most generous tip came from a night owl: {0}.",
+  "de": "Das großzügigste Trinkgeld gab ein Nachtschwärmer: {0}."
+ },
+ "{0} müşteri beklemekten sıkılıp gitti; kapıdan çıkarken söylendiklerini duydum.": {
+  "en": "{0} customers got tired of waiting and left; I heard them grumbling at the door.",
+  "de": "{0} Gäste hatten genug vom Warten und gingen; ich hörte sie an der Tür schimpfen."
+ },
+ "{0} kişi menüye bakıp \"Bu ne fiyat!\" diyerek döndü.": {
+  "en": "{0} people looked at the menu, said \"What a price!\" and turned away.",
+  "de": "{0} Leute sahen auf die Karte, sagten „Was für Preise!“ und gingen."
+ },
+ "Bugün {0} siparişi tezgâha geçip kendi ellerimle hazırladım.": {
+  "en": "Today I stepped behind the counter and made {0} orders with my own hands.",
+  "de": "Heute stand ich selbst hinter der Theke und machte {0} Bestellungen mit eigenen Händen."
+ },
+ "Bir gurme çıkarken defterine bir şeyler not etti, gülümsüyordu.": {
+  "en": "A foodie jotted something in a notebook on the way out, smiling.",
+  "de": "Ein Feinschmecker notierte sich beim Hinausgehen etwas und lächelte."
+ },
+ "{0} {1} yapımında ustalaştı (★{2}).": {
+  "en": "{0} has mastered {1} (★{2}).",
+  "de": "{0} beherrscht jetzt {1} (★{2})."
+ },
+ "{0} {1} yapımında ustalaştı (★{2}); {3}'nın emeği büyük.": {
+  "en": "{0} has mastered {1} (★{2}); {3} deserves much of the credit.",
+  "de": "{0} beherrscht jetzt {1} (★{2}); {3} hat großen Anteil daran."
+ },
+ "Akşam {0} önlüğünü çıkarıp \"Ben bu işi bırakıyorum\" dedi.": {
+  "en": "In the evening {0} took off the apron and said, \"I quit.\"",
+  "de": "Am Abend zog {0} die Schürze aus und sagte: „Ich höre auf.“"
+ },
+ "Moral meselesini hafife almamalıydım.": {
+  "en": "I shouldn't have taken morale lightly.",
+  "de": "Die Laune des Teams hätte ich nicht unterschätzen dürfen."
+ },
+ "Kepenk inerken içim rahattı; mahalle memnun.": {
+  "en": "As the shutter came down I felt at ease; the neighbourhood is happy.",
+  "de": "Als der Rollladen herunterging, war ich zufrieden; das Viertel ist glücklich."
+ },
+ "Fena bir gün değildi, ama daha iyisini yapabiliriz.": {
+  "en": "Not a bad day, but we can do better.",
+  "de": "Kein schlechter Tag, aber wir können es besser."
+ },
+ "Kepenk indirirken kafamda yarın neyi düzelteceğimin listesi vardı.": {
+  "en": "Pulling the shutter down, I was already listing what to fix tomorrow.",
+  "de": "Beim Herunterlassen des Rollladens hatte ich schon eine Liste für morgen im Kopf."
+ },
+ "Yarın her şey farklı olacak.": {
+  "en": "Tomorrow everything will be different.",
+  "de": "Morgen wird alles anders."
+ },
+ "Babamın {0}'deki küçük dükkânının anahtarını avucumda sıktım. Paslı kepengi kaldırdığımda içeri sabah güneşi doldu. {1} önlüğünü bağlarken gülümsedi: \"Baban bu ocağın başında otuz yıl ekmek çıkardı. Biz de çıkaracağız.\" Kasada {2} var. Önce bir menü, sonra bir mahalle, sonra bütün şehir.": {
+  "en": "I squeezed the key to my father's little shop in {0}. When I lifted the rusty shutter, morning sun poured in. {1} smiled while tying the apron: \"Your father made a living at this grill for thirty years. So will we.\" There is {2} in the till. First a menu, then a neighbourhood, then the whole city.",
+  "de": "Ich hielt den Schlüssel zum kleinen Laden meines Vaters in {0} fest. Als ich den rostigen Rollladen hochzog, flutete Morgensonne herein. {1} band lächelnd die Schürze: „Dein Vater hat an diesem Grill dreißig Jahre sein Brot verdient. Das tun wir auch.“ In der Kasse liegen {2}. Erst eine Speisekarte, dann ein Viertel, dann die ganze Stadt."
+ },
+ "{0} için tedarik": {
+  "en": "Supplies for {0}",
+  "de": "Einkauf für {0}"
+ },
+ "{0} · moral {1}": {
+  "en": "{0} · morale {1}",
+  "de": "{0} · Laune {1}"
+ },
+ "Döner ustası · {0} · Memleket: {1} ({2})": {
+  "en": "Döner master · {0} · Hometown: {1} ({2})",
+  "de": "Dönermeister · {0} · Heimat: {1} ({2})"
+ },
+ "Kebap ustası · {0} · Memleket: {1} ({2})": {
+  "en": "Kebab master · {0} · Hometown: {1} ({2})",
+  "de": "Kebabmeister · {0} · Heimat: {1} ({2})"
+ },
+ "Çırak · {0} · Memleket: {1} ({2})": {
+  "en": "Apprentice · {0} · Hometown: {1} ({2})",
+  "de": "Lehrling · {0} · Heimat: {1} ({2})"
+ },
+ "Kasiyer · {0} · Memleket: {1} ({2})": {
+  "en": "Cashier · {0} · Hometown: {1} ({2})",
+  "de": "Kassierer · {0} · Heimat: {1} ({2})"
+ },
+ "Komi · {0} · Memleket: {1} ({2})": {
+  "en": "Runner · {0} · Hometown: {1} ({2})",
+  "de": "Läufer · {0} · Heimat: {1} ({2})"
+ },
+ "Garson · {0} · Memleket: {1} ({2})": {
+  "en": "Waiter · {0} · Hometown: {1} ({2})",
+  "de": "Kellner · {0} · Heimat: {1} ({2})"
+ },
+ "Şube müdürü · {0} · Memleket: {1} ({2})": {
+  "en": "Branch manager · {0} · Hometown: {1} ({2})",
+  "de": "Filialleiter · {0} · Heimat: {1} ({2})"
+ },
+ "Temizlik görevlisi · {0} · Memleket: {1} ({2})": {
+  "en": "Cleaner · {0} · Hometown: {1} ({2})",
+  "de": "Reinigungskraft · {0} · Heimat: {1} ({2})"
+ },
+ "Kurye · {0} · Memleket: {1} ({2})": {
+  "en": "Courier · {0} · Hometown: {1} ({2})",
+  "de": "Kurier · {0} · Heimat: {1} ({2})"
+ },
+ "Eski {0} ve ustaların siyah beyaz kareleri.": {
+  "en": "Black-and-white shots of old {0} and its masters.",
+  "de": "Schwarzweißbilder des alten {0} und seiner Meister."
+ },
+ "{0} görevi": {
+  "en": "{0}'s job",
+  "de": "Aufgabe: {0}"
+ },
+ "Közlenmiş biber": {
+  "en": "Roasted peppers",
+  "de": "Geröstete Paprika"
+ },
+ "Soğan": {
+  "en": "Onion",
+  "de": "Zwiebel"
+ },
+ "Domates": {
+  "en": "Tomato",
+  "de": "Tomate"
+ },
+ "Fırına ver": {
+  "en": "Into the oven",
+  "de": "In den Ofen"
+ },
+ "Kızgın tereyağı": {
+  "en": "Sizzling butter",
+  "de": "Brutzelnde Butter"
+ },
+ "Pide": {
+  "en": "Pide",
+  "de": "Pide"
+ },
+ "Salata": {
+  "en": "Salad",
+  "de": "Salat"
+ },
+ "Domates sosu": {
+  "en": "Tomato sauce",
+  "de": "Tomatensoße"
+ },
+ "Yemek gelmedi!": {
+  "en": "The food never came!",
+  "de": "Das Essen kam nie!"
+ },
+ "Müdavimi memnun et, sadakati artsın": {
+  "en": "Keep the regular happy to win their loyalty",
+  "de": "Mach den Stammgast glücklich, dann bleibt er treu"
+ },
+ "Müdür {0} yoğunluğa göre görev ve mola düzenler.": {
+  "en": "Manager {0} assigns jobs and breaks by workload.",
+  "de": "Filialleitung {0} verteilt Aufgaben und Pausen nach Auslastung."
+ },
+ "Kavanoz bulunamadı. Ortam gergin.": {
+  "en": "The jar was never found. The mood is tense.",
+  "de": "Das Glas blieb verschwunden. Die Stimmung ist angespannt."
+ },
+ "Şimdi": {
+  "en": "Now",
+  "de": "Jetzt"
+ },
+ "Bir daha gelmem": {
+  "en": "I'm never coming back",
+  "de": "Ich komme nie wieder"
+ },
+ "{0} bir tepsi yaktı": {
+  "en": "{0} burned a tray",
+  "de": "{0} hat ein Blech verbrannt"
+ },
+ "{0} dalgınlıkla bir şiş dolusu kebabı yaktı. Mutfak duman içinde, herkes sana bakıyor.": {
+  "en": "{0} absent-mindedly burned a whole skewer of kebab. The kitchen is full of smoke and everyone is looking at you.",
+  "de": "{0} hat geistesabwesend einen ganzen Spieß Kebab verbrannt. Die Küche ist voller Rauch, alle schauen dich an."
+ },
+ "Ustanın yanına ver, öğret": {
+  "en": "Put them with a master to learn",
+  "de": "Einem Meister zur Seite stellen"
+ },
+ "En iyi usta mentor olur, moral +{0}": {
+  "en": "The best master mentors them, morale +{0}",
+  "de": "Der beste Meister wird Mentor, Laune +{0}"
+ },
+ "Ortada öğretecek usta yok. Bir usta işe al.": {
+  "en": "There's no master to teach. Hire one.",
+  "de": "Es gibt keinen Meister zum Anlernen. Stell einen ein."
+ },
+ "Sert uyar": {
+  "en": "Give a stern warning",
+  "de": "Streng ermahnen"
+ },
+ "Moral {0} hata payı düşer": {
+  "en": "Morale {0}, fewer mistakes",
+  "de": "Laune {0}, weniger Fehler"
+ },
+ "{0} kızardı, bir daha olmayacağına söz verdi.": {
+  "en": "{0} blushed and promised it wouldn't happen again.",
+  "de": "{0} wurde rot und versprach, dass es nicht wieder vorkommt."
+ },
+ "{0} müşteri beklemekten sıkılıp gitti.": {
+  "en": "{0} customers got tired of waiting and left.",
+  "de": "{0} Gäste hatten genug vom Warten und gingen."
+ },
+ "Kasaya ikinci bir kişi ver ya da yoğun saatte molaları kaldır.": {
+  "en": "Put a second person on the till or cancel breaks at peak times.",
+  "de": "Setz eine zweite Person an die Kasse oder streiche Pausen zur Stoßzeit."
+ },
+ "Ustasız şube var": {
+  "en": "A branch has no master",
+  "de": "Eine Filiale hat keinen Meister"
+ },
+ "{0} bugün kapalı kalır": {
+  "en": "{0} stays closed today",
+  "de": "{0} bleibt heute geschlossen"
+ },
+ "Acil": {
+  "en": "Urgent",
+  "de": "Dringend"
+ },
+ "Ustasız şube bugün kapalı kalacak: {0}": {
+  "en": "Branches without a master stay closed today: {0}",
+  "de": "Filialen ohne Meister bleiben heute geschlossen: {0}"
+ },
+ "Ustası yok, kapalı": {
+  "en": "No master, closed",
+  "de": "Kein Meister, geschlossen"
+ },
+ "Kapalı": {
+  "en": "Closed",
+  "de": "Geschlossen"
+ },
+ "\"Eh işte...\" yorumu viral oldu. İtibar {0}": {
+  "en": "The \"Meh...\" comment went viral. Reputation {0}",
+  "de": "Der Kommentar „Na ja...“ ging viral. Ruf {0}"
+ },
+ "Olay · {0}": {
+  "en": "Event · {0}",
+  "de": "Ereignis · {0}"
+ },
+ "Kasa sayımı": {
+  "en": "Cash count",
+  "de": "Kassensturz"
+ },
+ "Dil": {
+  "en": "Language",
+  "de": "Sprache"
+ },
+ "Hesap ve gizlilik": {
+  "en": "Account and privacy",
+  "de": "Konto und Datenschutz"
+ },
+ "Dosyaya yedekle": {
+  "en": "Back up to file",
+  "de": "In Datei sichern"
+ },
+ "Dosyadan yükle": {
+  "en": "Load from file",
+  "de": "Aus Datei laden"
+ },
+ "Şimdi kaydet": {
+  "en": "Save now",
+  "de": "Jetzt speichern"
+ },
+ "Ana menüye dön": {
+  "en": "Back to main menu",
+  "de": "Zum Hauptmenü"
+ },
+ "Yeni oyun başlat": {
+  "en": "Start a new game",
+  "de": "Neues Spiel starten"
+ },
+ "Kapat": {
+  "en": "Close",
+  "de": "Schließen"
+ },
+ "Oyun her gün sonunda bu tarayıcıya kaydedilir.": {
+  "en": "The game saves to this browser at the end of every day.",
+  "de": "Das Spiel wird am Ende jedes Tages in diesem Browser gespeichert."
+ },
+ "Kaydedildi.": {
+  "en": "Saved.",
+  "de": "Gespeichert."
+ },
+ "Devam et": {
+  "en": "Continue",
+  "de": "Fortsetzen"
+ },
+ "Emin misin?": {
+  "en": "Are you sure?",
+  "de": "Bist du sicher?"
+ },
+ "Kayıtlı oyun silinecek ve yeni bir oyun başlayacak.": {
+  "en": "The saved game will be deleted and a new one will start.",
+  "de": "Der Spielstand wird gelöscht und ein neues Spiel beginnt."
+ },
+ "Vazgeç": {
+  "en": "Cancel",
+  "de": "Abbrechen"
+ },
+ "Evet, sıfırdan başla": {
+  "en": "Yes, start over",
+  "de": "Ja, neu anfangen"
+ },
+ "Yeni sürüm hazır. Sayfayı yenileyince yüklenecek.": {
+  "en": "A new version is ready. It loads when you refresh the page.",
+  "de": "Eine neue Version ist bereit. Sie wird beim Neuladen der Seite geladen."
+ },
+ "Oyun artık internetsiz de açılır.": {
+  "en": "The game now works offline too.",
+  "de": "Das Spiel funktioniert jetzt auch offline."
+ },
+ "Yedek dosyası indirildi.": {
+  "en": "Backup file downloaded.",
+  "de": "Sicherungsdatei heruntergeladen."
+ },
+ "{0} yüklendi · {1}": {
+  "en": "{0} loaded · {1}",
+  "de": "{0} geladen · {1}"
+ },
+ "Şehir sıralaması": {
+  "en": "City ranking",
+  "de": "Stadtrangliste"
+ },
+ "Bu ay, doğrulanmış günlere göre bütün oyuncular": {
+  "en": "This month, all players by verified days",
+  "de": "Diesen Monat, alle Spieler nach bestätigten Tagen"
+ },
+ "Semt şampiyonları": {
+  "en": "District champions",
+  "de": "Viertel-Champions"
+ },
+ "Hoş geldin!": {
+  "en": "Welcome!",
+  "de": "Willkommen!"
+ },
+ "Oyun her zaman bu cihaza kaydedilir. Aşağıdakiler isteğe bağlıdır; istediğin zaman kapatabilirsin.": {
+  "en": "The game always saves to this device. The options below are optional; you can turn them off any time.",
+  "de": "Das Spiel speichert immer auf diesem Gerät. Die folgenden Optionen sind freiwillig und jederzeit abschaltbar."
+ },
+ "Bulut kaydı ve şehir sıralaması": {
+  "en": "Cloud save and city ranking",
+  "de": "Cloud-Speicher und Stadtrangliste"
+ },
+ "Anonim bir hesap açılır. Kaydın bulutta yedeklenir, gün sonuçların takma adınla sıralamaya girer. E-posta istenmez.": {
+  "en": "An anonymous account is created. Your save is backed up in the cloud and your daily results enter the ranking under your nickname. No email needed.",
+  "de": "Es wird ein anonymes Konto angelegt. Dein Spielstand wird in der Cloud gesichert, deine Tagesergebnisse kommen unter deinem Spitznamen in die Rangliste. Keine E-Mail nötig."
+ },
+ "Sıralamada görünecek takma ad": {
+  "en": "Nickname shown in the ranking",
+  "de": "Spitzname in der Rangliste"
+ },
+ "Kullanım istatistikleri": {
+  "en": "Usage statistics",
+  "de": "Nutzungsstatistik"
+ },
+ "Hangi ekranların kullanıldığı ve oyunun nerede zorlandığı gibi bilgiler. Kişisel veri, konum ya da reklam kimliği toplanmaz.": {
+  "en": "Things like which screens are used and where the game gets hard. No personal data, location or advertising ID is collected.",
+  "de": "Etwa welche Bildschirme genutzt werden und wo das Spiel schwer wird. Keine personenbezogenen Daten, kein Standort, keine Werbe-ID."
+ },
+ "Veriler Supabase üzerinde AB bölgesinde tutulur; ölçümler 180 günde silinir. Hata raporları kişisel veri içermez. Ayrıntılar oyunun gizlilik metninde.": {
+  "en": "Data is stored on Supabase in the EU; statistics are deleted after 180 days. Error reports contain no personal data. Details in the game's privacy notice.",
+  "de": "Die Daten liegen bei Supabase in der EU; Statistiken werden nach 180 Tagen gelöscht. Fehlerberichte enthalten keine personenbezogenen Daten. Details in der Datenschutzerklärung des Spiels."
+ },
+ "Hiçbirini istemiyorum": {
+  "en": "None, thanks",
+  "de": "Nichts davon"
+ },
+ "Kaydet": {
+  "en": "Save",
+  "de": "Speichern"
+ },
+ "{0}, işçi, gece çıkışı": {
+  "en": "{0}, workers, night owls",
+  "de": "{0}, Arbeiter, Nachtschwärmer"
+ },
+ "Örn. {0}": {
+  "en": "E.g. {0}",
+  "de": "Z. B. {0}"
+ },
+ "Bir semtin üstüne tıkla. {0} yokuşundan plaza öğle arasına, sahil ailelerinden tarihi çarşının turistlerine kadar her semtin derdi ayrı.": {
+  "en": "Click a district. From the {0} hill to the office lunch break, from seaside families to tourists in the old bazaar, every district has its own needs.",
+  "de": "Klicke auf ein Viertel. Vom {0}-Hügel bis zur Mittagspause im Büroviertel, von Familien an der Küste bis zu Touristen im alten Basar – jedes Viertel tickt anders."
+ },
+ "Çarşısı hiç uyumayan, genç ve hareketli bir semt. {0} kalabalığı bol.": {
+  "en": "A young, lively district whose bazaar never sleeps. Lots of {0} crowds.",
+  "de": "Ein junges, lebendiges Viertel, dessen Basar nie schläft. Viele {0}."
+ },
+ "{0} · satılık": {
+  "en": "{0} · for sale",
+  "de": "{0} · zu verkaufen"
+ },
+ "{0} bugün uğrayacak": {
+  "en": "{0} will drop by today",
+  "de": "{0} kommt heute vorbei"
+ },
+ "Babamın {0}'deki küçük dükkânının anahtarını avucumda sıktım. Paslı kepengi kaldırdığımda içeri sabah güneşi doldu. İsmail Usta önlüğünü bağlarken gülümsedi: \"Baban bu ocağın başında otuz yıl ekmek çıkardı. Biz de çıkaracağız.\" Kasada {1} var. Önce bir menü, sonra bir mahalle, sonra bütün şehir.": {
+  "en": "I squeezed the key to my father's little shop in {0}. When I lifted the rusty shutter, morning sun poured in. Master İsmail smiled as he tied his apron: \"Your father made a living at this grill for thirty years. So will we.\" There is {1} in the till. First a menu, then a neighbourhood, then the whole city.",
+  "de": "Ich hielt den Schlüssel zum kleinen Laden meines Vaters in {0} fest. Als ich den rostigen Rollladen hochzog, flutete Morgensonne herein. Meister İsmail band lächelnd seine Schürze: „Dein Vater hat an diesem Grill dreißig Jahre sein Brot verdient. Das tun wir auch.“ In der Kasse liegen {1}. Erst eine Speisekarte, dann ein Viertel, dann die ganze Stadt."
+ },
+ "{0} her pazar akşamı yenilenir": {
+  "en": "{0} renews every Sunday evening",
+  "de": "{0} wird jeden Sonntagabend erneuert"
+ },
+ "şubesine başlar (şube şeridinden değiştirebilirsin). {0} yeri: {1} şu an {2} pişirmeci.": {
+  "en": "starts at the branch (change it in the branch bar). {0} slots: {1}, currently {2} cooks.",
+  "de": "beginnt in der Filiale (in der Filialleiste änderbar). {0} Plätze: {1}, derzeit {2} Köche."
+ },
+ "{0} blog daveti": {
+  "en": "{0} blog invitation",
+  "de": "{0}-Blog-Einladung"
+ },
+ "Yemek yazarlarına tadım. {0} +{1} Usta ★{2} ve üstüyse itibar +{3}": {
+  "en": "A tasting for food writers. {0} +{1}. If your master is ★{2} or higher, reputation +{3}",
+  "de": "Verkostung für Foodblogger. {0} +{1}. Ist dein Meister ★{2} oder besser, Ruf +{3}"
+ },
+ "{0} · {1} ziyaret": {
+  "en": "{0} · {1} visits",
+  "de": "{0} · {1} Besuche"
+ },
+ "Yeni şubeye {0}'ndan bir usta, {1}'ndan kasiyer ve komi/garson al. Müdür, ekibi yoğunluğa göre kendisi yönetir. Ustasız şube kepenk açamaz.": {
+  "en": "For a new branch, hire a master at the {0} and a cashier and runner/waiter at the {1}. The manager runs the crew by workload. A branch without a master can't open.",
+  "de": "Für eine neue Filiale: einen Meister beim {0}, Kassierer und Läufer/Kellner bei der {1} einstellen. Der Filialleiter steuert das Team nach Auslastung. Ohne Meister kann keine Filiale öffnen."
+ },
+ "{0} Ofisi": {
+  "en": "{0} Office",
+  "de": "{0}-Büro"
+ },
+ "{0} {1} cirosu": {
+  "en": "{0} {1} revenue",
+  "de": "Umsatz {0} {1}"
+ },
+ "Ay sonu ({0} {1} {2}) kapanışında bordro, kira, stopaj, faturalar, KDV, çiftlik gideri ve kredi taksitleri kasadan düşer.": {
+  "en": "At month-end ({0} {1} {2}) payroll, rent, withholding, bills, VAT, farm costs and loan instalments come out of the till.",
+  "de": "Zum Monatsende ({0} {1} {2}) gehen Löhne, Miete, Quellensteuer, Nebenkosten, MwSt., Hofkosten und Kreditraten von der Kasse ab."
+ },
+ "Sabah hazırlığı · {0}": {
+  "en": "Morning prep · {0}",
+  "de": "Vorbereitung · {0}"
+ },
+ "{0} menüde": {
+  "en": "{0} on the menu",
+  "de": "{0} auf der Karte"
+ },
+ "{0} fiyatı": {
+  "en": "{0} price",
+  "de": "Preis für {0}"
+ },
+ "Pişiriyor: {0}": {
+  "en": "Cooking: {0}",
+  "de": "Kocht: {0}"
+ },
+ "{0} geldi!": {
+  "en": "{0} is here!",
+  "de": "{0} ist da!"
+ },
+ "Biten: {0}": {
+  "en": "Finished: {0}",
+  "de": "Fertig: {0}"
+ },
+ "Kuyruk ya da masa yetmiyor: {0}'dan salonu büyüt.": {
+  "en": "Not enough queue space or tables: expand the dining room at the {0}.",
+  "de": "Zu wenig Platz in der Schlange oder an Tischen: Vergrößere den Gastraum bei {0}."
+ },
+ "{0} Dönercisi": {
+  "en": "{0} Döner",
+  "de": "{0} Döner"
+ },
+ "{0} {1} bilançosu": {
+  "en": "{0} {1} statement",
+  "de": "Bilanz {0} {1}"
+ },
+ "Derbi günü. Akşam taraftarlar akın eder, {0} yerinden oynar.": {
+  "en": "Derby day. Fans flood in at night and {0} is shaking.",
+  "de": "Derby-Tag. Abends strömen die Fans, {0} bebt."
+ },
+ "{0} namazından sonra öğle kalabalığı her zamankinden büyük.": {
+  "en": "After {0} prayers the lunch crowd is bigger than ever.",
+  "de": "Nach dem {0}-Gebet ist der Mittagsandrang größer als sonst."
+ },
+ "{0} müfettişi": {
+  "en": "{0} inspector",
+  "de": "{0}-Prüfer"
+ },
+ "{0} şube müdürü": {
+  "en": "{0} branch manager",
+  "de": "{0}-Filialleiter"
+ },
+ "{0}'ya rakipten teklif!": {
+  "en": "A rival offer for {0}!",
+  "de": "Ein Konkurrenzangebot für {0}!"
+ },
+ "\"Lüks Kebap\" sahibi {0}, {1}'ya {2} daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.": {
+  "en": "{0}, owner of \"Lüks Kebap\", offered {1} {2} more salary. The master looks torn and wants to talk to you.",
+  "de": "{0}, Inhaber von „Lüks Kebap“, hat {1} {2} mehr Gehalt geboten. Der Meister schwankt und will mit dir reden."
+ },
+ "{0} kaldı: \"Bu dükkân benim de dükkânım.\"": {
+  "en": "{0} stays: \"This shop is mine too.\"",
+  "de": "{0} bleibt: „Dieser Laden ist auch meiner.“"
+ },
+ "{0} teşekkür edip rakibe geçti. Ocağın başı boş kaldı.": {
+  "en": "{0} thanked you and joined the rival. The grill stands empty.",
+  "de": "{0} bedankte sich und wechselte zur Konkurrenz. Der Grill steht leer."
+ },
+ "{0} ayrıldı. Usta pazarında yeni birini bulmalısın.": {
+  "en": "{0} has left. Find someone new at the master market.",
+  "de": "{0} ist gegangen. Such auf dem Meistermarkt jemand Neues."
+ },
+ "{0} denetimi kapıda": {
+  "en": "{0} inspection at the door",
+  "de": "{0}-Kontrolle vor der Tür"
+ },
+ "{0} evrak çantasıyla içeri girdi: \"Rutin hijyen denetimi.\" Temizlik puanın şu an {1}": {
+  "en": "{0} walked in with a briefcase: \"Routine hygiene inspection.\" Your cleanliness score is {1}",
+  "de": "{0} kam mit Aktentasche herein: „Routine-Hygienekontrolle.“ Deine Sauberkeit liegt bei {1}"
+ },
+ "{0} fısıldadı: \"Bak bak, köşedeki masada oturan o meşhur yemek yazarı!\" Yazar {1} sipariş etti ve tabağı silip süpürdü.": {
+  "en": "{0} whispered: \"Look, that famous food writer at the corner table!\" The writer ordered {1} and cleaned the plate.",
+  "de": "{0} flüsterte: „Schau, der berühmte Foodkritiker am Ecktisch!“ Er bestellte {1} und putzte den Teller leer."
+ },
+ "{0} kasayı sayarken fark etti: dün akşamki bahşiş kavanozu yerinde yok. Ekip birbirine kuşkuyla bakıyor.": {
+  "en": "{0} noticed while counting the till: last night's tip jar is gone. The crew eyes each other with suspicion.",
+  "de": "{0} bemerkte beim Kassensturz: Das Trinkgeldglas von gestern Abend fehlt. Das Team beäugt sich misstrauisch."
+ },
+ "{0} zam istiyor": {
+  "en": "{0} wants a raise",
+  "de": "{0} möchte eine Gehaltserhöhung"
+ },
+ "{0}: \"Patron, kira arttı, mutfak masrafı arttı. Bir el atabilir misin?\" Brüt maaşı şu an {1}.": {
+  "en": "{0}: \"Boss, rent went up, groceries went up. Can you help out?\" Gross salary is {1} right now.",
+  "de": "{0}: „Chef, die Miete ist gestiegen, die Lebensmittel auch. Kannst du helfen?“ Bruttogehalt derzeit {1}."
+ },
+ "{0}: \"Sağ ol patron, hakkını helal et.\"": {
+  "en": "{0}: \"Thanks, boss, God bless you.\"",
+  "de": "{0}: „Danke, Chef, vergelt's Gott.“"
+ },
+ "{0} başını öne eğdi: \"Anladım.\"": {
+  "en": "{0} lowered their head: \"I understand.\"",
+  "de": "{0} senkte den Kopf: „Verstehe.“"
+ },
+ "{0}'dan zam haberi": {
+  "en": "Price rise news from {0}",
+  "de": "Preiserhöhung von {0}"
+ },
+ "{0}'de büyük maç. Taraftarlar maç öncesi ve sonrası sokaklara taşacak. Gece kalabalığı bekleniyor.": {
+  "en": "Big match in {0}. Fans will pour into the streets before and after. A night rush is expected.",
+  "de": "Großes Spiel in {0}. Vor und nach dem Spiel strömen die Fans auf die Straßen. Ein nächtlicher Ansturm wird erwartet."
+ },
+ "{0} anlayışla karşıladı, başka bir ocakbaşına gittiler.": {
+  "en": "{0} understood and went to another grill house.",
+  "de": "{0} hatte Verständnis und ging zu einem anderen Grillhaus."
+ },
+ "{0} yarın akşam mahallede ihtiyaç sahipleri için iftar sofrası kuruyor, dükkândan da katkı bekliyor.": {
+  "en": "{0} is setting up an iftar table for neighbours in need tomorrow evening and hopes the shop will chip in.",
+  "de": "{0} richtet morgen Abend eine Iftar-Tafel für Bedürftige im Viertel aus und hofft auf einen Beitrag des Ladens."
+ },
+ "{0} dualar etti. Mahallede adın hayırla anılıyor.": {
+  "en": "{0} said many prayers. Your name is spoken kindly in the neighbourhood.",
+  "de": "{0} sprach viele Segenswünsche. Im Viertel spricht man gut von dir."
+ },
+ "{0} bozulmadı ama biraz kırıldı.": {
+  "en": "{0} wasn't angry, but a little hurt.",
+  "de": "{0} war nicht böse, aber ein wenig gekränkt."
+ },
+ "{0} birliği teklifi": {
+  "en": "{0} union offer",
+  "de": "Angebot der {0}-Vereinigung"
+ },
+ "{0} sokağın karşısındaki dükkânı kiralamış. Altın harfli tabelası şimdiden asıldı. \"Bu semtte yer var mı bakalım\" diyor sırıtarak.": {
+  "en": "{0} has rented the shop across the street. The gold-lettered sign is already up. \"Let's see if there's room in this district,\" he grins.",
+  "de": "{0} hat den Laden gegenüber gemietet. Das Schild mit Goldbuchstaben hängt schon. „Mal sehen, ob hier Platz für uns beide ist“, grinst er."
+ },
+ "Biten: {0}, {1}": {
+  "en": "Finished: {0}, {1}",
+  "de": "Fertig: {0}, {1}"
+ },
+ "{0} Ocakbaşı": {
+  "en": "{0} Grill House",
+  "de": "{0} Grillhaus"
+ },
+ "Uzun bir çay sohbeti işe yaradı. {0} kalıyor.": {
+  "en": "A long chat over tea did the trick. {0} is staying.",
+  "de": "Ein langes Gespräch bei Tee hat geholfen. {0} bleibt."
+ },
+ "Maydanoz-soğan": {
+  "en": "Parsley & onion",
+  "de": "Petersilie & Zwiebel"
+ },
+ "uğradı. Çok memnun kaldı ·": {
+  "en": "dropped by. Very happy ·",
+  "de": "kam vorbei. Sehr zufrieden ·"
+ },
+ "{0} dalgınlıkla pilav tenceresini yaktı. Mutfak duman içinde, herkes sana bakıyor.": {
+  "en": "{0} absent-mindedly burned the pot of rice. The kitchen is full of smoke and everyone is looking at you.",
+  "de": "{0} hat geistesabwesend den Reistopf anbrennen lassen. Die Küche ist voller Rauch, alle schauen dich an."
+ },
+ "Bugün acil bir iş yok. Dükkâna geçip kepengi aç ya da yerleri gez.": {
+  "en": "Nothing urgent today. Go to the shop and raise the shutter, or visit the places.",
+  "de": "Heute nichts Dringendes. Geh in den Laden und zieh den Rollladen hoch oder schau dich in der Stadt um."
+ },
+ "Avrupa yakası · {0} / Maslak esintisi": {
+  "en": "European side · inspired by {0} / Maslak",
+  "de": "Europäische Seite · nach {0} / Maslak"
+ },
+ "{0} / Maslak": {
+  "en": "{0} / Maslak",
+  "de": "{0} / Maslak"
+ },
+ "Kınalıada": {
+  "en": "Kınalıada",
+  "de": "Kınalıada"
+ },
+ "Sahne": {
+  "en": "Stage",
+  "de": "Bühne"
+ },
+ "Dil seç": {
+  "en": "Choose language",
+  "de": "Sprache wählen"
+ },
+ "Ocakta": {
+  "en": "Grill",
+  "de": "Grill"
+ },
+ "Paket": {
+  "en": "Delivery",
+  "de": "Lieferung"
+ },
+ "Ocakbaşı": {
+  "en": "Grill",
+  "de": "Grill"
+ }
+}
