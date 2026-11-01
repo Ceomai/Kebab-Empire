@@ -1,0 +1,29 @@
+Gezinme	Navigation	Navigation
+Mutfak	Kitchen	Küche
+Salon	Dining room	Gastraum
+Paket ve temizlik	Delivery & cleaning	Lieferung & Reinigung
+kadro	team	Team
+Dükkânın ocağı ve salonu büyüdükçe kadro genişler.	Your team can grow as the shop's grill and dining room grow.	Dein Team kann wachsen, wenn Grill und Gastraum wachsen.
+şubesine başlar (şube şeridinden değiştirebilirsin). Pişirme yeri: {0}	starts at the branch (change it in the branch bar). Cooking slots: {0}	beginnt in der Filiale (in der Filialleiste änderbar). Kochplätze: {0}
+Mutfak dolu	Kitchen full	Küche voll
+Salon dolu	Dining room full	Gastraum voll
+Paket ve temizlik dolu	Delivery & cleaning full	Lieferung & Reinigung voll
+Yönetim dolu	Management full	Leitung voll
+Mutfak kadrosu dolu: {0}/{1}	Kitchen team is full: {0}/{1}	Küchenteam ist voll: {0}/{1}
+Salon kadrosu dolu: {0}/{1}	Dining room team is full: {0}/{1}	Gastraum-Team ist voll: {0}/{1}
+Paket ve temizlik kadrosu dolu: {0}/{1}	Delivery & cleaning team is full: {0}/{1}	Liefer- & Reinigungsteam ist voll: {0}/{1}
+Yönetim kadrosu dolu: {0}/{1}	Management is full: {0}/{1}	Leitung ist voll: {0}/{1}
+{0}'dan ocağı büyütürsen yer açılır.	Upgrade the grill at {0} to make room.	Vergrößere den Grill bei {0}, um Platz zu schaffen.
+{0}'dan salonu büyütürsen yer açılır.	Upgrade the dining room at {0} to make room.	Vergrößere den Gastraum bei {0}, um Platz zu schaffen.
+Bu şube en büyük hâlinde; başka şubeye yerleştir.	This branch is at its largest; place them in another branch.	Diese Filiale ist voll ausgebaut; setze die Person in einer anderen Filiale ein.
+Her şubede bir müdür olabilir.	Each branch can have one manager.	Jede Filiale kann einen Leiter haben.
+{0} ocak yeri · mutfak kadrosu {1}	{0} grill slots · kitchen team {1}	{0} Grillplätze · Küchenteam {1}
+{0} masa, kuyruk {1} sabır ×{2} · salon kadrosu {3} paket/temizlik {4}	{0} tables, queue {1}, patience ×{2} · dining team {3}, delivery/cleaning {4}	{0} Tische, Schlange {1}, Geduld ×{2} · Gastraum-Team {3}, Lieferung/Reinigung {4}
+{0} · Mutfak {1}/{2}	{0} · Kitchen {1}/{2}	{0} · Küche {1}/{2}
+{0} · Salon {1}/{2}	{0} · Dining room {1}/{2}	{0} · Gastraum {1}/{2}
+{0} · Paket ve temizlik {1}/{2}	{0} · Delivery & cleaning {1}/{2}	{0} · Lieferung & Reinigung {1}/{2}
+{0} · Yönetim {1}/{2}	{0} · Management {1}/{2}	{0} · Leitung {1}/{2}
+{0} · Mutfak {1}/{2} · dolu	{0} · Kitchen {1}/{2} · full	{0} · Küche {1}/{2} · voll
+{0} · Salon {1}/{2} · dolu	{0} · Dining room {1}/{2} · full	{0} · Gastraum {1}/{2} · voll
+{0} · Paket ve temizlik {1}/{2} · dolu	{0} · Delivery & cleaning {1}/{2} · full	{0} · Lieferung & Reinigung {1}/{2} · voll
+{0} · Yönetim {1}/{2} · dolu	{0} · Management {1}/{2} · full	{0} · Leitung {1}/{2} · voll

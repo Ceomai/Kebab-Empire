@@ -115,6 +115,8 @@
   A.hireMaster = (d) => {
     const s = KE.G.market.find((x) => x.id === d.id);
     if (!s) return;
+    const ch = KE.canHire(KE.G, B(), s.role || 'usta');
+    if (!ch.ok) { UI.toast(`Mutfak kadrosu dolu: ${ch.used}/${ch.cap}`, 'bad'); UI.toast(ch.hint); return; }
     KE.G.cash -= s.fee || 0; if (s.fee) KE.addExtra(KE.G, 'other', s.fee);
     s.branchId = KE.G.activeBranch; s.hiredDay = KE.G.day; delete s.fee;
     KE.G.staff.push(s); KE.G.market = KE.G.market.filter((x) => x.id !== s.id);
@@ -123,6 +125,8 @@
   A.hireWorker = (d) => {
     const s = KE.G.workers.find((x) => x.id === d.id);
     if (!s) return;
+    const ch = KE.canHire(KE.G, B(), s.role);
+    if (!ch.ok) { UI.toast(`${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu: ${ch.used}/${ch.cap}`, 'bad'); UI.toast(ch.hint); return; }
     s.branchId = KE.G.activeBranch; s.hiredDay = KE.G.day;
     KE.G.staff.push(s); KE.G.workers = KE.G.workers.filter((x) => x.id !== s.id);
     UI.toast(`${s.name} işe başladı.`, 'good'); UI.render();
@@ -137,7 +141,7 @@
   };
   A.pickTransfer = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
-    UI.picker(`${s.name} hangi şubede çalışsın?`, null, KE.G.branches.map((b) => ({ id: b.id, label: b.name, sub: `${KE.district(b).name} · ${KE.branchStaff(KE.G, b).length} kişi`, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>`, sel: b.id === s.branchId })), (o) => {
+    UI.picker(`${s.name} hangi şubede çalışsın?`, null, KE.G.branches.map((b) => { const ch = KE.canHire(KE.G, b, s.role, s.id); return { id: b.id, label: b.name, disabled: b.id !== s.branchId && !ch.ok, sub: `${KE.district(b).name} · ${KE.STAFF_GROUPS[ch.group].name} ${ch.used}/${ch.cap}${b.id !== s.branchId && !ch.ok ? ' · dolu' : ''}`, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>`, sel: b.id === s.branchId }; }), (o) => {
       if (o.id === s.branchId) return;
       s.branchId = o.id; s.mentorId = null; s.pos = KE.POSITIONS[s.role][0];
       KE.G.staff.forEach((x) => { if (x.mentorId === s.id) x.mentorId = null; });

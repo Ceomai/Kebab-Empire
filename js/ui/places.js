@@ -18,6 +18,20 @@
   };
 
   /* ---------- Usta pazarı ---------- */
+  /* Şubenin kadro doluluğu: grup başına kullanılan / sınır */
+  function capBar(b, groups) {
+    const caps = KE.staffCaps(KE.G, b);
+    return `<div class="capbar"><span class="cap-l">${IC('users')}<b>${esc(b.name)}</b> kadro</span>${groups.map((g) => {
+      const used = KE.branchStaff(KE.G, b).filter((s) => KE.staffGroup(s.role) === g).length;
+      const full = used >= caps[g];
+      return `<span class="cap ${full ? 'full' : ''}"><small>${KE.STAFF_GROUPS[g].name}</small><b>${used}/${caps[g]}</b></span>`;
+    }).join('')}<span class="cap-h">Dükkânın ocağı ve salonu büyüdükçe kadro genişler.</span></div>`;
+  }
+  const hireBtn = (b, s, label, extraDisabled) => {
+    const ch = KE.canHire(KE.G, b, s.role || 'usta');
+    if (!ch.ok) return `<button class="btn ghost" disabled title="${esc(ch.hint)}">${IC('lock')}${KE.STAFF_GROUPS[ch.group].name} dolu</button>`;
+    return `<button class="btn green" data-a="${s.role === 'usta' || s.role === 'cirak' ? 'hireMaster' : 'hireWorker'}" data-id="${s.id}" ${extraDisabled ? 'disabled' : ''}>${label}</button>`;
+  };
   SCREENS.lonca = () => {
     const b = B();
     const mine = KE.G.staff.filter(KE.isCook);
@@ -35,21 +49,21 @@
     return `<main class="screen">${head('Usta Pazarı', 'Pazar her pazar akşamı yenilenir', null, 'lonca')}
       <div class="tabs"><button class="tab ${tab === 'pazar' ? 'on' : ''}" data-a="go" data-s="lonca" data-tab="pazar">Pazardaki ustalar</button><button class="tab ${tab === 'kadro' ? 'on' : ''}" data-a="go" data-s="lonca" data-tab="kadro">Kadrom (${mine.length})</button></div>
       <section class="panel tabbody">${tab === 'pazar'
-        ? `<p class="small muted">İşe aldığın usta <b>${esc(b.name)}</b> şubesine başlar (şube şeridinden değiştirebilirsin). Ocak yeri: ${KE.equip(KE.G, b, 'cook').stations}, şu an ${KE.branchStaff(KE.G, b).filter(KE.isCook).length} pişirmeci.</p>
-          <div class="grid g3">${KE.G.market.map((s) => H.masterCard(s, { actions: `<button class="btn green" data-a="hireMaster" data-id="${s.id}" ${KE.G.cash < (s.fee || 0) ? 'disabled' : ''}>İşe al${s.fee ? ' · ' + KE.tl(s.fee) : ''}</button>` })).join('') || '<p class="muted">Pazarda şu an kimse yok.</p>'}</div>`
+        ? `<p class="small muted">İşe aldığın usta <b>${esc(b.name)}</b> şubesine başlar (şube şeridinden değiştirebilirsin). Pişirme yeri: ${KE.equip(KE.G, b, 'cook').stations}.</p>${capBar(b, ['mutfak'])}
+          <div class="grid g3">${KE.G.market.map((s) => H.masterCard(s, { actions: hireBtn(b, s, `İşe al${s.fee ? ' · ' + KE.tl(s.fee) : ''}`, KE.G.cash < (s.fee || 0)) })).join('') || '<p class="muted">Pazarda şu an kimse yok.</p>'}</div>`
         : `${morningOnly()}<div class="grid g3">${mine.map((s) => H.masterCard(s, { own: true, extra: `<p class="tiny muted">${esc(KE.G.branches.find((x) => x.id === s.branchId).name)} · toplam ${s.servedTotal} porsiyon · bu ay bahşiş ${KE.tl(s.tipsMonth)}</p>`, actions: actions(s) })).join('')}</div>`}
       </section></main>`;
   };
 
   /* ---------- Eleman bürosu ---------- */
-  function workerCard(s, own) {
+  function workerCard(s, own, b) {
     const tr = KE.TRAITS[s.trait];
     let acts;
     if (own) {
       acts = `<button class="btn xs ghost" data-a="raise" data-id="${s.id}">${IC('coin')}%10 zam</button>`;
       if (KE.G.branches.length > 1 && KE.G.phase === 'morning') acts += `<button class="btn xs ghost" data-a="pickTransfer" data-id="${s.id}">${IC('swap')}Şube</button>`;
       if (KE.G.phase === 'morning') acts += `<button class="btn xs red" data-a="fire" data-id="${s.id}">Çıkar</button>`;
-    } else acts = `<button class="btn green" data-a="hireWorker" data-id="${s.id}">İşe al</button>`;
+    } else acts = hireBtn(b, s, 'İşe al');
     return `<article class="card person">
       <div class="pc-top"><div class="pc-fig">${KE.figure(KE.staffLook(s), { mood: KE.moodFromValue(s.morale), label: s.name })}</div>
         <div class="pc-id"><h3>${esc(s.name)}</h3><div class="chips"><span class="chip bl">${roleName(s)}</span>${tr ? `<span class="chip gd" title="${esc(tr.desc)}">${tr.name}</span>` : ''}</div>
@@ -62,7 +76,7 @@
     const mine = KE.G.staff.filter((s) => !KE.isCook(s));
     return `<main class="screen">${head('Eleman Bürosu', 'Kasa, servis, temizlik, paket ve yönetim ekibi', null, 'buro')}
       <section class="panel"><div class="sechead"><h2>Adaylar</h2><span class="small muted">İşe aldığın kişi <b>${esc(b.name)}</b> şubesinde başlar. Liste her pazar yenilenir.</span></div>
-        <div class="rolekey">${['kasiyer', 'garson', 'temizlik', 'kurye', 'mudur'].map((r) => `<span><b>${r === 'garson' ? (KE.G.mode === 'doner' ? 'Komi' : 'Garson') : KE.ROLES[r].name}</b>${KE.ROLES[r].desc}</span>`).join('')}</div><div class="grid g3">${KE.G.workers.map((s) => workerCard(s, false)).join('')}</div></section>
+        ${capBar(b, ['salon', 'destek', 'yonetim'])}<div class="rolekey">${['kasiyer', 'garson', 'temizlik', 'kurye', 'mudur'].map((r) => `<span><b>${r === 'garson' ? (KE.G.mode === 'doner' ? 'Komi' : 'Garson') : KE.ROLES[r].name}</b>${KE.ROLES[r].desc}</span>`).join('')}</div><div class="grid g3">${KE.G.workers.map((s) => workerCard(s, false, b)).join('')}</div></section>
       <section class="panel"><div class="sechead"><h2>Kadro (ustalar hariç)</h2></div>${morningOnly()}<div class="grid g3">${mine.map((s) => workerCard(s, true)).join('') || '<p class="muted">Henüz kimse yok.</p>'}</div></section></main>`;
   };
 
@@ -81,13 +95,14 @@
     const amb = KE.ambience(KE.G, b);
     const styles = {};
     b.decor.forEach((id) => { const d = KE.DECOR.find((x) => x.id === id); if (d.style !== 'personel') styles[d.style] = (styles[d.style] || 0) + 1; });
-    const eqDesc = (k, lv) => k === 'cook' ? `${lv.stations} ocak yeri` : k === 'prep' ? `Hız ×${lv.speed}${lv.quality ? `, kalite +${lv.quality}` : ''}` : k === 'cold' ? `Günlük fire %${KE.num(lv.waste * 100, 1)}` : `${lv.tables} masa, kuyruk ${lv.queue}, sabır ×${lv.patience}`;
+    const capAt = (k, i) => KE.staffCapsAt(KE.G, b, Object.assign({}, b.equipment, { [k]: i }));
+    const eqDesc = (k, lv, i) => k === 'cook' ? `${lv.stations} ocak yeri · mutfak kadrosu ${capAt(k, i).mutfak}` : k === 'prep' ? `Hız ×${lv.speed}${lv.quality ? `, kalite +${lv.quality}` : ''}` : k === 'cold' ? `Günlük fire %${KE.num(lv.waste * 100, 1)}` : `${lv.tables} masa, kuyruk ${lv.queue}, sabır ×${lv.patience} · salon kadrosu ${capAt(k, i).salon}, paket/temizlik ${capAt(k, i).destek}`;
     const eqIc = { cook: 'fire', prep: 'chef', cold: 'leaf', service: 'table' };
     return `<main class="screen">${head('Mobilya ve Dekor', esc(b.name), null, 'dekor')}
       <section class="panel"><div class="sechead"><h2>Ekipman</h2></div><div class="grid g4">${Object.entries(M.equipment).map(([k, eq]) => {
         const lvl = b.equipment[k], cur = eq.levels[lvl], next = eq.levels[lvl + 1];
-        return `<article class="card eq"><div class="row between"><span class="kicker">${IC(eqIc[k])}${eq.name}</span><span class="lvl">${eq.levels.map((_, i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</span></div><h3>${cur.name}</h3><p class="small">${eqDesc(k, cur)}</p>
-          ${next ? `<div class="eq-next"><small class="muted">Sonraki</small><b>${next.name}</b><small>${eqDesc(k, next)}</small></div><div class="pc-foot"><b>${KE.tl(next.cost * KE.G.priceIndex)}</b><button class="btn sm green" data-a="upgrade" data-k="${k}" ${KE.G.cash < next.cost * KE.G.priceIndex ? 'disabled' : ''}>Yükselt</button></div>` : `<span class="chip gr">${IC('check')}En üst seviye</span>`}</article>`;
+        return `<article class="card eq"><div class="row between"><span class="kicker">${IC(eqIc[k])}${eq.name}</span><span class="lvl">${eq.levels.map((_, i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</span></div><h3>${cur.name}</h3><p class="small">${eqDesc(k, cur, lvl)}</p>
+          ${next ? `<div class="eq-next"><small class="muted">Sonraki</small><b>${next.name}</b><small>${eqDesc(k, next, lvl + 1)}</small></div><div class="pc-foot"><b>${KE.tl(next.cost * KE.G.priceIndex)}</b><button class="btn sm green" data-a="upgrade" data-k="${k}" ${KE.G.cash < next.cost * KE.G.priceIndex ? 'disabled' : ''}>Yükselt</button></div>` : `<span class="chip gr">${IC('check')}En üst seviye</span>`}</article>`;
       }).join('')}</div></section>
       <section class="panel"><div class="sechead"><h2>Dekor</h2><div class="chips">${Object.entries(styles).map(([s, n]) => `<span class="chip ${n >= 3 ? 'gd' : ''}">${s}: ${n}/3</span>`).join('')}${amb.concept ? `<span class="chip gd">${IC('star')}Konsept: ${amb.concept.name}</span>` : ''}</div></div>
         <p class="small muted">Ortam puanı müşteri sayısını ve memnuniyeti artırır. Aynı tarzdan 3 parça konsept bonusunu açar; kostümler konsepti güçlendirir.</p>

@@ -5010,5 +5010,117 @@
  "Şehrin en büyük iki kebap zinciri tek çatı altında birleşti. Cüneyt Bey veda ederken \"Ocağın hakkını verdin\" dedi. Mahalle esnafı ilk kez aynı tabelanın altında toplanıyor.": {
   "en": "The city's two biggest kebab chains are now under one roof. Saying goodbye, Cüneyt Bey said: \"You did the grill justice.\" For the first time, the neighbourhood's shopkeepers gather under the same sign.",
   "de": "Die zwei größten Kebab-Ketten der Stadt sind jetzt unter einem Dach. Zum Abschied sagte Cüneyt Bey: „Du hast dem Grill alle Ehre gemacht.“ Zum ersten Mal versammeln sich die Händler des Viertels unter demselben Schild."
+ },
+ "Gezinme": {
+  "en": "Navigation",
+  "de": "Navigation"
+ },
+ "Mutfak": {
+  "en": "Kitchen",
+  "de": "Küche"
+ },
+ "Paket ve temizlik": {
+  "en": "Delivery & cleaning",
+  "de": "Lieferung & Reinigung"
+ },
+ "kadro": {
+  "en": "team",
+  "de": "Team"
+ },
+ "Dükkânın ocağı ve salonu büyüdükçe kadro genişler.": {
+  "en": "Your team can grow as the shop's grill and dining room grow.",
+  "de": "Dein Team kann wachsen, wenn Grill und Gastraum wachsen."
+ },
+ "şubesine başlar (şube şeridinden değiştirebilirsin). Pişirme yeri: {0}": {
+  "en": "starts at the branch (change it in the branch bar). Cooking slots: {0}",
+  "de": "beginnt in der Filiale (in der Filialleiste änderbar). Kochplätze: {0}"
+ },
+ "Mutfak dolu": {
+  "en": "Kitchen full",
+  "de": "Küche voll"
+ },
+ "Salon dolu": {
+  "en": "Dining room full",
+  "de": "Gastraum voll"
+ },
+ "Paket ve temizlik dolu": {
+  "en": "Delivery & cleaning full",
+  "de": "Lieferung & Reinigung voll"
+ },
+ "Yönetim dolu": {
+  "en": "Management full",
+  "de": "Leitung voll"
+ },
+ "Mutfak kadrosu dolu: {0}/{1}": {
+  "en": "Kitchen team is full: {0}/{1}",
+  "de": "Küchenteam ist voll: {0}/{1}"
+ },
+ "Salon kadrosu dolu: {0}/{1}": {
+  "en": "Dining room team is full: {0}/{1}",
+  "de": "Gastraum-Team ist voll: {0}/{1}"
+ },
+ "Paket ve temizlik kadrosu dolu: {0}/{1}": {
+  "en": "Delivery & cleaning team is full: {0}/{1}",
+  "de": "Liefer- & Reinigungsteam ist voll: {0}/{1}"
+ },
+ "Yönetim kadrosu dolu: {0}/{1}": {
+  "en": "Management is full: {0}/{1}",
+  "de": "Leitung ist voll: {0}/{1}"
+ },
+ "{0}'dan ocağı büyütürsen yer açılır.": {
+  "en": "Upgrade the grill at {0} to make room.",
+  "de": "Vergrößere den Grill bei {0}, um Platz zu schaffen."
+ },
+ "{0}'dan salonu büyütürsen yer açılır.": {
+  "en": "Upgrade the dining room at {0} to make room.",
+  "de": "Vergrößere den Gastraum bei {0}, um Platz zu schaffen."
+ },
+ "Bu şube en büyük hâlinde; başka şubeye yerleştir.": {
+  "en": "This branch is at its largest; place them in another branch.",
+  "de": "Diese Filiale ist voll ausgebaut; setze die Person in einer anderen Filiale ein."
+ },
+ "Her şubede bir müdür olabilir.": {
+  "en": "Each branch can have one manager.",
+  "de": "Jede Filiale kann einen Leiter haben."
+ },
+ "{0} ocak yeri · mutfak kadrosu {1}": {
+  "en": "{0} grill slots · kitchen team {1}",
+  "de": "{0} Grillplätze · Küchenteam {1}"
+ },
+ "{0} masa, kuyruk {1} sabır ×{2} · salon kadrosu {3} paket/temizlik {4}": {
+  "en": "{0} tables, queue {1}, patience ×{2} · dining team {3}, delivery/cleaning {4}",
+  "de": "{0} Tische, Schlange {1}, Geduld ×{2} · Gastraum-Team {3}, Lieferung/Reinigung {4}"
+ },
+ "{0} · Mutfak {1}/{2}": {
+  "en": "{0} · Kitchen {1}/{2}",
+  "de": "{0} · Küche {1}/{2}"
+ },
+ "{0} · Salon {1}/{2}": {
+  "en": "{0} · Dining room {1}/{2}",
+  "de": "{0} · Gastraum {1}/{2}"
+ },
+ "{0} · Paket ve temizlik {1}/{2}": {
+  "en": "{0} · Delivery & cleaning {1}/{2}",
+  "de": "{0} · Lieferung & Reinigung {1}/{2}"
+ },
+ "{0} · Yönetim {1}/{2}": {
+  "en": "{0} · Management {1}/{2}",
+  "de": "{0} · Leitung {1}/{2}"
+ },
+ "{0} · Mutfak {1}/{2} · dolu": {
+  "en": "{0} · Kitchen {1}/{2} · full",
+  "de": "{0} · Küche {1}/{2} · voll"
+ },
+ "{0} · Salon {1}/{2} · dolu": {
+  "en": "{0} · Dining room {1}/{2} · full",
+  "de": "{0} · Gastraum {1}/{2} · voll"
+ },
+ "{0} · Paket ve temizlik {1}/{2} · dolu": {
+  "en": "{0} · Delivery & cleaning {1}/{2} · full",
+  "de": "{0} · Lieferung & Reinigung {1}/{2} · voll"
+ },
+ "{0} · Yönetim {1}/{2} · dolu": {
+  "en": "{0} · Management {1}/{2} · full",
+  "de": "{0} · Leitung {1}/{2} · voll"
  }
 }

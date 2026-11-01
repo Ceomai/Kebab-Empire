@@ -94,3 +94,27 @@ Daily goal {0}/{1}
 {0} Dönerci
 {0} Dönercis
 {0}, {1}, {2}, {3}, {4}, {5} bugün kapalı kalır
+şubesine başlar (şube şeridinden değiştirebilirsin). {0} yeri: {1}
+{0} ve salon büyüdükçe kadro genişler.
+Levent Usta
+Can Usta
+Tarık Usta
+Onur
+Elif
+Tuğba
+Kadir
+Turşu
+Ekmek
+Biten: {0}, {1}, {2}, {3}
+Levent
+Sokakta trafo arızası var; elektrik akşama kadar gelmeyebilir. {0} bir jeneratörcünün numarasını buldu.
+Telefonlar ve tabletler aynı anda ötüyor. {0} motoru hiç durdurmadı.
+Nazlı Usta
+Hatice Usta
+Can
+Sinan
+Kerem
+Ebru
+İç harç
+Maydanoz-limon
+Biten: {0}, {1}, {2}, {3}, {4}

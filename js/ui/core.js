@@ -130,7 +130,25 @@
   };
 
   /* ---------- Yönlendirme ---------- */
-  UI.go = function (s, p) { UI.screen = s; UI.params = p || {}; UI.render(); window.scrollTo(0, 0); };
+  /* Telefonun geri tuşu / geri kaydırma: ekranlar tarayıcı geçmişine yazılır. Geri gelince önce açık
+     pencere kapanır, sonra bir önceki ekrana dönülür; oyun sayfadan çıkmaz. */
+  const histOk = (() => { try { return !!(window.history && history.pushState); } catch (e) { return false; } })();
+  UI.go = function (s, p, o) {
+    const prev = UI.screen;
+    UI.screen = s; UI.params = p || {}; UI.render(); window.scrollTo(0, 0);
+    if (!histOk || (o && o.pop)) return;
+    const st = { ke: s, p: UI.params };
+    try { if (prev === s || !history.state || !history.state.ke) history.replaceState(st, ''); else history.pushState(st, ''); } catch (e) { /* yok */ }
+  };
+  if (histOk) window.addEventListener('popstate', (e) => {
+    const st = e.state;
+    const m = document.querySelector('.modal-bg');
+    const keep = () => { try { history.pushState({ ke: UI.screen, p: UI.params }, ''); } catch (x) { /* yok */ } };
+    if (m) { if (m.querySelector('.acts [data-a="closeModal"], .sheet-x')) UI.closeModal(); keep(); return; }
+    if (!KE.G || ['title', 'newMode', 'newDistrict', 'newMaster'].includes(UI.screen)) return;
+    if (st && st.ke && SCREENS[st.ke]) { UI.go(st.ke, st.p, { pop: true }); return; }
+    if (UI.screen !== 'map') { UI.go('map', {}, { pop: true }); keep(); } else keep();
+  });
   UI.render = function () {
     const fn = SCREENS[UI.screen] || SCREENS.title;
     const inGame = KE.G && !['title', 'newMode', 'newDistrict', 'newMaster'].includes(UI.screen);
@@ -164,7 +182,21 @@
         <nav class="tb-nav">${nav.map(([s, ic, l]) => `<button class="navbtn ${UI.screen === s ? 'on' : ''}" data-a="go" data-s="${s}">${IC(ic)}<span>${l}</span></button>`).join('')}<button class="navbtn snd ${KE.SND.on ? 'on2' : ''}" data-a="sound" aria-label="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}" title="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}">${IC(KE.SND.on ? 'sound' : 'mute')}</button><button class="navbtn" data-a="menu" aria-label="Menü">${IC('menu')}</button></nav>
       </div>
       <div class="branchbar" role="tablist" aria-label="Şubeler">${branchTabs()}</div>
-    </header>`;
+    </header>${tabbar()}`;
+  }
+  /* Telefon: alt sekme çubuğu (yatay ekranda sol şerit) */
+  const PLACE_SCREENS = () => KE.MAP.PLACES.map((p) => p.id).filter((id) => id !== 'office');
+  function tabbar() {
+    const n = UI.cityTasks ? UI.cityTasks().length : 0;
+    const inPlace = PLACE_SCREENS().includes(UI.screen);
+    const t = (on, a, extra, ic, l, badge) => `<button class="tbb ${on ? 'on' : ''}" data-a="${a}" ${extra}>${IC(ic)}${badge ? `<b class="tbb-n">${badge}</b>` : ''}<span>${l}</span></button>`;
+    return `<nav class="tabbar" aria-label="Gezinme">
+      ${t(UI.screen === 'map', 'go', 'data-s="map"', 'map', 'Harita')}
+      ${t(UI.screen === 'shop', 'go', 'data-s="shop"', 'store', 'Dükkân')}
+      ${t(inPlace, 'places', '', 'pin', 'Yerler', n)}
+      ${t(UI.screen === 'office', 'go', 'data-s="office"', 'chart', 'Muhasebe')}
+      ${t(false, 'menu', '', 'menu', 'Menü')}
+    </nav>`;
   }
   function branchTabs() {
     return KE.G.branches.map((b) => branchTab(b)).join('') + `<button class="btab add" data-a="go" data-s="subeler">${IC('plus')}<span>Şube aç</span></button>`;

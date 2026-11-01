@@ -22,8 +22,10 @@ for (const mode of (process.env.MODES || 'doner,kebap').split(',')) for (const f
     // iyi oyuncu: fiyatları ayda bir piyasaya çek, kaybedilen müşteri çoksa ön ekibi büyüt
     if (d % 30 === 0) G.branches.forEach((b) => Object.values(KE.MODES[mode].products).forEach((p) => { if (b.prices[p.id] != null) b.prices[p.id] = KE.marketPrice(G, p); }));
     if (G.lastSummary && d % 7 === 0) G.branches.forEach((b) => { const x = G.lastSummary.branches[b.id]; if (!x) return; const S = x.stats; const st = KE.branchStaff(G, b); const front = st.filter((s) => !KE.isCook(s) && s.role !== 'mudur').length;
-      if (S.arrivals > 40 && (S.lostWait + S.lostFull + S.lostFood) / S.arrivals > 0.15 && front < 4 && G.cash > 400000) { const w = KE.randomWorker(G, front % 2 ? 'kasiyer' : 'garson'); w.branchId = b.id; G.staff.push(w); }
-      if (S.arrivals > 40 && S.lostFood / S.arrivals > 0.06 && st.filter(KE.isCook).length < 3 && G.market.length && G.cash > 600000) { const m = G.market.shift(); m.branchId = b.id; G.staff.push(m); } });
+      // kadro sınırı doluysa önce dükkânı büyüt (ocak / salon yükseltmesi)
+      const grow = (k) => { const lv = KE.MODES[mode].equipment[k].levels[b.equipment[k] + 1]; if (lv && G.cash > lv.cost * G.priceIndex * 3) { const c = lv.cost * G.priceIndex; G.cash -= c; KE.addExtra(G, 'capex', c); b.equipment[k]++; } };
+      if (S.arrivals > 40 && (S.lostWait + S.lostFull + S.lostFood) / S.arrivals > 0.15 && front < 4 && G.cash > 400000) { const r = front % 2 ? 'kasiyer' : 'garson'; if (!KE.canHire(G, b, r).ok) grow('service'); if (KE.canHire(G, b, r).ok) { const w = KE.randomWorker(G, r); w.branchId = b.id; G.staff.push(w); } }
+      if (S.arrivals > 40 && S.lostFood / S.arrivals > 0.06 && st.filter(KE.isCook).length < 3 && G.market.length && G.cash > 600000) { if (!KE.canHire(G, b, 'usta').ok) grow('cook'); if (KE.canHire(G, b, 'usta').ok) { const m = G.market.shift(); m.branchId = b.id; G.staff.push(m); } } });
     if (G.phase === 'morning' && KE.empireStatus(G).ready && !G.flags.empire) { KE.buyRival(G); rows.push(`*** İMPARATOR: gün ${G.day} (${KE.dateStr(G.day)})`); }
     KE.startService(G); let g = 0; while (!KE.allDone(G) && g++ < 1500) KE.tickAll(G);
     KE.finishService(G);

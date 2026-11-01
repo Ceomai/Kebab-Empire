@@ -346,7 +346,7 @@ KE.GOALS = [
   { id: 'imparator', name: 'Kebap İmparatoru', desc: '"Lüks Kebap" zincirini satın al ve şehrin tek kebap imparatoru ol.', reward: 0, final: true }
 ];
 /* Oyun sonu: "Lüks Kebap" zincirini satın almak için şartlar */
-KE.EMPIRE = { branches: 7, crowns: 3, reputation: 50, price: 30000000 };
+KE.EMPIRE = { branches: 7, crowns: 3, reputation: 80, price: 60000000 };
 
 
 // ---- js/calendar.js ----
@@ -970,6 +970,37 @@ KE.EMPIRE = { branches: 7, crowns: 3, reputation: 50, price: 30000000 };
     return s;
   };
   KE.isCook = (s) => s.role === 'usta' || s.role === 'cirak';
+
+  /* ---------- Kadro sınırı: dükkân büyüdükçe artar ----------
+     Mutfak (usta + çırak): ocak yeri + 1 · Salon (kasiyer + garson/komi): masa sayısının yarısı
+     Destek (kurye + temizlik): salon seviyesi + 1 · Müdür: 1. Sınırı ocak ve salon yükseltmeleri açar. */
+  KE.STAFF_GROUPS = {
+    mutfak: { name: 'Mutfak', roles: ['usta', 'cirak'], up: 'cook' },
+    salon: { name: 'Salon', roles: ['kasiyer', 'garson'], up: 'service' },
+    destek: { name: 'Paket ve temizlik', roles: ['kurye', 'temizlik'], up: 'service' },
+    yonetim: { name: 'Yönetim', roles: ['mudur'], up: null }
+  };
+  KE.staffGroup = (role) => Object.keys(KE.STAFF_GROUPS).find((g) => KE.STAFF_GROUPS[g].roles.includes(role));
+  KE.staffCapsAt = (G, b, eq) => {
+    const M = KE.MODES[G.mode].equipment;
+    const st = M.cook.levels[eq.cook].stations, tables = M.service.levels[eq.service].tables;
+    return { mutfak: st + 1, salon: Math.ceil(tables / 2), destek: eq.service + 1, yonetim: 1 };
+  };
+  KE.staffCaps = (G, b) => KE.staffCapsAt(G, b, b.equipment);
+  /** Bu şubede bu rolden biri daha çalışabilir mi? { ok, group, used, cap, hint } */
+  KE.canHire = function (G, b, role, exceptId) {
+    const group = KE.staffGroup(role);
+    const cap = KE.staffCaps(G, b)[group];
+    const used = KE.branchStaff(G, b).filter((s) => s.id !== exceptId && KE.staffGroup(s.role) === group).length;
+    const g = KE.STAFF_GROUPS[group];
+    let hint = '';
+    if (used >= cap && g.up) {
+      const eq = KE.MODES[G.mode].equipment[g.up];
+      const next = eq.levels[b.equipment[g.up] + 1];
+      hint = next ? (g.up === 'cook' ? 'Mobilya ve Dekor\'dan ocağı büyütürsen yer açılır.' : 'Mobilya ve Dekor\'dan salonu büyütürsen yer açılır.') : 'Bu şube en büyük hâlinde; başka şubeye yerleştir.';
+    } else if (used >= cap) hint = 'Her şubede bir müdür olabilir.';
+    return { ok: used < cap, group, used, cap, hint };
+  };
   KE.roleName = (G, s) => s.role === 'usta' ? KE.MODES[G.mode].cookRole : s.role === 'garson' ? (G.mode === 'doner' ? 'Komi' : 'Garson') : KE.ROLES[s.role].name;
 
   KE.randomMaster = function (G) {

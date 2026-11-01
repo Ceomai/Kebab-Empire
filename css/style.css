@@ -1161,3 +1161,73 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: 0.001
 .end-stats .kpi b { font: 800 18px var(--f-display); }
 .ending .acts { width: 100%; justify-content: center; }
 .brand-crown { color: var(--altin-deep); display: inline-grid; } .brand-crown .ic { width: 20px; height: 20px; }
+
+/* ---------- Telefon: alt sekme çubuğu, yerler penceresi, yatay ekran ---------- */
+.tabbar { display: none; }
+.cp-pn { display: none; }
+.modal.sheet { max-width: 560px; gap: 10px; }
+.sheet-h { display: flex; align-items: center; justify-content: space-between; }
+.sheet-h h2 { margin: 0; }
+.sheet-x { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--krem); color: var(--murekkep); display: grid; place-items: center; cursor: pointer; }
+.sheet-x .ic { width: 20px; height: 20px; }
+.sheet-g { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--murekkep-2); margin-top: 4px; }
+.sheet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.sheet-pl { display: flex; align-items: center; gap: 10px; text-align: left; background: #fff; border: 1px solid var(--kart-cizgi); border-radius: 16px; padding: 8px 10px 8px 8px; min-height: 58px; cursor: pointer; color: var(--murekkep); }
+.sheet-pl.on { border-color: var(--c); box-shadow: inset 0 0 0 1px var(--c); }
+.sheet-pl.urg { background: #fff6f3; }
+.sp-ic { position: relative; flex: none; width: 42px; height: 42px; border-radius: 12px; background: var(--c); color: #fff; display: grid; place-items: center; box-shadow: 0 2px 0 color-mix(in srgb, var(--c) 70%, #000); }
+.sp-ic .ic { width: 22px; height: 22px; }
+.sp-ic b { position: absolute; right: -6px; top: -6px; width: 18px; height: 18px; border-radius: 50%; background: var(--murekkep); color: #fff; font: 800 10px/18px var(--f-body); text-align: center; border: 2px solid #fff; }
+.sp-t { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.sp-t b { font-family: var(--f-display); font-size: 15px; }
+.sp-t small { font-size: 11.5px; color: var(--murekkep-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 760px), (max-height: 520px) {
+  .tabbar { display: flex; position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; gap: 2px; background: var(--kart); border-top: 1px solid var(--kart-cizgi); box-shadow: 0 -8px 20px -14px rgba(60, 35, 15, .6); padding: 4px max(6px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px)); }
+  .tbb { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; padding: 6px 2px; border: 0; border-radius: 12px; background: none; color: var(--murekkep-2); font: 800 11px var(--f-body); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .tbb .ic { width: 24px; height: 24px; }
+  .tbb.on { color: var(--biber); background: var(--krem); }
+  .tbb:active { transform: scale(.94); }
+  .tbb-n { position: absolute; top: 3px; left: calc(50% + 5px); min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--biber); color: #fff; font-size: 10px; line-height: 17px; text-align: center; }
+  body:has(.tabbar) { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  .tb-nav .navbtn[data-a="go"], .tb-nav .navbtn[data-a="menu"] { display: none; }
+  .tb-nav { width: auto; margin-left: auto; } .tb-nav .navbtn { flex: none; }
+  .tb-row .tb-rep { display: flex; flex: none; padding: 4px 9px; } .tb-rep small { display: none; }
+  #toasts { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  .modal.sheet { margin: auto 0 0; border-radius: 24px 24px 0 0; animation: sheetup .28s cubic-bezier(.2, .9, .3, 1) both; }
+  .modal-bg:has(.sheet) { padding: 0; align-items: flex-end; }
+  .modal.sheet { padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px)); max-height: 88vh; overflow-y: auto; }
+  /* haritadaki yer düğmeleri adlarıyla */
+  .cp-places { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 8px; }
+  .cp-pl { aspect-ratio: auto; height: 54px; margin-bottom: 18px; }
+  .cp-pl small.cp-pn { display: block; position: absolute; top: calc(100% + 4px); left: -4px; right: -4px; font: 700 10.5px/1.15 var(--f-body); color: var(--murekkep-2); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+@keyframes sheetup { from { transform: translateY(40%); opacity: .3; } to { transform: none; opacity: 1; } }
+
+/* Yatay telefon: gezinme sol şeritte, üst çubuk tek satır */
+@media (max-height: 520px) and (orientation: landscape) {
+  .tabbar { top: 0; right: auto; bottom: 0; width: calc(72px + env(safe-area-inset-left, 0px)); flex-direction: column; justify-content: center; gap: 4px; border-top: 0; border-right: 1px solid var(--kart-cizgi); box-shadow: 8px 0 20px -14px rgba(60, 35, 15, .6); padding: max(6px, env(safe-area-inset-top, 0px)) 6px max(6px, env(safe-area-inset-bottom, 0px)) max(6px, env(safe-area-inset-left, 0px)); }
+  .tbb { flex: none; min-height: 0; padding: 6px 2px; }
+  body:has(.tabbar) { padding-bottom: 0; padding-left: calc(72px + env(safe-area-inset-left, 0px)); }
+  #toasts { bottom: max(12px, env(safe-area-inset-bottom, 0px)); }
+  .topbar { position: static; display: flex; align-items: center; }
+  .topbar .tb-row { flex: none; flex-wrap: nowrap; gap: 6px; padding: 6px 8px 6px 10px; }
+  .brand, .tb-date, .tb-rep, .tb-clock span, .tb-money small { display: none; }
+  .tb-clock, .tb-money { padding: 4px 9px; }
+  .tb-clock b, .tb-money b { font-size: 16px; }
+  .tb-nav { margin-left: 0; }
+  .navbtn { padding: 6px 8px; } .navbtn span { display: none; }
+  .topbar .branchbar { flex: 1; min-width: 0; padding: 6px max(10px, env(safe-area-inset-right, 0px)) 6px 0; gap: 6px; scrollbar-width: none; }
+  .btab { padding: 3px 10px 3px 4px; } .btab-art { width: 30px; } .btab-t b { font-size: 13px; } .btab-t small { font-size: 10.5px; }
+  .btab.add span { display: none; } .btab.add { padding: 6px 10px; }
+  .modal-bg { padding-block: max(10px, env(safe-area-inset-top, 0px)) 10px; }
+  .modal.sheet { max-height: 92vh; }
+  .sheet-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Kadro doluluğu */
+.capbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; background: var(--krem); border: 1px solid var(--kart-cizgi); border-radius: 14px; padding: 8px 12px; margin: 8px 0 12px; }
+.cap-l { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; } .cap-l .ic { width: 18px; height: 18px; color: var(--murekkep-2); }
+.cap { display: inline-flex; align-items: baseline; gap: 6px; background: #fff; border: 1px solid var(--kart-cizgi); border-radius: 10px; padding: 3px 10px; }
+.cap small { font-size: 11.5px; color: var(--murekkep-2); font-weight: 700; } .cap b { font-family: var(--f-display); font-variant-numeric: tabular-nums; }
+.cap.full { border-color: var(--biber); background: #fff4f2; } .cap.full b { color: var(--biber); } .cap.full b::after { content: " ●"; font-size: .7em; }
+.cap-h { flex-basis: 100%; font-size: 12px; color: var(--murekkep-2); }

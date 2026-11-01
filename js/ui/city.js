@@ -77,10 +77,19 @@
       ${goalRing()}
       <div class="cp-sec">Yapılacaklar</div><div class="cp-tasks">${taskHtml}</div>
       <div class="cp-sec">Yerler</div>
-      <div class="cp-places">${KE.MAP.PLACES.map((p) => { const t = tasks.find((x) => x.id === p.id); return `<button class="cp-pl" data-a="go" data-s="${p.id}" data-route="${p.id}" style="--c:${p.color}" title="${esc(p.name)}" aria-label="${esc(p.name)}">${IC(p.icon)}${t ? `<b>${t.n}</b>` : ''}</button>`; }).join('')}</div>
+      <div class="cp-places">${KE.MAP.PLACES.map((p) => { const t = tasks.find((x) => x.id === p.id); return `<button class="cp-pl" data-a="go" data-s="${p.id}" data-route="${p.id}" style="--c:${p.color}" title="${esc(p.name)}" aria-label="${esc(p.name)}">${IC(p.icon)}${t ? `<b>${t.n}</b>` : ''}<small class="cp-pn">${esc(p.name)}</small></button>`; }).join('')}</div>
       <button class="btn big green block" data-a="go" data-s="shop">${IC(act[0])}${act[1]}</button>
     </div></aside>`;
   }
+  UI.cityTasks = () => (KE.G ? cityTasks() : []);
+  /* Telefon: bütün yerler, adları ve bekleyen işleriyle tek bir alt pencerede */
+  A.places = () => {
+    const tasks = cityTasks();
+    const groups = [...new Set(KE.MAP.PLACES.map((p) => p.group))];
+    UI.modal(`<div class="sheet-h"><h2>Yerler</h2><button class="sheet-x" data-a="closeModal" aria-label="Kapat">${IC('x')}</button></div>
+      ${groups.map((g) => `<div class="sheet-g">${g}</div><div class="sheet-grid">${KE.MAP.PLACES.filter((p) => p.group === g).map((p) => { const t = tasks.find((x) => x.id === p.id); return `<button class="sheet-pl ${UI.screen === p.id ? 'on' : ''} ${t && t.urgent ? 'urg' : ''}" data-a="goSheet" data-s="${p.id}" style="--c:${p.color}"><span class="sp-ic">${IC(p.icon)}${t ? `<b>${t.n}</b>` : ''}</span><span class="sp-t"><b>${esc(p.name)}</b>${t ? `<small>${esc(t.title)}</small>` : ''}</span></button>`; }).join('')}</div>`).join('')}`, { cls: 'sheet' });
+  };
+  A.goSheet = (d) => { UI.closeModal(); UI.go(d.s); };
   SCREENS.map = () => {
     const tasks = cityTasks();
     return `<main class="mapscreen2"><div class="mapframe big" id="cityframe"></div>${cityPanel(tasks)}</main>`;

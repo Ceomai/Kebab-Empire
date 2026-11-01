@@ -341,4 +341,4 @@ KE.GOALS = [
   { id: 'imparator', name: 'Kebap İmparatoru', desc: '"Lüks Kebap" zincirini satın al ve şehrin tek kebap imparatoru ol.', reward: 0, final: true }
 ];
 /* Oyun sonu: "Lüks Kebap" zincirini satın almak için şartlar */
-KE.EMPIRE = { branches: 7, crowns: 3, reputation: 50, price: 30000000 };
+KE.EMPIRE = { branches: 7, crowns: 3, reputation: 80, price: 60000000 };

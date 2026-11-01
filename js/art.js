@@ -184,6 +184,8 @@
     cow: '<path d="M6 9 q-3 -1 -3 -4 M18 9 q3 -1 3 -4"/><rect x="6" y="7" width="12" height="11" rx="5"/><ellipse cx="12" cy="16" rx="4" ry="2.5"/><circle cx="9.5" cy="11" r=".6"/><circle cx="14.5" cy="11" r=".6"/>',
     truck: '<rect x="2.5" y="7" width="11" height="9" rx="1"/><path d="M13.5 10 h4 l3 3 v3 h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',
     plus: '<path d="M12 5 v14 M5 12 h14"/>',
+    pin: '<path d="M12 21 s-6.5 -6 -6.5 -11 a6.5 6.5 0 0 1 13 0 c0 5 -6.5 11 -6.5 11z"/><circle cx="12" cy="10" r="2.4"/>',
+    x: '<path d="M6 6 l12 12 M18 6 l-12 12"/>',
     minus: '<path d="M5 12 h14"/>',
     arrow: '<path d="M14 6 l-6 6 6 6"/>',
     eye: '<path d="M2.5 12 q9.5 -10 19 0 q-9.5 10 -19 0z"/><circle cx="12" cy="12" r="2.8"/>',
