@@ -96,7 +96,7 @@
   };
   A.goSheet = (d) => { if (!KE.placeOpen(KE.G, d.s)) { UI.go(d.s); return; } UI.closeModal(); UI.go(d.s); };
   /* Dönem kartı: hangi bölümdesin, sıradaki için ne lazım */
-  const ERA_PLACE = { hafta: 'office', rep40: 'kahve', upg: 'dekor', sampiyon: 'subeler', sube2: 'subeler', ciro1m: 'office', sube4: 'subeler', rep65: 'ajans', imza: 'subeler' };
+  const ERA_PLACE = { hafta: 'office', rep40: 'kahve', upg: 'dekor', taclar2: 'subeler', sube3: 'subeler', ciro3m: 'office', rep65: 'ajans', sube5: 'subeler', imza2: 'subeler', kontrat4: 'subeler' };
   function eraCard() {
     const st = KE.eraStatus(KE.G);
     if (!st.next) return `<div class="cp-era last"><span class="era-n">${st.era}</span><span class="era-t"><small>${st.era}. dönem</small><b>${st.cur.name}</b><em>${KE.G.flags.empire ? 'İmparatorluk kuruldu.' : 'Son hedef Merkez Ofis\'te.'}</em></span></div>`;

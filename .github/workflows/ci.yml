@@ -100,6 +100,44 @@ jobs:
           git commit -qm "Yayın ${GITHUB_SHA::7}"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
 
+  android:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_APP_VERSION: ${{ github.sha }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          VITE_TURNSTILE_SITEKEY: ${{ vars.VITE_TURNSTILE_SITEKEY }}
+          VITE_CONTACT_EMAIL: ${{ vars.VITE_CONTACT_EMAIL }}
+      - run: npx cap sync android
+      - name: APK derle
+        run: |
+          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.0.${{ github.run_number }}\"/" android/app/build.gradle
+          cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+          cp app/build/outputs/apk/debug/app-debug.apk ../kebab-empire.apk
+      # Sabit indirme adresi: /releases/download/android/kebab-empire.apk
+      - name: APK'yı yayınla
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete android --yes --cleanup-tag || true
+          gh release create android kebab-empire.apk --title "Kebab Empire Android (${GITHUB_SHA::7})" --notes "Son ana dal derlemesi. Telefonda indirip açın; bilinmeyen kaynaklardan yüklemeye izin vermeniz gerekebilir."
+
   supabase:
     if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
     needs: test

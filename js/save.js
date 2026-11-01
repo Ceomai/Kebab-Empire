@@ -54,6 +54,15 @@
     if (g.phase === 'closing' && !g.lastSummary) g.phase = 'morning';
     g.live = null;
     (g.staff || []).forEach((s) => { s.task = null; if (s.energy == null) s.energy = 100; if (!s.pos) s.pos = KE.POSITIONS[s.role][0]; });
+    /* Dönemlerden önce başlamış oyunlar (dönem kaydı yok): imza tarif şartı o sistemden önce
+       ilerlemiş zincirlere sayılmaz; oyun ulaştığı döneme yerleşir, imparatorluk kurulmuşsa son dönemdedir. */
+    if (g.flags && !g.eraLog) {
+      g.eraLog = {};
+      if ((g.branches || []).length >= 5 || g.flags.empire) g.flags.legacyImza = true;
+      g.era = g.era || 1;
+      if (KE.advanceEra) { try { KE.advanceEra(g); } catch (e) { /* eksik veri */ } }
+    }
+    if (g.flags && g.flags.empire && (g.era || 1) < 4) g.era = 4;
     return g;
   };
   S.valid = (g) => !!(g && typeof g === 'object' && Array.isArray(g.branches) && g.branches.length && Array.isArray(g.staff) && typeof g.day === 'number' && g.mode && KE.MODES[g.mode]);

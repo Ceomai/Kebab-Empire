@@ -132,3 +132,46 @@ describe('yeni nesil', () => {
     expect(KE.chainCheck(null, clone(KE.SAVE.envelope(G))).ok).toBe(true);
   });
 });
+
+describe('eski kayıtlar', () => {
+  it('dönem kaydı olmayan ileri oyun imza tarif şartına takılmaz', () => {
+    const { KE } = loadGame(files);
+    const G = playDays(KE, newGame(KE), 3);
+    ['besiktepe', 'sultanpazari', 'kulealti', 'bostansahil'].forEach((d) => KE.openBranch(G, d));
+    G.flags.profitWeek = 1; G.flags.champ = true; G.reputation = 80; G.branches[0].equipment.cook = 1;
+    G.branches.slice(0, 2).forEach((b) => { b.champions = 1; });
+    G.ledger.months.push({ revenue: 4e6 });
+    const env = clone(KE.SAVE.envelope(G));
+    delete env.game.eraLog; env.game.era = 3; delete env.sum;
+    const g = KE.SAVE.open(env);
+    expect(g.era).toBe(4);
+    expect(g.eraLog).toBeTruthy();
+  });
+  it('yeni oyunda imza tarif şartı geçerli kalır', () => {
+    const { KE } = loadGame(files);
+    const G = newGame(KE);
+    ['besiktepe', 'sultanpazari', 'kulealti'].forEach((d) => KE.openBranch(G, d));
+    G.era = 3; G.reputation = 70;
+    const g = KE.SAVE.open(clone(KE.SAVE.envelope(G)));
+    expect(g.era).toBe(3);
+    expect(KE.eraStatus(g).req.find((r) => r.id === 'imza2').ok).toBe(false);
+  });
+  it('imparatorluğu kurmuş eski oyun son dönemdedir', () => {
+    const { KE } = loadGame(files);
+    const G = newGame(KE);
+    G.flags.empire = 5;
+    const env = clone(KE.SAVE.envelope(G));
+    delete env.game.eraLog; env.game.era = 1; delete env.sum;
+    expect(KE.SAVE.open(env).era).toBe(4);
+  });
+});
+
+describe('itibar', () => {
+  it('70 üstünde her gün aşınır', () => {
+    const { KE } = loadGame(files);
+    const G = newGame(KE);
+    G.reputation = 100;
+    playDays(KE, G, 3);
+    expect(G.reputation).toBeLessThan(100);
+  });
+});

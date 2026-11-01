@@ -6262,5 +6262,33 @@
  "Cüneyt Bey'in teklifi geri çevrildi": {
   "en": "Cüneyt Bey's offer turned down",
   "de": "Cüneyt Beys Angebot abgelehnt"
+ },
+ "İki semtte taç kazan": {
+  "en": "Win crowns in two districts",
+  "de": "Gewinne Kronen in zwei Bezirken"
+ },
+ "Üç şubeye ulaş": {
+  "en": "Reach three branches",
+  "de": "Erreiche drei Filialen"
+ },
+ "Beş şubeli zincir": {
+  "en": "A five-branch chain",
+  "de": "Eine Kette mit fünf Filialen"
+ },
+ "İmza tarifi 2. seviyeye çıkar": {
+  "en": "Raise the signature recipe to level 2",
+  "de": "Bring das Signature-Rezept auf Stufe 2"
+ },
+ "İmza tarifi {0} seviyeye çıkar": {
+  "en": "Raise the signature recipe to level {0}",
+  "de": "Bring das Signature-Rezept auf Stufe {0}"
+ },
+ "Dört toplu sipariş teslim et": {
+  "en": "Deliver four bulk orders",
+  "de": "Liefere vier Großaufträge"
+ },
+ "Adını semtte duyur, yeni dükkânlar aç. \"Lüks Kebap\" seni fark etti.": {
+  "en": "Make a name in the district and open new shops. \"Lüks Kebap\" has noticed you.",
+  "de": "Mach dir im Bezirk einen Namen und eröffne neue Läden. „Lüks Kebap“ ist auf dich aufmerksam geworden."
  }
 }

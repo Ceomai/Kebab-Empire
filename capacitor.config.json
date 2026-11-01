@@ -1,0 +1,6 @@
+{
+  "appId": "com.ceomai.kebabempire",
+  "appName": "Kebab Empire",
+  "webDir": "dist",
+  "android": { "backgroundColor": "#fff8ec" }
+}

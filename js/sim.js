@@ -209,7 +209,7 @@
       ledger: { days: [], months: [] }, monthExtras: { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 }, journal: [], news: [], goals: {},
       phase: 'morning', rival: { power: 20, district: null }, market: [], workers: [], flags: {}, centralKitchen: false,
       eventLog: [], pendingEvent: null, payLate: false, lastSummary: null, speed: 1, farm: null, tut: opts.tut ? 0 : 99,
-      era: 1, gen: 1, weekly: null, stories: {}
+      era: 1, eraLog: { 1: 1 }, gen: 1, weekly: null, stories: {}
     };
     const lg = opts.legacy;
     if (lg) {
@@ -959,17 +959,17 @@
     G.staff = G.staff.filter((s) => !s.quit);
     const totalRep = G.branches.reduce((a, b) => a + S0.branches[b.id].stats.repDelta, 0);
     let dRep = clamp(totalRep, -2, 1.5);
-    if (dRep > 0 && G.reputation > 55) dRep *= Math.max(0.15, 1 - (G.reputation - 55) / 55);
+    if (dRep > 0 && G.reputation > 55) dRep *= Math.max(0.08, 1 - (G.reputation - 55) / 50);
     G.reputation = clamp(G.reputation + dRep, 0, 100);
     /* tepede kalmak emek ister: 70'in üstünde itibar her gün biraz aşınır */
-    if (G.reputation > 70) G.reputation = clamp(G.reputation - (G.reputation - 70) / 150, 0, 100);
+    if (G.reputation > 70) G.reputation = clamp(G.reputation - (G.reputation - 70) / 55, 0, 100);
     out.journal = KE.writeJournal(G, S0, out);
     G.journal.unshift({ day: G.day, date: KE.dateStr(G.day), text: out.journal });
     if (G.journal.length > 60) G.journal.length = 60;
     G.mods.forEach((m) => { m.days -= 1; }); G.mods = G.mods.filter((m) => m.days > 0);
     if (KE.farmDay) out.farm = KE.farmDay(G);
     out.daily = KE.dailyProgress(G, true);
-    out.daily.forEach((g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + (G.reputation > 70 ? 0.15 : 0.4), 0, 100); } });
+    out.daily.forEach((g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + (G.reputation > 70 ? 0.05 : 0.4), 0, 100); } });
     out.unlocks = [];
     KE.MODES[G.mode].products.filter((p) => p.unlock && !G.flags['tarif_' + p.id] && G.reputation >= p.unlock).forEach((p) => {
       G.flags['tarif_' + p.id] = true; out.unlocks.push(p);
@@ -1024,13 +1024,14 @@
   /* Ay sonu semt şampiyonluğu: şubenin ay ortalaması memnuniyeti "Lüks Kebap"ın semtteki çıtasını geçerse */
   KE.championship = function (G) {
     const key = KE.monthKey(G.day);
+    let repWins = 0;
     return G.branches.map((b) => {
       const days = G.ledger.days.filter((d) => d.month === key && d.branchId === b.id);
       const served = days.reduce((a, d) => a + d.served, 0);
       const sat = served ? days.reduce((a, d) => a + d.sat * d.served, 0) / served : 0;
       const bar = Math.round(Math.min(90, 72 + G.rival.power * 0.08) + (G.rival.district === b.district ? 4 : 0) - (b.flagship ? 3 : 0));
       const won = served >= 250 && sat >= bar;
-      if (won) { b.championUntil = G.day + 30; b.champions = (b.champions || 0) + 1; G.flags.champ = true; G.reputation = clamp(G.reputation + 2, 0, 100); }
+      if (won) { b.championUntil = G.day + 30; b.champions = (b.champions || 0) + 1; G.flags.champ = true; if (repWins++ < 3) G.reputation = clamp(G.reputation + 1, 0, 100); }
       return { id: b.id, name: b.name, district: KE.district(b).name, sat, bar, won, served };
     });
   };
@@ -1112,12 +1113,14 @@
     hafta: (G) => !!(G.flags.profitWeek || (G.goals && G.goals.ilkhafta)),
     rep40: (G) => G.reputation >= 40,
     upg: (G) => G.branches.some((b) => Object.values(b.equipment).some((v) => v > 0)),
-    sampiyon: (G) => !!G.flags.champ,
-    sube2: (G) => G.branches.length >= 2,
-    ciro1m: (G) => G.ledger.months.some((m) => m.revenue >= 1000000),
-    sube4: (G) => G.branches.length >= 4,
+    taclar2: (G) => G.branches.filter((b) => (b.champions || 0) > 0).length >= 2,
+    sube3: (G) => G.branches.length >= 3,
+    ciro3m: (G) => G.ledger.months.some((m) => m.revenue >= 3000000),
     rep65: (G) => G.reputation >= 65,
-    imza: (G) => !!(G.signature && G.signature.level >= 1 && !G.signature.family) || !!(G.signature && G.signature.level >= 2)
+    sube5: (G) => G.branches.length >= 5,
+    imza2: (G) => !!(G.signature && !G.signature.family && G.signature.level >= 2) || !!G.flags.legacyImza,
+    kontrat4: (G) => (G.flags.contracts || 0) >= 4 || !!G.flags.legacyImza,
+    imza: (G) => !!(G.signature && !G.signature.family) || !!G.flags.legacyImza
   };
   KE.eraStatus = function (G) {
     const n = G.era || 1, cur = KE.ERAS[n - 1];
@@ -1126,7 +1129,7 @@
   };
   KE.advanceEra = function (G) {
     const out = [];
-    while ((G.era || 1) < KE.ERAS.length && KE.eraStatus(G).ready) { G.era = (G.era || 1) + 1; out.push(KE.ERAS[G.era - 1]); }
+    while ((G.era || 1) < KE.ERAS.length && KE.eraStatus(G).ready) { G.era = (G.era || 1) + 1; (G.eraLog = G.eraLog || {})[G.era] = G.day; out.push(KE.ERAS[G.era - 1]); }
     return out;
   };
   KE.placeOpen = (G, id) => !G || (G.era || 1) >= (KE.PLACE_ERA[id] || 1);
