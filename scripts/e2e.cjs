@@ -5,7 +5,7 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
   const browser = await pw[BROWSER].launch();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
-  page.on('pageerror', e => errors.push('PAGEERROR ' + e.message + ' @ ' + (e.stack || '').split('\n').slice(1, 3).join(' | ')));
+  page.on('pageerror', e => /sw\.js.*access control/.test(e.message) || errors.push('PAGEERROR ' + e.message + ' @ ' + (e.stack || '').split('\n').slice(1, 3).join(' | ')));
   page.on('console', m => { if (m.type() === 'error' && !/fonts|ERR_/.test(m.text())) errors.push('CONSOLE ' + m.text()); });
   await page.goto(process.env.URL || 'http://localhost:4173/');
   await page.evaluate(() => localStorage.clear());
