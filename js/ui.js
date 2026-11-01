@@ -17,6 +17,8 @@
   const roleName = (s) => KE.roleName(G, s);
   const bar = (v, cls) => `<span class="gauge ${cls || ''}"><i style="width:${clamp(v, 0, 100)}%"></i></span>`;
   const moodCls = (v) => v < 35 ? 'crit' : v < 60 ? 'warn' : 'ok';
+  const CL = () => (KE.CLOUD && KE.CLOUD.enabled ? KE.CLOUD : null);
+  const track = (n, p) => { if (KE.CLOUD && KE.CLOUD.track) KE.CLOUD.track(n, p); };
   const avatar = (look, mood, label, size) => `<span class="avatar ${size || ''}">${KE.portrait(look, { mood, label })}</span>`;
 
   /* ---------- Kayıt (ayrıntılar save.js'te) ---------- */
@@ -124,6 +126,8 @@
     const inGame = G && !['title', 'newMode', 'newDistrict', 'newMaster'].includes(screen);
     app().innerHTML = (inGame ? topbar() : '') + fn();
     if (screen === 'map') UI.mapMount();
+    if (screen === 'subeler') UI.fillRanking();
+    if (G && UI.lastTracked !== screen) { UI.lastTracked = screen; track('screen', { s: screen, day: G.day }); }
     if (screen === 'shop' && G && G.phase !== 'morning') { KE.SCENE.reset(); if (G.live) UI.sceneTick(true); renderTezgah(); }
     if (G && G.phase !== 'service') UI.save();
     if (inGame) setTimeout(UI.tutor, 60);
@@ -1036,7 +1040,32 @@
       ${morningOnly()}
       <div class="note">${IC('users')}<span>Yeni şubeye Usta Pazarı'ndan bir usta, Eleman Bürosu'ndan kasiyer ve komi/garson al. Müdür, ekibi yoğunluğa göre kendisi yönetir. Ustasız şube kepenk açamaz.</span></div>
       ${G.branches.length >= 3 ? `<section class="panel row between"><div><h2>Merkezi mutfak</h2><p class="small muted">Döner ve kıyma merkezde hazırlanıp şubelere dağıtılır. Malzeme maliyeti %12 düşer.</p></div>${G.centralKitchen ? `<span class="chip gr">${IC('check')}Kuruldu</span>` : `<button class="btn green" data-a="central" ${G.cash < 450000 * G.priceIndex ? 'disabled' : ''}>${KE.tl(450000 * G.priceIndex)}</button>`}</section>` : ''}
-      <div class="grid g3">${cards}</div></main>`;
+      <div class="grid g3">${cards}</div>
+      ${CL() ? `<section class="panel" id="cityrank"><div class="sechead"><h2>Şehir sıralaması</h2><span class="muted small">Bu ay, doğrulanmış günlere göre bütün oyuncular</span></div><p class="small muted">Yükleniyor…</p></section>` : ''}</main>`;
+  };
+  /* Şehir sıralaması (bulut açıksa, sayfa çizildikten sonra doldurulur) */
+  UI.fillRanking = async function () {
+    const box = document.getElementById('cityrank'); const cl = CL();
+    if (!box || !cl) return;
+    if (!cl.ready) { box.querySelector('p').innerHTML = `Sıralamaya katılmak için bulut kaydını aç. <button class="btn xs" data-a="privacy">Hesap ve gizlilik</button>`; return; }
+    const month = KE.monthKey(G.day);
+    const [rows, champs] = await Promise.all([cl.leaderboard(month, G.mode), cl.champions(month)]);
+    if (!document.getElementById('cityrank')) return;
+    box.querySelector('p').outerHTML = (rows.length ? `<ol class="rank">${rows.map((r, i) => `<li class="${r.is_me ? 'me' : ''}"><b>${i + 1}</b><span>${esc(r.display_name)}</span><em>${KE.tl(r.revenue)}</em><small>${r.days} gün · itibar ${r.reputation}</small></li>`).join('')}</ol>` : '<p class="small muted">Bu ay henüz doğrulanmış sonuç yok. Günü bitirdiğinde sonucun buraya gelir.</p>')
+      + (champs.length ? `<h3>Semt şampiyonları</h3><div class="chips">${champs.map((c) => `<span class="chip gd">${esc((KE.DISTRICTS.find((d) => d.id === c.district) || {}).name || c.district)}: ${esc(c.display_name)}</span>`).join('')}</div>` : '');
+  };
+  /* KVKK aydınlatma ve rıza */
+  UI.privacyModal = function (first) {
+    const cl = CL(); if (!cl) { UI.toast('Bu sürümde bulut bağlantısı yok; oyun yalnızca bu cihazda kaydedilir.'); return; }
+    const c = cl.consent() || {};
+    UI.modal(`<div class="mhead"><h2>${first ? 'Hoş geldin!' : 'Hesap ve gizlilik'}</h2><p class="muted">Oyun her zaman bu cihaza kaydedilir. Aşağıdakiler isteğe bağlıdır; istediğin zaman kapatabilirsin.</p></div>
+      <div class="stack">
+        <label class="switch lbl"><input type="checkbox" id="cs-cloud" ${c.cloud ? 'checked' : ''}><i></i><span><b>Bulut kaydı ve şehir sıralaması</b><small>Anonim bir hesap açılır. Kaydın bulutta yedeklenir, gün sonuçların takma adınla sıralamaya girer. E-posta istenmez.</small></span></label>
+        <label class="field">Sıralamada görünecek takma ad<input id="cs-name" maxlength="24" value="${esc(c.name || (G && G.owner) || '')}" placeholder="Örn. Deniz Usta"></label>
+        <label class="switch lbl"><input type="checkbox" id="cs-an" ${c.analytics ? 'checked' : ''}><i></i><span><b>Kullanım istatistikleri</b><small>Hangi ekranların kullanıldığı ve oyunun nerede zorlandığı gibi bilgiler. Kişisel veri, konum ya da reklam kimliği toplanmaz.</small></span></label>
+        <p class="tiny muted">Veriler Supabase üzerinde AB bölgesinde tutulur; ölçümler 180 günde silinir. Hata raporları kişisel veri içermez. Ayrıntılar oyunun gizlilik metninde.</p>
+        ${!first && c.cloud ? `<div class="row"><input id="cs-mail" type="email" class="grow inp" placeholder="E-posta (başka cihazda devam için)"><button class="btn sm ghost" data-a="linkMail">Bağla</button></div><div class="row"><button class="btn sm ghost" data-a="cloudLoad">${IC('arrow')}Buluttaki kaydı yükle</button><button class="btn sm red" data-a="deleteData">Bütün verilerimi sil</button></div>` : ''}
+      </div><div class="acts">${first ? '<button class="btn ghost" data-a="consentNone">Hiçbirini istemiyorum</button>' : '<button class="btn ghost" data-a="closeModal">Kapat</button>'}<button class="btn green" data-a="consentSave">Kaydet</button></div>`);
   };
 
   /* ---------- Besi çiftliği ---------- */
@@ -1102,6 +1131,7 @@
     const m = ng.masters[ng.master];
     G = KE.newGame({ tut: true, mode: ng.mode, district: ng.district, master: Object.assign({}, m.tmpl, { look: m.look, gender: m.gender, age: m.age }), owner: ng.owner || 'Patron', shopName: ng.shopName || null });
     KE.G = G;
+    track('game_start', { mode: G.mode, district: G.branches[0].district });
     UI.go('map');
     const usta = G.staff[0];
     UI.modal(`<div class="evcard"><div class="ev-fig">${KE.figure(KE.staffLook(usta), { mood: 'happy', label: usta.name })}</div><div class="stack"><span class="kicker">Hikâye</span><h2>Babadan kalan dükkân</h2>
@@ -1112,7 +1142,7 @@
   A.closeModal = () => UI.closeModal();
   A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">Oyun her gün sonunda bu tarayıcıya kaydedilir.</p></div>
-    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
+    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
   A.exportSave = () => { if (!G) return; if (G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; } KE.SAVE.exportFile(G); UI.toast('Yedek dosyası indirildi.', 'good'); };
   A.importSave = () => {
@@ -1123,7 +1153,7 @@
   A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Kayıtlı oyun silinecek ve yeni bir oyun başlayacak.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Evet, sıfırdan başla</button></div>`); };
   A.doNew = () => { KE.SAVE.clear(); G = null; UI.closeModal(); UI.ng = {}; UI.go('newMode'); };
   A.tutNext = () => { G.tut++; UI.tutor(); };
-  A.tutSkip = () => { G.tut = 99; UI.tutor(); };
+  A.tutSkip = () => { track('tutorial_skip', { step: G.tut }); G.tut = 99; UI.tutor(); };
   A.pickOpt = (d) => { const o = UI.pickOptions[+d.i]; UI.closeModal(); if (pickCb) pickCb(o); };
 
   A.viewBranch = (d) => {
@@ -1133,6 +1163,7 @@
   A.openShop = () => {
     UI.dailyDone = null;
     if (!G.branches.some((b) => KE.branchStaff(G, b).some(KE.isCook))) { UI.toast('Hiçbir şubede usta yok. Usta Pazarı\'ndan birini işe al.', 'bad'); return; }
+    UI.morningEnv = CL() && KE.CLOUD.ready ? JSON.parse(JSON.stringify(KE.SAVE.envelope(G))) : null;
     KE.startService(G);
     if (!G.speed) G.speed = 1;
     UI.render();
@@ -1164,7 +1195,14 @@
   A.closeTab = (d) => { UI.closeTab = d.id; showClosing(); };
   A.tipToday = (d) => { UI.todayRule = d.r; showClosing(); };
   A.finalize = () => {
+    const S0 = G.lastSummary, morning = UI.morningEnv; UI.morningEnv = null;
     const out = KE.finalizeDay(G, UI.todayRule);
+    const tot = { served: 0, revenue: 0 }; Object.values(S0.branches).forEach((x) => { tot.served += x.stats.served; tot.revenue += x.stats.revenue; });
+    track('day_end', { day: S0.day, served: tot.served, revenue: Math.round(tot.revenue), branches: G.branches.length, rep: Math.round(G.reputation) });
+    if (morning && KE.CLOUD.ready) {
+      const lg = (G.actionLog || []).slice(-1)[0];
+      KE.CLOUD.submitDay({ saveId: G.saveId, day: S0.day, month: KE.monthKey(S0.day), mode: G.mode, district: G.branches[0].district, served: tot.served, revenue: tot.revenue, reputation: G.reputation, morning, todayRule: UI.todayRule || G.tipRule, log: lg && lg.day === S0.day ? lg.log : [] });
+    }
     document.querySelectorAll('.modal-bg').forEach((m) => m.remove());
     UI.holdEvent = true;
     UI.go('shop');
@@ -1262,10 +1300,10 @@
     if (c.rep) { const best = Math.max(...MODE().products.map((p) => KE.bestStar(G, b, p.id))); G.reputation = clamp(G.reputation + (best >= 4 ? 4 : 1), 0, 100); }
     UI.toast(`${c.name} başladı.`, 'good'); UI.render();
   };
-  A.openBranch = (d) => { const b = KE.openBranch(G, d.d); G.activeBranch = b.id; KE.checkGoals(G); UI.toast(`${b.name} açıldı! Şimdi usta ve ekip al.`, 'gold'); UI.render(); };
+  A.openBranch = (d) => { const b = KE.openBranch(G, d.d); track('branch_open', { district: d.d, day: G.day }); G.activeBranch = b.id; KE.checkGoals(G); UI.toast(`${b.name} açıldı! Şimdi usta ve ekip al.`, 'gold'); UI.render(); };
   A.central = () => { const c = 450000 * G.priceIndex; G.cash -= c; KE.addExtra(G, 'capex', c); G.centralKitchen = true; UI.toast('Merkezi mutfak kuruldu.', 'gold'); UI.render(); };
   A.tipRule = (d) => { G.tipRule = d.r; UI.todayRule = null; if (G.phase === 'closing' && document.querySelector('.tipbox')) showClosing(); else UI.render(); };
-  A.buyFarm = () => { KE.buyFarm(G); KE.checkGoals(G); UI.toast('Besi çiftliği artık senin!', 'gold'); UI.render(); };
+  A.buyFarm = () => { KE.buyFarm(G); track('farm_buy', { day: G.day }); KE.checkGoals(G); UI.toast('Besi çiftliği artık senin!', 'gold'); UI.render(); };
   A.buyAnimal = (d) => { const c = KE.buyAnimals(G, d.k); UI.toast(`${KE.FARM[d.k].name} alındı · ${KE.tl(c)}`, 'good'); UI.render(); };
   A.slaughter = (d) => { const r = KE.slaughter(G, d.k); UI.toast(`${r.heads} ${KE.FARM[d.k].unit} kesimhaneye gitti: ${Object.values(r.got).map((v) => KE.num(v, 0) + ' kg').join(', ')}`, 'good'); UI.render(); };
   A.upgradePen = (d) => { KE.upgradePen(G, d.k); UI.toast('Ağıl büyütüldü.', 'good'); UI.render(); };
@@ -1294,5 +1332,19 @@
     if (fn) fn(el, e);
   });
 
-  UI.boot = function () { UI.go('title'); };
+  /* Hesap ve gizlilik */
+  A.privacy = () => { UI.closeModal(); UI.privacyModal(false); };
+  A.consentSave = async () => {
+    const v = { cloud: document.getElementById('cs-cloud').checked, analytics: document.getElementById('cs-an').checked, name: document.getElementById('cs-name').value };
+    try { await KE.CLOUD.setConsent(v); UI.closeModal(); UI.toast(v.cloud ? 'Bulut kaydı açık.' : 'Tercihin kaydedildi.', 'good'); if (G) UI.save(); } catch (e) { UI.toast('Bağlanılamadı: ' + e.message, 'bad'); }
+  };
+  A.consentNone = async () => { await KE.CLOUD.setConsent({ cloud: false, analytics: false }); UI.closeModal(); };
+  A.linkMail = async () => { const m = document.getElementById('cs-mail').value.trim(); if (!/^\S+@\S+\.\S+$/.test(m)) { UI.toast('Geçerli bir e-posta yaz.', 'bad'); return; } try { await KE.CLOUD.linkEmail(m); UI.toast('Onay bağlantısı e-postana gönderildi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
+  A.cloudLoad = async () => {
+    const r = await KE.CLOUD.loadSave(); if (!r) { UI.toast('Bulutta kayıt yok.', 'bad'); return; }
+    try { const g = KE.SAVE.open(r.save); G = g; KE.G = G; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`Buluttan yüklendi · ${KE.dateStr(g.day)}`, 'good'); } catch (e) { UI.toast(e.message, 'bad'); }
+  };
+  A.deleteData = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Bütün bulut verilerin silinsin mi?</h2><p>Bulut kaydın, sıralama sonuçların, istatistiklerin ve anonim hesabın kalıcı olarak silinir. Bu cihazdaki oyun kalır.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="deleteDataYes">Evet, sil</button></div>`); };
+  A.deleteDataYes = async () => { try { await KE.CLOUD.deleteMyData(); UI.closeModal(); UI.toast('Bulut verilerin silindi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
+  UI.boot = function () { UI.go('title'); if (CL() && KE.CLOUD.needsConsent()) setTimeout(() => UI.privacyModal(true), 900); };
 })();

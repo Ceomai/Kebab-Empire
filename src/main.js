@@ -15,10 +15,11 @@ import '../js/config.js';
 import '../js/map.js';
 import '../js/scene.js';
 import '../js/ui.js';
+import './cloud.js';
 import '../js/main.js';
 import { registerSW } from 'virtual:pwa-register';
 
-KE.CONFIG.load();
+KE.CLOUD.init().finally(() => KE.CONFIG.load());
 
 registerSW({
   immediate: true,

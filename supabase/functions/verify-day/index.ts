@@ -1,0 +1,30 @@
+// Kebab Empire — gün sonucu doğrulama
+// İstemci gün sonucunu day_results'a yazar ve bu fonksiyonu { id } ile çağırır.
+// Fonksiyon sabah kaydını hamle günlüğüyle yeniden oynatır; tutarsa satırı doğrulanmış işaretler.
+// Ağır alanlar (sabah kaydı, günlük) doğrulamadan sonra silinir.
+import { createClient } from 'npm:@supabase/supabase-js@2';
+import { GAME as KE } from './game.js';
+
+const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' };
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+  try {
+    const auth = req.headers.get('Authorization') ?? '';
+    const url = Deno.env.get('SUPABASE_URL')!;
+    const user = createClient(url, Deno.env.get('SUPABASE_ANON_KEY')!, { global: { headers: { Authorization: auth } } });
+    const { data: u } = await user.auth.getUser();
+    if (!u?.user) return new Response(JSON.stringify({ error: 'oturum yok' }), { status: 401, headers: cors });
+    const { id } = await req.json();
+    const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    const { data: row, error } = await admin.from('day_results').select('*').eq('id', id).eq('user_id', u.user.id).single();
+    if (error || !row) return new Response(JSON.stringify({ error: 'kayıt yok' }), { status: 404, headers: cors });
+    if (row.verified) return new Response(JSON.stringify({ ok: true, note: 'zaten doğrulanmış' }), { headers: cors });
+    const morning = row.morning ?? {};
+    const r = KE.verifyDay(morning.envelope, row.action_log ?? [], morning.todayRule, { day: row.day, served: row.served, revenue: Number(row.revenue), reputation: Number(row.reputation) });
+    await admin.from('day_results').update({ verified: r.ok, verify_note: r.note, morning: null, action_log: null }).eq('id', id);
+    return new Response(JSON.stringify(r), { headers: { ...cors, 'Content-Type': 'application/json' } });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: cors });
+  }
+});

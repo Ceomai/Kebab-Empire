@@ -1107,3 +1107,10 @@ body::before { background: var(--kart); }
   .branchbar { padding-bottom: 8px; gap: 6px; }
   .btab { padding: 4px 10px 4px 5px; } .btab-art { width: 34px; } .btab-t b { font-size: 13.5px; } .btab-t small { font-size: 11px; }
 }
+.rank { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px; }
+.rank li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 10px; align-items: center; background: #fff; border: 1px solid var(--kart-cizgi); border-radius: 14px; padding: 8px 12px; }
+.rank li b { grid-row: span 2; width: 30px; height: 30px; border-radius: 50%; background: var(--krem); display: grid; place-items: center; font-family: var(--f-display); }
+.rank li:nth-child(1) b { background: var(--altin); } .rank li.me { border-color: var(--biber); background: #fff4f2; }
+.rank li span { font-weight: 800; } .rank li em { font-style: normal; font-family: var(--f-display); font-weight: 800; } .rank li small { grid-column: 2 / 4; color: var(--murekkep-2); font-size: 12px; }
+.inp { font: 700 15px var(--f-body); padding: 8px 12px; border-radius: 10px; border: 2px solid var(--cizgi); min-width: 0; }
+.modal .stack .field { flex: none; }
