@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 const root = path.resolve(import.meta.dirname, '..', 'js');
-export function loadGame(files = ['data', 'calendar', 'characters', 'economy', 'sim', 'farm', 'narrative', 'save']) {
+export function loadGame(files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save']) {
   const store = {};
   const ctx = { console, Intl, Math, Date, JSON, setTimeout, clearTimeout,
     localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } } };

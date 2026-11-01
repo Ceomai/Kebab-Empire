@@ -160,15 +160,15 @@
       ] }) });
 
   /* ---------- Ustaların huyları: ekip yönetimi küçük hikâyelere döner ---------- */
-  ev.push({ id: 'ustaIzin', who: null, w: 0.6,
+  ev.push({ id: 'ustaIzin', who: null, w: (G) => staffOf(G).some((s) => KE.huyOf(s) === 'izinci') ? 1.8 : 1.0,
     when: (G) => staffOf(G).filter(KE.isCook).length >= 2,
-    build: (G) => { const u = staffOf(G).filter(KE.isCook).sort((a, c) => a.morale - c.morale)[0];
+    build: (G) => { const cooks = staffOf(G).filter(KE.isCook); const u = cooks.find((s) => KE.huyOf(s) === 'izinci') || cooks.sort((a, c) => a.morale - c.morale)[0];
       return { title: `${u.name} izin istiyor`, text: `${u.name} önlüğünü katlarken lafı dolandırdı: "Patron, memlekette kızımın nişanı var. Bugün bir çıkabilsem..."`, ctx: { sid: u.id }, who: u,
         choices: [
           { label: 'Git, gönlün rahat olsun', desc: 'Bugün çalışmaz; morali +15', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale + 15, 0, 100); x.pos = 'mola'; x.offDay = G.day; return `${x.name} elini öptü: "Sağ ol patron, bunu unutmam."`; } },
           { label: 'Bugün olmaz, kalabalık var', desc: 'Çalışır ama morali −8', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale - 8, 0, 100); return `${x.name} başını salladı, ama bütün gün suratı asık.`; } }
         ] }; } });
-  ev.push({ id: 'ustaKavga', who: null, w: 0.5,
+  ev.push({ id: 'ustaKavga', who: null, w: 1.0,
     when: (G) => staffOf(G).some((s) => s.role === 'cirak' && s.mentorId),
     build: (G) => { const c = staffOf(G).find((s) => s.role === 'cirak' && s.mentorId); const m = G.staff.find((x) => x.id === c.mentorId) || c;
       return { title: 'Mutfakta gerginlik', text: `${m.name} ile çırağı ${c.name} sabah sabah atıştı. "Bana bıçak tutmayı öğretmiyor, bulaşık yaptırıyor!" diyor ${c.name.split(' ').slice(-1)[0]}.`, ctx: { sid: c.id, mid: m.id }, who: m,
@@ -177,9 +177,11 @@
           { label: 'Ustanın arkasında dur', desc: 'Usta +6, çırak −10', run: (G, ctx) => { const a = G.staff.find((y) => y.id === ctx.mid), c = G.staff.find((y) => y.id === ctx.sid); if (a) a.morale = clamp(a.morale + 6, 0, 100); if (c) c.morale = clamp(c.morale - 10, 0, 100); return 'Usta memnun; çırak sessizce bulaşığa döndü.'; } },
           { label: 'Çırağı başka ustaya ver', desc: 'Mentor bırakılır, çırak +6', run: (G, ctx) => { const c = G.staff.find((y) => y.id === ctx.sid); if (c) { c.mentorId = null; c.morale = clamp(c.morale + 6, 0, 100); } return 'Çırak artık mentorsuz. Usta Pazarı\'ndaki Kadrom sekmesinden yeni bir mentor seçebilirsin.'; } }
         ] }; } });
-  ev.push({ id: 'ustaTeklif', who: null, w: 0.5,
-    when: (G) => staffOf(G).some((s) => KE.isCook(s) && s.role === 'usta' && Math.max(...Object.values(s.spec)) >= 4),
-    build: (G) => { const u = staffOf(G).filter((s) => s.role === 'usta').sort((a, c) => Math.max(...Object.values(c.spec)) - Math.max(...Object.values(a.spec)))[0];
+  /* sadık usta başka yere bakmaz; hırslı usta teklifleri dinler */
+  const tempted = (G) => staffOf(G).filter((s) => s.role === 'usta' && KE.huyOf(s) !== 'sadik' && Math.max(...Object.values(s.spec)) >= 4);
+  ev.push({ id: 'ustaTeklif', who: null, w: (G) => tempted(G).some((s) => KE.huyOf(s) === 'hirsli') ? 1.8 : 1.0,
+    when: (G) => tempted(G).length > 0,
+    build: (G) => { const u = tempted(G).sort((a, c) => Number(KE.huyOf(c) === 'hirsli') - Number(KE.huyOf(a) === 'hirsli') || Math.max(...Object.values(c.spec)) - Math.max(...Object.values(a.spec)))[0];
       return { title: `${KE.ek(u.name, 'e')} göz koyan var`, text: `Karşı sokaktaki otelin şefi ${KE.ek(u.name, 'i')} yemeğe çıkarmış. "Bana iki katını veriyorlar patron, ama ben buraya alıştım..." diyor.`, ctx: { sid: u.id }, who: u,
         choices: [
           { label: '%15 zam yap', desc: 'Maaş +%15, moral +12', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.wage = Math.round(x.wage * 1.15 / 100) * 100; x.morale = clamp(x.morale + 12, 0, 100); return `${x.name} gülümsedi: "Bu dükkânın ekmeğini yedim, bir yere gitmem."`; } },
@@ -505,9 +507,10 @@
     const arc = ARC_IDS();
     const pool = ev.filter((e) => !e.arc && arc.indexOf(e.id) === -1 && (!e.mode || e.mode === G.mode) && (!e.when || e.when(G)) && G.eventLog.slice(-4).indexOf(e.id) === -1);
     if (!pool.length) return null;
-    let tot = pool.reduce((a, e) => a + e.w, 0), r = KE.rand() * tot;
+    const wOf = (x) => typeof x.w === 'function' ? x.w(G) : x.w;
+    let tot = pool.reduce((a, e) => a + wOf(e), 0), r = KE.rand() * tot;
     let e = pool[0];
-    for (const x of pool) { if ((r -= x.w) <= 0) { e = x; break; } }
+    for (const x of pool) { if ((r -= wOf(x)) <= 0) { e = x; break; } }
     const card = e.build(G);
     G.eventLog.push(e.id);
     return { id: e.id, who: e.who, title: card.title, text: card.text, ctx: card.ctx, whoStaff: card.who ? card.who.id : null, story: e.story ? { rid: e.story, step: e.step } : null, choices: card.choices.map((c) => ({ label: c.label, desc: c.desc })) };

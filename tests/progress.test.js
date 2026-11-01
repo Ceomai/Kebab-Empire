@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { loadGame, newGame, playDays } from './load.js';
 
-const files = ['data', 'calendar', 'characters', 'economy', 'sim', 'farm', 'narrative', 'save', 'verify'];
+const files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
 describe('dönemler', () => {

@@ -42,8 +42,8 @@
       <div class="t-dish d1">${KE.ART.dish('adana')}</div><div class="t-dish d2">${KE.ART.dish('lahmacun')}</div><div class="t-dish d3">${KE.ART.dish('et_durum')}</div><div class="t-dish d4">${KE.ART.dish('kunefe')}</div>
       <div class="t-front">
         <div class="t-logo"><span class="t-mark">${KE.ART.logo()}</span><h1><span>Kebab</span><em>Empire</em></h1><span class="t-ribbon">Döner ve kebap işletme oyunu</span></div>
-        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost" data-a="guide">${IC('book')}Kılavuz</button><button class="btn big ghost round langbtn" data-a="lang" aria-label="Dil / Language" title="Dil / Language">${(KE.I18N ? KE.I18N.lang : 'tr').toUpperCase()}</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
-        ${(() => { const h = UI.hall ? UI.hall() : []; return h.length ? `<div class="t-hall"><span class="kicker">${IC('crown')}Şeref kürsüsü</span>${h.slice(0, 3).map((x) => `<span><b>${esc(x.shop)}</b> · ${x.gen}. kuşak · ${x.days} günde imparator</span>`).join('')}</div>` : ''; })()}
+        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost" data-a="guide">${IC('book')}Kılavuz</button><button class="btn big ghost" data-a="race">${IC('target')}Haftanın yarışı</button><button class="btn big ghost round langbtn" data-a="lang" aria-label="Dil / Language" title="Dil / Language">${(KE.I18N ? KE.I18N.lang : 'tr').toUpperCase()}</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
+        ${(() => { const h = UI.hall ? UI.hall() : []; return h.length ? `<div class="t-hall"><span class="kicker">${IC('crown')}Şeref kürsüsü</span>${h.slice(0, 3).map((x) => `<span><b>${esc(x.shop)}</b> · ${x.gen}. kuşak · ${x.days} günde imparator${x.stars ? ` · ${'★'.repeat(x.stars)}` : ''}${x.donated ? ` · ${KE.tl(x.donated)} bağış` : ''}</span>`).join('')}</div>` : ''; })()}
       </div>
     </main>`;
   };
@@ -101,11 +101,11 @@
     const specs = Object.entries(s.spec).sort((a, b) => b[1] - a[1]);
     return `<article class="card person ${opts.sel ? 'sel' : ''}">
       <div class="pc-top"><div class="pc-fig">${KE.figure(KE.staffLook(s), { mood: KE.moodFromValue(s.morale), label: s.name })}</div>
-        <div class="pc-id"><h3>${esc(s.name)}</h3><div class="chips"><span class="chip or">${s.role === 'cirak' ? 'Çırak' : 'Usta'}</span><span class="chip">${s.region}</span>${tr ? `<span class="chip gd" title="${esc(tr.desc)}">${tr.name}</span>` : ''}</div>
+        <div class="pc-id"><h3>${esc(s.name)}</h3><div class="chips"><span class="chip or">${s.role === 'cirak' ? 'Çırak' : 'Usta'}</span><span class="chip">${s.region}</span>${tr ? `<span class="chip gd" title="${esc(tr.desc)}">${tr.name}</span>` : ''}${KE.huyOf(s) ? `<span class="chip bl" title="${esc(KE.HUYS[KE.huyOf(s)].desc)}">${KE.HUYS[KE.huyOf(s)].name}</span>` : ''}</div>
         ${opts.own ? `<div class="statl"><span>Moral</span>${bar(s.morale, moodCls(s.morale))}<b>${Math.round(s.morale)}</b></div>` : ''}
         <div class="specs">${specs.map(([pid, st]) => `<div class="spec">${KE.ART.dish(pid)}<span><b>${pn(pid)}</b>${stars(st)}${opts.own && st < 5 ? `<em class="xp">${bar((s.xp[pid] || 0) / KE.STAR_NEED[st + 1] * 100, 'thin')}</em>` : ''}</span></div>`).join('') || '<span class="muted small">Henüz uzmanlık yok</span>'}</div></div></div>
       <div class="pc-stats">${statl('Hız', (s.speed - 0.6) / 0.8)}${statl('Kalite', (s.quality + s.consistency) / 2)}${statl('Fire kontrol', 1.2 - s.waste)}</div>
-      ${tr ? `<p class="small muted">${tr.desc}</p>` : ''}${opts.extra || ''}
+      ${tr ? `<p class="small muted">${tr.desc}</p>` : ''}${KE.huyOf(s) ? `<p class="small muted"><b>${KE.HUYS[KE.huyOf(s)].name}:</b> ${KE.HUYS[KE.huyOf(s)].desc}</p>` : ''}${opts.extra || ''}
       <div class="pc-foot"><div class="price"><b>${KE.tl(s.wage)}</b><small>brüt / ay${s.fee ? ` · transfer ${KE.tl(s.fee)}` : ''}</small></div><div class="row">${opts.actions || ''}</div></div>
     </article>`;
   }
@@ -144,6 +144,7 @@
       '<b>Kapanış:</b> Günün raporunu görürsün, bahşişin nasıl dağıtılacağını seçersin ve günlüğünü okursun.',
       '<b>Hızlı gün:</b> Servisi izlemek istemediğin günlerde sabah ekranındaki "Hızlı gün" düğmesi servisi atlayıp doğrudan sonuca geçer.',
       '<b>Haftayı hızlı geç:</b> Yedi semtin hepsinde şube açtıktan sonra açılır. Haftanın kalanını tek tuşla geçer; biri istifa ederse, ay kapanırsa, yeni döneme geçersen, müfettiş gelirse ya da bir karar beklerse durur.',
+      '<b>Haftanın yarışı:</b> Ana menüden açılır. O hafta bütün oyuncular aynı semtte, aynı ustayla, aynı tohumla 7 gün oynar; müşteriler ve olaylar herkes için aynı gelir. Puan 7 günün toplam cirosudur. Yarış ayrı kaydedilir, ana oyununa dokunmaz; bulut açıksa günlerin doğrulanır ve haftalık sıralamaya girer.',
       '<b>Yönlendirme düzeyi:</b> Menüden "Bugün ne yapmalıyım?" kartının ne kadar konuşacağını seçebilirsin: Çok, Az (yalnızca acil uyarılar) ya da Sessiz.',
       'Oyun her gün sonunda tarayıcıya kaydedilir. Menüden dosyaya yedek alabilir, başka cihazda yükleyebilirsin.'
     ] },
@@ -152,8 +153,9 @@
       'Sahnedeki yoğunluk göstergesi kırmızıya dönen yeri gösterir: kuyruk uzarsa kasaya, tabak beklerse servise bir kişi daha ver.',
       '<b>Tezgâh:</b> İstersen tezgâha geçip siparişleri kendin hazırlarsın. Adımları doğru sırayla seç; hızlı ve hatasız olursan kalite artar. Her gün tezgâhta 6 sipariş hazırlamak bonus hedeftir (iki kat ödül).',
       'Bir müşterinin en sevdiği ürünü o ürünün uzmanı pişirirse "Ellerine sağlık!" der; memnuniyet ve bahşiş artar.',
-      '<b>Gün ortası kararları:</b> Bazı günler servis sırasında küçük bir olay çıkar: turist otobüsü, sönen ocak, fenalaşan bir çalışan, bastıran sağanak. Oyun durur ve seçim yaparsın; karar vermezsen 40 dakika sonra güvenli seçenek uygulanır.',
-      '<b>Acil kurye:</b> Servis sırasında malzeme bitmek üzereyse yan paneldeki "Acil kurye" düğmesi eksikleri normal fiyatın 1,5 katına hemen getirir. Günde bir kez kullanılabilir.',
+      '<b>Rezervasyon defteri:</b> 2. dönemde Mobilya ve Dekor\'dan şube başına alınır, sabah açılıp kapatılır. Açıkken dolu saatte gelen müşteri kaçmaz, başka saate yönlendirilir; yer ayırtan müşteri daha sabırlıdır ve %5 daha çok harcar. Bedeli: yer ayırtmadan gelen kalabalığın %8\'i hiç gelmez. Rehber müfettişini geçmenin en sağlam yolu budur.',
+      '<b>Gün ortası kararları:</b> Bazı günler servis sırasında küçük bir olay çıkar: turist otobüsü, sönen ocak, fenalaşan bir çalışan, bastıran sağanak. Oyun durur ve seçim yaparsın. Karar vermezsen 40 dakika sonra şubenin müdürü varsa o en iyisini seçer; yoksa güvenli seçenek uygulanır. Tamirci bazen trafiğe takılır; tente müdavimlerin gönlünü kazanır.',
+      '<b>Acil kurye:</b> Servis sırasında bir malzeme günün kalanına yetmeyecekse yan paneldeki "Acil kurye" düğmesi günün kalanının ihtiyacını getirir (dönerde normal fiyatın 1,3 katı, kebapta 1,5 katı). Günde bir kez kullanılır; ertesi sabah sipariş kendiliğinden "Bol"a geçer.',
       '<b>Ekip panosu:</b> Ekip panelinde "Pano" görünümüne geçersen görevleri sütun sütun görürsün. Bir kişiye dokun, sonra gideceği sütuna dokun; masaüstünde sürükleyip bırakabilirsin.',
     ] },
     { id: 'ekip', ic: 'users', t: 'Ekip, roller ve moral', lead: 'Her rolün tek bir işi vardır; doğru kişiyi doğru göreve vermek servisin hızını belirler.', items: [
@@ -164,7 +166,7 @@
       '<b>Şube müdürü:</b> İkinci şubeyle birlikte görünür. Ekibi yoğunluğa göre kendisi yönetir ve sabah stok ile fiyat ayarlarını yapar.',
       '<b>Moral:</b> Bahşiş, kostüm, dinlenme odası ve molalar morali artırır; aşırı yorgunluk ve geciken maaş düşürür. Morali 18\'in altına düşen çalışan istifa edebilir.',
       '<b>Mola:</b> Enerjisi biten çalışanı sakin saatte molaya gönder. Otomatik ekip yönetimi açıksa bunu kendisi yapar ve hiçbir görevi tamamen boş bırakmaz.',
-      '<b>Ustaların huyları:</b> Ustalar zaman zaman izin ister, çıraklarıyla atışır ya da başka yerden teklif alır. Verdiğin karar moralini ve sadakatini etkiler.',
+      '<b>Ustaların huyları:</b> Her ustanın kalıcı bir huyu vardır ve kartında yazar. <b>Ailesine düşkün</b> usta ara sıra izin ister, <b>hırslı</b> usta başka yerlerin tekliflerini dinler, <b>sadık</b> usta başka yere bakmaz ve morali zor bozulur. Verdiğin kararlar moralini ve sadakatini etkiler.',
     ] },
     { id: 'kadro', ic: 'lock', t: 'Kadro sınırı ve dükkânı büyütmek', lead: 'Bir şubede çalışabilecek kişi sayısı dükkânın büyüklüğüne bağlıdır.', items: [
       '<b>Mutfak</b> (usta + çırak): ocak yeri + 1. <b>Salon</b> (kasiyer + garson): masa sayısının yarısı. <b>Paket ve temizlik:</b> salon seviyesi + 1. <b>Müdür:</b> 1.',
@@ -199,7 +201,7 @@
       '<b>Ustaya ağırlık:</b> Ustalar iki pay alır, keyiflenir; çıraklar ustalarından %30 daha hızlı öğrenir. Diğerleri biraz bozulur.',
       '<b>Performansa göre:</b> Kim çok iş çıkardıysa o çok alır; çalışkanlar mutlu olur.',
       '<b>Kasaya al:</b> Bahşiş işletmeye kalır, ekip ay sonu primi sözüyle idare eder. Kısa vadede nakit sağlar; uzun süre yapılırsa moral, hız ve itibar düşer.',
-      '<b>Ekibin isteği:</b> Ekip her hafta bir kural ister (kapanış ekranında yazar). O kuralı seçtiğin her gün herkesin morali biraz daha artar; çırakları mentorlu ekipler çoğunlukla "Ustaya ağırlık" ister.',
+      '<b>Ekibin isteği:</b> Ekip her hafta bir bahşiş kuralı ister (kapanış ekranında yazar). O kuralı seçtiğin her gün herkesin morali biraz artar; hafta sonunda günlerin yarısında bile uygulanmadıysa ekip küser ve morali düşer.',
     ] },
     { id: 'temizlik', ic: 'broom', t: 'Temizlik ve denetim', lead: 'Temizlik her müşteriyle düşer; temizlik görevlisi ve masa toplamak yükseltir.', items: [
       'Belediye denetiminde temizlik 55\'in altındaysa ceza yersin (Muhtar Kemal Bey hikâyesini tamamlarsan eşik 45\'e iner).',
@@ -211,12 +213,12 @@
       '<b>2. Semtin yıldızı:</b> Reklam Ajansı ve Merkez Ofis (yeni şube açma) açılır. Geçmek için: dört şube, ayda 5 milyon ₺ ciro, itibar 65.',
       '<b>3. Şehrin zinciri:</b> Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı (dönerde üç), imza tarifin 2. seviyesi, on toplu sipariş.',
       '<b>4. İmparatorluk yolu:</b> "Lüks Kebap"ı satın alma teklifi açılır.',
-      '<b>Rehber yıldızı:</b> 3. dönemden sonra itibarın 88\'in üstündeyse rehber müfettişi habersiz bir şubeye gelir (danışman kartı o sabah haber verir). Memnuniyet %84 ve kaçan müşteri %10\'un altındaysa zincir bir yıldız kazanır (en çok 3): her yıldız müşteriyi ve fiyat toleransını kalıcı olarak %3 artırır. Başarısız ziyaret itibar götürür.',
+      '<b>Rehber yıldızı:</b> 3. dönemden sonra itibarın 88\'in üstündeyse rehber müfettişi bir şubeye gelir. Rezervasyon defteri olan şubede adı bir gün önceden defterde görünür (danışman kartı haber verir); öteki şubelere habersiz gelir. Memnuniyet %84 ve kaçan müşteri %15\'in altındaysa zincir bir yıldız kazanır (en çok 3): her yıldız müşteriyi ve fiyat toleransını kalıcı olarak %3 artırır. Başarısız ziyaret itibar götürür.',
       'Haritadaki şehir panelinde içinde bulunduğun dönem ve eksik şartlar görünür; bir şarta dokununca ilgili yere gidersin.'
     ] },
     { id: 'subeler', ic: 'store', t: 'Şubeler ve Merkez Ofis', lead: 'Yeni şubeleri Merkez Ofis\'ten açarsın. Bütün şubeler aynı anda çalışır; şube şeridinden canlı izlersin.', items: [
       'Yeni şubeye Usta Pazarı\'ndan bir usta, Eleman Bürosu\'ndan kasiyer ve komi/garson al. Ustasız şube kepenk açamaz.',
-      '<b>Müdürlü şube:</b> Müdürün olan şube sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar. İstersen şube kartından kapatabilirsin.',
+      '<b>Müdürlü şube:</b> Müdürün olan şube sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar; kapasite yetmiyorsa ve yer varsa bürodan bir kasiyer ya da garson alır. Gün ortası kararlarında sen karar vermezsen o verir. İstersen şube kartından kapatabilirsin.',
       '<b>Merkezi mutfak:</b> Üç şubeden sonra açılır, bütün şubelerde malzeme maliyetini %12 düşürür ve yaklaşık iki ayda kendini öder.',
       'Üç ve daha fazla şubede gün sonu, uzun günlük yerine şube şube bir özet tablo olur; her hafta sonunda haftalık rapor gelir.'
     ] },
@@ -245,6 +247,7 @@
     { id: 'yatirim', ic: 'chart', t: 'Büyük yatırımlar (3. dönem)', lead: 'Kasadaki parayı büyümeye çevirmenin yolları Merkez Ofis\'tedir.', items: [
       '<b>İmza tarif:</b> Bir ürünü zincirin imzası yaparsın (3 seviye, her biri 10 gün sürer). Her seviye bütün şubelerde müşteriyi %8 artırır ve müşterilerin fiyata toleransını %4 yükseltir.',
       '<b>Amiral dükkân:</b> Bir şubeyi şehrin simgesi yaparsın: +4 masa, +1 ocak yeri ve daha uzun kuyrukla kapasitesi büyür, müşteriler orada %10 daha yüksek fiyata katlanır. O şubede müşteri %15, diğer şubelerde %5 artar; semt tacı çıtası 3 puan düşer.',
+      '<b>Vakıf ve sponsorluk:</b> Merkez Ofis\'te üç bağış var: mahalle takımı (her seviye müşteri +%2), okul (itibar +3, fiyat toleransı +%1) ve aşevi (itibarın tepede aşınması %25 azalır, ekip morali +3). Her biri üç seviyedir ve pahalıdır: geç oyunda biriken paranın gideceği yer. Satın alma bedeliyle aynı kasadan çıkar; imparatorluktan sonra da açık kalır.',
       '<b>Toplu siparişler:</b> Her hafta stadyum, düğün, festival gibi üç teklif gelir; haftada biri kabul edilir. Gün sonunda teslim edilir, iyi para getirir ama ekibin morali düşer.',
       '<b>Besi çiftliği:</b> Kendi etini yetiştirirsin; çiftlik eti haldekinden yaklaşık %25 ucuzdur. Ağılları büyüttükçe daha çok şubeyi besler.'
     ] },

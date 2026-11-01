@@ -181,6 +181,7 @@
     return `<header class="topbar">
       <div class="tb-row">
         <button class="brand" data-a="go" data-s="map" aria-label="Haritaya dön">${KE.ART.logo()}<span>Kebab<b>Empire</b></span>${KE.G.flags && KE.G.flags.empire ? `<span class="brand-crown" title="Kebap İmparatoru">${IC('crown')}</span>` : ''}</button>
+        ${KE.G.race ? `<div class="tb-race" title="Haftanın yarışı">${IC('target')}<b>Yarış</b><small>${Math.min(KE.G.day, KE.RACE_DAYS)}/${KE.RACE_DAYS}. gün</small></div>` : ''}
         <div class="tb-date"><span class="tb-day">${KE.dateStr(KE.G.day)}</span><span class="tb-sub">${KE.weekday(KE.G.day)}${hol ? ' · ' + hol : ''}</span></div>
         <div class="tb-clock ${KE.G.phase}">${IC('clock')}<b id="tb-clock">${clock}</b><span>${phase}</span></div>
         <div class="tb-money ${KE.G.cash < 0 ? 'neg' : ''}">${IC('coin')}<span class="tbm"><b>${KE.tl(KE.G.cash)}</b>${KE.G.phase === 'service' ? `<small id="tb-today">Bugün +${KE.tl(todayRevenue())}</small>` : ''}</span></div>

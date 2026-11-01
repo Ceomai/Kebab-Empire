@@ -103,6 +103,7 @@
         /* sabah siparişi o güne yansır: kalabalık gün ya da kampanya sonrası eksik varsa tek dokunuşla tamamla */
         const sh = KE.shortfall(G, b);
         if (sh.items.length) add(1, 'cart', nm + 'stok bugüne yetmeyecek', (sh.items.length > 2 ? `${sh.items.length} malzeme` : sh.items.map((k) => KE.MODES[G.mode].ingredients[k].name).join(', ')) + ' beklenen kalabalığa yetmez.|Sabah eksiği tamamlarsan ürünler gün ortasında bitmez.', `Tamamla · ${KE.tl(sh.cost)}`, `data-a="topUpToday" data-id="${b.id}"`);
+        if (b.bolNote) add(2, 'truck', nm + 'sabah siparişi "Bol"a çekildi', 'Dün acil kurye çağrıldı; bugün stok daha bol geldi. Fire artarsa Hal\'den "Normal"e dön.', 'Hal', 'data-a="go" data-s="hal"');
         const yso = G.lastSummary && G.lastSummary.branches[b.id] && Object.entries(G.lastSummary.branches[b.id].stats.stockouts || {}).filter(([, m]) => m < 600);
         if (!sh.items.length && yso && yso.length >= 2 && b.stockLevel < 1.5 && !KE.isManaged(G, b)) add(1, 'cart', nm + 'dün ürün bitti', `${yso.length} ürün akşam saatlerinden önce tükendi. Sabah siparişini "Bol"a çevir; fark bugüne hemen yansır.`, 'Bol sipariş', `data-a="advBol" data-id="${b.id}"`);
         if (sh.factor >= 1.15) {
@@ -132,7 +133,14 @@
     const sp2 = morning && KE.specialDay(G.day + 1);
     /* her hafta gelen cuma bilinir; yalnızca maç ve bayram önceden haber verilir */
     if (sp2 && sp2.id !== 'cuma') add(2, 'star', `Yarın ${sp2.name}`, 'Kalabalık bekleniyor. Rıza siparişi kendisi artırır; ekibi tam kadro hazırla.', 'Hal tahmini', 'data-a="go" data-s="hal"');
-    if (morning && G.inspect) { const ib = G.branches.find((x) => x.id === G.inspect.bid); add(0, 'star', `Rehber müfettişi bugün ${ib.name} şubesinde`, 'Habersiz geldi, kimseye söyleme!|Yıldız için memnuniyet %84 ve kaçan müşteri %10\'un altında olmalı. Ekibi tam kadro koy, stoğu tamamla.', 'Şubeye git', `data-a="viewBranch" data-id="${ib.id}"`); }
+    /* müfettiş yalnızca rezervasyonlu şubede önceden görünür; öteki şubelere habersiz gelir */
+    const need = `Yıldız için memnuniyet %${KE.INSPECT.sat} ve kaçan müşteri %${Math.round(KE.INSPECT.lost * 100)}'in altında olmalı.`;
+    if (morning && G.inspect) { const ib = G.branches.find((x) => x.id === G.inspect.bid); if (ib && KE.resOn(ib)) add(0, 'star', `Rehber müfettişi bugün ${ib.name} şubesinde`, `Defterdeki "R. Güler" adına iki kişilik masa o.|${need} Ekibi tam kadro koy, stoğu tamamla.`, 'Şubeye git', `data-a="viewBranch" data-id="${ib.id}"`); }
+    if (morning && G.inspectNext) { const ib = G.branches.find((x) => x.id === G.inspectNext.bid); if (ib && KE.resOn(ib)) add(1, 'book', `Yarın ${ib.name} defterinde tanıdık bir isim`, `"R. Güler" adına iki kişilik akşam masası: rehber müfettişi olabilir.|${need} Bugünden ekibi ve stoğu hazırla.`, 'Şubeye git', `data-a="viewBranch" data-id="${ib.id}"`); }
+    if (morning && (G.era || 1) >= KE.RESERVATION.era && G.reputation >= 80) {
+      const nb = G.branches.find((b) => { const ys = G.lastSummary && G.lastSummary.branches[b.id] && G.lastSummary.branches[b.id].stats; return !b.reservation && ys && ys.arrivals > 40 && KE.lostShare(ys) >= 0.15; });
+      if (nb) add(2, 'book', `${nb.name}: rezervasyon defteri`, 'Dolu saatte gelen müşteri kaçmaz, başka saate yönlendirilir. Rehber müfettişi de önceden görünür.', 'Mobilya ve Dekor', `data-a="viewDekor" data-id="${nb.id}"`);
+    }
     if (G.cash < 0) add(0, 'coin', 'Kasa eksiye düştü', 'Maaşlar gecikirse SGK teşviki kaybolur. Kısa vadeli bir kredi çek.', 'Banka', 'data-a="go" data-s="banka"');
     const es = KE.eraStatus(G), miss = es.next && es.req.find((r) => !r.ok);
     /* dönem hedefi: şarta göre yapılacak somut iş */
@@ -153,6 +161,7 @@
     if (!list.length) return '';
     return `<div class="advice ${compact ? 'compact' : ''}"><span class="kicker">${IC('bolt')}Bugün ne yapmalıyım?</span>${list.map((a) => `<div class="adv p${a.pri}"><span class="adv-ic">${IC(a.ic)}</span><span class="adv-t"><b>${esc(a.title)}</b><small>${a.why.split('|').map((w) => `<span>${esc(w.replace(/^ +/, ''))}</span>`).join(' ')}</small></span><button class="btn xs ${a.pri === 0 ? 'red' : a.pri === 1 ? 'gold' : 'ghost'}" ${a.attrs}>${esc(a.btn)}</button></div>`).join('')}</div>`;
   };
+  A.viewDekor = (d) => { KE.G.activeBranch = d.id; UI.go('dekor'); };
   A.advBol = (d) => { KE.G.activeBranch = d.id; A.stockLevel({ v: 1.5 }); };
   A.advPrices = (d) => { KE.G.activeBranch = d.id; A.pricesToMarket(); };
   UI.cityTasks = () => (KE.G ? cityTasks() : []);

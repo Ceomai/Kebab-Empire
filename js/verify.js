@@ -41,6 +41,10 @@
       P.pendingEvent.choices.forEach((_, i) => { const g = KE.SAVE.open(clone(prevEnv)); try { KE.resolveEvent(g, i); } catch (e) { /* yok */ } maxCash = Math.max(maxCash, g.cash); maxRep = Math.max(maxRep, g.reputation); });
     }
     if (Cu.flags && Cu.flags.empire && !(P.flags && P.flags.empire)) maxRep += 5; // imparatorluk satın alımı
+    // okul bağışı sabah itibar verir (seviye başına +3); bağış seviyesi geri gidemez
+    const okul = ((Cu.charity || {}).okul || 0) - ((P.charity || {}).okul || 0);
+    if (Object.entries(P.charity || {}).some(([k, v]) => ((Cu.charity || {})[k] || 0) < v)) return bad('bağış geri alınmış');
+    if (okul > 0) maxRep += 3 * okul;
     const newLoans = (Cu.loans || []).slice((P.loans || []).length).reduce((a, l) => a + (l.amount || 0), 0);
     if ((Cu.loans || []).length < (P.loans || []).length) return bad('kredi silinmiş');
     const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + KE.goalReward(Cu, KE.GOALS.find((g) => g.id === k) || {}), 0);

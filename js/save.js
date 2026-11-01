@@ -6,6 +6,7 @@
   const S = KE.SAVE = {};
   S.KEY = 'kebab-empire-save-v2';
   S.BACKUP = 'kebab-empire-save-backup';
+  S.RACE_KEY = 'kebab-empire-race';
   S.VERSION = 4;
   S.APP = 'kebab-empire';
 
@@ -97,6 +98,8 @@
   S.write = function (G) {
     const env = S.envelope(G);
     const txt = JSON.stringify(env);
+    /* haftalık yarış ayrı yuvada durur: ana oyunun kaydına dokunmaz, buluta kayıt olarak gitmez */
+    if (G.race) { if (!store.set(S.RACE_KEY, txt)) { S.lastError = 'quota'; return false; } S.lastError = null; return true; }
     /* Gün değiştiyse eski sağlam kaydı yedeğe al */
     const prev = store.get(S.KEY);
     if (prev) { try { const p = JSON.parse(prev); if ((p.day || (p.game && p.game.day)) !== G.day) store.set(S.BACKUP, prev); } catch (e) { /* bozuk eskiyi yedeklemeyiz */ } }
@@ -115,6 +118,8 @@
     }
     return null;
   };
+  S.readRace = function () { const raw = store.get(S.RACE_KEY); if (!raw) return null; try { return S.open(JSON.parse(raw)); } catch (e) { return null; } };
+  S.clearRace = () => store.del(S.RACE_KEY);
   S.exists = () => !!(store.get(S.KEY) || store.get(S.BACKUP));
   S.clear = () => { store.del(S.KEY); store.del(S.BACKUP); };
 

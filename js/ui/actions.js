@@ -105,7 +105,7 @@
     track('day_end', { day: S0.day, served: tot.served, revenue: Math.round(tot.revenue), branches: KE.G.branches.length, rep: Math.round(KE.G.reputation), era: KE.G.era || 1, gen: KE.G.gen || 1, rival: (KE.G.rival && KE.G.rival.stage) || 0, quick: !!UI.quickDayRun });
     if (morning && KE.CLOUD.ready) {
       const lg = (KE.G.actionLog || []).slice(-1)[0];
-      KE.CLOUD.submitDay({ saveId: KE.G.saveId, day: S0.day, month: KE.monthKey(S0.day), mode: KE.G.mode, district: KE.G.branches[0].district, served: tot.served, revenue: tot.revenue, reputation: KE.G.reputation, morning, todayRule: UI.todayRule || KE.G.tipRule, log: lg && lg.day === S0.day ? lg.log : [] });
+      KE.CLOUD.submitDay({ saveId: KE.G.saveId, day: S0.day, month: KE.monthKey(S0.day), mode: KE.G.mode, district: KE.G.branches[0].district, served: tot.served, revenue: tot.revenue, reputation: KE.G.reputation, morning, todayRule: UI.todayRule || KE.G.tipRule, log: lg && lg.day === S0.day ? lg.log : [], race: KE.G.race ? KE.G.race.week : null });
     }
     return out;
   }
@@ -114,6 +114,7 @@
     document.querySelectorAll('.modal-bg').forEach((m) => m.remove());
     UI.holdEvent = true;
     UI.go('shop');
+    if (UI.raceCheck()) return;
     H.afterDay(out);
     (out.goals || []).forEach((g) => UI.toast('Hedef tamamlandı: ' + g.name, 'gold'));
   };
@@ -254,7 +255,7 @@
     UI.undoChip();
   });
   /* ---------- Geri al: sabah, kepenk açılmadan yapılan son işlem ---------- */
-  const UNDOABLE = new Set(['setPos', 'boardDrop', 'topUpAll', 'price', 'pricesToMarket', 'tier', 'stockLevel', 'topUpToday', 'buy', 'hireMaster', 'hireWorker', 'raise', 'promote', 'pickMentor', 'doFire', 'costume', 'upgrade', 'buyDecor', 'hygiene', 'campaign', 'openBranch', 'central', 'buyAnimal', 'upgradePen', 'toggleManaged', 'advBol', 'advPrices', 'buyFarm', 'loan', 'payoff', 'tipRule']);
+  const UNDOABLE = new Set(['setPos', 'boardDrop', 'topUpAll', 'price', 'pricesToMarket', 'tier', 'stockLevel', 'topUpToday', 'buy', 'hireMaster', 'hireWorker', 'raise', 'promote', 'pickMentor', 'doFire', 'costume', 'upgrade', 'buyDecor', 'hygiene', 'campaign', 'openBranch', 'central', 'buyAnimal', 'upgradePen', 'toggleManaged', 'donate', 'buyRes', 'toggleRes', 'advBol', 'advPrices', 'buyFarm', 'loan', 'payoff', 'tipRule']);
   function snap(el) {
     const who = el.dataset.a === 'boardDrop' && KE.G.staff.find((x) => x.id === UI.crewPick);
     const label = who ? who.name + ' → ' + KE.POS_NAMES[el.dataset.p] : String(el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 36);
@@ -312,7 +313,7 @@
   UI.hallAdd = function (G) {
     const h = UI.hall();
     if (h.some((x) => x.saveId === G.saveId)) return;
-    h.unshift({ saveId: G.saveId, shop: G.shopName || G.branches[0].name, owner: G.owner, mode: G.mode, gen: G.gen || 1, days: G.day - 1, date: new Date().toISOString().slice(0, 10), duels: (G.rival && G.rival.wins) || 0 });
+    h.unshift({ saveId: G.saveId, shop: G.shopName || G.branches[0].name, owner: G.owner, mode: G.mode, gen: G.gen || 1, days: G.day - 1, date: new Date().toISOString().slice(0, 10), duels: (G.rival && G.rival.wins) || 0, donated: (G.flags && G.flags.donated) || 0, stars: G.stars || 0 });
     try { localStorage.setItem(HALL_KEY, JSON.stringify(h.slice(0, 20))); } catch (e) { /* yok */ }
   };
   A.newGeneration = () => {
@@ -380,6 +381,52 @@
     UI.toast(`${n} gün geçti: ${agg.served} müşteri, ciro ${KE.tl(agg.revenue)}, net ${KE.tl(agg.net)}.`, 'gold');
     if (why) UI.toast('Durdum: ' + why);
   };
+  A.donate = (d) => { const r = KE.donate(KE.G, d.id); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } const c = KE.CHARITY.find((x) => x.id === d.id); track('donate', { id: d.id, level: r.level, day: KE.G.day }); UI.toast(`${c.name}: seviye ${r.level}. Mahalle bunu konuşacak.`, 'gold'); UI.render(); };
+  A.buyRes = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); const r = KE.buyReservation(KE.G, b); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('reservation', { day: KE.G.day }); UI.toast(`${b.name}: rezervasyon defteri hazır.`, 'gold'); UI.render(); };
+  A.toggleRes = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); if (!b || KE.G.phase !== 'morning') return; b.resOn = !KE.resOn(b); UI.toast(b.resOn ? `${b.name}: bugün rezervasyonla çalışıyor.` : `${b.name}: rezervasyon kapalı, kapı herkese açık.`); UI.render(); };
+  /* ---------- Haftanın yarışı ---------- */
+  const RACE_BEST = 'kebab-empire-race-best';
+  const raceBest = () => { try { return JSON.parse(localStorage.getItem(RACE_BEST) || '{}'); } catch (e) { return {}; } };
+  A.race = async () => {
+    const week = KE.raceWeek(new Date()), R = KE.raceSetup(week), best = raceBest()[week];
+    const cur = KE.SAVE.readRace(), going = cur && cur.race && cur.race.week === week && !KE.raceOver(cur);
+    const masters = KE.MASTER_TEMPLATES[R.mode].filter((t) => t.role !== 'cirak');
+    UI.modal(`<div class="mhead"><span class="kicker">${IC('target')}Haftanın yarışı · ${week}</span><h2>Herkes aynı dükkânla, aynı günlerle</h2>
+      <p>Bu hafta bütün oyuncular aynı semtte, aynı ustayla, aynı tohumla <b>${KE.RACE_DAYS} gün</b> oynar: müşteriler, olaylar ve fiyatlar herkes için aynı gelir. Fark senin kararlarında. Puan: ${KE.RACE_DAYS} günün toplam cirosu.</p></div>
+      <div class="chips"><span class="chip or">${R.mode === 'doner' ? 'Döner' : 'Kebap'}</span><span class="chip">${esc(KE.DISTRICTS.find((x) => x.id === R.district).name)}</span><span class="chip">${esc(masters.at(R.master).name)}</span>${best ? `<span class="chip gd">${IC('star')}En iyin: ${KE.tl(best)}</span>` : ''}</div>
+      <p class="small muted">Yarış ayrı kaydedilir, ana oyununa dokunmaz.${H.CL() && KE.CLOUD.ready ? ' Bulut açık: günlerin sunucuda doğrulanır ve haftalık sıralamaya girer.' : ' Bulut kaydı kapalıysa puanın yalnızca bu cihazda tutulur.'}</p>
+      <div id="raceboard" class="raceboard"></div>
+      <div class="acts"><button class="btn ghost" data-a="closeModal">Kapat</button>${going ? `<button class="btn gold" data-a="raceContinue">${IC('play')}Devam et (${cur.day}. gün)</button>` : ''}<button class="btn green" data-a="raceStart">${IC('play')}${going ? 'Baştan başla' : 'Başla'}</button></div>`);
+    const cl = KE.CLOUD;
+    if (H.CL() && cl.ready && cl.raceBoard) {
+      const rows = await cl.raceBoard(week);
+      const el = document.getElementById('raceboard');
+      if (el && rows.length) el.innerHTML = `<h4>Sıralama</h4><ol>${rows.map((r) => `<li class="${r.is_me ? 'me' : ''}"><b>${esc(r.display_name)}</b><span>${KE.tl(r.revenue)}</span><small>${r.days}/${KE.RACE_DAYS} gün</small></li>`).join('')}</ol>`;
+    }
+  };
+  A.raceStart = () => {
+    if (KE.G && !KE.G.race) UI.save();
+    const owner = (KE.G && !KE.G.race && KE.G.owner) || (UI.hall()[0] || {}).owner || 'Patron';
+    KE.G = KE.newRace(KE.raceWeek(new Date()), owner);
+    UI.closeModal(); UI.save(); track('race_start', { week: KE.G.race.week });
+    UI.go('shop'); UI.toast('Yarış başladı: 7 gün, puan toplam ciro.', 'gold');
+  };
+  A.raceContinue = () => { const g = KE.SAVE.readRace(); if (!g) return; if (KE.G && !KE.G.race) UI.save(); KE.G = g; UI.closeModal(); UI.go('shop'); };
+  /* gün kapanınca: yarış bittiyse sonuç */
+  UI.raceCheck = function () {
+    const G = KE.G;
+    if (!G || !KE.raceOver(G)) return false;
+    const score = KE.raceScore(G), week = G.race.week, all = raceBest(), prev = all[week] || 0;
+    if (score > prev) { all[week] = score; try { localStorage.setItem(RACE_BEST, JSON.stringify(all)); } catch (e) { /* yok */ } }
+    track('race_end', { week, score });
+    UI.modal(`<div class="mhead"><span class="kicker">${IC('target')}Haftanın yarışı · ${week}</span><h2>${KE.RACE_DAYS} gün bitti</h2><p class="lead">Toplam ciro: <b>${KE.tl(score)}</b>${score > prev ? (prev ? ` · yeni rekorun! (önceki ${KE.tl(prev)})` : ' · ilk puanın') : ` · en iyin ${KE.tl(prev)}`}</p></div>
+      <div id="raceboard" class="raceboard"></div>
+      <div class="acts"><button class="btn green" data-a="raceDone">${IC('arrow')}Ana menüye dön</button></div>`);
+    const cl = KE.CLOUD;
+    if (H.CL() && cl.ready && cl.raceBoard) cl.raceBoard(week).then((rows) => { const el = document.getElementById('raceboard'); if (el && rows.length) el.innerHTML = `<h4>Sıralama</h4><ol>${rows.map((r) => `<li class="${r.is_me ? 'me' : ''}"><b>${esc(r.display_name)}</b><span>${KE.tl(r.revenue)}</span><small>${r.days}/${KE.RACE_DAYS} gün</small></li>`).join('')}</ol>`; });
+    return true;
+  };
+  A.raceDone = () => { KE.SAVE.clearRace(); KE.G = null; UI.closeModal(); UI.go('title'); };
   A.toggleManaged = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); if (!b) return; b.managed = b.managed === false; UI.toast(b.managed ? `${b.name}: müdür sabah stok ve fiyatı kendisi ayarlayacak.` : `${b.name}: sabah ayarları artık sende.`); UI.render(); };
   A.signature = () => {
     const G = KE.G;

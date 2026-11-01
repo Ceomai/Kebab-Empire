@@ -275,7 +275,7 @@
     const G = KE.G, M = G.mid, D = KE.MIDS.find((x) => x.id === M.id), b = G.branches.find((x) => x.id === M.bid);
     UI.modal(`<div class="mhead"><span class="kicker">${IC(D.ic)}${G.branches.length > 1 ? esc(b.name) + ' · ' : ''}${KE.clock(G.live[b.id].minute)}</span><h2>${esc(D.title)}</h2><p class="lead">${esc(D.text(G, b, M))}</p></div>
       <div class="choices">${D.choices(G).map((c, i) => `<button class="choice" data-a="midChoice" data-i="${i}"><b>${esc(c.label)}</b><small>${esc(c.desc)}</small></button>`).join('')}</div>
-      <p class="tiny muted">Karar vermezsen ${KE.MID_WAIT} dakika sonra "${esc(D.choices(G)[D.def].label)}" uygulanır.</p>`, { cls: 'midev' });
+      <p class="tiny muted">${KE.branchStaff(G, b).some((s) => s.role === 'mudur') ? `Karar vermezsen ${KE.MID_WAIT} dakika sonra müdür "${esc(D.choices(G)[D.mgr].label)}" der.` : `Karar vermezsen ${KE.MID_WAIT} dakika sonra "${esc(D.choices(G)[D.def].label)}" uygulanır.`}</p>`, { cls: 'midev' });
   }
   H.showMid = showMid;
 
@@ -321,12 +321,13 @@
     const big = [[S.lostWait, 'kuyrukta bekleyemedi'], [S.lostFood, 'yemeğini bekleyemedi'], [S.lostFull, 'yer bulamadı'], [S.lostPrice, 'fiyatı pahalı buldu'], [S.lostStock, 'istediğini bulamadı']].sort((a, c) => c[0] - a[0])[0];
     const adv = advice(b, S)[0];
     const pct = S.arrivals ? Math.round(lostAll / S.arrivals * 100) : 0;
+    const capLoss = S.lostWait + S.lostFull + S.lostFood, avg = S.served ? S.revenue / S.served : 0;
     const M = KE.G.mid;
     return `<div class="closesum">
       <div class="cs-row">${IC('coin')}<span><small>Bugün</small><b>${KE.tl(S.revenue)} ciro · ${S.served} müşteri · memnuniyet %${Math.round(sum.sat)}</b></span></div>
-      <div class="cs-row ${pct >= 12 ? 'bad' : ''}">${IC('queue')}<span><small>En büyük kayıp</small><b>${big[0] >= 3 ? `${big[0]} müşteri ${big[1]} (gelenlerin %${KE.ekSayi(String(pct), 'i')} kaçtı)` : 'Kayda değer kayıp yok'}</b></span></div>
+      <div class="cs-row ${pct >= 12 ? 'bad' : ''}">${IC('queue')}<span><small>En büyük kayıp</small><b>${big[0] >= 3 ? `${big[0]} müşteri ${big[1]} (gelenlerin %${KE.ekSayi(String(pct), 'i')} kaçtı)` : 'Kayda değer kayıp yok'}</b>${capLoss >= 3 && avg ? `<em class="cs-note">Kapasite yetmediği için kaçanların değeri yaklaşık ${KE.tl(Math.round(capLoss * avg / 100) * 100)}.</em>` : ''}${S.turned ? `<em class="cs-note">Rezervasyon: ${S.turned} kişi başka saate yönlendirildi (kaçmış sayılmaz).</em>` : ''}</span></div>
       <div class="cs-row ${adv[0]}">${IC(adv[0] === 'ok' ? 'check' : 'bolt')}<span><small>Yarın için</small><b>${adv[1]}</b></span></div>
-      ${M && M.choice != null && M.bid === b.id ? `<div class="cs-row">${IC((KE.MIDS.find((x) => x.id === M.id) || {}).ic || 'bolt')}<span><small>Gün ortası</small><b><span>${esc(KE.MIDS.find((x) => x.id === M.id).title)}</span> → <span>${esc(KE.MIDS.find((x) => x.id === M.id).choices(KE.G)[M.choice].label)}</span></b></span></div>` : ''}
+      ${M && M.choice != null && M.bid === b.id ? `<div class="cs-row">${IC((KE.MIDS.find((x) => x.id === M.id) || {}).ic || 'bolt')}<span><small>${M.byMgr ? 'Gün ortası · müdür karar verdi' : 'Gün ortası'}</small><b><span>${esc(KE.MIDS.find((x) => x.id === M.id).title)}</span> → <span>${esc(KE.MIDS.find((x) => x.id === M.id).choices(KE.G)[M.choice].label)}</span></b>${M.late ? '<em class="cs-note">Tamirci trafiğe takıldı; ocak bir saat soğuk kaldı.</em>' : ''}</span></div>` : ''}
     </div>`;
   }
   /* Kapanışta yalnızca harekete geçirilebilir öneriler */
@@ -357,6 +358,7 @@
     const staff = KE.G.staff.slice(0, 12);
     const pn2 = (pid) => (KE.MODES[KE.G.mode].products.find((p) => p.id === pid) || {}).name;
     const extra = [
+      out.tipWishEnd ? (out.tipWishEnd.missed ? `<li class="neg">${IC('heart')}<span>Ekip bu hafta <b>${KE.TIP_RULES[out.tipWishEnd.rule].name}</b> istemişti; ${out.tipWishEnd.days} günün ${out.tipWishEnd.hits}'inde uygulandı. Biraz küstüler: herkesin morali −2.</span></li>` : `<li class="pos">${IC('heart')}<span>Ekibin haftalık isteği karşılandı (${out.tipWishEnd.days} günün ${out.tipWishEnd.hits}'inde ${KE.TIP_RULES[out.tipWishEnd.rule].name}).</span></li>`) : '',
       out.inspect ? (out.inspect.pass ? `<li class="pos">${IC('star')}<span><b>Rehber yıldızı!</b> Müfettiş ${esc(out.inspect.branch)} şubesinden memnun ayrıldı (memnuniyet %${out.inspect.sat}). Zincirin ${out.inspect.stars}. yıldızı: müşteri ve fiyat toleransı kalıcı olarak +%3, itibar +3.</span></li>` : `<li class="neg">${IC('star')}<span><b>Rehber müfettişi memnun kalmadı.</b> ${esc(out.inspect.branch)}: memnuniyet %${out.inspect.sat}, kaçan müşteri %${out.inspect.lost}. Yıldız için %84 memnuniyet ve %10'dan az kayıp gerekir. İtibar −5.</span></li>`) : '',
       out.contract ? `<li class="pos">${IC('truck')}<span><b>${esc(out.contract.name)}</b> teslim edildi: ${out.contract.qty} porsiyon · net ${KE.tl(out.contract.net)}, itibar +1.</span></li>` : '',
       out.signature ? `<li class="pos">${IC('chef')}<span>Ar-Ge mutfağı bitirdi: <b>${esc(pn2(out.signature.pid))}</b> · <b>${KE.SIGNATURE.names[out.signature.level - 1]}</b> (seviye ${out.signature.level}/3)</span></li>` : '',

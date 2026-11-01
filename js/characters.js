@@ -305,3 +305,16 @@
   KE.portrait = memo(KE.portrait);
   KE.figure = memo(KE.figure);
 })();
+
+/* ---------- Ustaların huyu: kimliğinden türetilir (kayda yazılmaz, her yerde aynı çıkar) ---------- */
+KE.HUYS = {
+  izinci: { name: 'Ailesine düşkün', desc: 'Ara sıra izin ister; izin verilirse çok sevinir.' },
+  hirsli: { name: 'Hırslı', desc: 'Başka yerlerin tekliflerini dinler, yarışmalara can atar.' },
+  sadik: { name: 'Sadık', desc: 'Başka yere gözü yok; morali zor bozulur.' }
+};
+KE.huyOf = function (s) {
+  if (!s || !(s.role === 'usta' || s.role === 'cirak')) return null;
+  const id = String(s.id || s.name || '');
+  let h = 0; for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 9973;
+  return ['izinci', 'hirsli', 'sadik'][h % 3];
+};

@@ -1,7 +1,7 @@
 /* Orta oyun A/B: 4 şubeli zincir, 120 gün. Yatırımların ve müdürün getirisini ölçer. */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', 'js') + '/';
-function load() { const ctx = { console, Intl, Math, Date, JSON }; ctx.window = ctx; vm.createContext(ctx); for (const f of ['data', 'calendar', 'characters', 'economy', 'sim', 'farm', 'narrative']) vm.runInContext(fs.readFileSync(root + f + '.js', 'utf8'), ctx, { filename: f }); return ctx.KE; }
+function load() { const ctx = { console, Intl, Math, Date, JSON }; ctx.window = ctx; vm.createContext(ctx); for (const f of ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative']) vm.runInContext(fs.readFileSync(root + f + '.js', 'utf8'), ctx, { filename: f }); return ctx.KE; }
 const DAYS = +(process.argv[2] || 120), MODES = (process.argv[3] || 'doner,kebap').split(','), SEEDS = +(process.argv[4] || 3);
 function setup(KE, mode, seed, withMgr) {
   const G = KE.newGame({ mode, district: 'kadiceşme', master: KE.MASTER_TEMPLATES[mode][0], owner: 'T', shopName: 'T', seed });

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { loadGame } from './load.js';
 
 describe('çeviri katmanı', () => {
-  const { KE } = loadGame(['data', 'calendar', 'characters', 'economy', 'sim', 'farm', 'narrative', 'i18n']);
+  const { KE } = loadGame(['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'i18n']);
   it('sayıları ve adları yer tutucuya çevirir', () => {
     const r = KE.I18N.normalize('Günün yıldızı İskender oldu: 17 porsiyon.');
     expect(r.key).toBe('Günün yıldızı {0} oldu: {1} porsiyon.');

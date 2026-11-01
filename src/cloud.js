@@ -109,6 +109,7 @@ C.submitDay = async function (p) {
     served: p.served, revenue: Math.round(p.revenue), reputation: Math.round(p.reputation * 10) / 10,
     morning: { envelope: p.morning, todayRule: p.todayRule }, action_log: p.log || []
   };
+  if (p.race) row.race = p.race;
   const r = await sb.from('day_results').insert(row).select('id').single();
   if (r.error) { C.lastError = r.error.message; return null; }
   const v = await sb.functions.invoke('verify-day', { body: { id: r.data.id } });
@@ -119,6 +120,11 @@ C.submitDay = async function (p) {
 C.leaderboard = async function (month, mode) {
   if (!sb) return [];
   const r = await sb.from('leaderboard_month').select('*').eq('game_month', month).eq('mode', mode).order('revenue', { ascending: false }).limit(20);
+  return r.data || [];
+};
+C.raceBoard = async function (week) {
+  if (!sb) return [];
+  const r = await sb.from('leaderboard_race').select('*').eq('race', week).order('revenue', { ascending: false }).limit(20);
   return r.data || [];
 };
 C.champions = async function (month) {

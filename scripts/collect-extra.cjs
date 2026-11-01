@@ -35,6 +35,9 @@ const fs = require('fs');
       G.era = 4; G.flags.empire = G.day; A.empireEnding(); A.newGeneration(); sweep();
       UI.ng = { mode, legacy: UI.heir, owner: '', shopName: '' }; UI.go('newMode'); UI.ng.district = 'kadiceşme'; UI.go('newMaster');
       UI.hallAdd(G); UI.go('title');
+      A.race(); sweep();
+      const RG = KE.newRace(KE.raceWeek(new Date()), 'D'); KE.G = RG; UI.go('shop'); for (let i = 0; i < 7; i++) { if (RG.pendingEvent) KE.resolveEvent(RG, 0); KE.startService(RG); KE.finishService(RG); KE.finalizeDay(RG); } UI.raceCheck(); sweep(); KE.SAVE.clearRace();
+      KE.G = G;
       KE.G = G; UI.go('map');
       // stok tahmini, kalabalık gün, dolu kadro
       const b0 = G.branches[0]; G.phase = 'morning';
@@ -57,6 +60,17 @@ const fs = require('fs');
       const fo = KE.finalizeDay(G); fo.inspect = { pass: true, stars: 1, branch: b0.name, sat: 90, lost: 5 }; H.afterDay(fo); sweep(); fo.inspect.pass = false; H.afterDay(fo); sweep();
       while (G.branches.length < KE.DISTRICTS.length) { const d = KE.DISTRICTS.find((x) => !G.branches.some((y) => y.district === x.id)); KE.openBranch(G, d.id); }
       UI.go('shop'); UI.go('map');
+      // rezervasyon, müfettiş, vakıf, huylar, kapanış notları
+      G.era = 3; G.cash = 9e7; G.phase = 'morning'; UI.go('dekor'); KE.buyReservation(G, b0); UI.go('dekor'); A.toggleRes({ id: b0.id }); A.toggleRes({ id: b0.id });
+      G.inspectNext = { bid: b0.id, day: G.day + 1 }; G.inspect = { bid: b0.id }; UI.adviceCard(); UI.go('map'); G.inspect = null; G.inspectNext = null;
+      b0.bolNote = true; b0.reservation = false; G.reputation = 90; G.lastSummary = { day: G.day - 1, branches: { [b0.id]: { stats: { arrivals: 100, lostWait: 20, lostFull: 10, lostFood: 0, served: 70, revenue: 7000, stockouts: {} }, sat: 80 } } }; UI.adviceCard(); b0.reservation = true; b0.bolNote = false;
+      UI.go('subeler'); KE.donate(G, 'okul'); UI.go('subeler');
+      Object.keys(KE.HUYS).forEach((k) => { KE.I18N.t(KE.HUYS[k].name); KE.I18N.t(KE.HUYS[k].desc); });
+      UI.go('lonca');
+      const fo2 = { levelUps: [], quits: [], branches: {}, tipWishEnd: { rule: 'usta', hits: 1, days: 7, missed: true } }; H.afterDay(fo2); sweep(); fo2.tipWishEnd.missed = false; H.afterDay(fo2); sweep();
+      G.phase = 'service'; G.live = {}; G.branches.forEach((x) => { G.live[x.id] = KE.newLive(G, x); }); G.live[b0.id].stats.turned = 12; G.live[b0.id].stats.lostWait = 9; G.live[b0.id].stats.served = 50; G.live[b0.id].stats.revenue = 5000; G.mid = { id: 'ariza', bid: b0.id, minute: 0, choice: 0, byMgr: true, late: true }; KE.finishService(G); H.showClosing(); sweep(); G.phase = 'morning';
+      KE.MIDS.forEach((M) => { G.phase = 'service'; G.live = {}; G.branches.forEach((x) => { G.live[x.id] = KE.newLive(G, x); }); const mg = KE.randomWorker(G, 'mudur'); mg.branchId = b0.id; G.staff.push(mg); G.mid = { id: M.id, bid: b0.id, minute: 0, choice: null }; H.showMid(); sweep(); G.staff = G.staff.filter((x) => x !== mg); });
+      G.phase = 'morning'; G.live = null;
       ['ustaIzin', 'ustaKavga', 'ustaTeklif'].forEach((id) => { const e = KE.EVENTS.find((x) => x.id === id); try { const c = e.build(G); KE.I18N.t(c.title); KE.I18N.t(c.text); c.choices.forEach((ch) => { KE.I18N.t(ch.label); KE.I18N.t(ch.desc); KE.I18N.t(ch.run(G, c.ctx)); }); } catch (x) { console.log('ev', id, x.message); } });
       // rakip hamleleri ve hikâyeler
       KE.EVENTS.filter((e) => e.arc || e.story || e.id === 'rakipSemt').forEach((e) => { try { const c = e.build(G); KE.I18N.t(c.title); KE.I18N.t(c.text); c.choices.forEach((ch) => { KE.I18N.t(ch.label); KE.I18N.t(ch.desc); }); } catch (x) { /* yok */ } });

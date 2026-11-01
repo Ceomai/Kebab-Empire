@@ -360,6 +360,12 @@ KE.PLACE_ERA = { ajans: 2, subeler: 2, ciftlik: 3 };
 /* ---------- Büyük yatırımlar (3. dönem) ---------- */
 KE.SIGNATURE = { cost: [300000, 800000, 2000000], days: 10, traffic: 0.08, names: ['Usta işi', 'Şehrin tarifi', 'Efsane tarif'] };
 KE.FLAGSHIP = { cost: 2500000, traffic: 1.15, chain: 1.05 };
+/* ---------- Vakıf ve sponsorluk (3. dönem): geç oyunun para yutağı, kalıcı küçük etkiler ---------- */
+KE.CHARITY = [
+  { id: 'takim', name: 'Mahalle takımı sponsorluğu', icon: 'users', cost: [3000000, 8000000, 18000000], desc: 'Formalarda zincirin adı. Her seviye bütün şubelerde müşteri +%2.' },
+  { id: 'okul', name: 'Okul bağışı', icon: 'book', cost: [2500000, 7000000, 16000000], desc: 'Mahalle okuluna kütüphane ve burs. Her seviye itibar +3 ve müşterinin fiyat toleransı +%1.' },
+  { id: 'asevi', name: 'Aşevi', icon: 'heart', cost: [2000000, 6000000, 14000000], desc: 'Her akşam kapıda sıcak yemek. Her seviye itibarın tepede aşınmasını %25 azaltır; ekip morali +3.' }
+];
 KE.CONTRACT_KINDS = [
   { id: 'stadyum', name: 'Stadyum maç günü', who: 'Kulüp yönetimi', qty: [300, 600], morale: 8 },
   { id: 'fabrika', name: 'Fabrika yemekhanesi', who: 'Merterli Tekstil', qty: [200, 400], morale: 5 },

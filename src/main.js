@@ -25,6 +25,8 @@ import '../js/art.js';
 import '../js/sound.js';
 import '../js/economy.js';
 import '../js/sim.js';
+import '../js/midday.js';
+import '../js/progress.js';
 import '../js/farm.js';
 import '../js/narrative.js';
 import '../js/save.js';

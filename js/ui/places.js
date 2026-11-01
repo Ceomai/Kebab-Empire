@@ -105,6 +105,20 @@
         <div class="wr-figs">${KE.COSTUMES.map((c) => `<button class="wr-opt ${s.costume === c.id ? 'sel' : ''}" data-a="costume" data-id="${s.id}" data-c="${c.id}" ${s.costume === c.id ? 'disabled' : ''} aria-label="${c.name}">${KE.figure(KE.staffLook(Object.assign({}, s, { costume: c.id })), { mood: s.costume === c.id ? 'happy' : 'neutral' })}<small>${c.name}${c.cost && s.costume !== c.id ? '<br><b>' + KE.tl(c.cost) + '</b>' : s.costume === c.id ? '<br><b>Giyiyor</b>' : ''}</small></button>`).join('')}</div></article>`;
     }).join('')}</div></main>`;
 
+  /* Rezervasyon defteri: kaçan müşteri yerine yönlendirilen müşteri, müfettiş bir gün önceden görünür */
+  function resPanel(b) {
+    const G = KE.G;
+    if ((G.era || 1) < KE.RESERVATION.era) return '';
+    const ys = G.lastSummary && G.lastSummary.branches[b.id] && G.lastSummary.branches[b.id].stats;
+    const lost = ys && ys.arrivals > 20 ? Math.round(KE.lostShare(ys) * 100) : null;
+    const cost = KE.reservationCost(G);
+    return `<section class="panel respanel"><div class="sechead"><h2>${IC('book')}Rezervasyon defteri</h2>${b.reservation ? `<label class="switch lbl"><input type="checkbox" data-a="toggleRes" data-id="${b.id}" ${KE.resOn(b) ? 'checked' : ''} ${G.phase !== 'morning' ? 'disabled' : ''}><i></i><span><b>${KE.resOn(b) ? 'Rezervasyonla çalışıyor' : 'Kapalı'}</b></span></label>` : ''}</div>
+      <p class="small">Müşteriler masa ayırtır. <b>Dolu saatte gelen müşteri kaçmaz</b>, başka saate yönlendirilir; yer ayırtan müşteri daha sabırlıdır ve %5 daha çok harcar. Bedeli: yer ayırtmadan gelen kalabalığın %8'i hiç gelmez.</p>
+      <p class="small"><b>Rehber müfettişi de yer ayırtır:</b> rezervasyonlu şubeye geleceği bir gün önceden defterde görünür, ekibi ve stoğu hazırlarsın. Yıldız için memnuniyet %${KE.INSPECT.sat}, kaçan müşteri %${Math.round(KE.INSPECT.lost * 100)}'in altında olmalı; yönlendirilen müşteri kaçmış sayılmaz.</p>
+      ${lost != null ? `<p class="small ${lost >= 15 ? 'neg' : 'muted'}">Dün bu şubede gelenlerin %${KE.ekSayi(String(lost), 'i')} hizmet alamadan gitti${ys.turned ? `, ${ys.turned} kişi başka saate yönlendirildi` : ''}.</p>` : ''}
+      ${b.reservation ? '' : `<button class="btn green" data-a="buyRes" data-id="${b.id}" ${G.cash < cost ? 'disabled' : ''}>${IC('book')}Defteri al · ${KE.tl(cost)}</button>`}</section>`;
+  }
+
   /* ---------- Mobilya, ekipman, dekor ---------- */
   SCREENS.dekor = () => {
     const b = B(); const M = MODE();
@@ -120,6 +134,7 @@
         return `<article class="card eq"><div class="row between"><span class="kicker">${IC(eqIc[k])}${eq.name}</span><span class="lvl">${eq.levels.map((_, i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</span></div><h3>${cur.name}</h3><p class="small">${eqDesc(k, cur, lvl)}</p>${k === 'cook' && KE.branchStaff(KE.G, b).filter(KE.isCook).length < cur.stations ? `<div class="alert warn">${IC('bolt')}<span>Şu an ${cur.stations - KE.branchStaff(KE.G, b).filter(KE.isCook).length} ocak yeri boş. Yükseltmeden önce Usta Pazarı'ndan pişirmeci al; boş ocak müşteri getirmez.</span></div>` : ''}
           ${next ? `<div class="eq-next"><small class="muted">Sonraki</small><b>${next.name}</b><small>${eqDesc(k, next, lvl + 1)}</small></div><div class="pc-foot"><b>${KE.tl(next.cost * KE.G.priceIndex)}</b><button class="btn sm green" data-a="upgrade" data-k="${k}" ${KE.G.cash < next.cost * KE.G.priceIndex ? 'disabled' : ''}>Yükselt</button></div>` : `<span class="chip gr">${IC('check')}En üst seviye</span>`}</article>`;
       }).join('')}</div></section>
+      ${resPanel(b)}
       <section class="panel"><div class="sechead"><h2>Dekor</h2><div class="chips">${Object.entries(styles).map(([s, n]) => `<span class="chip ${n >= 3 ? 'gd' : ''}">${s}: ${n}/3</span>`).join('')}${amb.concept ? `<span class="chip gd">${IC('star')}Konsept: ${amb.concept.name}</span>` : ''}</div></div>
         <p class="small muted">Ortam puanı müşteri sayısını ve memnuniyeti artırır. Aynı tarzdan 3 parça konsept bonusunu açar; kostümler konsepti güçlendirir.</p>
         <div class="grid g4">${KE.DECOR.map((d) => { const own = b.decor.includes(d.id); return `<article class="card decor ${own ? 'owned' : ''}"><div class="dec-art st-${d.style === 'lüks' ? 'luks' : d.style}">${KE.ART.decor(d.id)}</div><div><b>${d.name}</b><div class="chips"><span class="chip">${d.style}</span><span class="chip">Ortam +${d.ambience}</span>${d.morale ? `<span class="chip gr">Moral +${d.morale}/gün</span>` : ''}</div><p class="small muted">${d.desc}</p></div><div class="pc-foot">${own ? `<span class="chip gr">${IC('check')}Dükkânda</span>` : `<b>${KE.tl(d.cost * KE.G.priceIndex)}</b><button class="btn sm green" data-a="buyDecor" data-id="${d.id}" ${KE.G.cash < d.cost * KE.G.priceIndex ? 'disabled' : ''}>Al</button>`}</div></article>`; }).join('')}</div></section></main>`;
@@ -211,6 +226,15 @@
         <div class="rv-row"><span class="lvl">${steps}</span><span class="chip gr">${IC('check')}Kazandığın: ${R.wins || 0}</span><span class="chip rd">${IC('bolt')}Kaybettiğin: ${R.losses || 0}</span><span class="chip">Rakip gücü ${Math.round(R.power || 0)}</span></div></div></section>`;
   }
   /* 3. dönem: imza tarif, amiral dükkân, toplu siparişler */
+  function charityPanel() {
+    const G = KE.G;
+    if ((G.era || 1) < 3) return '';
+    const total = (G.flags && G.flags.donated) || 0;
+    return `<section class="panel invest"><div class="sechead"><h2>${IC('heart')}Vakıf ve sponsorluk</h2><span class="muted small">Kalıcı küçük etkiler. Bugüne kadar bağış: ${KE.tl(total)}</span></div>
+      <div class="grid g3">${KE.CHARITY.map((c) => { const lv = KE.charityLv(G, c.id), cost = KE.charityCost(G, c.id); return `<article class="card inv"><span class="kicker">${IC(c.icon)}Seviye ${lv}/${c.cost.length}</span><h3>${c.name}</h3><p class="small">${c.desc}</p>
+        <div class="pc-foot">${cost == null ? `<span class="chip gr">${IC('check')}En üst seviye</span>` : `<b>${KE.tl(cost)}</b><button class="btn sm green" data-a="donate" data-id="${c.id}" ${G.cash < cost || G.phase !== 'morning' ? 'disabled' : ''}>Bağışla</button>`}</div></article>`; }).join('')}</div>
+      <p class="tiny muted">Bağışlar "Lüks Kebap"ı satın alma bedeliyle aynı kasadan çıkar: önce imparatorluk mu, önce mahalle mi? İmparatorluktan sonra da açık kalır.</p></section>`;
+  }
   function investPanel() {
     const G = KE.G;
     if ((G.era || 1) < 3) return `<section class="panel invest locked"><div class="sechead"><h2>${IC('lock')}Büyük yatırımlar</h2><span class="muted small">3. dönemde (Şehrin zinciri) açılır: imza tarif, amiral dükkân, toplu siparişler.</span></div></section>`;
@@ -246,7 +270,7 @@
         const mgr = st.find((s) => s.role === 'mudur');
         return `<article class="card branch ${b.id === KE.G.activeBranch ? 'sel' : ''}"><div class="br-art">${KE.ART.storefront(b.name, '#d7263d', true)}</div><span class="kicker">${d.name}</span><h3>${esc(b.name)}</h3>
           <div class="chips"><span class="chip">${st.length} kişi</span><span class="chip ${mgr ? 'gr' : 'rd'}">${mgr ? 'Müdür: ' + esc(mgr.name) : 'Müdür yok'}</span><span class="chip">Temizlik ${Math.round(b.cleanliness)}</span>${b.flagship ? `<span class="chip gd">${IC('star')}Amiral</span>` : ''}</div>
-          ${mgr ? `<label class="managed"><input type="checkbox" data-a="toggleManaged" data-id="${b.id}" ${b.managed !== false ? 'checked' : ''}><span><b>Müdür yönetsin</b><small>Sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar.${b.managedNote && b.managedNote.length ? ' Bugün: ' + b.managedNote.map((n) => ({ stok: 'stok artırıldı', fire: 'fire için stok azaltıldı', fiyat: 'fiyatlar güncellendi' })[n]).join(', ') + '.' : ''}</small></span></label>` : (KE.G.branches.length >= 2 ? '<p class="tiny muted">Müdür alırsan şubenin sabah ayarlarını o yapar.</p>' : '')}
+          ${mgr ? `<label class="managed"><input type="checkbox" data-a="toggleManaged" data-id="${b.id}" ${b.managed !== false ? 'checked' : ''}><span><b>Müdür yönetsin</b><small>Sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar.${b.managedNote && b.managedNote.length ? ' Bugün: ' + b.managedNote.map((n) => ({ stok: 'stok artırıldı', fire: 'fire için stok azaltıldı', fiyat: 'fiyatlar güncellendi', eleman: 'bürodan ' + (b.mgrHired || 'bir eleman') + ' işe alındı' })[n]).join(', ') + '.' : ''}</small></span></label>` : (KE.G.branches.length >= 2 ? '<p class="tiny muted">Müdür alırsan şubenin sabah ayarlarını o yapar.</p>' : '')}
           ${h.length > 1 ? lineChart([{ name: 'Son 7 gün ciro', color: '#f28c28', values: h.map((x) => x.revenue), area: true }], h.map((x) => String(KE.dateOf(x.day).getUTCDate())), { h: 120, label: 'Şube cirosu' }) : '<p class="small muted">Henüz yeterli veri yok.</p>'}
           <div class="pc-foot">${b.id !== KE.G.activeBranch ? `<button class="btn sm green" data-a="viewBranch" data-id="${b.id}">${IC('eye')}Bu şubeye geç</button>` : `<button class="btn sm" data-a="go" data-s="shop">${IC('store')}Dükkâna git</button>`}</div></article>`;
       }
@@ -261,6 +285,7 @@
       ${(KE.G.era || 1) >= 3 || KE.G.flags.empire ? empirePanel() : ''}
       ${rivalPanel()}
       ${investPanel()}
+      ${charityPanel()}
       <div class="note">${IC('users')}<span>Yeni şubeye Usta Pazarı'ndan bir usta, Eleman Bürosu'ndan kasiyer ve komi/garson al. Müdür, ekibi yoğunluğa göre kendisi yönetir. Ustasız şube kepenk açamaz.</span></div>
       ${KE.G.branches.length >= 3 ? `<section class="panel row between"><div><h2>Merkezi mutfak</h2><p class="small muted">Döner ve kıyma merkezde hazırlanıp şubelere dağıtılır. Malzeme maliyeti %12 düşer.</p></div>${KE.G.centralKitchen ? `<span class="chip gr">${IC('check')}Kuruldu</span>` : `<button class="btn green" data-a="central" ${KE.G.cash < 450000 * KE.G.priceIndex ? 'disabled' : ''}>${KE.tl(450000 * KE.G.priceIndex)}</button>`}</section>` : ''}
       <div class="grid g3">${cards}</div>
