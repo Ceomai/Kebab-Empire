@@ -113,7 +113,7 @@
     const lost = ys && ys.arrivals > 20 ? Math.round(KE.lostShare(ys) * 100) : null;
     const cost = KE.reservationCost(G);
     return `<section class="panel respanel"><div class="sechead"><h2>${IC('book')}Rezervasyon defteri</h2>${b.reservation ? `<label class="switch lbl"><input type="checkbox" data-a="toggleRes" data-id="${b.id}" ${KE.resOn(b) ? 'checked' : ''} ${G.phase !== 'morning' ? 'disabled' : ''}><i></i><span><b>${KE.resOn(b) ? 'Rezervasyonla çalışıyor' : 'Kapalı'}</b></span></label>` : ''}</div>
-      <p class="small">Müşteriler masa ayırtır. <b>Dolu saatte gelen müşteri kaçmaz</b>, başka saate yönlendirilir; yer ayırtan müşteri daha sabırlıdır ve %5 daha çok harcar. Bedeli: yer ayırtmadan gelen kalabalığın %8'i hiç gelmez.</p>
+      <p class="small">Müşteriler masa ayırtır. <b>Dolu saatte gelen müşteri kaçmaz</b>, başka saate yönlendirilir; yer ayırtan müşteri daha sabırlıdır ve %5 daha çok harcar. Bedeli: yer ayırtmadan gelen kalabalığın %3'ü hiç gelmez.</p>
       <p class="small"><b>Rehber müfettişi de yer ayırtır:</b> rezervasyonlu şubeye geleceği bir gün önceden defterde görünür, ekibi ve stoğu hazırlarsın. Yıldız için memnuniyet %${KE.INSPECT.sat}, kaçan müşteri %${Math.round(KE.INSPECT.lost * 100)}'in altında olmalı; yönlendirilen müşteri kaçmış sayılmaz.</p>
       ${lost != null ? `<p class="small ${lost >= 15 ? 'neg' : 'muted'}">Dün bu şubede gelenlerin %${KE.ekSayi(String(lost), 'i')} hizmet alamadan gitti${ys.turned ? `, ${ys.turned} kişi başka saate yönlendirildi` : ''}.</p>` : ''}
       ${b.reservation ? '' : `<button class="btn green" data-a="buyRes" data-id="${b.id}" ${G.cash < cost ? 'disabled' : ''}>${IC('book')}Defteri al · ${KE.tl(cost)}</button>`}</section>`;

@@ -507,8 +507,8 @@
     const spH = L.special && L.special.hours[hour] ? L.special.hours[hour] : 1;
     const burst = (L.boost && L.minute < L.boost.until ? L.boost.mult : 1) * (L.rain && L.minute < L.rain.until ? L.rain.mult : 1);
     const res = KE.resOn(b);
-    /* rezervasyonlu şube: kapıdan gelenin bir kısmı yer ayırtmadan gelmez (×0,92) */
-    const rate = L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH * burst * (res ? 0.92 : 1) / L.curveSum / 60;
+    /* rezervasyonlu şube: kapıdan gelenin bir kısmı yer ayırtmadan gelmez (×0,97) */
+    const rate = L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH * burst * (res ? 0.97 : 1) / L.curveSum / 60;
     (G.regularVisits || []).filter((v) => v.branchId === b.id && v.minute === L.minute).forEach((v) => spawnRegular(G, b, L, v.rid));
     L.spawnAcc += rate * rnd(0.6, 1.4);
     while (L.spawnAcc >= 1) {

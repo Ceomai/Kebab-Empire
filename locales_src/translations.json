@@ -8634,5 +8634,13 @@
  "{0} müşteri istediğini bulamadı (gelenlerin {1}'u kaçtı)": {
   "en": "{0} customers couldn't get what they wanted ({1} of arrivals lost)",
   "de": "{0} Gäste bekamen nicht, was sie wollten ({1} der Gäste verloren)"
+ },
+ "{0} dönemde {1}'dan şube başına alınır, sabah açılıp kapatılır. Açıkken dolu saatte gelen müşteri kaçmaz, başka saate yönlendirilir; yer ayırtan müşteri daha sabırlıdır ve {2} daha çok harcar. Bedeli: yer ayırtmadan gelen kalabalığın {3}'ü hiç gelmez. Rehber müfettişini geçmenin en sağlam yolu budur.": {
+  "en": "From era {0}, bought per branch at {1} and switched on or off each morning. While it's on, customers arriving at a full hour aren't lost but redirected to another time; customers with a reservation are more patient and spend {2} more. The cost: {3} of the walk-in crowd never comes. It's the surest way to pass the guidebook inspector.",
+  "de": "Ab Epoche {0} pro Filiale bei {1} erhältlich und jeden Morgen ein- oder ausschaltbar. Solange es aktiv ist, gehen Gäste zur vollen Stunde nicht verloren, sondern werden auf eine andere Uhrzeit umgeleitet; Gäste mit Reservierung sind geduldiger und geben {2} mehr aus. Der Preis: {3} der Laufkundschaft kommt gar nicht. Das ist der sicherste Weg, den Restaurantführer-Inspektor zu überzeugen."
+ },
+ ", başka saate yönlendirilir; yer ayırtan müşteri daha sabırlıdır ve {0} daha çok harcar. Bedeli: yer ayırtmadan gelen kalabalığın {1}'ü hiç gelmez.": {
+  "en": ", but redirected to another time; customers with a reservation are more patient and spend {0} more. The cost: {1} of the walk-in crowd never comes.",
+  "de": ", sondern werden auf eine andere Uhrzeit umgeleitet; Gäste mit Reservierung sind geduldiger und geben {0} mehr aus. Der Preis: {1} der Laufkundschaft kommt gar nicht."
  }
 }
