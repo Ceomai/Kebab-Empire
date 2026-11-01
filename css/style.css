@@ -1389,3 +1389,117 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: 0.001
 .raceboard li.me b { color: var(--biber); }
 .raceboard small { color: var(--murekkep-2); }
 .invest h2 { display: flex; align-items: center; gap: 6px; }
+
+/* =====================================================================
+   Telefon düzeni v2: harita bütün ekranı kaplar, şehir paneli çekmece
+   ===================================================================== */
+.sheet-handle { display: none; }
+.cp-go { display: none; }
+html { overflow-x: clip; }
+@media (max-width: 760px), (max-height: 520px) and (orientation: landscape) {
+  body:has(.mapscreen2) { overflow: hidden; padding-bottom: 0; }
+  .mapscreen2 { flex: none; display: flex; position: relative; height: calc(100dvh - var(--tbh, 100px) - var(--tabh, 64px) - env(safe-area-inset-bottom, 0px)); min-height: 0; overflow: hidden; }
+  .mapscreen2 .mapframe.big { flex: 1 1 auto; min-height: 0; min-width: 0; display: block; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; border-radius: 0; }
+  .mapscreen2 .mapframe.big::-webkit-scrollbar { display: none; }
+  /* harita yüksekliğe göre ölçeklenir: telefonda öğeler büyük görünür, parmakla kaydırılır */
+  /* harita kapsayıcıyı iki yönde de doldurur (gerekirse taşar, parmakla kaydırılır) */
+  .mapscreen2 .mapframe.big { position: relative; container-type: size; }
+  .mapscreen2 .mapinner { position: absolute; top: 0; left: 0; width: max(100cqw, 100cqh * 1.6279); height: max(100cqh, 100cqw * 0.6143); min-width: 0; }
+  .mapscreen2 .mapframe.big svg, .mapscreen2 .mapframe.big svg.base { width: 100%; height: 100%; min-height: 0; min-width: 0; }
+  .citypanel { flex: none; display: flex; flex-direction: column; overflow: hidden; background: var(--kart); z-index: 3; transition: height .25s ease, width .25s ease; }
+  .sheet-handle { display: grid; place-items: center; flex: none; border: 0; background: transparent; cursor: pointer; padding: 0; color: var(--murekkep-3); }
+  .sheet-handle i { display: block; border-radius: 99px; background: currentColor; opacity: .55; }
+  .cp-in { position: static; max-height: none; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; gap: 10px; }
+  .cp-head { display: flex; align-items: center; gap: 10px; }
+  .cp-ht { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+  .cp-head h2 { font-size: 20px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cp-go { display: inline-flex; flex: none; padding: 8px 12px; font-size: 14px; }
+  .cp-main, .cp-placewrap { display: none; }
+  .cp-goal { padding: 10px 12px; } .cp-goal .gring { width: 76px; height: 76px; }
+  .cp-tt b { font-size: 14px; }
+}
+/* dikey telefon: alttan açılan çekmece */
+@media (max-width: 760px) and (orientation: portrait), (max-width: 760px) and (min-height: 521px) {
+  .mapscreen2 { flex-direction: column; }
+  .citypanel { width: 100%; margin-top: -14px; border-radius: 20px 20px 0 0; box-shadow: 0 -10px 26px -14px rgba(60, 35, 15, .6); }
+  .sheet-min .citypanel { height: 92px; }
+  .sheet-mid .citypanel { height: 46%; }
+  .sheet-max .citypanel { height: 88%; }
+  .sheet-handle { height: 22px; width: 100%; }
+  .sheet-handle i { width: 44px; height: 5px; }
+  .cp-in { padding: 2px 16px 14px; }
+  .sheet-min .cp-in { overflow: hidden; }
+  .sheet-min .cp-in > :not(.cp-head) { display: none; }
+}
+/* yatay telefon: sağdan açılan panel */
+@media (max-height: 520px) and (orientation: landscape) {
+  .mapscreen2 { flex-direction: row; height: calc(100dvh - var(--tbh, 56px)); }
+  .citypanel { height: 100%; flex-direction: row; border-left: 1px solid var(--kart-cizgi); box-shadow: -10px 0 26px -16px rgba(60, 35, 15, .6); }
+  .sheet-min .citypanel { width: 36px; }
+  .sheet-mid .citypanel, .sheet-max .citypanel { width: min(340px, 46vw); }
+  .sheet-handle { width: 36px; height: 100%; background: var(--krem); border-right: 1px solid var(--kart-cizgi); }
+  .sheet-handle i { width: 6px; height: 56px; opacity: .7; }
+  .sheet-min .cp-in { display: none; }
+  .cp-in { padding: 12px 12px 12px 4px; }
+}
+
+/* üst çubuk sade: ses menüye taşındı, "şube aç" Merkez Ofis'te */
+@media (max-width: 760px), (max-height: 520px) and (orientation: landscape) {
+  .navbtn.snd, .btab.add { display: none; }
+  .tb-rep { display: flex; padding: 4px 8px; } .tb-rep small { display: none; } .repstars { font-size: 13px; letter-spacing: -1px; }
+  .tb-race small { display: none; }
+  .btab .hdots { display: none; }
+  .btab-t small { max-width: 26vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* servis: sahne ekrana sığar, saat zaten üst çubukta */
+  .stagewrap { overflow: hidden; }
+  .stage { min-width: 0 !important; }
+  .clockpanel .bigclock, .clockpanel .jar, .clockpanel > .row > div > small { display: none; }
+  .clockpanel > .row { display: none; }
+  .clockpanel { padding: 8px; }
+  .speed.seg button { min-height: 40px; }
+  /* dokunma için okunur boyutlar, taşma yok */
+  .btn { white-space: normal; text-align: center; min-height: 40px; line-height: 1.2; }
+  .btn.xs { min-height: 30px; font-size: 12.5px; }
+  .row { flex-wrap: wrap; }
+  .screen { padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+  .panel, .card { min-width: 0; }
+  .grid { min-width: 0; }
+  .small, small { font-size: max(12px, 0.8em); }
+  .tiny { font-size: 11.5px; }
+  img, svg { max-width: 100%; }
+  .mapscreen2 svg { max-width: none; }
+}
+
+/* yer ekranlarının başlığı telefonda sade: geri düğmesi alt sekmede, karakter balonu gizli */
+@media (max-width: 760px), (max-height: 520px) and (orientation: landscape) {
+  .pagehead { padding: 12px 14px; gap: 10px; flex-wrap: nowrap; align-items: center; }
+  .pagehead > .btn { display: none; }
+  .pagehead .ph-npc { display: none; }
+  .pagehead .ph-ic { width: 40px; height: 40px; flex: none; }
+  .pagehead .ph-ic .ic { width: 22px; height: 22px; }
+  .pagehead h1 { font-size: 22px; line-height: 1.1; }
+  .pagehead p { font-size: 13px; margin: 2px 0 0; }
+  .pagehead .kicker { font-size: 10.5px; }
+}
+/* başlık ekranı: yatay telefonda logo küçülür, düğmeler ilk ekranda görünür */
+@media (max-height: 520px) and (orientation: landscape) {
+  .title2 { overflow-y: auto; }
+  .t-front { gap: 10px; padding-top: 10px; }
+  .t-mark { display: none; }
+  .t-logo h1 { font-size: clamp(34px, 9vh, 52px); padding: 10px 22px 8px; border-radius: 20px; box-shadow: 0 5px 0 #9c1527; }
+  .t-ribbon { font-size: 11px; }
+  .t-cta { gap: 8px; }
+  .t-cta .btn.big { font-size: 15px; padding: 8px 14px; border-radius: 14px; min-height: 40px; }
+  .t-cta .btn.round { padding: 8px 10px; }
+  .t-hall { display: none; }
+}
+@media (max-width: 380px) { .t-cta .btn.big { font-size: 18px; padding: 12px 20px; } }
+.t-cta { flex-direction: column; align-items: center; }
+.t-r1, .t-r2, .t-r3 { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.t-r3 .btn.big.round { font-size: 15px; padding: 10px 14px; min-height: 0; }
+@media (max-height: 520px) and (orientation: landscape) {
+  .t-cta { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+  .t-ribbon { margin-top: -6px; }
+}
+.t-r2 .btn.big { font-size: 17px; padding: 10px 18px; }
+@media (max-width: 380px) { .t-r2 .btn.big { font-size: 15px; padding: 9px 12px; } .t-r2 { gap: 8px; } }

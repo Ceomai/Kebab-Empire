@@ -45,7 +45,7 @@
     tasks = tasks || cityTasks();
     const TL = { now: 'Şimdi', pm: 'Öğleden sonra', eve: 'Akşam' };
     const fw = Math.max(320, window.innerWidth - (window.innerWidth > 1000 ? 380 : 0)), fh = Math.max(600, window.innerHeight - 128);
-    const phone = window.innerWidth <= 760;
+    const phone = window.innerWidth <= 760 || (window.innerHeight <= 520 && window.innerWidth > window.innerHeight);
     return { fill: true, par: phone ? 'xMidYMid meet' : window.innerWidth > 1000 && fw / fh < 1400 / 860 ? 'xMidYMin meet' : 'xMidYMid slice', tasks: tasks.map((t) => ({ id: t.id, n: t.n, color: t.color, label: t.time || TL[t.when].replace('Öğleden sonra', 'Öğleden s.') })), route: UI.mapRoute || (tasks[0] && tasks[0].id) };
   }
   function goalRing() {
@@ -75,15 +75,16 @@
         ${ts.map((t) => { const p = KE.MAP.place(t.id); return `<button class="cp-task ${t.urgent ? 'urg' : ''} ${UI.mapRoute === t.id ? 'on' : ''}" data-a="go" data-s="${t.id}" data-route="${t.id}" style="--c:${t.color}"><span class="cp-ic">${IC(p.icon)}<b>${t.n}</b></span><span class="cp-tt"><b>${esc(t.title)}</b><small>${esc(t.sub)}</small></span>${t.urgent ? '<em class="cp-urg">Acil</em>' : ''}</button>`; }).join('')}</div>`;
     }).join('') : `<div class="cp-empty">${IC('check')}<span>Bugün acil bir iş yok. Dükkâna geçip kepengi aç ya da yerleri gez.</span></div>`;
     const act = KE.G.phase === 'morning' ? ['store', KE.G.branches.length > 1 ? 'Dükkâna geç, kepenkleri aç' : 'Dükkâna geç, kepengi aç'] : KE.G.phase === 'service' ? ['eye', 'Dükkâna bak'] : ['chart', 'Kapanış raporuna git'];
-    return `<aside class="citypanel"><div class="cp-in">
-      <div class="cp-head"><span class="kicker">${KE.weekday(KE.G.day)} · ${clockNow}</span><h2>${esc(B().name)}</h2></div>
+    const st = UI.sheetState();
+    return `<aside class="citypanel"><button class="sheet-handle" data-a="sheetToggle" aria-label="${st === 'max' ? 'Paneli küçült' : 'Paneli büyüt'}" aria-expanded="${st !== 'min'}"><i></i></button><div class="cp-in">
+      <div class="cp-head"><span class="cp-ht"><span class="kicker">${KE.weekday(KE.G.day)} · ${clockNow}</span><h2>${esc(B().name)}</h2></span><button class="btn green cp-go" data-a="go" data-s="shop">${IC(act[0])}<span>${KE.G.phase === 'morning' ? 'Dükkâna geç' : KE.G.phase === 'service' ? 'Dükkâna bak' : 'Kapanış'}</span></button></div>
       ${UI.adviceCard(false)}
       ${goalRing()}
       ${eraCard()}${weeklyCard()}
       <div class="cp-sec">Yapılacaklar</div><div class="cp-tasks">${taskHtml}</div>
-      <div class="cp-sec">Yerler</div>
-      <div class="cp-places">${KE.MAP.PLACES.map((p) => { const t = tasks.find((x) => x.id === p.id); const lk = !KE.placeOpen(KE.G, p.id); return `<button class="cp-pl ${lk ? 'lk' : ''}" data-a="go" data-s="${p.id}" data-route="${p.id}" style="--c:${lk ? '#a99a88' : p.color}" title="${esc(p.name)}${lk ? ' · ' + KE.PLACE_ERA[p.id] + '. dönem' : ''}" aria-label="${esc(p.name)}">${IC(lk ? 'lock' : p.icon)}${t ? `<b>${t.n}</b>` : ''}<small class="cp-pn">${esc(p.name)}</small></button>`; }).join('')}</div>
-      <button class="btn big green block" data-a="go" data-s="shop">${IC(act[0])}${act[1]}</button>
+      <div class="cp-placewrap"><div class="cp-sec">Yerler</div>
+      <div class="cp-places">${KE.MAP.PLACES.map((p) => { const t = tasks.find((x) => x.id === p.id); const lk = !KE.placeOpen(KE.G, p.id); return `<button class="cp-pl ${lk ? 'lk' : ''}" data-a="go" data-s="${p.id}" data-route="${p.id}" style="--c:${lk ? '#a99a88' : p.color}" title="${esc(p.name)}${lk ? ' · ' + KE.PLACE_ERA[p.id] + '. dönem' : ''}" aria-label="${esc(p.name)}">${IC(lk ? 'lock' : p.icon)}${t ? `<b>${t.n}</b>` : ''}<small class="cp-pn">${esc(p.name)}</small></button>`; }).join('')}</div></div>
+      <button class="btn big green block cp-main" data-a="go" data-s="shop">${IC(act[0])}${act[1]}</button>
       ${KE.G.phase === 'morning' ? `<button class="btn ghost block quickday" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün: servisi atla, sonuca geç</button>${KE.quickWeekOpen(KE.G) ? `<button class="btn ghost block quickday" data-a="quickWeek">${IC('ff')}Haftayı hızlı geç (önemli bir şey olursa durur)</button>` : ''}` : ''}
     </div></aside>`;
   }
@@ -187,9 +188,22 @@
     const p = Math.max(0, Math.min(1, (W.value || 0) / W.target));
     return `<div class="cp-week ${W.done ? 'done' : ''}"><span class="kicker">${IC('target')}Haftalık meydan okuma · ödül ${KE.tl(W.reward)}</span><b>${esc(W.text)}</b><span class="gauge ${W.done ? 'ok' : 'or'}"><i style="width:${Math.round(p * 100)}%"></i></span><small>${W.done ? 'Tamamlandı!' : W.kind === 'sat' ? 'Şu an %' + Math.round(W.value || 0) : (W.kind === 'tips' ? KE.tl(W.value || 0) : Math.round(W.value || 0)) + ' / ' + (W.kind === 'tips' ? KE.tl(W.target) : W.target)}</small></div>`;
   }
+  /* Telefon: şehir paneli üç kademeli çekmece (küçük / yarım / büyük); harita kalan alanı doldurur */
+  const SHEET_KEY = 'kebab-empire-sheet';
+  UI.sheetState = () => { try { return localStorage.getItem(SHEET_KEY) || 'mid'; } catch (e) { return 'mid'; } };
+  A.sheetToggle = () => {
+    const cur = UI.sheetState(), land = window.innerHeight <= 520 && window.innerWidth > window.innerHeight;
+    const next = land ? (cur === 'min' ? 'mid' : 'min') : ({ min: 'mid', mid: 'max', max: 'min' })[cur] || 'mid';
+    try { localStorage.setItem(SHEET_KEY, next); } catch (e) { /* yok */ }
+    const ms = document.querySelector('.mapscreen2');
+    if (!ms) return;
+    ms.classList.remove('sheet-min', 'sheet-mid', 'sheet-max'); ms.classList.add('sheet-' + next);
+    const h = ms.querySelector('.sheet-handle'); if (h) { h.setAttribute('aria-expanded', String(next !== 'min')); h.setAttribute('aria-label', next === 'max' ? 'Paneli küçült' : 'Paneli büyüt'); }
+    setTimeout(() => UI.mapMount(), 280);
+  };
   SCREENS.map = () => {
     const tasks = cityTasks();
-    return `<main class="mapscreen2"><div class="mapframe big" id="cityframe"></div>${cityPanel(tasks)}</main>`;
+    return `<main class="mapscreen2 sheet-${UI.sheetState()}"><div class="mapframe big" id="cityframe"></div>${cityPanel(tasks)}</main>`;
   };
   UI.mapRefresh = function () {
     const f = document.getElementById('cityframe');

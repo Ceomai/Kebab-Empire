@@ -193,3 +193,9 @@ Yarış
 Merve Usta
 Kes
 Çırak Barış
+Çırak Onur
+{0} müşteri yemeğini bekleyemedi (gelenlerin {1}'u kaçtı)
+{0}: Selim çok mutsuz
+Uğur
+Çırak İbrahim
+dün gelenlerin {0}'yı kapasite yetmediği için gitti. Reklamın getireceği müşterilerin çoğu da kapıdan dönecek; önce ekibi ya da salonu büyüt.

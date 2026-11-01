@@ -166,7 +166,18 @@
     if (inGame) setTimeout(UI.tutor, 60);
     if (inGame && !UI.holdEvent && KE.G.pendingEvent && KE.G.phase === 'morning' && !document.querySelector('.modal-bg')) H.showEvent();
     if (UI.undoChip) UI.undoChip();
+    UI.layoutVars();
   };
+  /* Telefon düzeni: üst çubuk ve alt sekme yüksekliği CSS'e aktarılır, harita ekranı tam bu kadar yer kaplar;
+     servis sahnesi ekran genişliğine sığar */
+  UI.layoutVars = function () {
+    const r = document.documentElement.style;
+    const tb = document.querySelector('.topbar'), tab = document.querySelector('.tabbar');
+    r.setProperty('--tbh', (tb ? tb.getBoundingClientRect().height : 0) + 'px');
+    const tabH = tab && getComputedStyle(tab).display !== 'none' && tab.getBoundingClientRect().width > tab.getBoundingClientRect().height ? tab.getBoundingClientRect().height : 0;
+    r.setProperty('--tabh', tabH + 'px');
+  };
+  window.addEventListener('resize', () => UI.layoutVars());
 
   /* ---------- Üst çubuk ve şube şeridi ---------- */
   function topbar() {
