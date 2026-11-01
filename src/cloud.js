@@ -9,6 +9,7 @@ const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || 'dev';
 const CONSENT_KEY = 'kebab-empire-consent';
 
+/** @type {any} */
 const C = (window.KE.CLOUD = {
   enabled: !!(URL && KEY),
   ready: false,

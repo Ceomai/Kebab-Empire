@@ -11,12 +11,14 @@
     "test": "vitest run",
     "typecheck": "tsc -p jsconfig.json",
     "sim": "node scripts/sim-balance.cjs",
-    "e2e": "node scripts/e2e.cjs"
+    "e2e": "node scripts/e2e.cjs",
+    "build:edge": "node scripts/build-edge.mjs"
   },
   "devDependencies": {
     "acorn": "^8.19.0",
     "eslint-scope": "^9.1.2",
     "jsdom": "^30.1.3",
+    "playwright": "^1.63.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
     "vite-plugin-pwa": "^2.0.0",

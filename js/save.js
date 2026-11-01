@@ -2,6 +2,7 @@
    Zarf: { v, app, savedAt, day, sum, game }. Eski kayıtlar sürüm sürüm göç ettirilir.
    Ana kayıt bozulursa son sağlam yedekten açılır. Dosyaya dışa/içe aktarma ve bulut kaydı aynı zarfı kullanır. */
 (function () {
+  /** @type {any} */
   const S = KE.SAVE = {};
   S.KEY = 'kebab-empire-save-v2';
   S.BACKUP = 'kebab-empire-save-backup';
@@ -120,7 +121,7 @@
         if (!f) return reject(new Error('Dosya seçilmedi.'));
         if (f.size > 5e6) return reject(new Error('Dosya çok büyük.'));
         const r = new FileReader();
-        r.onload = () => { try { resolve(S.open(JSON.parse(r.result))); } catch (e) { reject(e); } };
+        r.onload = () => { try { resolve(S.open(JSON.parse(String(r.result)))); } catch (e) { reject(e); } };
         r.onerror = () => reject(new Error('Dosya okunamadı.'));
         r.readAsText(f);
       };

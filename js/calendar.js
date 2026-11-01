@@ -3,6 +3,7 @@
    İstanbul'un gün batımından hesaplanır. Diyanet'in ilan ettiği tarihlerle bir gün kayma olabilecek
    yıllar için KE.CAL.OVERRIDES kullanılır (uzaktan ayarla da güncellenebilir). */
 (function () {
+  /** @type {any} */
   const C = KE.CAL = {};
   const DAY = 86400000;
   const iso = (t) => new Date(t).toISOString().slice(0, 10);

@@ -2,6 +2,7 @@
    16:9 sahne; bütün konumlar sahne genişliğine göre yüzde. Varlıklar (müşteri, personel, tabak) anahtarlı DOM öğeleri;
    simülasyon her dakika konumları günceller, CSS geçişleri yürüyüşü yumuşatır. */
 (function () {
+  /** @type {any} */
   const S = KE.SCENE = {};
   const A = () => KE.ART;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));

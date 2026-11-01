@@ -104,7 +104,7 @@
   let rsz = 0;
   window.addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(() => UI.mapRefresh(), 200); });
   document.addEventListener('mouseover', (e) => {
-    const t = e.target.closest && e.target.closest('.citypanel [data-route]');
+    const t = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.citypanel [data-route]');
     if (!t || UI.mapRoute === t.dataset.route) return;
     UI.mapRoute = t.dataset.route;
     UI.mapRefresh();

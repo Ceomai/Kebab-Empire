@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const OUT = process.argv[3] || '.';
+const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() + '/ke-e2e-');
 (async () => {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -104,4 +104,5 @@ const OUT = process.argv[3] || '.';
   console.log('scrollWidth', sw, sw2);
   console.log(errors.length ? [...new Set(errors)].join('\n') : 'NO ERRORS');
   await browser.close();
+  if (errors.length) process.exit(1);
 })();

@@ -11,7 +11,7 @@
   A.ngStep = (d) => { readNg(); UI.go(d.to); };
   A.pickDistrict = (d) => { UI.ng.district = d.d; UI.render(); };
   A.pickMaster = (d) => { UI.ng.master = +d.i; UI.render(); };
-  function readNg() { const o = document.getElementById('ng-owner'), s = document.getElementById('ng-shop'); if (o) UI.ng.owner = o.value.trim(); if (s) UI.ng.shopName = s.value.trim(); }
+  function readNg() { const o = document.getElementById('ng-owner'), s = document.getElementById('ng-shop'); if (o) UI.ng.owner = /** @type {HTMLInputElement} */ (o).value.trim(); if (s) UI.ng.shopName = /** @type {HTMLInputElement} */ (s).value.trim(); }
   A.startGame = () => {
     const ng = UI.ng;
     const m = ng.masters[ng.master];
@@ -57,7 +57,7 @@
     const sp = KE.specialDay(KE.G.day);
     setTimeout(() => H.banner(sp ? sp.name + ' başladı!' : 'Kepenkler açıldı!'), 300);
   };
-  A.speed = (d) => { KE.G.speed = +d.v; document.querySelectorAll('.speed button').forEach((x) => x.classList.toggle('on', +x.dataset.v === KE.G.speed)); };
+  A.speed = (d) => { KE.G.speed = +d.v; document.querySelectorAll('.speed button').forEach((x) => x.classList.toggle('on', +(/** @type {HTMLElement} */ (x)).dataset.v === KE.G.speed)); };
   A.setPos = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
     if (!s) return;
@@ -200,18 +200,18 @@
   C.farmAuto = (el) => { KE.G.farm.auto = el.checked; UI.render(); };
 
   document.addEventListener('click', (e) => {
-    const el = e.target.closest('[data-a]');
+    const el = /** @type {any} */ (e.target).closest('[data-a]');
     if (!el || el.disabled) return;
     const fn = A[el.dataset.a];
     if (fn) { e.preventDefault(); fn(Object.assign({}, el.dataset), el, e); }
   });
-  document.addEventListener('pointerover', (e) => { if (e.target.closest && e.target.closest('#crew')) UI.crewHover = Date.now(); });
+  document.addEventListener('pointerover', (e) => { if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('#crew')) UI.crewHover = Date.now(); });
   document.addEventListener('keydown', (e) => {
-    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('g.place[data-a]')) { e.preventDefault(); const fn = A[e.target.dataset.a]; if (fn) fn(Object.assign({}, e.target.dataset)); }
+    if ((e.key === 'Enter' || e.key === ' ') && /** @type {any} */ (e.target).matches && /** @type {any} */ (e.target).matches('g.place[data-a]')) { e.preventDefault(); const fn = A[/** @type {any} */ (e.target).dataset.a]; if (fn) fn(Object.assign({}, /** @type {any} */ (e.target).dataset)); }
     if (e.key === 'Escape' && document.querySelector('.modal-bg .acts [data-a="closeModal"]')) UI.closeModal();
   });
   document.addEventListener('change', (e) => {
-    const el = e.target.closest('[data-c]');
+    const el = /** @type {any} */ (e.target).closest('[data-c]');
     if (!el) return;
     const fn = C[el.dataset.c];
     if (fn) fn(el, e);
@@ -220,11 +220,11 @@
   /* Hesap ve gizlilik */
   A.privacy = () => { UI.closeModal(); UI.privacyModal(false); };
   A.consentSave = async () => {
-    const v = { cloud: document.getElementById('cs-cloud').checked, analytics: document.getElementById('cs-an').checked, name: document.getElementById('cs-name').value };
+    const v = { cloud: /** @type {HTMLInputElement} */ (document.getElementById('cs-cloud')).checked, analytics: /** @type {HTMLInputElement} */ (document.getElementById('cs-an')).checked, name: /** @type {HTMLInputElement} */ (document.getElementById('cs-name')).value };
     try { await KE.CLOUD.setConsent(v); UI.closeModal(); UI.toast(v.cloud ? 'Bulut kaydı açık.' : 'Tercihin kaydedildi.', 'good'); if (KE.G) UI.save(); } catch (e) { UI.toast('Bağlanılamadı: ' + e.message, 'bad'); }
   };
   A.consentNone = async () => { await KE.CLOUD.setConsent({ cloud: false, analytics: false }); UI.closeModal(); };
-  A.linkMail = async () => { const m = document.getElementById('cs-mail').value.trim(); if (!/^\S+@\S+\.\S+$/.test(m)) { UI.toast('Geçerli bir e-posta yaz.', 'bad'); return; } try { await KE.CLOUD.linkEmail(m); UI.toast('Onay bağlantısı e-postana gönderildi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
+  A.linkMail = async () => { const m = /** @type {HTMLInputElement} */ (document.getElementById('cs-mail')).value.trim(); if (!/^\S+@\S+\.\S+$/.test(m)) { UI.toast('Geçerli bir e-posta yaz.', 'bad'); return; } try { await KE.CLOUD.linkEmail(m); UI.toast('Onay bağlantısı e-postana gönderildi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
   A.cloudLoad = async () => {
     const r = await KE.CLOUD.loadSave(); if (!r) { UI.toast('Bulutta kayıt yok.', 'bad'); return; }
     try { const g = KE.SAVE.open(r.save); KE.G = g; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`Buluttan yüklendi · ${KE.dateStr(g.day)}`, 'good'); } catch (e) { UI.toast(e.message, 'bad'); }

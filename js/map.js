@@ -3,6 +3,7 @@
    Adalar, köprüler ve simge yapılar. Zemin bir kez üretilip saklanır; tesis rozetleri,
    dükkânlar, iş etiketleri ve rota her çizimde üstüne eklenir. */
 (function () {
+  /** @type {any} */
   const M = KE.MAP = {};
   const f1 = (n) => Math.round(n * 10) / 10;
 
@@ -26,6 +27,7 @@
     { id: 'ciftlik', name: 'Besi Çiftliği', x: 1215, y: 146, color: '#b83227', icon: 'cow', group: 'Şirket' }
   ];
   M.place = (id) => M.PLACES.find((p) => p.id === id);
+  /** @type {Array<[number, number, string, string]>} */
   const LABELS = [[470, 196, 'Kulealtı', 'kulealti'], [608, 346, 'Beşiktepe', 'besiktepe'], [515, 602, 'Sultanpazarı', 'sultanpazari'], [244, 500, 'Merterli Sanayi', 'merterli'], [130, 652, 'Kampüstepe', 'kampustepe'], [1146, 622, 'Bostansahil', 'bostansahil'], [880, 602, 'Kadıçeşme', 'kadiceşme']];
 
   /* ---------- Coğrafya ---------- */

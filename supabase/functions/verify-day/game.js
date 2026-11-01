@@ -375,6 +375,7 @@ KE.GOALS = [
    İstanbul'un gün batımından hesaplanır. Diyanet'in ilan ettiği tarihlerle bir gün kayma olabilecek
    yıllar için KE.CAL.OVERRIDES kullanılır (uzaktan ayarla da güncellenebilir). */
 (function () {
+  /** @type {any} */
   const C = KE.CAL = {};
   const DAY = 86400000;
   const iso = (t) => new Date(t).toISOString().slice(0, 10);
@@ -2295,6 +2296,7 @@ KE.GOALS = [
    Zarf: { v, app, savedAt, day, sum, game }. Eski kayıtlar sürüm sürüm göç ettirilir.
    Ana kayıt bozulursa son sağlam yedekten açılır. Dosyaya dışa/içe aktarma ve bulut kaydı aynı zarfı kullanır. */
 (function () {
+  /** @type {any} */
   const S = KE.SAVE = {};
   S.KEY = 'kebab-empire-save-v2';
   S.BACKUP = 'kebab-empire-save-backup';
@@ -2413,7 +2415,7 @@ KE.GOALS = [
         if (!f) return reject(new Error('Dosya seçilmedi.'));
         if (f.size > 5e6) return reject(new Error('Dosya çok büyük.'));
         const r = new FileReader();
-        r.onload = () => { try { resolve(S.open(JSON.parse(r.result))); } catch (e) { reject(e); } };
+        r.onload = () => { try { resolve(S.open(JSON.parse(String(r.result)))); } catch (e) { reject(e); } };
         r.onerror = () => reject(new Error('Dosya okunamadı.'));
         r.readAsText(f);
       };

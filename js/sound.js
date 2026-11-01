@@ -2,6 +2,7 @@
    Bütün sesler tarayıcıda sentezlenir (dosya yok). Kasa, zil, eşleşme arpeji, tezgâh, hedef fanfarı
    ve hicaz makamında hafif bir saz ezgisi. Ses ancak oyuncu düğmeye bastıktan sonra başlar. */
 (function () {
+  /** @type {any} */
   const S = KE.SND = { on: false };
   let ctx = null, master = null, musicGain = null, musicTimer = null, nextNote = 0, step = 0;
   const last = {};
@@ -11,7 +12,7 @@
 
   function init() {
     if (ctx) return true;
-    const AC = window.AudioContext || window.webkitAudioContext;
+    const AC = window.AudioContext || /** @type {any} */ (window).webkitAudioContext;
     if (!AC) return false;
     ctx = new AC();
     master = ctx.createGain(); master.gain.value = 0.55; master.connect(ctx.destination);
@@ -101,7 +102,7 @@
   S.toggle = () => S.set(!S.on);
   /* Tercih açıksa ilk tıklamada sesi başlat (tarayıcı kuralı) */
   document.addEventListener('pointerdown', function first(e) {
-    if (e.target.closest && e.target.closest('[data-a="sound"]')) { document.removeEventListener('pointerdown', first); return; }
+    if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('[data-a="sound"]')) { document.removeEventListener('pointerdown', first); return; }
     document.removeEventListener('pointerdown', first);
     if (S.wanted && !S.on) S.set(true);
   });

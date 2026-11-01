@@ -1,8 +1,11 @@
 /* Kebab Empire — arayüz: çekirdek: durum, kayıt, rehber, bildirim, modal, yönlendirme, üst çubuk, ortak parçalar, grafikler.
    Diğer arayüz dosyaları paylaşılan parçalara KE.UI.H üzerinden erişir. */
 (function () {
+  /** @type {any} */
   const UI = KE.UI = {};
+  /** @type {any} */
   const H = UI.H = {};
+  /** @type {any} */
   const SCREENS = UI.SCREENS = {}, A = UI.A = {}, C = UI.C = {};
   UI.screen = 'title'; UI.params = {};
   const app = () => document.getElementById('app');
@@ -96,7 +99,7 @@
     bg.innerHTML = `<div class="modal ${opts.wide ? 'wide' : ''} ${opts.cls || ''}" role="dialog" aria-modal="true">${html}</div>`;
     document.body.appendChild(bg);
     const f = bg.querySelector('button, input');
-    if (f) f.focus({ preventScroll: true });
+    if (f) /** @type {HTMLElement} */ (f).focus({ preventScroll: true });
     return bg;
   };
   UI.closeModal = function () {
