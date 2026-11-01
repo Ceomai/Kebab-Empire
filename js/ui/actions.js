@@ -5,7 +5,7 @@
 
   /* =================== EYLEMLER =================== */
   A.go = (d) => { const p = Object.assign({}, d); delete p.a; const s = p.s; delete p.s; UI.go(s, p); };
-  A.newgame = () => { UI.ng = {}; UI.go('newMode'); };
+  A.newgame = () => { if (KE.G) UI.save(); KE.G = null; UI.ng = {}; UI.go('newMode'); };
   A.continue = () => { KE.G = UI.load(); if (!KE.G) { UI.toast('Kayıt bulunamadı.', 'bad'); return; } UI.go('map'); };
   A.pickMode = (d) => { readNg(); UI.ng.mode = d.m; UI.ng.masters = null; UI.ng.master = null; UI.render(); };
   A.ngStep = (d) => { readNg(); UI.go(d.to); };
@@ -36,8 +36,9 @@
       .catch((e) => UI.toast(e.message, 'bad'));
   };
   A.toTitle = () => { UI.save(); UI.closeModal(); UI.go('title'); };
-  A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Kayıtlı oyun silinecek ve yeni bir oyun başlayacak.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Evet, sıfırdan başla</button></div>`); };
-  A.doNew = () => { KE.SAVE.clear(); KE.G = null; UI.closeModal(); UI.ng = {}; UI.go('newMode'); };
+  A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Yeni oyunun kurulumuna geçilecek. Kayıtlı oyunun, yeni oyunu başlatana kadar silinmez; kurulumdan vazgeçip devam edebilirsin.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Yeni oyun kur</button></div>`); };
+  A.doNew = () => { UI.save(); KE.G = null; UI.closeModal(); UI.ng = {}; UI.go('newMode'); };
+  A.backToTitle = () => { UI.go('title'); };
   A.tutNext = () => { KE.G.tut++; UI.tutor(); };
   A.tutSkip = () => { track('tutorial_skip', { step: KE.G.tut }); KE.G.tut = 99; UI.tutor(); };
   A.pickOpt = (d) => { const o = UI.pickOptions[+d.i]; UI.closeModal(); if (H.pickCb) H.pickCb(o); };

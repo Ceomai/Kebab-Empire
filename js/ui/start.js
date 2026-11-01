@@ -63,7 +63,9 @@
         <div class="mc-body"><h3>${M.name}</h3><p>${M.tagline}</p><ul>${facts.map(([ic, t]) => `<li>${IC(ic)}${t}</li>`).join('')}</ul><div class="mc-dishes">${dishes}</div></div>
         ${ng.mode === m ? `<span class="mc-check">${IC('check')}</span>` : ''}</button>`;
     };
-    return `<main class="screen narrow">${steps(1)}<h1 class="stitle">Ne olacaksın?</h1>
+    const saved = UI.hasSave() ? KE.SAVE.read() : null;
+    return `<main class="screen narrow">${steps(1)}<div class="row between"><h1 class="stitle">Ne olacaksın?</h1><button class="btn sm ghost" data-a="backToTitle">${IC('arrow')}Ana menü</button></div>
+      ${saved ? `<div class="note savednote">${IC('store')}<span><b>${esc(saved.game.shopName || 'Kayıtlı oyun')}</b> · ${KE.dateStr(saved.game.day)} kayıtlı duruyor. Yeni oyunu başlatana kadar silinmez; istersen geri dönüp devam edebilirsin.</span><button class="btn sm green" data-a="continue">${IC('play')}Kayıtlı oyuna dön</button></div>` : ''}
       <div class="modecards">${card('doner')}${card('kebap')}</div>
       <div class="panel formrow">
         <label class="field">Adın<input id="ng-owner" value="${esc(ng.owner || '')}" placeholder="Örn. Deniz" maxlength="24" autocomplete="off"></label>

@@ -1115,3 +1115,5 @@ body::before { background: var(--kart); }
 .inp { font: 700 15px var(--f-body); padding: 8px 12px; border-radius: 10px; border: 2px solid var(--cizgi); min-width: 0; }
 .modal .stack .field { flex: none; }
 .langbtn { font-family: var(--f-display); font-weight: 800; font-size: 16px; min-width: 58px; }
+.note { background: var(--krem); color: var(--murekkep-2); border-color: var(--kart-cizgi); }
+.savednote { align-items: center; background: #f2fbf6; border-color: #bfe6d1; color: var(--murekkep); } .savednote span { flex: 1; }

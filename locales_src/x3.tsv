@@ -1,0 +1,6 @@
+Ana menü	Main menu	Hauptmenü
+Kayıtlı oyuna dön	Back to saved game	Zurück zum Spielstand
+{0} · {1} {2} {3} kayıtlı duruyor. Yeni oyunu başlatana kadar silinmez; istersen geri dönüp devam edebilirsin.	{0} · {1} {2} {3} is saved. It isn't deleted until you start the new game; you can go back and continue.	{0} · {1} {2} {3} ist gespeichert. Er wird erst gelöscht, wenn du das neue Spiel startest; du kannst zurück und weiterspielen.
+· {0} {1} {2} kayıtlı duruyor. Yeni oyunu başlatana kadar silinmez; istersen geri dönüp devam edebilirsin.	· {0} {1} {2} is saved. It isn't deleted until you start the new game; you can go back and continue.	· {0} {1} {2} ist gespeichert. Er wird erst gelöscht, wenn du das neue Spiel startest; du kannst zurück und weiterspielen.
+Yeni oyunun kurulumuna geçilecek. Kayıtlı oyunun, yeni oyunu başlatana kadar silinmez; kurulumdan vazgeçip devam edebilirsin.	You'll go to new game setup. Your saved game isn't deleted until you start the new game; you can cancel setup and continue.	Du gehst zur Einrichtung eines neuen Spiels. Dein Spielstand wird erst gelöscht, wenn du das neue Spiel startest; du kannst abbrechen und weiterspielen.
+Yeni oyun kur	Set up new game	Neues Spiel einrichten
