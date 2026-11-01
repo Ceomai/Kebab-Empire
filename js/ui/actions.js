@@ -218,6 +218,33 @@
     if (fn) fn(el, e);
   });
 
+  /* Oyun sonu: Lüks Kebap'ı satın al */
+  A.buyRival = () => {
+    const st = KE.empireStatus(KE.G);
+    if (!st.ready) return;
+    UI.modal(`<div class="mhead"><span class="kicker">${IC('crown')} Son hamle</span><h2>"Lüks Kebap"a teklif ver</h2><p>Cüneyt Bey'in bütün zincirini ${KE.tl(st.price)} karşılığında satın alacaksın. Rakip ortadan kalkar, onun müşterileri sana gelir ve oyun "Kebap İmparatoru" unvanıyla devam eder.</p></div>
+      <div class="acts"><button class="btn ghost" data-a="closeModal">Biraz daha bekle</button><button class="btn gold" data-a="buyRivalYes">${IC('crown')}Teklifi ver</button></div>`);
+  };
+  A.buyRivalYes = () => {
+    const r = KE.buyRival(KE.G);
+    UI.closeModal();
+    if (!r.ok) { UI.toast(r.msg, 'bad'); return; }
+    track('empire', { day: KE.G.day, branches: KE.G.branches.length });
+    UI.save(); UI.render();
+    UI.empireEnding(r.life);
+  };
+  A.empireEnding = () => UI.empireEnding(KE.lifetime(KE.G));
+  UI.empireEnding = function (life) {
+    const G = KE.G;
+    const stat = (ic, l, v) => `<div class="kpi"><i>${IC(ic)}</i><span><small>${l}</small><b>${v}</b></span></div>`;
+    const best = life.bestProduct ? (KE.MODES[G.mode].products.find((p) => p.id === life.bestProduct) || {}).name : null;
+    UI.modal(`<div class="ending"><div class="end-crown">${IC('crown')}</div><span class="kicker">${KE.dateStr(G.flags.empire || G.day)}</span><h2>Şehrin Kebap İmparatoru</h2>
+      <p class="end-story">Cüneyt Bey anahtarları masaya bıraktı: "Ocağın hakkını verdin." Babamdan kalan küçük dükkânın paslı kepengini kaldırdığım sabahtan bu yana ${life.days} gün geçti. Şimdi şehrin her semtinde tabelamız yanıyor; ustalarım, çıraklarım, mahallelim aynı sofrada. İmparatorluk kuruldu, ama ocak hiç sönmeyecek.</p>
+      <div class="end-stats">${stat('chart', 'Toplam ciro', KE.tl(life.revenue))}${stat('users', 'Doyurulan müşteri', KE.num(life.served))}${stat('gift', 'Toplanan bahşiş', KE.tl(life.tips))}${stat('store', 'Şube', life.branches)}${stat('crown', 'Şampiyonluk tacı', life.crowns)}${best ? stat('star', 'En sevilen', `${esc(best)} · ${KE.num(life.bestCount)}`) : ''}</div>
+      <div class="acts"><button class="btn ghost" data-a="newgame">${IC('plus')}Yeni imparatorluk kur</button><button class="btn big gold" data-a="closeModal">${IC('play')}Oyuna devam et</button></div></div>`, { cls: 'endingmodal', wide: true });
+    if (UI.confetti) { UI.confetti(); setTimeout(UI.confetti, 900); }
+    if (KE.SND) KE.SND.play('goal');
+  };
   /* Görünüm: yazı boyutu ve hareket */
   const A11Y_KEY = 'kebab-empire-a11y';
   UI.a11y = (() => { try { return JSON.parse(localStorage.getItem(A11Y_KEY) || '{}'); } catch (e) { return {}; } })();

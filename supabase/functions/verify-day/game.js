@@ -340,8 +340,13 @@ KE.GOALS = [
   { id: 'sube2', name: 'İkinci şube', desc: 'Başka bir semtte ikinci dükkânını aç.', reward: 60000 },
   { id: 'ciro1m', name: 'Milyonluk ay', desc: 'Bir ayda 1.000.000 ₺ konsolide ciroya ulaş.', reward: 80000 },
   { id: 'itibar80', name: 'Şehrin efsanesi', desc: 'İtibarı 80\'e çıkar.', reward: 100000 },
-  { id: 'sube4', name: 'Kebab Empire', desc: 'Dört şubeli bir zincir kur.', reward: 250000 }
+  { id: 'sube4', name: 'Kebab Empire', desc: 'Dört şubeli bir zincir kur.', reward: 250000 },
+  { id: 'taclar3', name: 'Üç taç', desc: 'Üç ayrı semtte semt şampiyonluğu kazan.', reward: 300000 },
+  { id: 'sube7', name: 'Şehrin her köşesinde', desc: 'Yedi semtin hepsinde bir dükkânın olsun.', reward: 400000 },
+  { id: 'imparator', name: 'Kebap İmparatoru', desc: '"Lüks Kebap" zincirini satın al ve şehrin tek kebap imparatoru ol.', reward: 0, final: true }
 ];
+/* Oyun sonu: "Lüks Kebap" zincirini satın almak için şartlar */
+KE.EMPIRE = { branches: 7, crowns: 3, reputation: 50, price: 30000000 };
 
 
 // ---- js/calendar.js ----
@@ -1067,13 +1072,14 @@ KE.GOALS = [
     const ambF = 1 + Math.min(0.35, amb.score / 120) + (amb.concept ? 0.08 * amb.concept.power : 0);
     const wk = KE.isWeekend(G.day) ? 1.18 : 1;
     const hol = KE.holidayOf(G.day) ? 1.25 : 1;
-    const rival = 1 - Math.min(0.25, d.rivals * 0.03 + (G.rival.district === d.id ? G.rival.power / 400 : 0));
+    const emp = G.flags && G.flags.empire;
+    const rival = 1 - Math.min(0.25, Math.max(0, d.rivals - (emp ? 1 : 0)) * 0.03 + (!emp && G.rival.district === d.id ? G.rival.power / 400 : 0));
     const ad = KE.modVal(G, 'traffic') * KE.modVal(G, 'traffic:' + b.id) * (b.signBoost || 1);
     const sp = KE.specialDay(G.day);
     const mac = sp && sp.id === 'mac' && b.district === 'besiktepe' ? 1.3 : 1;
     const loyal = 1 + 0.025 * Object.values(G.regulars || {}).filter((r) => r.loyalty >= 8).length;
     const champ = b.championUntil && G.day <= b.championUntil ? 1.06 : 1;
-    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
+    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * (emp ? 1.1 : 1) * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
   };
 
   /* ---------- Yeni oyun ---------- */
@@ -1857,6 +1863,41 @@ KE.GOALS = [
     });
   };
 
+  /* ---------- Oyun sonu: imparatorluk ---------- */
+  KE.empirePrice = (G) => Math.round(KE.EMPIRE.price * G.priceIndex / 100000) * 100000;
+  KE.empireStatus = function (G) {
+    const E = KE.EMPIRE, price = KE.empirePrice(G);
+    const crowns = G.branches.filter((b) => (b.champions || 0) > 0).length;
+    const req = [
+      { id: 'branches', label: 'Her semtte bir dükkân', have: G.branches.length, need: E.branches },
+      { id: 'crowns', label: 'Semt şampiyonluğu tacı', have: crowns, need: E.crowns },
+      { id: 'rep', label: 'İtibar', have: Math.round(G.reputation), need: E.reputation },
+      { id: 'cash', label: 'Satın alma bedeli', have: Math.max(0, Math.round(G.cash)), need: price, money: true }
+    ];
+    req.forEach((r) => { r.ok = r.have >= r.need; r.p = Math.min(1, r.have / r.need); });
+    return { req, price, ready: req.every((r) => r.ok), done: !!(G.flags && G.flags.empire) };
+  };
+  /* Bütün oyun boyunca toplamlar (bitiş ekranı için) */
+  KE.lifetime = function (G) {
+    const days = G.ledger.days;
+    const byProduct = {};
+    days.forEach((d) => Object.entries(d.byProduct || {}).forEach(([k, v]) => { byProduct[k] = (byProduct[k] || 0) + v; }));
+    const best = Object.entries(byProduct).sort((a, c) => c[1] - a[1])[0];
+    return { days: G.day - 1, revenue: days.reduce((a, d) => a + (d.revenue || 0), 0), served: days.reduce((a, d) => a + (d.served || 0), 0), tips: days.reduce((a, d) => a + (d.tips || 0), 0), branches: G.branches.length, staff: G.staff.length, crowns: G.branches.reduce((a, b) => a + (b.champions || 0), 0), bestProduct: best ? best[0] : null, bestCount: best ? best[1] : 0 };
+  };
+  KE.buyRival = function (G) {
+    const st = KE.empireStatus(G);
+    if (st.done) return { ok: false, msg: 'Zincir zaten senin.' };
+    if (!st.ready || G.phase !== 'morning') return { ok: false, msg: 'Şartlar henüz tamam değil.' };
+    G.cash -= st.price;
+    KE.addExtra(G, 'capex', st.price);
+    G.flags.empire = G.day;
+    G.rival.power = 0; G.rival.district = null;
+    G.reputation = clamp(G.reputation + 5, 0, 100);
+    G.staff.forEach((s) => { s.morale = clamp(s.morale + 15, 0, 100); });
+    const goals = KE.checkGoals(G);
+    return { ok: true, goals, life: KE.lifetime(G) };
+  };
   KE.checkGoals = function (G) {
     const done = [];
     const test = {
@@ -1870,7 +1911,10 @@ KE.GOALS = [
       sampiyon: () => !!G.flags.champ,
       ciro1m: () => G.ledger.months.some((m) => m.revenue >= 1000000),
       itibar80: () => G.reputation >= 80,
-      sube4: () => G.branches.length >= 4
+      sube4: () => G.branches.length >= 4,
+      taclar3: () => G.branches.filter((b) => (b.champions || 0) > 0).length >= 3,
+      sube7: () => G.branches.length >= KE.DISTRICTS.length,
+      imparator: () => !!(G.flags && G.flags.empire)
     };
     KE.GOALS.forEach((g) => { if (!G.goals[g.id] && test[g.id] && test[g.id]()) { G.goals[g.id] = G.day; G.cash += g.reward; done.push(g); } });
     return done;
@@ -2068,6 +2112,7 @@ KE.GOALS = [
     const sat = week.length ? week.reduce((a, d) => a + d.sat, 0) / week.length : 0;
     const b = G.branches[0];
     const h = [];
+    if (G.flags.empire && G.day - G.flags.empire < 7) h.push({ title: `"Lüks Kebap" artık ${G.shopName || G.branches[0].name} zincirinin`, body: `Şehrin en büyük iki kebap zinciri tek çatı altında birleşti. Cüneyt Bey veda ederken "Ocağın hakkını verdin" dedi. Mahalle esnafı ilk kez aynı tabelanın altında toplanıyor.` });
     if (sat > 80) h.push({ title: `${b.name} mahallenin dilinde`, body: `Haftanın memnuniyet ortalaması %${Math.round(sat)}. Komşular "Böyle ${G.mode === 'doner' ? 'döner' : 'kebap'} yıllardır yenmedi" diyor.` });
     else if (sat > 60) h.push({ title: `${b.name} istikrarlı bir hafta geçirdi`, body: `Haftalık ciro ${KE.tl(rev)}. Esnaf, dükkânın kendini toparladığını söylüyor.` });
     else h.push({ title: `${b.name} zorlu bir hafta geçirdi`, body: 'Müşteriler bekleme sürelerinden ve fiyatlardan şikâyetçi. Esnaf "Toparlanırlar" diyor.' });
@@ -2105,7 +2150,7 @@ KE.GOALS = [
   KE.canRaise = canRaise;
 
   ev.push({ id: 'rakipTeklif', who: 'rakip', w: 1.2,
-    when: (G) => staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),
+    when: (G) => !G.flags.empire && staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),
     build: (G) => { const s = staffOf(G).filter((x) => x.role === 'usta' && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
       return { title: `${s.name}'ya rakipten teklif!`, text: `"Lüks Kebap" sahibi Cüneyt Bey, ${s.name}'ya %30 daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.`, ctx: { sid: s.id },
         choices: [
@@ -2202,7 +2247,7 @@ KE.GOALS = [
       ] }) });
 
   ev.push({ id: 'rakipSemt', who: 'rakip', w: 0.5,
-    when: (G) => G.rival.district !== branch(G).district && G.day > 10,
+    when: (G) => !G.flags.empire && G.rival.district !== branch(G).district && G.day > 10,
     build: (G) => ({ title: '"Lüks Kebap" semtine geliyor', text: 'Cüneyt Bey sokağın karşısındaki dükkânı kiralamış. Altın harfli tabelası şimdiden asıldı. "Bu semtte yer var mı bakalım" diyor sırıtarak.', ctx: {},
       choices: [
         { label: 'Reklama yüklen', desc: `${KE.tl(25000)}, 7 gün müşteri +%15`, run: (G) => { G.rival.district = branch(G).district; G.cash -= 25000; KE.addExtra(G, 'ads', 25000); G.mods.push({ key: 'traffic', mult: 1.15, days: 7, label: 'Karşı kampanya' }); return 'Mahalleyi el ilanıyla donattık. "Asıl lezzet burada!"'; } },
@@ -2574,6 +2619,7 @@ KE.GOALS = [
     if (P.pendingEvent) {
       P.pendingEvent.choices.forEach((_, i) => { const g = KE.SAVE.open(clone(prevEnv)); try { KE.resolveEvent(g, i); } catch (e) { /* yok */ } maxCash = Math.max(maxCash, g.cash); maxRep = Math.max(maxRep, g.reputation); });
     }
+    if (Cu.flags && Cu.flags.empire && !(P.flags && P.flags.empire)) maxRep += 5; // imparatorluk satın alımı
     const newLoans = (Cu.loans || []).slice((P.loans || []).length).reduce((a, l) => a + (l.amount || 0), 0);
     if ((Cu.loans || []).length < (P.loans || []).length) return bad('kredi silinmiş');
     const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + ((KE.GOALS.find((g) => g.id === k) || {}).reward || 0), 0);

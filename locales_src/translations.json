@@ -4838,5 +4838,177 @@
  "{0}, itibar +{1}": {
   "en": "{0}, reputation +{1}",
   "de": "{0}, Ruf +{1}"
+ },
+ "Üç taç": {
+  "en": "Three crowns",
+  "de": "Drei Kronen"
+ },
+ "Üç ayrı semtte semt şampiyonluğu kazan.": {
+  "en": "Win the district championship in three different districts.",
+  "de": "Gewinne die Bezirksmeisterschaft in drei verschiedenen Bezirken."
+ },
+ "Şehrin her köşesinde": {
+  "en": "Every corner of the city",
+  "de": "In jeder Ecke der Stadt"
+ },
+ "Yedi semtin hepsinde bir dükkânın olsun.": {
+  "en": "Own a shop in all seven districts.",
+  "de": "Besitze in allen sieben Bezirken einen Laden."
+ },
+ "Kebap İmparatoru": {
+  "en": "Kebab Emperor",
+  "de": "Kebab-Kaiser"
+ },
+ "\"Lüks Kebap\" zincirini satın al ve şehrin tek kebap imparatoru ol.": {
+  "en": "Buy the \"Lüks Kebap\" chain and become the city's one and only kebab emperor.",
+  "de": "Kaufe die Kette „Lüks Kebap“ und werde der einzige Kebab-Kaiser der Stadt."
+ },
+ "Unvan": {
+  "en": "Title",
+  "de": "Titel"
+ },
+ "İmparatorluk yolu": {
+  "en": "Road to empire",
+  "de": "Weg zum Imperium"
+ },
+ "Son hedef: rakip zincir \"Lüks Kebap\"ı satın al, şehrin tek kebap imparatoru ol.": {
+  "en": "Final goal: buy the rival chain \"Lüks Kebap\" and become the city's one and only kebab emperor.",
+  "de": "Letztes Ziel: Kaufe die Konkurrenzkette „Lüks Kebap“ und werde der einzige Kebab-Kaiser der Stadt."
+ },
+ "Her semtte bir dükkân": {
+  "en": "A shop in every district",
+  "de": "Ein Laden in jedem Bezirk"
+ },
+ "Semt şampiyonluğu tacı": {
+  "en": "District championship crowns",
+  "de": "Bezirksmeister-Kronen"
+ },
+ "Satın alma bedeli": {
+  "en": "Purchase price",
+  "de": "Kaufpreis"
+ },
+ "Şartlar tamamlanınca teklif verebilirsin. Satın alma sabah hazırlığında yapılır.": {
+  "en": "Once every requirement is met you can make an offer. The purchase happens during morning prep.",
+  "de": "Sind alle Bedingungen erfüllt, kannst du ein Angebot machen. Der Kauf erfolgt in der Morgenvorbereitung."
+ },
+ "Teklif ver · {0}": {
+  "en": "Make an offer · {0}",
+  "de": "Angebot machen · {0}"
+ },
+ "\"Lüks Kebap\" satılık!": {
+  "en": "\"Lüks Kebap\" is for sale!",
+  "de": "„Lüks Kebap“ steht zum Verkauf!"
+ },
+ "Bütün şartlar tamam: {0}'ten teklifini ver": {
+  "en": "All requirements met: make your offer from the {0}",
+  "de": "Alle Bedingungen erfüllt: Mach dein Angebot im {0}"
+ },
+ "Bütün şartlar tamam. {0} teklifini bekliyor.": {
+  "en": "All requirements met. {0} is waiting for your offer.",
+  "de": "Alle Bedingungen erfüllt. {0} wartet auf dein Angebot."
+ },
+ "Son hamle": {
+  "en": "The final move",
+  "de": "Der letzte Zug"
+ },
+ "\"Lüks Kebap\"a teklif ver": {
+  "en": "Make an offer for \"Lüks Kebap\"",
+  "de": "Angebot für „Lüks Kebap“ machen"
+ },
+ "{0}'in bütün zincirini {1} karşılığında satın alacaksın. Rakip ortadan kalkar, onun müşterileri sana gelir ve oyun \"Kebap İmparatoru\" unvanıyla devam eder.": {
+  "en": "You'll buy {0}'s entire chain for {1}. The rival disappears, its customers come to you, and the game continues with the title \"Kebab Emperor\".",
+  "de": "Du kaufst die gesamte Kette von {0} für {1}. Der Rivale verschwindet, seine Kunden kommen zu dir und das Spiel geht mit dem Titel „Kebab-Kaiser“ weiter."
+ },
+ "Biraz daha bekle": {
+  "en": "Wait a little longer",
+  "de": "Noch etwas warten"
+ },
+ "Teklifi ver": {
+  "en": "Make the offer",
+  "de": "Angebot abgeben"
+ },
+ "Şehrin Kebap İmparatoru": {
+  "en": "Kebab Emperor of the City",
+  "de": "Kebab-Kaiser der Stadt"
+ },
+ "\"Lüks Kebap\" artık zincirinin bir parçası. Rakip yok, şehir senin. Oyun sürüyor: yeni rekorların peşinden git.": {
+  "en": "\"Lüks Kebap\" is now part of your chain. No rivals left, the city is yours. The game goes on: chase new records.",
+  "de": "„Lüks Kebap“ gehört jetzt zu deiner Kette. Keine Rivalen mehr, die Stadt gehört dir. Das Spiel geht weiter: Jag neuen Rekorden nach."
+ },
+ "Hikâyeyi yeniden gör": {
+  "en": "See the story again",
+  "de": "Geschichte noch einmal ansehen"
+ },
+ "{0} anahtarları masaya bıraktı: \"Ocağın hakkını verdin.\" Babamdan kalan küçük dükkânın paslı kepengini kaldırdığım sabahtan bu yana {1} gün geçti. Şimdi şehrin her semtinde tabelamız yanıyor; ustalarım, çıraklarım, mahallelim aynı sofrada. İmparatorluk kuruldu, ama ocak hiç sönmeyecek.": {
+  "en": "{0} put the keys on the table: \"You did the grill justice.\" {1} days have passed since the morning I lifted the rusty shutter of the little shop my father left me. Now our sign glows in every district of the city; my masters, my apprentices and my neighbours share one table. The empire is built, but the fire will never go out.",
+  "de": "{0} legte die Schlüssel auf den Tisch: „Du hast dem Grill alle Ehre gemacht.“ {1} Tage sind vergangen seit dem Morgen, an dem ich den rostigen Rollladen des kleinen Ladens meines Vaters hochzog. Jetzt leuchtet unser Schild in jedem Bezirk der Stadt; meine Meister, Lehrlinge und Nachbarn sitzen an einem Tisch. Das Imperium steht, doch das Feuer wird nie erlöschen."
+ },
+ "Toplam ciro": {
+  "en": "Total revenue",
+  "de": "Gesamtumsatz"
+ },
+ "Doyurulan müşteri": {
+  "en": "Customers fed",
+  "de": "Satte Kunden"
+ },
+ "Toplanan bahşiş": {
+  "en": "Tips collected",
+  "de": "Gesammeltes Trinkgeld"
+ },
+ "Şube": {
+  "en": "Branches",
+  "de": "Filialen"
+ },
+ "Şampiyonluk tacı": {
+  "en": "Championship crowns",
+  "de": "Meisterkronen"
+ },
+ "Yeni imparatorluk kur": {
+  "en": "Build a new empire",
+  "de": "Neues Imperium gründen"
+ },
+ "Oyuna devam et": {
+  "en": "Continue playing",
+  "de": "Weiterspielen"
+ },
+ "Merkezi mutfak": {
+  "en": "Central kitchen",
+  "de": "Zentralküche"
+ },
+ "Döner ve kıyma merkezde hazırlanıp şubelere dağıtılır. Malzeme maliyeti {0} düşer.": {
+  "en": "Döner and mince are prepared centrally and delivered to branches. Ingredient costs drop by {0}.",
+  "de": "Döner und Hackfleisch werden zentral zubereitet und an die Filialen verteilt. Die Zutatenkosten sinken um {0}."
+ },
+ "Bu şubeye geç": {
+  "en": "Switch to this branch",
+  "de": "Zu dieser Filiale wechseln"
+ },
+ "{0} müşteri istediğini bulamadı.": {
+  "en": "{0} customers couldn't get what they wanted.",
+  "de": "{0} Kunden bekamen nicht, was sie wollten."
+ },
+ "Stok bitti: Hal'de sabah siparişini \"Bol\" yap.": {
+  "en": "Out of stock: set your morning order at the Market to \"Plenty\".",
+  "de": "Ausverkauft: Stell deine Morgenbestellung auf dem Markt auf „Reichlich“."
+ },
+ "Közde pişir": {
+  "en": "Grill over coals",
+  "de": "Über Glut grillen"
+ },
+ "Lavaşa sar": {
+  "en": "Wrap in lavash",
+  "de": "In Lavash wickeln"
+ },
+ "Şişe sar": {
+  "en": "Thread on skewer",
+  "de": "Auf den Spieß stecken"
+ },
+ "\"Lüks Kebap\" artık {0} zincirinin": {
+  "en": "\"Lüks Kebap\" now belongs to the {0} chain",
+  "de": "„Lüks Kebap“ gehört jetzt zur Kette {0}"
+ },
+ "Şehrin en büyük iki kebap zinciri tek çatı altında birleşti. Cüneyt Bey veda ederken \"Ocağın hakkını verdin\" dedi. Mahalle esnafı ilk kez aynı tabelanın altında toplanıyor.": {
+  "en": "The city's two biggest kebab chains are now under one roof. Saying goodbye, Cüneyt Bey said: \"You did the grill justice.\" For the first time, the neighbourhood's shopkeepers gather under the same sign.",
+  "de": "Die zwei größten Kebab-Ketten der Stadt sind jetzt unter einem Dach. Zum Abschied sagte Cüneyt Bey: „Du hast dem Grill alle Ehre gemacht.“ Zum ersten Mal versammeln sich die Händler des Viertels unter demselben Schild."
  }
 }

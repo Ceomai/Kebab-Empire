@@ -8,6 +8,8 @@
     const out = [];
     const b = B();
     const add = (id, title, sub, when, urgent) => { if (!out.some((t) => t.id === id)) out.push({ id, title, sub, when, urgent }); };
+    const emp = KE.empireStatus(KE.G);
+    if (emp.ready && !emp.done) add('subeler', '"Lüks Kebap" satılık!', 'Bütün şartlar tamam: Merkez Ofis\'ten teklifini ver', 'now', true);
     if (KE.G.cash < 0) add('banka', 'Kasa eksiye düştü', 'Kredi teklifine bak, maaşlar gecikmesin', 'now', true);
     const noCook = KE.G.branches.filter((x) => !KE.branchStaff(KE.G, x).some(KE.isCook));
     if (noCook.length) add('lonca', 'Ustasız şube var', `${noCook.map((x) => x.name).join(', ')} bugün kapalı kalır`, 'now', true);

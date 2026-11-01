@@ -155,13 +155,14 @@
     const ambF = 1 + Math.min(0.35, amb.score / 120) + (amb.concept ? 0.08 * amb.concept.power : 0);
     const wk = KE.isWeekend(G.day) ? 1.18 : 1;
     const hol = KE.holidayOf(G.day) ? 1.25 : 1;
-    const rival = 1 - Math.min(0.25, d.rivals * 0.03 + (G.rival.district === d.id ? G.rival.power / 400 : 0));
+    const emp = G.flags && G.flags.empire;
+    const rival = 1 - Math.min(0.25, Math.max(0, d.rivals - (emp ? 1 : 0)) * 0.03 + (!emp && G.rival.district === d.id ? G.rival.power / 400 : 0));
     const ad = KE.modVal(G, 'traffic') * KE.modVal(G, 'traffic:' + b.id) * (b.signBoost || 1);
     const sp = KE.specialDay(G.day);
     const mac = sp && sp.id === 'mac' && b.district === 'besiktepe' ? 1.3 : 1;
     const loyal = 1 + 0.025 * Object.values(G.regulars || {}).filter((r) => r.loyalty >= 8).length;
     const champ = b.championUntil && G.day <= b.championUntil ? 1.06 : 1;
-    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
+    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * (emp ? 1.1 : 1) * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
   };
 
   /* ---------- Yeni oyun ---------- */
@@ -945,6 +946,41 @@
     });
   };
 
+  /* ---------- Oyun sonu: imparatorluk ---------- */
+  KE.empirePrice = (G) => Math.round(KE.EMPIRE.price * G.priceIndex / 100000) * 100000;
+  KE.empireStatus = function (G) {
+    const E = KE.EMPIRE, price = KE.empirePrice(G);
+    const crowns = G.branches.filter((b) => (b.champions || 0) > 0).length;
+    const req = [
+      { id: 'branches', label: 'Her semtte bir dükkân', have: G.branches.length, need: E.branches },
+      { id: 'crowns', label: 'Semt şampiyonluğu tacı', have: crowns, need: E.crowns },
+      { id: 'rep', label: 'İtibar', have: Math.round(G.reputation), need: E.reputation },
+      { id: 'cash', label: 'Satın alma bedeli', have: Math.max(0, Math.round(G.cash)), need: price, money: true }
+    ];
+    req.forEach((r) => { r.ok = r.have >= r.need; r.p = Math.min(1, r.have / r.need); });
+    return { req, price, ready: req.every((r) => r.ok), done: !!(G.flags && G.flags.empire) };
+  };
+  /* Bütün oyun boyunca toplamlar (bitiş ekranı için) */
+  KE.lifetime = function (G) {
+    const days = G.ledger.days;
+    const byProduct = {};
+    days.forEach((d) => Object.entries(d.byProduct || {}).forEach(([k, v]) => { byProduct[k] = (byProduct[k] || 0) + v; }));
+    const best = Object.entries(byProduct).sort((a, c) => c[1] - a[1])[0];
+    return { days: G.day - 1, revenue: days.reduce((a, d) => a + (d.revenue || 0), 0), served: days.reduce((a, d) => a + (d.served || 0), 0), tips: days.reduce((a, d) => a + (d.tips || 0), 0), branches: G.branches.length, staff: G.staff.length, crowns: G.branches.reduce((a, b) => a + (b.champions || 0), 0), bestProduct: best ? best[0] : null, bestCount: best ? best[1] : 0 };
+  };
+  KE.buyRival = function (G) {
+    const st = KE.empireStatus(G);
+    if (st.done) return { ok: false, msg: 'Zincir zaten senin.' };
+    if (!st.ready || G.phase !== 'morning') return { ok: false, msg: 'Şartlar henüz tamam değil.' };
+    G.cash -= st.price;
+    KE.addExtra(G, 'capex', st.price);
+    G.flags.empire = G.day;
+    G.rival.power = 0; G.rival.district = null;
+    G.reputation = clamp(G.reputation + 5, 0, 100);
+    G.staff.forEach((s) => { s.morale = clamp(s.morale + 15, 0, 100); });
+    const goals = KE.checkGoals(G);
+    return { ok: true, goals, life: KE.lifetime(G) };
+  };
   KE.checkGoals = function (G) {
     const done = [];
     const test = {
@@ -958,7 +994,10 @@
       sampiyon: () => !!G.flags.champ,
       ciro1m: () => G.ledger.months.some((m) => m.revenue >= 1000000),
       itibar80: () => G.reputation >= 80,
-      sube4: () => G.branches.length >= 4
+      sube4: () => G.branches.length >= 4,
+      taclar3: () => G.branches.filter((b) => (b.champions || 0) > 0).length >= 3,
+      sube7: () => G.branches.length >= KE.DISTRICTS.length,
+      imparator: () => !!(G.flags && G.flags.empire)
     };
     KE.GOALS.forEach((g) => { if (!G.goals[g.id] && test[g.id] && test[g.id]()) { G.goals[g.id] = G.day; G.cash += g.reward; done.push(g); } });
     return done;

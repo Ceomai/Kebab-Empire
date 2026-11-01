@@ -335,5 +335,10 @@ KE.GOALS = [
   { id: 'sube2', name: 'İkinci şube', desc: 'Başka bir semtte ikinci dükkânını aç.', reward: 60000 },
   { id: 'ciro1m', name: 'Milyonluk ay', desc: 'Bir ayda 1.000.000 ₺ konsolide ciroya ulaş.', reward: 80000 },
   { id: 'itibar80', name: 'Şehrin efsanesi', desc: 'İtibarı 80\'e çıkar.', reward: 100000 },
-  { id: 'sube4', name: 'Kebab Empire', desc: 'Dört şubeli bir zincir kur.', reward: 250000 }
+  { id: 'sube4', name: 'Kebab Empire', desc: 'Dört şubeli bir zincir kur.', reward: 250000 },
+  { id: 'taclar3', name: 'Üç taç', desc: 'Üç ayrı semtte semt şampiyonluğu kazan.', reward: 300000 },
+  { id: 'sube7', name: 'Şehrin her köşesinde', desc: 'Yedi semtin hepsinde bir dükkânın olsun.', reward: 400000 },
+  { id: 'imparator', name: 'Kebap İmparatoru', desc: '"Lüks Kebap" zincirini satın al ve şehrin tek kebap imparatoru ol.', reward: 0, final: true }
 ];
+/* Oyun sonu: "Lüks Kebap" zincirini satın almak için şartlar */
+KE.EMPIRE = { branches: 7, crowns: 3, reputation: 50, price: 30000000 };

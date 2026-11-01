@@ -1131,3 +1131,33 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: 0.001
 :focus-visible { outline: 3px solid var(--biber); outline-offset: 2px; }
 .citymap .place:focus-visible rect { stroke: var(--biber); stroke-width: 5; }
 .legal h3 { margin-top: 6px; } .legal p { font-size: 14px; color: var(--murekkep-2); }
+
+/* ---------- Oyun sonu: imparatorluk ---------- */
+.panel.empire { border: 2px solid #f1d38a; background: linear-gradient(135deg, #fffaf0, #fff3d6); }
+.panel.empire .sechead h2 { display: flex; align-items: center; gap: 8px; color: var(--sumak); }
+.panel.empire .sechead h2 .ic { color: var(--altin-deep); width: 24px; height: 24px; }
+.emp-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+.emp-req { display: flex; gap: 10px; align-items: center; background: #fff; border: 1px solid var(--kart-cizgi); border-radius: 14px; padding: 10px 12px; }
+.emp-req > i { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--krem); color: var(--kor-deep); flex: none; }
+.emp-req.ok > i { background: var(--nane); color: #fff; }
+.emp-req > span { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.emp-req small { color: var(--murekkep-2); font-weight: 700; font-variant-numeric: tabular-nums; }
+.emp-foot { margin-top: 12px; }
+.panel.empire.done { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.panel.empire.done h2 { color: var(--sumak); }
+.emp-crown { width: 64px; height: 64px; border-radius: 50%; background: var(--altin); color: var(--sumak); display: grid; place-items: center; box-shadow: 0 4px 0 var(--altin-deep); flex: none; }
+.emp-crown .ic { width: 34px; height: 34px; }
+.panel.empire.done > div { flex: 1; min-width: 220px; }
+.ending { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+.end-crown { width: 96px; height: 96px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff2b8, var(--altin) 60%, var(--altin-deep)); color: var(--sumak); display: grid; place-items: center; box-shadow: 0 6px 0 var(--altin-deep), 0 0 0 10px rgba(255, 201, 60, .2); animation: endpop .8s cubic-bezier(.3, 1.6, .5, 1) both; }
+.end-crown .ic { width: 52px; height: 52px; }
+@keyframes endpop { from { transform: scale(.2) rotate(-30deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.ending h2 { font-size: clamp(28px, 4vw, 40px); color: var(--sumak); }
+.end-story { max-width: 62ch; font-family: var(--f-hand); font-size: 18px; color: var(--murekkep-2); }
+.end-stats { width: 100%; display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); text-align: left; }
+.end-stats .kpi { display: flex; gap: 10px; align-items: center; background: var(--krem); border-radius: 14px; padding: 10px 12px; }
+.end-stats .kpi > i { color: var(--kor-deep); }
+.end-stats .kpi small { display: block; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--murekkep-3); }
+.end-stats .kpi b { font: 800 18px var(--f-display); }
+.ending .acts { width: 100%; justify-content: center; }
+.brand-crown { color: var(--altin-deep); display: inline-grid; } .brand-crown .ic { width: 20px; height: 20px; }

@@ -55,6 +55,7 @@
     const sat = week.length ? week.reduce((a, d) => a + d.sat, 0) / week.length : 0;
     const b = G.branches[0];
     const h = [];
+    if (G.flags.empire && G.day - G.flags.empire < 7) h.push({ title: `"Lüks Kebap" artık ${G.shopName || G.branches[0].name} zincirinin`, body: `Şehrin en büyük iki kebap zinciri tek çatı altında birleşti. Cüneyt Bey veda ederken "Ocağın hakkını verdin" dedi. Mahalle esnafı ilk kez aynı tabelanın altında toplanıyor.` });
     if (sat > 80) h.push({ title: `${b.name} mahallenin dilinde`, body: `Haftanın memnuniyet ortalaması %${Math.round(sat)}. Komşular "Böyle ${G.mode === 'doner' ? 'döner' : 'kebap'} yıllardır yenmedi" diyor.` });
     else if (sat > 60) h.push({ title: `${b.name} istikrarlı bir hafta geçirdi`, body: `Haftalık ciro ${KE.tl(rev)}. Esnaf, dükkânın kendini toparladığını söylüyor.` });
     else h.push({ title: `${b.name} zorlu bir hafta geçirdi`, body: 'Müşteriler bekleme sürelerinden ve fiyatlardan şikâyetçi. Esnaf "Toparlanırlar" diyor.' });
@@ -92,7 +93,7 @@
   KE.canRaise = canRaise;
 
   ev.push({ id: 'rakipTeklif', who: 'rakip', w: 1.2,
-    when: (G) => staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),
+    when: (G) => !G.flags.empire && staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),
     build: (G) => { const s = staffOf(G).filter((x) => x.role === 'usta' && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
       return { title: `${s.name}'ya rakipten teklif!`, text: `"Lüks Kebap" sahibi Cüneyt Bey, ${s.name}'ya %30 daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.`, ctx: { sid: s.id },
         choices: [
@@ -189,7 +190,7 @@
       ] }) });
 
   ev.push({ id: 'rakipSemt', who: 'rakip', w: 0.5,
-    when: (G) => G.rival.district !== branch(G).district && G.day > 10,
+    when: (G) => !G.flags.empire && G.rival.district !== branch(G).district && G.day > 10,
     build: (G) => ({ title: '"Lüks Kebap" semtine geliyor', text: 'Cüneyt Bey sokağın karşısındaki dükkânı kiralamış. Altın harfli tabelası şimdiden asıldı. "Bu semtte yer var mı bakalım" diyor sırıtarak.', ctx: {},
       choices: [
         { label: 'Reklama yüklen', desc: `${KE.tl(25000)}, 7 gün müşteri +%15`, run: (G) => { G.rival.district = branch(G).district; G.cash -= 25000; KE.addExtra(G, 'ads', 25000); G.mods.push({ key: 'traffic', mult: 1.15, days: 7, label: 'Karşı kampanya' }); return 'Mahalleyi el ilanıyla donattık. "Asıl lezzet burada!"'; } },

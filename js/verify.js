@@ -40,6 +40,7 @@
     if (P.pendingEvent) {
       P.pendingEvent.choices.forEach((_, i) => { const g = KE.SAVE.open(clone(prevEnv)); try { KE.resolveEvent(g, i); } catch (e) { /* yok */ } maxCash = Math.max(maxCash, g.cash); maxRep = Math.max(maxRep, g.reputation); });
     }
+    if (Cu.flags && Cu.flags.empire && !(P.flags && P.flags.empire)) maxRep += 5; // imparatorluk satın alımı
     const newLoans = (Cu.loans || []).slice((P.loans || []).length).reduce((a, l) => a + (l.amount || 0), 0);
     if ((Cu.loans || []).length < (P.loans || []).length) return bad('kredi silinmiş');
     const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + ((KE.GOALS.find((g) => g.id === k) || {}).reward || 0), 0);

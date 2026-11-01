@@ -51,3 +51,46 @@ Halil
 Seda
 Ayşe
 Dilimle
+Murat Usta
+Esra Usta
+Yusuf Usta
+Cem Usta
+Derya
+Ömer
+Murat
+Merve
+Barış
+Onur Usta
+Zeynep Usta
+İbrahim Usta
+Çırak Ali
+Nermin
+Gül
+Volkan
+Recep
+Serkan
+Back to the map
+Reputation {0}/{1}
+Turn sound on
+Menu
+Branches
+City map
+Market & Butcher
+Master Market
+Tailor
+Furniture & Decor
+Bank
+Town Hall
+Accounting
+Neighbourhood Café
+Ad Agency
+Staffing Office
+Head Office
+Livestock Farm
+Daily goal {0}/{1}
+{0} Döner
+{0} Dönerc
+{0} Dö
+{0} Dönerci
+{0} Dönercis
+{0}, {1}, {2}, {3}, {4}, {5} bugün kapalı kalır
