@@ -1394,6 +1394,7 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: 0.001
    Telefon düzeni v2: harita bütün ekranı kaplar, şehir paneli çekmece
    ===================================================================== */
 .sheet-handle { display: none; }
+.mapzoom { display: none; }
 .cp-go { display: none; }
 html { overflow-x: clip; }
 @media (max-width: 760px), (max-height: 520px) and (orientation: landscape) {
@@ -1404,7 +1405,12 @@ html { overflow-x: clip; }
   /* harita yüksekliğe göre ölçeklenir: telefonda öğeler büyük görünür, parmakla kaydırılır */
   /* harita kapsayıcıyı iki yönde de doldurur (gerekirse taşar, parmakla kaydırılır) */
   .mapscreen2 .mapframe.big { position: relative; container-type: size; }
-  .mapscreen2 .mapinner { position: absolute; top: 0; left: 0; width: max(100cqw, 100cqh * 1.6279); height: max(100cqh, 100cqw * 0.6143); min-width: 0; }
+  .mapscreen2 .mapinner { position: absolute; top: 0; left: 0; width: calc(max(100cqw, 100cqh * 1.6279) * var(--mz, 1)); height: calc(max(100cqh, 100cqw * 0.6143) * var(--mz, 1)); min-width: 0; }
+  .mapscreen2 .mapframe.big { touch-action: pan-x pan-y; }
+  .mapzoom { display: flex; flex-direction: column; gap: 6px; position: absolute; top: 10px; right: 10px; z-index: 4; }
+  .mapzoom button { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--kart-cizgi); background: rgba(255, 250, 240, .94); color: var(--murekkep); display: grid; place-items: center; box-shadow: 0 4px 12px -6px rgba(60, 35, 15, .6); cursor: pointer; }
+  .mapzoom button .ic { width: 20px; height: 20px; }
+  .mapzoom button:disabled { opacity: .4; }
   .mapscreen2 .mapframe.big svg, .mapscreen2 .mapframe.big svg.base { width: 100%; height: 100%; min-height: 0; min-width: 0; }
   .citypanel { flex: none; display: flex; flex-direction: column; overflow: hidden; background: var(--kart); z-index: 3; transition: height .25s ease, width .25s ease; }
   .sheet-handle { display: grid; place-items: center; flex: none; border: 0; background: transparent; cursor: pointer; padding: 0; color: var(--murekkep-3); }
@@ -1503,3 +1509,4 @@ html { overflow-x: clip; }
 }
 .t-r2 .btn.big { font-size: 17px; padding: 10px 18px; }
 @media (max-width: 380px) { .t-r2 .btn.big { font-size: 15px; padding: 9px 12px; } .t-r2 { gap: 8px; } }
+@media (max-height: 520px) and (orientation: landscape) { .mapzoom { right: auto; left: 10px; } }

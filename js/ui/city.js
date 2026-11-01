@@ -201,9 +201,36 @@
     const h = ms.querySelector('.sheet-handle'); if (h) { h.setAttribute('aria-expanded', String(next !== 'min')); h.setAttribute('aria-label', next === 'max' ? 'Paneli küçült' : 'Paneli büyüt'); }
     setTimeout(() => UI.mapMount(), 280);
   };
+  /* ---------- Harita yakınlaştırma (telefon): iki parmak ya da +/− ----------
+     Yakınlaştırma CSS değişkeni --mz ile haritanın boyunu büyütür; parmakların ortasındaki nokta yerinde kalır. */
+  const ZOOM_KEY = 'kebab-empire-mapzoom', ZMIN = 1, ZMAX = 3;
+  UI.mapZoom = (() => { try { return Math.min(ZMAX, Math.max(ZMIN, +localStorage.getItem(ZOOM_KEY) || 1)); } catch (e) { return 1; } })();
+  function setZoom(f, z, cx, cy) {
+    z = Math.min(ZMAX, Math.max(ZMIN, z));
+    const z0 = UI.mapZoom || 1;
+    if (cx == null) { cx = f.clientWidth / 2; cy = f.clientHeight / 2; }
+    const px = (f.scrollLeft + cx) / z0, py = (f.scrollTop + cy) / z0;
+    UI.mapZoom = z;
+    f.style.setProperty('--mz', String(z));
+    f.scrollLeft = Math.max(0, px * z - cx); f.scrollTop = Math.max(0, py * z - cy);
+    const zb = document.querySelectorAll('.mapzoom button');
+    if (zb.length === 2) { /** @type {any} */ (zb[0]).disabled = z >= ZMAX - 0.01; /** @type {any} */ (zb[1]).disabled = z <= ZMIN + 0.01; }
+  }
+  const saveZoom = () => { try { localStorage.setItem(ZOOM_KEY, String(Math.round(UI.mapZoom * 100) / 100)); } catch (e) { /* yok */ } };
+  A.mapZoom = (d) => { const f = document.getElementById('cityframe'); if (!f) return; setZoom(f, UI.mapZoom * (+d.d > 0 ? 1.35 : 1 / 1.35)); saveZoom(); };
+  function bindPinch(f) {
+    let p = null;
+    const pts = (e) => { const r = f.getBoundingClientRect(), a = e.touches[0], b = e.touches[1]; return { d: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), x: (a.clientX + b.clientX) / 2 - r.left, y: (a.clientY + b.clientY) / 2 - r.top }; };
+    f.addEventListener('touchstart', (e) => { if (e.touches.length === 2) { const q = pts(e); p = { d0: q.d, z0: UI.mapZoom }; } }, { passive: true });
+    f.addEventListener('touchmove', (e) => { if (!p || e.touches.length !== 2) return; e.preventDefault(); const q = pts(e); setZoom(f, p.z0 * q.d / Math.max(1, p.d0), q.x, q.y); }, { passive: false });
+    f.addEventListener('touchend', (e) => { if (p && e.touches.length < 2) { p = null; saveZoom(); } });
+    /* masaüstünde Ctrl + tekerlek */
+    f.addEventListener('wheel', (e) => { if (!e.ctrlKey) return; e.preventDefault(); const r = f.getBoundingClientRect(); setZoom(f, UI.mapZoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), e.clientX - r.left, e.clientY - r.top); saveZoom(); }, { passive: false });
+  }
+  UI.mapZoomInit = function (f) { f.style.setProperty('--mz', String(UI.mapZoom)); bindPinch(f); setZoom(f, UI.mapZoom, 0, 0); };
   SCREENS.map = () => {
     const tasks = cityTasks();
-    return `<main class="mapscreen2 sheet-${UI.sheetState()}"><div class="mapframe big" id="cityframe"></div>${cityPanel(tasks)}</main>`;
+    return `<main class="mapscreen2 sheet-${UI.sheetState()}"><div class="mapframe big" id="cityframe"></div><div class="mapzoom" role="group" aria-label="Harita yakınlaştırma"><button data-a="mapZoom" data-d="1" aria-label="Yakınlaştır">${IC('plus')}</button><button data-a="mapZoom" data-d="-1" aria-label="Uzaklaştır">${IC('minus')}</button></div>${cityPanel(tasks)}</main>`;
   };
   UI.mapRefresh = function () {
     const f = document.getElementById('cityframe');
@@ -214,6 +241,7 @@
     const f = document.getElementById('cityframe');
     if (!f) return;
     KE.MAP.mount(f, mapOpts());
+    if (window.innerWidth <= 760 || (window.innerHeight <= 520 && window.innerWidth > window.innerHeight)) UI.mapZoomInit(f);
     if (UI.a11y && UI.a11y.calm) f.querySelectorAll('svg').forEach((sv) => { if (/** @type {any} */ (sv).pauseAnimations) /** @type {any} */ (sv).pauseAnimations(); });
     if (f.scrollWidth > f.clientWidth + 4 && KE.G) {
       const P = KE.MAP.POS[B().district] || { x: 700, y: 430 };

@@ -8682,5 +8682,17 @@
  "Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı, imza tarifin {0} seviyesi, on toplu sipariş.": {
   "en": "The livestock farm and big investments unlock. To advance: six branches, two district crowns, signature recipe level {0}, ten bulk orders.",
   "de": "Mastbetrieb und große Investitionen werden freigeschaltet. Zum Aufstieg: sechs Filialen, zwei Bezirkskronen, Signature-Rezept Stufe {0}, zehn Großaufträge."
+ },
+ "Harita yakınlaştırma": {
+  "en": "Map zoom",
+  "de": "Karten-Zoom"
+ },
+ "Yakınlaştır": {
+  "en": "Zoom in",
+  "de": "Vergrößern"
+ },
+ "Uzaklaştır": {
+  "en": "Zoom out",
+  "de": "Verkleinern"
  }
 }
