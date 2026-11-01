@@ -47,6 +47,10 @@
     return { key, parts: order };
   };
   const word = (v) => (I.dict[v] != null ? I.dict[v] : v);
+  /* Türkçe ekler isme göre değişir (Burak'ın / Usta'nın): sözlükte ekin kalıbıyla da ara */
+  const canon = (k) => k.replace(/\}'n?[ıiuü]n(?=[^a-zçğıöşü]|$)/g, "}'İN").replace(/\}'n?[dt][ae]n(?=[^a-zçğıöşü]|$)/g, "}'DEN").replace(/\}'n?[dt][ae](ki)?(?=[^a-zçğıöşü]|$)/g, "}'DE$1").replace(/\}'[yn]?[ae](?=[^a-zçğıöşü]|$)/g, "}'E");
+  let canonFor = null, canonMap = null;
+  const canonDict = () => { if (canonFor !== I.dict) { canonFor = I.dict; canonMap = {}; Object.keys(I.dict).forEach((k) => { if (k.includes("}'")) canonMap[canon(k)] = I.dict[k]; }); } return canonMap; };
   I.t = function (text) {
     if (I.lang === 'tr' || !text || !TR.test(text)) return text;
     const lead = text.match(/^\s*/)[0], trail = text.match(/\s*$/)[0];
@@ -56,6 +60,7 @@
     const { key, parts } = I.normalize(core);
     if (I.collect) I.collect(key, core);
     let tpl = I.dict[key];
+    if (tpl == null && /\}'/.test(key)) tpl = canonDict()[canon(key)];
     if (tpl == null && parts.length && /^[{}\d\s.,:;·\-–—/+%₺×~()]*$/.test(key)) tpl = key; // yalnızca yer tutucu: adları çevir
     if (tpl == null) return text;
     return lead + tpl.replace(/\{(\d+)\}/g, (m, i) => (parts[+i] != null ? word(parts[+i]) : m)) + trail;

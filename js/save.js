@@ -63,6 +63,7 @@
       if (KE.advanceEra) { try { KE.advanceEra(g); } catch (e) { /* eksik veri */ } }
     }
     if (g.flags && g.flags.empire && (g.era || 1) < 4) g.era = 4;
+    (g.branches || []).forEach((b) => { if (b.stockLevel < 1.15) b.stockLevel = 1.15; });
     return g;
   };
   S.valid = (g) => !!(g && typeof g === 'object' && Array.isArray(g.branches) && g.branches.length && Array.isArray(g.staff) && typeof g.day === 'number' && g.mode && KE.MODES[g.mode]);

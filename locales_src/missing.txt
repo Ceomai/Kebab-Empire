@@ -120,3 +120,15 @@ Sıradaki döneme geçmek için: Dört şubeli zincir · İtibar {0} · Bir imza
 Mahmut
 Yaprak Döner
 Language / Dil
+Selin Usta
+Ahmet Usta
+Gizem Usta
+Mehmet
+Emine
+Fıstık
+Barış Usta
+Büşra Usta
+Emre Usta
+Burak
+Erkan
+{0} {1}:{2}'da bitti, ardından {3} de tükendi.

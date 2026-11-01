@@ -25,7 +25,7 @@ const VARIANTS = {
   dekor_konsept: (KE, G) => { G.branches[0].decor.push('cini', 'bakir', 'nostalji'); G.cash -= 47000; },
   dekor_dinlenme: (KE, G) => { G.branches[0].decor.push('dinlenme', 'klima'); G.cash -= 54000; },
   ekip_hazirlik: (KE, G) => { G.branches[0].equipment.prep = 1; G.cash -= KE.MODES[G.mode].equipment.prep.levels[1].cost; },
-  ekip_sogutma: (KE, G) => { G.branches[0].equipment.cold = 1; G.cash -= 45000; },
+  ekip_sogutma: (KE, G) => { G.branches[0].equipment.cold = 1; G.cash -= 25000; },
   ekip_ocak: (KE, G) => { G.branches[0].equipment.cook = 1; G.cash -= KE.MODES[G.mode].equipment.cook.levels[1].cost; },
   ekip_salon: (KE, G) => { G.branches[0].equipment.service = 1; G.cash -= KE.MODES[G.mode].equipment.service.levels[1].cost; },
   ocak_cirak: (KE, G) => { G.branches[0].equipment.cook = 1; G.cash -= KE.MODES[G.mode].equipment.cook.levels[1].cost; const m = G.market[0]; if (m) { m.branchId = G.branches[0].id; G.staff.push(m); } },

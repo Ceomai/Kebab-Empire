@@ -23,6 +23,13 @@
     const closedBranches = KE.G.branches.filter((x) => x.id !== b.id && !KE.branchStaff(KE.G, x).some(KE.isCook));
     if (closedBranches.length) warn.push(['warn', 'Ustasız şube bugün kapalı kalacak: ' + closedBranches.map((x) => esc(x.name)).join(', ')]);
     const low = Object.entries(M.ingredients).filter(([k]) => b.usage[k] > 0 && (b.stock[k] || 0) / b.usage[k] < 0.9).map(([, ing]) => ing.name);
+    /* kapasite: dün gelenlerin ne kadarı hizmet alamadan gitti */
+    const ys = KE.G.lastSummary && KE.G.lastSummary.branches[b.id] && KE.G.lastSummary.branches[b.id].stats;
+    const capLost = ys && ys.arrivals > 20 ? (ys.lostWait + ys.lostFull + ys.lostFood) / ys.arrivals : 0;
+    if (capLost >= 0.12) warn.push([capLost >= 0.2 ? 'crit' : 'warn', `Dün gelen her 100 müşteriden ${Math.round(capLost * 100)} tanesi kapasite yetmediği için hizmet alamadan gitti. Reklamdan önce kapasiteyi büyüt: kasaya ve servise kişi, ocak yerine pişirmeci ya da salonu büyüt.`]);
+    /* enflasyon: fiyatlar piyasanın gerisinde kaldıysa */
+    const pr = KE.priceRatio(KE.G, b);
+    if (pr < 0.95) warn.push(['warn', `Fiyatların piyasanın ortalama %${Math.round((1 - pr) * 100)} altında; enflasyon maliyetleri artırıyor. <button class="btn xs green" data-a="pricesToMarket">Fiyatları piyasaya çek</button>`]);
     if (low.length) warn.push(['warn', `Stok bir günü karşılamıyor: ${low.join(', ')}. Hal'den ek alım yap ya da sabah siparişini "Bol" yap.`]);
     const dishCards = M.products.concat([M.drink]).map((p) => {
       const isDrink = p.id === M.drink.id;
@@ -41,7 +48,7 @@
           </div></article>`;
     }).join('');
     return `<main class="screen">
-      <div class="pagehead"><div class="ph-t"><span class="kicker">Sabah hazırlığı · ${KE.weekday(KE.G.day)}</span><h1>${esc(b.name)}</h1><p class="ph-facts"><span>${IC('map')}${KE.district(b).name}</span><span>${IC('users')}~${Math.round(exp)} müşteri</span><span>${IC('fire')}${Math.min(stations, cooks.length)}/${stations} ocak</span><span>${IC('table')}${KE.tableCount(KE.G, b)} masa</span>${amb.concept ? `<span>${IC('star')}${amb.concept.name}</span>` : ''}</p></div>
+      <div class="pagehead"><div class="ph-t"><span class="kicker">Sabah hazırlığı · ${KE.weekday(KE.G.day)}</span><h1>${esc(b.name)}</h1><p class="ph-facts"><span>${IC('map')}${KE.district(b).name}</span><span>${IC('users')}~${Math.round(exp)} müşteri</span>${ys && ys.arrivals > 20 ? `<span class="${capLost >= 0.12 ? 'neg' : ''}" title="Dün kapasite yetmediği için hizmet alamadan gidenler">${IC('queue')}Kapasite: dün %${Math.round(capLost * 100)} kaçtı</span>` : ''}<span>${IC('fire')}${Math.min(stations, cooks.length)}/${stations} ocak</span><span>${IC('table')}${KE.tableCount(KE.G, b)} masa</span>${amb.concept ? `<span>${IC('star')}${amb.concept.name}</span>` : ''}</p></div>
         <div class="row"><button class="btn ghost" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün</button><button class="btn big green" data-a="openShop">${IC('store')}${KE.G.branches.length > 1 ? 'Bütün şubelerde kepengi aç' : 'Kepengi aç'}</button></div></div>
       ${(() => { const sp = KE.specialDay(KE.G.day); return sp ? `<section class="special sp-${sp.theme || 'cuma'}"><span class="sp-badge">${IC(sp.id === 'mac' ? 'fire' : sp.id === 'cuma' ? 'users' : 'star')}</span><div><span class="kicker">Bugün özel gün</span><h2>${sp.name}</h2><p>${sp.desc}</p></div></section>` : ''; })()}
       ${(KE.G.daily || []).length ? `<section class="panel daypanel"><div class="sechead"><h2>Günün hedefleri</h2><span class="muted small">Tutturduğun her hedef ek para ve biraz itibar getirir.</span></div>${dailyHtml(false)}</section>` : ''}

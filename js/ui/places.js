@@ -9,8 +9,8 @@
     const mods = KE.G.mods.filter((m) => m.key.startsWith('ing'));
     return `<main class="screen">${head('Hal ve Kasap', esc(b.name) + ' için tedarik', null, 'riza')}
       <section class="panel"><div class="sechead"><h2>Tedarik kalitesi</h2></div><div class="grid g3">${KE.TIERS.map((t, i) => `<button class="optcard ${b.tier === i ? 'sel' : ''}" data-a="tier" data-i="${i}">${IC(i === 2 ? 'star' : i === 1 ? 'check' : 'coin')}<b>${t.name}</b><small>${t.desc}</small><span class="chips"><span class="chip">Fiyat ×${t.mul}</span><span class="chip ${t.quality > 0 ? 'gr' : t.quality < 0 ? 'rd' : ''}">Kalite ${t.quality >= 0 ? '+' : ''}${t.quality}</span></span></button>`).join('')}</div></section>
-      <section class="panel"><div class="sechead"><h2>Otomatik sabah siparişi</h2><div class="seg">${/** @type {Array<[number, string]>} */ ([[0.85, 'Az'], [1.15, 'Normal'], [1.5, 'Bol']]).map(([v, l]) => `<button class="${Math.abs(b.stockLevel - v) < 0.01 ? 'on' : ''}" data-a="stockLevel" data-v="${v}"><span>${l}</span></button>`).join('')}</div></div>
-        <p class="small muted">Rıza her sabah stoğu son günlerin ortalama kullanımının bu katına tamamlar. Çiftliğin varsa et önce çiftlik deposundan gelir.</p>
+      <section class="panel"><div class="sechead"><h2>Otomatik sabah siparişi</h2><div class="seg">${/** @type {Array<[number, string]>} */ ([[1.15, 'Normal'], [1.5, 'Bol']]).map(([v, l]) => `<button class="${Math.abs(b.stockLevel - v) < 0.01 ? 'on' : ''}" data-a="stockLevel" data-v="${v}"><span>${l}</span></button>`).join('')}</div></div>
+        <p class="small muted">Rıza her sabah stoğu son günlerin kullanımına göre tamamlar. "Normal" her gün için yeterli; "Bol" yalnızca maç, bayram ve kampanya günlerinde işe yarar, diğer günler fazlası fire olur. Çiftliğin varsa et önce çiftlik deposundan gelir.</p>
         ${mods.length ? `<div class="chips">${mods.map((m) => `<span class="chip rd">${m.label} ×${m.mult} · ${m.days} gün</span>`).join('')}</div>` : ''}
         <div class="inggrid">${Object.entries(M.ingredients).map(([k, ing]) => { const u = b.usage[k] || 0; const step = ing.unit === 'kg' ? Math.max(1, Math.round(u * 0.25)) : Math.max(10, Math.round(u * 0.25 / 10) * 10); const days = u ? (b.stock[k] || 0) / u : 9; return `<div class="ing"><div class="ing-t"><b>${ing.name}</b><small>${KE.tl(KE.ingPrice(KE.G, b, k))}/${ing.unit}</small></div>${bar(clamp(days / 1.5 * 100, 0, 100), days < 0.9 ? 'crit' : days < 1.05 ? 'warn' : 'ok')}<div class="row between"><small class="muted">${KE.num(b.stock[k] || 0, ing.unit === 'kg' ? 1 : 0)} / günlük ${KE.num(u, ing.unit === 'kg' ? 1 : 0)} ${ing.unit}</small><button class="btn xs ghost" data-a="buy" data-k="${k}" data-q="${step}">+${step} ${ing.unit}</button></div></div>`; }).join('')}</div></section>
 
@@ -103,7 +103,7 @@
     return `<main class="screen">${head('Mobilya ve Dekor', esc(b.name), null, 'dekor')}
       <section class="panel"><div class="sechead"><h2>Ekipman</h2></div><div class="grid g4">${Object.entries(M.equipment).map(([k, eq]) => {
         const lvl = b.equipment[k], cur = eq.levels[lvl], next = eq.levels[lvl + 1];
-        return `<article class="card eq"><div class="row between"><span class="kicker">${IC(eqIc[k])}${eq.name}</span><span class="lvl">${eq.levels.map((_, i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</span></div><h3>${cur.name}</h3><p class="small">${eqDesc(k, cur, lvl)}</p>
+        return `<article class="card eq"><div class="row between"><span class="kicker">${IC(eqIc[k])}${eq.name}</span><span class="lvl">${eq.levels.map((_, i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</span></div><h3>${cur.name}</h3><p class="small">${eqDesc(k, cur, lvl)}</p>${k === 'cook' && KE.branchStaff(KE.G, b).filter(KE.isCook).length < cur.stations ? `<div class="alert warn">${IC('bolt')}<span>Şu an ${cur.stations - KE.branchStaff(KE.G, b).filter(KE.isCook).length} ocak yeri boş. Yükseltmeden önce Usta Pazarı'ndan pişirmeci al; boş ocak müşteri getirmez.</span></div>` : ''}
           ${next ? `<div class="eq-next"><small class="muted">Sonraki</small><b>${next.name}</b><small>${eqDesc(k, next, lvl + 1)}</small></div><div class="pc-foot"><b>${KE.tl(next.cost * KE.G.priceIndex)}</b><button class="btn sm green" data-a="upgrade" data-k="${k}" ${KE.G.cash < next.cost * KE.G.priceIndex ? 'disabled' : ''}>Yükselt</button></div>` : `<span class="chip gr">${IC('check')}En üst seviye</span>`}</article>`;
       }).join('')}</div></section>
       <section class="panel"><div class="sechead"><h2>Dekor</h2><div class="chips">${Object.entries(styles).map(([s, n]) => `<span class="chip ${n >= 3 ? 'gd' : ''}">${s}: ${n}/3</span>`).join('')}${amb.concept ? `<span class="chip gd">${IC('star')}Konsept: ${amb.concept.name}</span>` : ''}</div></div>
@@ -124,9 +124,9 @@
     const fines = KE.G.ledger.months.reduce((a, m) => a + (m.fines || 0), 0) + (KE.G.monthExtras.fines || 0);
     return `<main class="screen">${head('Belediye', 'Ruhsat, hijyen ve denetim', null, 'bulent')}
       <div class="grid g3">${KE.G.branches.map((b) => `<article class="card"><h3>${esc(b.name)}</h3><div class="statl"><span>Temizlik</span>${bar(b.cleanliness, b.cleanliness < 40 ? 'crit' : b.cleanliness < 60 ? 'warn' : 'ok')}<b>${Math.round(b.cleanliness)}</b></div>
-        <p class="small muted">${b.cleanliness < 55 ? 'Denetim gelirse ceza yersin.' : 'Denetimden rahat geçer.'}</p>
+        <p class="small muted">${b.cleanliness < (KE.G.flags.muhtar ? 45 : 55) ? 'Denetim gelirse ceza yersin.' : 'Denetimden rahat geçer.'}</p>
         <div class="pc-foot"><span class="small">Hijyen eğitimi ve derin temizlik</span><button class="btn sm green" data-a="hygiene" data-id="${b.id}">${KE.tl(12000 * KE.G.priceIndex)}</button></div></article>`).join('')}</div>
-      <div class="note">${IC('broom')}<span>Temizlik her müşteriyle düşer; masa toplamak ve temizlik görevlisi yükseltir. Denetimde 55'in altı cezadır. Bugüne kadar ödenen ceza: ${KE.tl(fines)}</span></div></main>`;
+      <div class="note">${IC('broom')}<span>Temizlik her müşteriyle düşer; masa toplamak ve temizlik görevlisi yükseltir. Denetimde ${KE.G.flags.muhtar ? 45 : 55}'in altı cezadır${KE.G.flags.muhtar ? ' (Muhtar Kemal Bey sayesinde)' : ''}. Bugüne kadar ödenen ceza: ${KE.tl(fines)}</span></div></main>`;
   };
 
   /* ---------- Reklam ajansı ---------- */
@@ -140,7 +140,10 @@
   SCREENS.ajans = () => {
     const b = B();
     const active = KE.G.mods.filter((m) => m.camp);
+    const ys = KE.G.lastSummary && KE.G.lastSummary.branches[b.id] && KE.G.lastSummary.branches[b.id].stats;
+    const capLost = ys && ys.arrivals > 20 ? (ys.lostWait + ys.lostFull + ys.lostFood) / ys.arrivals : 0;
     return `<main class="screen">${head('Reklam Ajansı', 'Doğru semte doğru kampanya', null, 'ajans')}
+      ${capLost >= 0.12 ? `<div class="alert warn">${IC('queue')}<span><b>Dükkân zaten dolu:</b> dün gelenlerin %${KE.ekSayi(String(Math.round(capLost * 100)), 'i')} kapasite yetmediği için gitti. Reklamın getireceği müşterilerin çoğu da kapıdan dönecek; önce ekibi ya da salonu büyüt.</span></div>` : ''}
       <div class="grid g3">${CAMPAIGNS.map((c) => { const cost = Math.round(c.cost * KE.G.priceIndex); const done = c.sign && b.signBoost; const run = active.find((m) => m.camp === c.id); return `<article class="card"><span class="kicker">${IC(c.icon)}${c.days ? c.days + ' gün' : 'Kalıcı'}</span><h3>${c.name}</h3><p class="small">${c.desc}</p><div class="pc-foot">${done ? `<span class="chip gr">${IC('check')}Yapıldı</span>` : run ? `<span class="chip bl">Sürüyor · ${run.days} gün</span>` : `<b>${KE.tl(cost)}</b><button class="btn sm green" data-a="campaign" data-id="${c.id}" ${KE.G.cash < cost ? 'disabled' : ''}>Başlat</button>`}</div></article>`; }).join('')}</div></main>`;
   };
 
@@ -151,7 +154,7 @@
     const done = Object.keys(KE.G.goals).length;
     return `<main class="screen">${head('Mahalle Kahvesi', 'Hedefler, müdavimler, günlük ve gazete', null, 'ayse')}
       <div class="cols2"><div class="stack">
-        <section class="panel"><div class="sechead"><h2>Hedefler</h2><span class="chip gd">${done} / ${KE.GOALS.length}</span></div><div class="goals">${KE.GOALS.map((g) => `<div class="goal ${KE.G.goals[g.id] ? 'done' : ''}"><i>${KE.G.goals[g.id] ? IC('check') : IC('star')}</i><span><b>${g.name}</b><small>${g.desc}</small></span><em>${KE.G.goals[g.id] ? KE.dateStr(KE.G.goals[g.id]) : g.final ? 'Unvan' : KE.tl(g.reward)}</em></div>`).join('')}</div></section>
+        <section class="panel"><div class="sechead"><h2>Hedefler</h2><span class="chip gd">${done} / ${KE.GOALS.length}</span></div><div class="goals">${KE.GOALS.map((g) => `<div class="goal ${KE.G.goals[g.id] ? 'done' : ''}"><i>${KE.G.goals[g.id] ? IC('check') : IC('star')}</i><span><b>${g.name}</b><small>${g.desc}</small></span><em>${KE.G.goals[g.id] ? KE.dateStr(KE.G.goals[g.id]) : g.final ? 'Unvan' : KE.tl(KE.goalReward(KE.G, g))}</em></div>`).join('')}</div></section>
         <section class="panel"><h2>Günlük arşivi</h2><div class="stack">${KE.G.journal.slice(0, 6).map((j) => `<div><span class="kicker">${j.date}</span><div class="journal sm">${H.sentences(j.text)}</div></div>`).join('') || '<p class="muted">İlk gün bittiğinde günlüğün burada birikecek.</p>'}</div></section>
       </div><div class="stack">
         <section class="panel"><div class="sechead"><h2>Müdavimler</h2><span class="small muted">Sevdiği yemeği iyi yap, gönlü dolsun. 5 kalpte arkadaşını getirir, 8'de mahallede seni över.</span></div><div class="regs">${KE.REGULARS.map((R) => { const r = KE.G.regulars[R.id]; const pid = R.fav[KE.G.mode]; return `<div class="reg"><span class="avatar lg">${KE.portrait(R.look || KE.CAST[R.cast].look, { mood: r.loyalty >= 5 ? 'happy' : 'neutral' })}</span><span class="reg-t"><b>${R.name}</b><small>${KE.CUSTOMER_TYPES[R.type].name} · ${r.visits} ziyaret</small>${H.hearts(r.loyalty)}</span><span class="reg-fav">${KE.ART.dish(pid)}<small>${pn(pid)}</small></span></div>`; }).join('')}</div></section>
@@ -179,11 +182,11 @@
     if ((G.era || 1) < 3) return `<section class="panel invest locked"><div class="sechead"><h2>${IC('lock')}Büyük yatırımlar</h2><span class="muted small">3. dönemde (Şehrin zinciri) açılır: imza tarif, amiral dükkân, toplu siparişler.</span></div></section>`;
     const sig = G.signature && !G.signature.family ? G.signature : null, cost = KE.signatureCost(G), pn2 = (pid) => (KE.MODES[G.mode].products.find((p) => p.id === pid) || {}).name;
     const sigBox = `<article class="card inv"><span class="kicker">${IC('chef')}Ar-Ge mutfağı</span><h3>İmza tarif</h3>
-      <p class="small">${sig ? `<b>${esc(pn2(sig.pid))}</b> · ${KE.SIGNATURE.names[sig.level - 1]} (seviye ${sig.level}/3). Her şubede müşteri +%${sig.level * 5}.` : G.signature && G.signature.family ? `Aile tarifi <b>${esc(pn2(G.signature.pid))}</b> menüde. Kendi imza tarifini geliştir.` : 'Bir ürünü zincirin imzası yap: her şubede müşteri artar, o ürün daha çok satılır.'}</p>
+      <p class="small">${sig ? `<b>${esc(pn2(sig.pid))}</b> · ${KE.SIGNATURE.names[sig.level - 1]} (seviye ${sig.level}/3). Her şubede müşteri +%${Math.round(sig.level * KE.SIGNATURE.traffic * 100)}; müşteriler fiyatına %${sig.level * 4} daha fazla katlanır.` : G.signature && G.signature.family ? `Aile tarifi <b>${esc(pn2(G.signature.pid))}</b> menüde. Kendi imza tarifini geliştir.` : 'Bir ürünü zincirin imzası yap: her şubede müşteri artar, o ürün daha çok satılır.'}</p>
       ${G.sigWork ? `<span class="chip or">${IC('clock')}Hazırlanıyor: ${Math.max(0, G.sigWork.ready - G.day)} gün kaldı</span>` : cost == null ? `<span class="chip gr">${IC('check')}Efsane seviyede</span>` : `<div class="pc-foot"><b>${KE.tl(cost)}</b><button class="btn sm green" data-a="signature" ${G.cash < cost ? 'disabled' : ''}>${sig ? 'Geliştir' : 'Tarif seç'}</button></div>`}</article>`;
     const fl = G.branches.find((b) => b.flagship);
     const flBox = `<article class="card inv"><span class="kicker">${IC('star')}Amiral dükkân</span><h3>${fl ? esc(fl.name) : 'Zincirin vitrini'}</h3>
-      <p class="small">${fl ? 'Amiral dükkân: müşteri +%20, şampiyonluk çıtası 3 puan aşağıda.' : 'Bir şubeni şehrin simgesine dönüştür: müşteri +%20, semt tacını korumak kolaylaşır.'}</p>
+      <p class="small">${fl ? 'Amiral dükkânda müşteri +%40, zincirin diğer şubelerinde +%8; şampiyonluk çıtası 3 puan aşağıda.' : 'Bir şubeni şehrin simgesine dönüştür: o şubede müşteri +%40, bütün zincirde +%8, semt tacını korumak kolaylaşır.'}</p>
       ${fl ? `<span class="chip gr">${IC('check')}Açıldı</span>` : `<div class="pc-foot"><b>${KE.tl(KE.flagshipCost(G))}</b><button class="btn sm green" data-a="flagship" ${G.cash < KE.flagshipCost(G) || G.phase !== 'morning' ? 'disabled' : ''}>Şube seç</button></div>`}</article>`;
     const taken = KE.contractTaken(G);
     const offers = KE.contractOffers(G);

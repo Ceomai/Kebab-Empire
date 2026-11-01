@@ -42,9 +42,9 @@
   const TUT = [
     { phase: 'morning', screen: 'map', sel: '.cp-goal', text: 'Burası şehir haritası, ana menün. Sağ üstte günün hedefi ve sayıları var.' },
     { phase: 'morning', screen: 'map', sel: '.cp-tasks', text: 'Yapılacaklar saate göre dizilir. Bir işe dokununca haritada dükkânından oraya rota çizilir; tıklayınca oraya gidersin.' },
-    { phase: 'morning', screen: 'map', sel: '.cp-places', text: 'Hal, usta pazarı, banka, çiftlik… Şehirdeki bütün yerler burada. Numaralı olanlarda seni bekleyen iş var.' },
+    { phase: 'morning', screen: 'map', sel: '.cp-places', text: 'Hal, usta pazarı, banka… Şehirdeki bütün yerler burada. Numaralı olanlarda seni bekleyen iş var; kilitli olanlar ileriki dönemlerde açılır.' },
     { phase: 'morning', screen: 'map', sel: '.citypanel .btn.big', text: 'Şimdi dükkâna geçelim.' },
-    { phase: 'morning', sel: '.daypanel', text: 'Her gün üç küçük hedefin olur. Tutturdukça ek para ve itibar gelir.' },
+    { phase: 'morning', sel: '.daypanel', text: 'Her gün üç küçük hedefin ve bir bonus hedefin olur. Tutturdukça ek para ve itibar gelir.' },
     { phase: 'morning', sel: '.crewlist', text: 'Ekibin burada. Usta yalnızca pişirir; kasiyer sipariş alır, komi yemeği masaya götürür. Görevi bu düğmelerle değiştirirsin.' },
     { phase: 'morning', sel: '.dishgrid', text: 'Fiyatları buradan ayarla. Piyasanın çok üstü öğrenciyi ve işçiyi kaçırır.' },
     { phase: 'morning', sel: '[data-a="openShop"]', text: 'Hazırsan kepengi aç. Bütün şubeler aynı anda çalışır.' },

@@ -168,8 +168,8 @@ KE.MODES = {
         { name: 'Döner kesme robotu', speed: 1.3, cost: 95000 } ] },
       cold:    { name: 'Soğutma', levels: [
         { name: 'Tezgâh altı dolap', waste: 0.06, cost: 0 },
-        { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 45000 },
-        { name: 'Soğuk oda', waste: 0.015, cost: 120000 } ] },
+        { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 25000 },
+        { name: 'Soğuk oda', waste: 0.015, cost: 65000 } ] },
       service: { name: 'Servis', levels: [
         { name: 'Klasik tezgâh ve 4 masa', patience: 1.0, queue: 8, tables: 4, cost: 0 },
         { name: 'Self servis tezgâh ve 6 masa', patience: 1.15, queue: 10, tables: 6, cost: 35000 },
@@ -228,8 +228,8 @@ KE.MODES = {
         { name: 'Zırh tezgâhı ve hazırlık mutfağı', speed: 1.25, quality: 0.6, cost: 105000 } ] },
       cold:    { name: 'Soğutma', levels: [
         { name: 'Tezgâh altı dolap', waste: 0.06, cost: 0 },
-        { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 45000 },
-        { name: 'Soğuk oda', waste: 0.015, cost: 120000 } ] },
+        { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 25000 },
+        { name: 'Soğuk oda', waste: 0.015, cost: 65000 } ] },
       service: { name: 'Salon', levels: [
         { name: '5 masalık salon', patience: 1.0, queue: 6, tables: 5, cost: 0 },
         { name: '7 masa ve yer sofrası köşesi', patience: 1.15, queue: 8, tables: 7, cost: 45000 },
@@ -271,11 +271,11 @@ KE.specialDay = function (day) {
 KE.FARM_COST = 650000;
 KE.FARM_MONTHLY = 38000;   // bakıcı ücreti, enerji, veteriner
 KE.FARM = {
-  dana:  { name: 'Dana', unit: 'baş', young: 52000, feed: 1050, days: 24, batch: 1, caps: [4, 8, 12], upCost: [0, 160000, 300000],
+  dana:  { name: 'Dana', unit: 'baş', young: 44000, feed: 1050, days: 24, batch: 1, caps: [8, 16, 24], upCost: [0, 160000, 300000],
            yield: { doner: { et: 135 }, kebap: { kiyma: 135 } }, desc: 'Döner ve kıyma için besi danası. Uzun büyür, çok et verir.' },
-  kuzu:  { name: 'Kuzu', unit: 'baş', young: 8800, feed: 230, days: 14, batch: 1, caps: [12, 24, 36], upCost: [0, 90000, 170000],
+  kuzu:  { name: 'Kuzu', unit: 'baş', young: 7400, feed: 230, days: 14, batch: 1, caps: [24, 48, 72], upCost: [0, 90000, 170000],
            yield: { doner: { kuzu: 15 }, kebap: { kuzu: 11, kiyma: 4, ciger: 0.9 } }, desc: 'Şiş, cağ ve ciğer için kuzu.' },
-  tavuk: { name: 'Tavuk', unit: 'adet', young: 60, feed: 19, days: 8, batch: 50, caps: [150, 300, 450], upCost: [0, 60000, 120000],
+  tavuk: { name: 'Tavuk', unit: 'adet', young: 60, feed: 19, days: 8, batch: 50, caps: [300, 600, 900], upCost: [0, 60000, 120000],
            yield: { doner: { tavuk: 1.05 } }, modes: ['doner'], desc: 'Tavuk döner için kümes. Hızlı döner, ucuz beslenir.' }
 };
 
@@ -363,8 +363,8 @@ KE.ERAS = [
 KE.PLACE_ERA = { ajans: 2, subeler: 2, ciftlik: 3 };
 
 /* ---------- Büyük yatırımlar (3. dönem) ---------- */
-KE.SIGNATURE = { cost: [300000, 800000, 2000000], days: 10, traffic: 0.05, names: ['Usta işi', 'Şehrin tarifi', 'Efsane tarif'] };
-KE.FLAGSHIP = { cost: 4000000, traffic: 1.2 };
+KE.SIGNATURE = { cost: [300000, 800000, 2000000], days: 10, traffic: 0.08, names: ['Usta işi', 'Şehrin tarifi', 'Efsane tarif'] };
+KE.FLAGSHIP = { cost: 2500000, traffic: 1.4, chain: 1.08 };
 KE.CONTRACT_KINDS = [
   { id: 'stadyum', name: 'Stadyum maç günü', who: 'Kulüp yönetimi', qty: [300, 600], morale: 8 },
   { id: 'fabrika', name: 'Fabrika yemekhanesi', who: 'Merterli Tekstil', qty: [200, 400], morale: 5 },
@@ -381,6 +381,34 @@ KE.WEEKLY_KINDS = [
   { kind: 'tips', text: 'Bu hafta {t} bahşiş topla' },
   { kind: 'sat', text: 'Haftanın memnuniyet ortalaması %{t} ve üstü olsun' }
 ];
+
+/* ---------- Türkçe ek uyumu: özel isimlere kesme işaretiyle ek ----------
+   KE.ek('Burak', 'in') → "Burak'ın" · KE.ek('İsmail Usta', 'e') → "İsmail Usta'ya" · KE.ek('Kulealtı', 'de') → "Kulealtı'nda" */
+KE.ek = function (word, kind) {
+  const w = String(word || ''), lower = w.toLocaleLowerCase('tr');
+  const vs = lower.match(/[aeıioöuü]/g); const v = vs ? vs[vs.length - 1] : 'e';
+  const last = lower.slice(-1), vowelEnd = /[aeıioöuü]/.test(last), hard = /[çfhkpsşt]/.test(last);
+  // istisnalar: ince okunan alıntı isimler (Kemal'in), iyelikli birleşik adlar (Kulealtı'nda, Usta Pazarı'na)
+  const thin = /(kemal|cemal|celal|bilal|hilal|ikbal|kemal bey)$/.test(lower);
+  const poss = /(.altı|pazarı|bürosu|kahvesi|çiftliği|ajansı|ofisi|sanayi)$/.test(lower) && !/sanayi$/.test(lower);
+  const back = !thin && 'aıou'.includes(v), round = 'ouöü'.includes(v);
+  const i4 = back ? (round ? 'u' : 'ı') : (round ? 'ü' : 'i'), a2 = back ? 'a' : 'e';
+  const d = hard ? 't' : 'd';
+  const s = { in: (vowelEnd ? 'n' : '') + i4 + 'n', e: (poss ? 'n' : vowelEnd ? 'y' : '') + a2, de: (poss ? 'n' : '') + (poss ? 'd' : d) + a2, den: (poss ? 'nd' : d) + a2 + 'n', le: (vowelEnd ? 'y' : '') + 'l' + a2, i: (poss ? 'n' : vowelEnd ? 'y' : '') + i4 }[kind];
+  return w + "'" + s;
+};
+/* Sayıya ek: söylenişin son kelimesine göre (15:38 → "otuz sekiz" → 15:38'de, 14:00 → "on dört" → 14:00'te) */
+KE.ekSayi = function (str, kind) {
+  const W1 = ['', 'bir', 'iki', 'üç', 'dört', 'beş', 'altı', 'yedi', 'sekiz', 'dokuz'], W10 = ['', 'on', 'yirmi', 'otuz', 'kırk', 'elli', 'altmış', 'yetmiş', 'seksen', 'doksan'];
+  const parts = String(str).split(/[:.]/).map(Number);
+  let n = parts.length > 1 && parts[1] !== 0 ? parts[1] : parts[0];
+  n = Math.abs(Math.round(n)) % 100;
+  const word = n === 0 ? 'sıfır' : n % 10 ? W1[n % 10] : W10[n / 10];
+  const suf = KE.ek(word, kind).slice(word.length + 1);
+  return str + "'" + suf;
+};
+/* "de/da" bağlacı: önceki kelimeye uyar (Tavuk Dürüm de, Tavuk Porsiyon da) */
+KE.dA = function (word) { const vs = String(word).toLocaleLowerCase('tr').match(/[aeıioöuü]/g); const v = vs ? vs[vs.length - 1] : 'e'; return word + ('aıou'.includes(v) ? ' da' : ' de'); };
 
 
 // ---- js/calendar.js ----
@@ -788,7 +816,7 @@ KE.WEEKLY_KINDS = [
     bulent: { name: 'Bülent Bey', role: 'Belediye müfettişi', look: { gender: 'e', age: 'orta', skin: '#f3d2b3', hairColor: '#4a2f1d', hair: 'yan', facial: 'biyik', glasses: true, head: 'none', outfit: 'takim', outfitColor: '#5d6d7e', accent: '#1f618d' } },
     emre: { name: 'Kurye Emre', role: 'Kurye', look: { gender: 'e', age: 'genc', skin: '#c68b5c', hairColor: '#1c1410', hair: 'kisa', facial: 'kirli', glasses: false, head: 'kask', hatColor: '#e74c3c', outfit: 'mont', outfitColor: '#e67e22', accent: '#f4d03f' } },
     rakip: { name: 'Cüneyt Bey', role: '"Lüks Kebap" sahibi', look: { gender: 'e', age: 'orta', skin: '#f3d2b3', hairColor: '#1c1410', hair: 'yan', facial: 'kirli', glasses: false, head: 'none', outfit: 'takim', outfitColor: '#4a235a', accent: '#d4ac0d' } },
-    banker: { name: 'Selin Hanım', role: 'Banka şube müdürü', look: { gender: 'k', age: 'orta', skin: '#f3d2b3', hairColor: '#6b4423', hair: 'uzun', facial: 'none', glasses: false, head: 'none', outfit: 'takim', outfitColor: '#1b4f72', accent: '#fdfefe' } },
+    banker: { name: 'Sevim Hanım', role: 'Banka şube müdürü', look: { gender: 'k', age: 'orta', skin: '#f3d2b3', hairColor: '#6b4423', hair: 'uzun', facial: 'none', glasses: false, head: 'none', outfit: 'takim', outfitColor: '#1b4f72', accent: '#fdfefe' } },
     ajans: { name: 'Deniz', role: 'Reklam ajansı', look: { gender: 'e', age: 'genc', skin: '#e8b98f', hairColor: '#2b1d14', hair: 'dalgali', facial: 'kirli', glasses: true, head: 'none', outfit: 'tisort', outfitColor: '#f39c12', accent: '#fdfefe', print: true } },
     terzi: { name: 'Terzi Nuri', role: 'Terzi', look: { gender: 'e', age: 'yasli', skin: '#e8b98f', hairColor: '#d0d0d0', hair: 'kel', facial: 'biyik', glasses: true, head: 'none', outfit: 'yelek', outfitColor: '#6e2c00', accent: '#f5cba7' } },
     dekor: { name: 'Gül Hanım', role: 'Dekoratör', look: { gender: 'k', age: 'orta', skin: '#c68b5c', hairColor: '#1c1410', hair: 'dalgali', facial: 'none', glasses: false, head: 'none', outfit: 'gomlek', outfitColor: '#117a65' } },
@@ -1129,6 +1157,12 @@ KE.WEEKLY_KINDS = [
     return best;
   };
 
+  /* Menünün piyasaya göre ortalama fiyat oranı (1 = piyasa) ve itibara bağlı fiyat toleransı */
+  KE.priceRatio = function (G, b) {
+    const ps = MODE(G).products.filter((p) => b.menu[p.id] && !KE.isLocked(G, p) && b.prices[p.id] != null);
+    return ps.length ? ps.reduce((a, p) => a + b.prices[p.id] / KE.marketPrice(G, p), 0) / ps.length : 1;
+  };
+  KE.priceTolerance = (G) => 1.02 + Math.max(0, G.reputation - 50) / 400 + (G.signature && !G.signature.family ? G.signature.level * 0.04 : 0);
   KE.expectedCustomers = function (G, b) {
     const d = KE.district(b);
     const mode = MODE(G);
@@ -1145,8 +1179,10 @@ KE.WEEKLY_KINDS = [
     const loyal = 1 + 0.025 * Object.values(G.regulars || {}).filter((r) => r.loyalty >= 8).length;
     const champ = b.championUntil && G.day <= b.championUntil ? 1.06 : 1;
     const sig = 1 + (G.signature ? G.signature.level * KE.SIGNATURE.traffic : 0);
-    const flag = b.flagship ? KE.FLAGSHIP.traffic : 1;
-    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * sig * flag * (emp ? 1.1 : 1) * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
+    /* ucuz fiyat kapıdan daha çok müşteri getirir, pahalı fiyat biraz azaltır (±%12) */
+    const pr = 1 + Math.max(-0.12, Math.min(0.12, (1 - KE.priceRatio(G, b)) * 0.6));
+    const flag = b.flagship ? KE.FLAGSHIP.traffic : G.branches.some((x) => x.flagship) ? KE.FLAGSHIP.chain : 1;
+    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * sig * flag * pr * (emp ? 1.1 : 1) * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
   };
 
   /* ---------- Yeni oyun ---------- */
@@ -1214,7 +1250,7 @@ KE.WEEKLY_KINDS = [
     if (sum) {
       const so = Object.keys(sum.stats.stockouts || {}).length;
       if (so && b.stockLevel < 1.5) { b.stockLevel = Math.min(1.5, Math.round((b.stockLevel + 0.1) * 100) / 100); notes.push('stok'); }
-      else if (!so && sum.wasteVal > sum.stats.revenue * 0.04 && b.stockLevel > 1) { b.stockLevel = Math.max(1, Math.round((b.stockLevel - 0.05) * 100) / 100); notes.push('fire'); }
+      else if (!so && sum.wasteVal > sum.stats.revenue * 0.04 && b.stockLevel > 1.15) { b.stockLevel = Math.max(1.15, Math.round((b.stockLevel - 0.05) * 100) / 100); notes.push('fire'); }
     }
     if (G.day % 7 === 1) {
       let moved = false;
@@ -1266,7 +1302,7 @@ KE.WEEKLY_KINDS = [
     const open = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
     const exp = open.reduce((a, b) => a + KE.expectedCustomers(G, b), 0);
     if (!exp) { G.daily = []; return; }
-    const reward = Math.round(5000 * G.priceIndex / 500) * 500;
+    const reward = Math.round(5000 * G.priceIndex * (1 + 0.6 * (open.length - 1)) / 500) * 500;
     const pool = [
       { kind: 'served', target: Math.max(20, Math.round(exp * 0.92 / 5) * 5), text: (t) => `${t} müşteriye servis yap` },
       { kind: 'sat', target: 78, text: (t) => `Ortalama memnuniyet %${t} ve üstü` },
@@ -1400,7 +1436,9 @@ KE.WEEKLY_KINDS = [
       const p = ch.p;
       const price = b.prices[p.id];
       const ratio = price / KE.marketPrice(G, p);
-      if (ratio > 1.08 + (1 - ct.priceSens) * 0.6 && KE.rand() < 0.85) { lose(L, c, 'lostPrice', 'Çok pahalı!'); L.fx.push({ t: 'pass', cid: id }); continue; }
+      /* fiyat: piyasanın üstü, müşteri tipine göre kademeli kaçırır; itibar yüksekse tolerans artar */
+      const pLeave = Math.min(0.95, Math.max(0, (ratio - KE.priceTolerance(G)) * 3.5 * ct.priceSens));
+      if (pLeave > 0 && KE.rand() < pLeave) { lose(L, c, 'lostPrice', 'Çok pahalı!'); L.fx.push({ t: 'pass', cid: id }); continue; }
       const take = (ct.takeaway || 0) * (G.mode === 'kebap' ? 0.4 : 1);
       Object.assign(c, {
         pid: p.id, price, ratio, state: 'queue', wait: 0, takeaway: KE.rand() < take,
@@ -1682,8 +1720,10 @@ KE.WEEKLY_KINDS = [
     const peak = (KE.HOUR_CURVE[hour] || 0) >= 1;
     const cooks = st.filter(KE.isCook);
     const pending = L.tickets.filter((t) => t.state === 'wait').length;
-    st.forEach((s) => { if (s.energy < (mgr ? 22 : 12) && s.pos !== 'mola') { const same = st.filter((x) => x.role === s.role && x !== s && x.pos !== 'mola'); if (same.length || !peak) KE.setPos(G, s, 'mola'); } });
-    st.forEach((s) => { if (s.pos === 'mola' && s.energy >= (mgr ? 85 : 95)) KE.setPos(G, s, KE.POSITIONS[s.role][0]); });
+    /* aynı işi yapan başka biri çalışıyorsa molaya gönder (müdürsüz şubede de bir görev hiç boş kalmaz) */
+    const sameJob = (s, x) => (KE.isCook(s) ? KE.isCook(x) : x.role === s.role);
+    st.forEach((s) => { if (s.energy < (mgr ? 22 : 12) && s.pos !== 'mola') { const same = st.filter((x) => sameJob(s, x) && x !== s && x.pos !== 'mola'); if (same.length || (mgr && !peak)) KE.setPos(G, s, 'mola'); } });
+    st.forEach((s) => { if (s.pos === 'mola' && s.energy >= (mgr ? 85 : 80)) KE.setPos(G, s, KE.POSITIONS[s.role][0]); });
     if (!mgr) return;
     const stations = KE.equip(G, b, 'cook').stations;
     const working = cooks.filter((s) => s.pos === 'ocak');
@@ -1832,9 +1872,9 @@ KE.WEEKLY_KINDS = [
 
   KE.TIP_RULES = {
     esit: { name: 'Eşit paylaşım', desc: 'Kavanoz herkese eşit bölünür. Ekip morali dengeli artar.' },
-    usta: { name: 'Ustaya ağırlık', desc: 'Ustalar iki pay alır. Usta sadakati artar, diğerleri biraz bozulur.' },
+    usta: { name: 'Ustaya ağırlık', desc: 'Ustalar iki pay alır. Ustalar keyiflenir, çıraklar ustalarından %30 daha hızlı öğrenir; diğerleri biraz bozulur.' },
     performans: { name: 'Performansa göre', desc: 'Kim çok iş çıkardıysa o çok alır. Rekabet yaratır.' },
-    kasa: { name: 'Kasaya al', desc: 'Bahşiş işletmeye kalır. Moral sert düşer.' }
+    kasa: { name: 'Kasaya al', desc: 'Bahşiş işletmeye kalır. Kısa vadede nakit sağlar ama ekip her gün biraz küser.' }
   };
   KE.tipShares = function (G, b, rule, jar) {
     const st = KE.branchStaff(G, b);
@@ -1859,7 +1899,7 @@ KE.WEEKLY_KINDS = [
       KE.tipShares(G, b, rule, S.tips).forEach(([s, v]) => { shares[s.id] = v; });
       const perf = st.slice().sort((a, c) => c.servedToday - a.servedToday);
       const amb = KE.ambience(G, b);
-      const limit = G.mode === 'doner' ? 70 : 40;
+      const limit = G.mode === 'doner' ? 70 : 60;
       st.forEach((s) => {
         const tr = KE.TRAITS[s.trait] || {};
         const before = s.morale;
@@ -1867,8 +1907,8 @@ KE.WEEKLY_KINDS = [
         const share = shares[s.id] || 0;
         s.tipsMonth += share; s.tipsTotal += share; s.tipsToday = share;
         dm += Math.min(5, share / (s.wage / 30) * 6);
-        if (rule === 'kasa') dm -= 11;
-        if (rule === 'usta') dm += s.role === 'usta' ? 3 : -2;
+        if (rule === 'kasa') dm -= 2;
+        if (rule === 'usta') dm += s.role === 'usta' ? 3 : -1;
         if (rule === 'performans') dm += s === perf[0] ? 4 : s === perf[perf.length - 1] ? -2.5 : 0.5;
         if (s.servedToday > limit * 1.6) dm -= 5; else if (s.servedToday > limit) dm -= 2;
         if (s.minEnergy < 10) dm -= 6; else if (s.minEnergy < 25) dm -= 3; else if (s.minEnergy > 55) dm += 1;
@@ -1887,7 +1927,7 @@ KE.WEEKLY_KINDS = [
         const tm = KE.TRAITS[m.trait] || {}, tc = KE.TRAITS[c.trait] || {};
         Object.entries(m.spec).forEach(([pid, star]) => {
           if ((c.spec[pid] || 0) >= star - 1) return;
-          if (KE.gainXp(c, pid, m.teach * 4 * (1 + (tm.teachBonus || 0)) * (1 + (tc.xp || 0)))) out.levelUps.push({ name: c.name, pid, star: c.spec[pid], mentor: m.name });
+          if (KE.gainXp(c, pid, m.teach * 4 * (1 + (tm.teachBonus || 0)) * (1 + (tc.xp || 0)) * (rule === 'usta' ? 1.3 : 1))) out.levelUps.push({ name: c.name, pid, star: c.spec[pid], mentor: m.name });
         });
       });
       st.forEach((s) => { if (s.morale < 18 && KE.rand() < 0.3) { out.quits.push({ name: s.name, role: s.role, branch: b.name }); s.quit = true; } });
@@ -2023,6 +2063,8 @@ KE.WEEKLY_KINDS = [
     const goals = KE.checkGoals(G);
     return { ok: true, goals, life: KE.lifetime(G) };
   };
+  /* Hedef ödülü enflasyonla ve zincirin büyüklüğüyle büyür */
+  KE.goalReward = (G, g) => Math.round((g.reward || 0) * G.priceIndex * (1 + 0.5 * (G.branches.length - 1)) / 1000) * 1000;
   KE.checkGoals = function (G) {
     const done = [];
     const test = {
@@ -2041,7 +2083,7 @@ KE.WEEKLY_KINDS = [
       sube7: () => G.branches.length >= KE.DISTRICTS.length,
       imparator: () => !!(G.flags && G.flags.empire)
     };
-    KE.GOALS.forEach((g) => { if (!G.goals[g.id] && test[g.id] && test[g.id]()) { G.goals[g.id] = G.day; G.cash += g.reward; done.push(g); } });
+    KE.GOALS.forEach((g) => { if (!G.goals[g.id] && test[g.id] && test[g.id]()) { G.goals[g.id] = G.day; const r = KE.goalReward(G, g); G.cash += r; done.push(Object.assign({}, g, { reward: r })); } });
     return done;
   };
 
@@ -2124,7 +2166,7 @@ KE.WEEKLY_KINDS = [
       if (seen[k.id]) return null; seen[k.id] = 1;
       const qty = Math.round((k.qty[0] + ((h >>> 8) % 1000) / 1000 * (k.qty[1] - k.qty[0])) / 10) * 10;
       const p = prods[(h >>> 4) % prods.length];
-      const pay = Math.round(qty * KE.marketPrice(G, p) * 0.8 / 1000) * 1000;
+      const pay = Math.round(qty * KE.marketPrice(G, p) * 1.5 / 1000) * 1000;
       const cost = Math.round(qty * KE.productCost(G, b0, p) / 1000) * 1000;
       return { id: wk + '-' + i, kind: k.id, name: k.name, who: k.who, pid: p.id, qty, pay, cost, morale: k.morale };
     }).filter(Boolean).slice(0, 3);
@@ -2295,7 +2337,7 @@ KE.WEEKLY_KINDS = [
     const wd = KE.weekday(G.day);
     const hol = KE.holidayOf(G.day);
     const weather = pick(['Hava güneşliydi', 'Sabah çiseledi, öğlene doğru açtı', 'Lodos vardı, martılar alçaktan uçuyordu', 'Serin ama berrak bir gündü', 'Boğazdan ılık bir rüzgâr esiyordu', 'Gökyüzü kurşuni, sokak ıslaktı']);
-    parts.push(hol ? `${hol}, ${wd}. Sokaklar bayramlıklarla doluydu.` : `${wd}. ${weather}.`);
+    parts.push(hol ? `${hol}, ${wd}. ${/Ramazan|Kurban/.test(hol) ? 'Sokaklar bayramlıklarla doluydu.' : 'Sokaklar bayraklarla süslenmişti.'}` : `${wd}. ${weather}.`);
     if (lead) {
       const opener = G.mode === 'doner'
         ? pick([`${lead.name} sabah erkenden gelip ocağı yaktı, ilk yaprağı ustalıkla kesti.`, `${lead.name} döneri şişe dizerken radyoda eski bir şarkı çalıyordu.`, `${lead.name} bıçağı bileyleyip "Haydi bismillah" dedi.`])
@@ -2305,11 +2347,11 @@ KE.WEEKLY_KINDS = [
     const peakH = S.hourlyCust.indexOf(Math.max(...S.hourlyCust));
     if (S.served > 0) {
       const topType = Object.entries(S.byType).sort((a, c) => c[1] - a[1])[0];
-      const typeLine = topType ? { ogrenci: 'öğrenciler akın etti', beyaz: 'plaza çalışanları öğle arasında kapıyı aşındırdı', aile: 'aileler masaları doldurdu', gurme: 'gurmeler tabakları fotoğrafladı', turist: 'turistler haritalarıyla kapıda belirdi', isci: 'inşaat ekibi kalabalık geldi', gece: 'gece çıkışı kalabalığı dükkânı doldurdu' }[topType[0]] : 'müşteriler geldi';
-      parts.push(`En yoğun saat ${KE.OPEN_HOUR + peakH}:00 civarıydı; ${typeLine}.`);
+      const typeLine = topType ? { ogrenci: 'en çok öğrenciler geldi', beyaz: 'plaza çalışanları kapıyı aşındırdı', aile: 'aileler masaları doldurdu', gurme: 'gurmeler tabakları fotoğrafladı', turist: 'turistler haritalarıyla kapıda belirdi', isci: 'inşaat ekipleri kalabalık geldi', gece: 'en kalabalık grup gece çıkışı müşterileriydi' }[topType[0]] : 'müşteriler geldi';
+      parts.push(`En yoğun saat ${KE.OPEN_HOUR + peakH}:00 civarıydı. Gün boyunca ${typeLine}.`);
     } else parts.push('Kapıdan neredeyse kimse girmedi. Sessizlik insanın içine işliyordu.');
     const so = Object.entries(S.stockouts || {}).sort((a, c) => a[1] - c[1]);
-    if (so.length) parts.push(`${pname(G, so[0][0])} ${clock(so[0][1])}'da bitti${so.length > 1 ? `, ardından ${pname(G, so[1][0])} da tükendi` : ''}. Yarın stoğu artırmak lazım.`);
+    if (so.length) parts.push(`${pname(G, so[0][0])} ${KE.ekSayi(clock(so[0][1]), 'de')} bitti${so.length > 1 ? `, ardından ${KE.dA(pname(G, so[1][0]))} tükendi` : ''}. Yarın stoğu artırmak lazım.`);
     const top = Object.entries(S.byProduct).sort((a, c) => c[1] - a[1])[0];
     if (top) parts.push(`Günün yıldızı ${pname(G, top[0])} oldu: ${top[1]} porsiyon.`);
     if (S.matches > 3 && lead) parts.push(`"Ellerine sağlık usta!" sesi gün boyu ${S.matches} kez yankılandı.`);
@@ -2318,7 +2360,7 @@ KE.WEEKLY_KINDS = [
     if (S.lostPrice > 4) parts.push(`${S.lostPrice} kişi menüye bakıp "Bu ne fiyat!" diyerek döndü.`);
     if (S.playerServed) parts.push(`Bugün ${S.playerServed} siparişi tezgâha geçip kendi ellerimle hazırladım.`);
     if (S.gurmeHappy) parts.push('Bir gurme çıkarken defterine bir şeyler not etti, gülümsüyordu.');
-    if (out.levelUps.length) { const u = out.levelUps[0]; parts.push(`${u.name} ${pname(G, u.pid)} yapımında ustalaştı (★${u.star})${u.mentor ? `; ${u.mentor}'nın emeği büyük` : ''}.`); }
+    if (out.levelUps.length) { const u = out.levelUps[0]; parts.push(`${u.name} ${pname(G, u.pid)} yapımında ustalaştı (★${u.star})${u.mentor ? `; ${KE.ek(u.mentor, 'in')} emeği büyük` : ''}.`); }
     if (out.quits.length) parts.push(`Akşam ${out.quits[0].name} önlüğünü çıkarıp "Ben bu işi bırakıyorum" dedi. Moral meselesini hafife almamalıydım.`);
     const sat = sum.sat;
     parts.push(sat > 80 ? 'Kepenk inerken içim rahattı; mahalle memnun.' : sat > 65 ? 'Fena bir gün değildi, ama daha iyisini yapabiliriz.' : sat > 0 ? 'Kepenk indirirken kafamda yarın neyi düzelteceğimin listesi vardı.' : 'Yarın her şey farklı olacak.');
@@ -2337,11 +2379,11 @@ KE.WEEKLY_KINDS = [
     else if (sat > 60) h.push({ title: `${b.name} istikrarlı bir hafta geçirdi`, body: `Haftalık ciro ${KE.tl(rev)}. Esnaf, dükkânın kendini toparladığını söylüyor.` });
     else h.push({ title: `${b.name} zorlu bir hafta geçirdi`, body: 'Müşteriler bekleme sürelerinden ve fiyatlardan şikâyetçi. Esnaf "Toparlanırlar" diyor.' });
     const champ = G.branches.find((x) => x.championUntil && x.championUntil - G.day >= 23);
-    if (champ) h.unshift({ title: `${KE.district(champ).name}'nin şampiyonu: ${champ.name}`, body: '"Lüks Kebap" bu ay semtte geride kaldı. Komşular kutlamaya pide getirdi.' });
+    if (champ) h.unshift({ title: `${KE.ek(KE.district(champ).name, 'in')} şampiyonu: ${champ.name}`, body: '"Lüks Kebap" bu ay semtte geride kaldı. Komşular kutlamaya pide getirdi.' });
     const praised = KE.REGULARS.find((R) => G.regulars && G.regulars[R.id] && G.regulars[R.id].praised > G.day - 7);
-    if (praised) h.push({ title: `${praised.name}: "Şehrin en güzel sofrası"`, body: `Yıllardır müdavim olan ${praised.name}, dükkânı herkese öneriyor.` });
+    if (praised) h.push({ title: `${praised.name}: "Şehrin en güzel sofrası"`, body: `${praised.type === 'turist' ? 'Şehre her gelişinde uğrayan' : 'Yıllardır müdavim olan'} ${praised.name}, dükkânı herkese öneriyor.` });
     const st5 = G.staff.find((s) => Object.values(s.spec).some((v) => v >= 5));
-    if (st5) h.push({ title: `Usta sohbeti: ${st5.name}`, body: `${st5.region} kökenli usta, mesleğin inceliklerini anlattı: "Sabır, köz ve iyi malzeme. Gerisi el alışkanlığı."` });
+    if (st5) h.push({ title: `Usta sohbeti: ${st5.name}`, body: `${st5.region} kökenli ${st5.role === 'cirak' ? 'genç çırak' : 'usta'}, mesleğin inceliklerini anlattı: "Sabır, ${G.mode === 'doner' ? 'keskin bıçak' : 'köz'} ve iyi malzeme. Gerisi el alışkanlığı."` });
     const city = [
       { title: 'Vapur seferlerine yaz tarifesi', body: 'Belediye yeni seferlerin iskele çevresindeki esnafa canlılık getireceğini açıkladı.' },
       { title: 'Halde et fiyatları yine hareketli', body: `Toptancılar kırmızı ette aylık %${KE.num(KE.ECON.aylikEnflasyon * 100, 1)} civarı artış bekliyor.` },
@@ -2381,7 +2423,7 @@ KE.WEEKLY_KINDS = [
   ev.push({ id: 'rakipTeklif', who: 'rakip', w: 1.2,
     when: (G) => !G.flags.empire && staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),
     build: (G) => { const s = staffOf(G).filter((x) => x.role === 'usta' && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
-      return { title: `${s.name}'ya rakipten teklif!`, text: `"Lüks Kebap" sahibi Cüneyt Bey, ${s.name}'ya %30 daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.`, ctx: { sid: s.id },
+      return { title: `${KE.ek(s.name, 'e')} rakipten teklif!`, text: `"Lüks Kebap" sahibi Cüneyt Bey, ${KE.ek(s.name, 'e')} %30 daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.`, ctx: { sid: s.id },
         choices: [
           { label: 'Maaşına %15 zam yap', desc: 'Moral +22, maaş +%15', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); raise(G, x, 1.15); x.morale = clamp(x.morale + 22, 0, 100); return `${x.name} kaldı: "Bu dükkân benim de dükkânım."`; } },
           { label: 'Oturup gönlünü al', desc: '%55 ihtimalle kalır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (KE.rand() < 0.55) { x.morale = clamp(x.morale + 10, 0, 100); return `Uzun bir çay sohbeti işe yaradı. ${x.name} kalıyor.`; } G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} teşekkür edip rakibe geçti. Ocağın başı boş kaldı.`; } },
@@ -2392,8 +2434,8 @@ KE.WEEKLY_KINDS = [
     build: (G) => { const b = branch(G);
       return { title: 'Belediye denetimi kapıda', text: `Bülent Bey evrak çantasıyla içeri girdi: "Rutin hijyen denetimi." Temizlik puanın şu an ${Math.round(b.cleanliness)}.`, ctx: {},
         choices: [
-          { label: 'Denetime hemen gir', desc: 'Temizlik puanına göre sonuç', run: (G) => { const b = branch(G); if (b.cleanliness >= 55) { G.reputation = clamp(G.reputation + 2, 0, 100); return '"Her şey yolunda, kolay gelsin." Denetimden temiz çıktın. İtibar +2.'; } const fine = Math.round(18000 * G.priceIndex); G.cash -= fine; KE.addExtra(G, 'fines', fine); G.reputation = clamp(G.reputation - 3, 0, 100); return `Tezgâh altı ve davlumbazda eksikler bulundu. ${KE.tl(fine)} idari para cezası. İtibar −3.`; } },
-          { label: 'Yarım saat bekletip acil temizlik yap', desc: `${KE.tl(6000)} ekstra mesai`, run: (G) => { const b = branch(G); G.cash -= 6000; KE.addExtra(G, 'other', 6000); b.cleanliness = clamp(b.cleanliness + 25, 0, 100); if (b.cleanliness >= 55) return 'Ekip seferber oldu. Denetim sorunsuz geçti.'; const fine = Math.round(9000 * G.priceIndex); G.cash -= fine; KE.addExtra(G, 'fines', fine); return `Yetişmedi. Daha hafif bir ceza: ${KE.tl(fine)}.`; } }
+          { label: 'Denetime hemen gir', desc: 'Temizlik puanına göre sonuç', run: (G) => { const b = branch(G); if (b.cleanliness >= cleanBar(G)) { G.reputation = clamp(G.reputation + 2, 0, 100); return '"Her şey yolunda, kolay gelsin." Denetimden temiz çıktın. İtibar +2.'; } const fine = fineOf(G, Math.round(18000 * G.priceIndex)); G.cash -= fine; KE.addExtra(G, 'fines', fine); G.reputation = clamp(G.reputation - 3, 0, 100); return `Tezgâh altı ve davlumbazda eksikler bulundu. ${KE.tl(fine)} idari para cezası. İtibar −3.`; } },
+          { label: 'Yarım saat bekletip acil temizlik yap', desc: `${KE.tl(6000)} ekstra mesai`, run: (G) => { const b = branch(G); G.cash -= 6000; KE.addExtra(G, 'other', 6000); b.cleanliness = clamp(b.cleanliness + 25, 0, 100); if (b.cleanliness >= cleanBar(G)) return 'Ekip seferber oldu. Denetim sorunsuz geçti.'; const fine = fineOf(G, Math.round(9000 * G.priceIndex)); G.cash -= fine; KE.addExtra(G, 'fines', fine); return `Yetişmedi. Daha hafif bir ceza: ${KE.tl(fine)}.`; } }
         ] }; } });
 
   ev.push({ id: 'yemekYazari', who: 'ayse', w: 0.8,
@@ -2426,7 +2468,7 @@ KE.WEEKLY_KINDS = [
     build: (G) => ({ title: 'Kasap Rıza\'dan zam haberi', text: '"Kusura bakma kardeşim, halde fiyatlar uçtu. Bu hafta et kalemlerine %15 zam yapmak zorundayım."', ctx: {},
       choices: [
         { label: 'Pazarlık et', desc: '%50 ihtimalle %5\'e iner', run: (G) => { if (KE.rand() < 0.5) { G.mods.push({ key: 'ing', mult: 1.05, days: 7, label: 'Et zammı' }); return '"Senin hatırın için %5 olsun." Rıza sözünün eri.'; } G.mods.push({ key: 'ing', mult: 1.15, days: 7, label: 'Et zammı' }); return '"Elimden gelen bu kadar." Zam %15 kaldı.'; } },
-        { label: 'Kabul et', desc: '7 gün malzeme +%15, ilişki iyi', run: (G) => { G.mods.push({ key: 'ing', mult: 1.12, days: 7, label: 'Et zammı' }); return 'Rıza memnun. "Senin için en iyi parçaları ayıracağım." Zam %12\'de kaldı.'; } }
+        { label: 'Kabul et', desc: '7 gün malzeme +%12, ilişki iyi', run: (G) => { G.mods.push({ key: 'ing', mult: 1.12, days: 7, label: 'Et zammı' }); return 'Rıza memnun. "Senin için en iyi parçaları ayıracağım." Zam %12\'de kaldı.'; } }
       ] }) });
 
   ev.push({ id: 'influencer', who: 'ajans', w: 0.7,
@@ -2441,7 +2483,7 @@ KE.WEEKLY_KINDS = [
     build: (G) => { const c = staffOf(G).find((s) => s.role === 'cirak');
       return { title: `${c.name} bir tepsi yaktı`, text: `${c.name} dalgınlıkla ${G.mode === 'doner' ? 'pilav tenceresini' : 'bir şiş dolusu kebabı'} yaktı. Mutfak duman içinde, herkes sana bakıyor.`, ctx: { sid: c.id }, who: c,
         choices: [
-          { label: 'Ustanın yanına ver, öğret', desc: 'En iyi usta mentor olur, moral +4', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); const m = staffOf(G).filter((s) => s.role === 'usta').sort((a, c) => c.teach - a.teach)[0]; if (m) { x.mentorId = m.id; x.morale = clamp(x.morale + 4, 0, 100); return `${m.name} çırağın omzuna dokundu: "Gel bakalım, köz böyle okunur."`; } return 'Ortada öğretecek usta yok. Bir usta işe al.'; } },
+          { label: 'Ustanın yanına ver, öğret', desc: 'En iyi usta mentor olur, moral +4', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); const m = staffOf(G).filter((s) => s.role === 'usta').sort((a, c) => c.teach - a.teach)[0]; if (m) { x.mentorId = m.id; x.morale = clamp(x.morale + 4, 0, 100); return `${m.name} çırağın omzuna dokundu: "Gel bakalım, ${G.mode === 'doner' ? 'yaprak böyle kesilir' : 'köz böyle okunur'}."`; } return 'Ortada öğretecek usta yok. Bir usta işe al.'; } },
           { label: 'Sert uyar', desc: 'Moral −10, hata payı düşer', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale - 10, 0, 100); x.consistency = Math.min(0.95, x.consistency + 0.05); return `${x.name} kızardı, bir daha olmayacağına söz verdi.`; } }
         ] }; } });
 
@@ -2489,6 +2531,9 @@ KE.WEEKLY_KINDS = [
   const moraleAll = (G, d) => staffOf(G).forEach((s) => { s.morale = clamp(s.morale + d, 0, 100); });
   const rep = (G, d) => { G.reputation = clamp(G.reputation + d, 0, 100); };
   const P = (G, v) => Math.round(v * G.priceIndex / 100) * 100;
+  /* Avukat Selin'in hikâyesi bitince cezalar yarıya iner; Muhtar Kemal Bey denetimde eşiği düşürür */
+  const fineOf = (G, v) => (G.flags && G.flags.lawyer ? Math.round(v / 2 / 100) * 100 : v);
+  const cleanBar = (G) => (G.flags && G.flags.muhtar ? 45 : 55);
 
   ev.push({ id: 'elektrik', who: 'emre', w: 0.7,
     build: (G) => ({ title: 'Elektrik kesintisi', text: 'Sokakta trafo arızası var; elektrik akşama kadar gelmeyebilir. Emre bir jeneratörcünün numarasını buldu.', ctx: {},
@@ -2545,7 +2590,7 @@ KE.WEEKLY_KINDS = [
     build: (G) => ({ title: 'Komşudan duman şikâyeti', text: 'Üst kattaki komşu belediyeye dilekçe vermiş: "Davlumbazın dumanı camımdan giriyor." Bülent Bey uyarıyor.', ctx: {},
       choices: [
         { label: 'Karbon filtre taktır', desc: `${KE.tl(P(G, 14000))}, temizlik +10`, run: (G) => { pay(G, P(G, 14000)); const b = branch(G); b.cleanliness = clamp(b.cleanliness + 10, 0, 100); return 'Filtre takıldı, komşu bir tabak baklava getirdi.'; } },
-        { label: 'Komşuya bir tepsi gönder', desc: `${KE.tl(P(G, 800))}, %50 ihtimalle ceza`, run: (G) => { pay(G, P(G, 800)); if (KE.rand() < 0.5) return 'Komşu yumuşadı, dilekçesini geri çekti.'; const fine = P(G, 9000); G.cash -= fine; KE.addExtra(G, 'fines', fine); return `Dilekçe işleme girdi: ${KE.tl(fine)} ceza.`; } }
+        { label: 'Komşuya bir tepsi gönder', desc: `${KE.tl(P(G, 800))}, %50 ihtimalle ceza`, run: (G) => { pay(G, P(G, 800)); if (KE.rand() < 0.5) return 'Komşu yumuşadı, dilekçesini geri çekti.'; const fine = fineOf(G, P(G, 9000)); G.cash -= fine; KE.addExtra(G, 'fines', fine); return `Dilekçe işleme girdi: ${KE.tl(fine)} ceza.`; } }
       ] }) });
 
   ev.push({ id: 'stajyer', who: 'buro', w: 0.5,
@@ -2588,12 +2633,12 @@ KE.WEEKLY_KINDS = [
     build: (G) => ({ title: 'Vergi incelemesi', text: 'Vergi müfettişi son üç ayın kayıtlarını istiyor. Zeynep Hanım: "Defterler tamam ama bir hafta mesai lazım."', ctx: {},
       choices: [
         { label: 'Muhasebeciye ek mesai öde', desc: `${KE.tl(P(G, 8000))}, sorunsuz`, run: (G) => { pay(G, P(G, 8000)); return 'İnceleme temiz kapandı. Müfettiş giderken "Defterleriniz örnek" dedi.'; } },
-        { label: 'Kendin hazırla', desc: '%40 ihtimalle usulsüzlük cezası', run: (G) => { if (KE.rand() < 0.6) return 'Gece yarılarına kadar fatura sıraladın; inceleme temiz çıktı.'; const fine = P(G, 15000); G.cash -= fine; KE.addExtra(G, 'fines', fine); return `Birkaç fiş eksik çıktı: ${KE.tl(fine)} usulsüzlük cezası.`; } }
+        { label: 'Kendin hazırla', desc: '%40 ihtimalle usulsüzlük cezası', run: (G) => { if (KE.rand() < 0.6) return 'Gece yarılarına kadar fatura sıraladın; inceleme temiz çıktı.'; const fine = fineOf(G, P(G, 15000)); G.cash -= fine; KE.addExtra(G, 'fines', fine); return `Birkaç fiş eksik çıktı: ${KE.tl(fine)} usulsüzlük cezası.`; } }
       ] }) });
 
   ev.push({ id: 'yeniTarif', who: 'lonca', w: 0.5, when: (G) => staffOf(G).some(KE.isCook),
-    build: (G) => { const s = staffOf(G).filter(KE.isCook).sort((a, c) => c.morale - a.morale)[0];
-      return { title: `${s.name}'nın yeni tarif fikri`, text: `${s.name}: "Memleketin usulü bir sos denesek? Bir hafta tadım yaparız, beğenilirse menüde kalır."`, ctx: { sid: s.id }, who: s,
+    build: (G) => { const s = staffOf(G).filter(KE.isCook).sort((a, c) => Number(c.role === 'usta') - Number(a.role === 'usta') || c.morale - a.morale)[0];
+      return { title: `${KE.ek(s.name, 'in')} yeni tarif fikri`, text: `${s.name}: "Memleketin usulü bir sos denesek? Bir hafta tadım yaparız, beğenilirse menüde kalır."`, ctx: { sid: s.id }, who: s,
         choices: [
           { label: 'Dene, malzemesini al', desc: `${KE.tl(P(G, 4000))}, usta morali +15, 7 gün gurme +%40`, run: (G, c) => { pay(G, P(G, 4000)); const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale + 15, 0, 100); G.mods.push({ key: 'type:gurme', mult: 1.4, days: 7, label: 'Yeni sos' }); return 'Sos tuttu! Gurmeler tarifini soruyor, usta sır vermiyor.'; } },
           { label: 'Klasikten şaşmayalım', desc: 'Usta morali −5', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale - 5, 0, 100); return 'Usta "Peki" dedi ama biraz bozuldu.'; } }
@@ -2644,7 +2689,7 @@ KE.WEEKLY_KINDS = [
 
   ev.push({ id: 'rk_usta', who: 'rakip', w: 0, arc: true, when: (G) => !!bestCook(G),
     build: (G) => { const s = bestCook(G);
-      return { title: `Cüneyt Bey ${s.name}'nın peşinde`, text: `Rakip, en iyi ustan ${s.name}'ya yalnızca maaş değil, yeni şubesinde ortaklık teklif etmiş. "Bu sefer ciddi" diyor usta, gözünü kaçırarak.`, ctx: { sid: s.id }, who: s,
+      return { title: `Cüneyt Bey ${KE.ek(s.name, 'in')} peşinde`, text: `Rakip, en iyi ustan ${KE.ek(s.name, 'e')} yalnızca maaş değil, yeni şubesinde ortaklık teklif etmiş. "Bu sefer ciddi" diyor usta, gözünü kaçırarak.`, ctx: { sid: s.id }, who: s,
         choices: [
           { label: 'Kâr payı primi ver', desc: `${KE.tl(P(G, 60000))}, moral +25, maaş +%10`, run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (!x) return 'Usta zaten gitmiş.'; pay(G, P(G, 60000)); raise(G, x, 1.1); x.morale = clamp(x.morale + 25, 0, 100); duel(G, true, 0); return `${x.name} primi cebine koydu: "Ortaklık dediğin böyle olur." Cüneyt Bey eli boş döndü.`; } },
           { label: 'Vicdanına bırak', desc: 'Moral 60 ve üstüyse kalır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (!x) return 'Usta zaten gitmiş.'; if (x.morale >= 60) { x.morale = clamp(x.morale + 10, 0, 100); duel(G, true, 0); return `${x.name}: "Bu ocağı sen yaktın, ben söndürmem." Kaldı.`; } G.staff = G.staff.filter((y) => y.id !== x.id); duel(G, false, 10); return `${x.name} önlüğünü katlayıp bıraktı. Karşı dükkânın camında yüzünü gördük.`; } },
@@ -2653,7 +2698,7 @@ KE.WEEKLY_KINDS = [
 
   ev.push({ id: 'rk_tac', who: 'rakip', w: 0, arc: true,
     build: (G) => { const b = G.branches.find((x) => x.championUntil) || branch(G); const d = KE.district(b);
-      return { title: `${d.name}'de taç savaşı`, text: `"Lüks Kebap" ${d.name}'deki şubesine yeni bir şef ve mermer salon getirdi. Hedefleri belli: bu ay semtin tacını senden almak.`, ctx: { bid: b.id },
+      return { title: `${KE.ek(d.name, 'de')} taç savaşı`, text: `"Lüks Kebap" ${KE.ek(d.name, 'de')}ki şubesine yeni bir şef ve mermer salon getirdi. Hedefleri belli: bu ay semtin tacını senden almak.`, ctx: { bid: b.id },
         choices: [
           { label: 'Semtte lezzet festivali düzenle', desc: `${KE.tl(P(G, 40000))}, 14 gün şube müşterisi +%25, itibar +2`, run: (G, c) => { pay(G, P(G, 40000)); G.mods.push({ key: 'traffic:' + c.bid, mult: 1.25, days: 14, label: 'Lezzet festivali' }); rep(G, 2); G.rival.district = KE.district(G.branches.find((x) => x.id === c.bid)).id; duel(G, true, 6); return 'Festival üç gün sürdü; semtin bütün sofraları bizim dükkândan doldu.'; } },
           { label: 'Müdavimlerine güven', desc: 'Sadık müdavimin çoksa taç kalır', run: (G, c) => { G.rival.district = KE.district(G.branches.find((x) => x.id === c.bid)).id; const loyal = Object.values(G.regulars || {}).filter((r) => r.loyalty >= 6).length; if (loyal >= 2) { duel(G, true, 8); return 'Ayşe Teyze kapıda nöbet tutar gibi: "Bizim dükkân burası." Müdavimler kımıldamadı.'; } duel(G, false, 14); return 'Müdavimlerin azdı; yenilik merakı ağır bastı. Çıta yükseldi.'; } }
@@ -2707,7 +2752,7 @@ KE.WEEKLY_KINDS = [
       { label: 'Herkese ikram!', desc: `${KE.tl(P(G, 5000))}, itibar +4, 60 gün beyaz yaka +%15`, run: (G) => { pay(G, P(G, 5000)); rep(G, 4); G.mods.push({ key: 'type:beyaz', mult: 1.15, days: 60, label: 'Selin\'in tavsiyesi' }); G.flags.lawyer = G.day; done(G, 'selin', 3); return 'Kutlama gece yarısına kadar sürdü. Selin artık dükkânın avukatı: cezalar ve sözleşmeler dert değil.'; } }
     ] }));
 
-  story('kemal', 1, 3, (G) => ({ title: 'Emekli Kemal Bey\'in fotoğrafları (1/3)', text: 'Kemal Bey sararmış bir zarf çıkardı: "Bu dükkânın 1974\'teki hâli. Baban o zaman çıraktı." Fotoğrafta genç bir adam döner kesiyor.', ctx: {},
+  story('kemal', 1, 3, (G) => ({ title: 'Emekli Kemal Bey\'in fotoğrafları (1/3)', text: `Kemal Bey sararmış bir zarf çıkardı: "Bu dükkânın 1974'teki hâli. Baban o zaman çıraktı." Fotoğrafta genç bir adam ${G.mode === 'doner' ? 'döner kesiyor' : 'şiş çeviriyor'}.`, ctx: {},
     choices: [
       { label: 'Duvara asalım', desc: 'Ekip morali +5, Kemal Bey\'in gönlü +2', run: (G) => { moraleAll(G, 5); loyal(G, 'kemal', 2); done(G, 'kemal', 1); return 'Fotoğraf kasanın üstüne asıldı. Müşteriler önünde durup soruyor.'; } },
       { label: 'Kemal Bey\'e geri ver', desc: 'Gönül +1', run: (G) => { loyal(G, 'kemal', 1); done(G, 'kemal', 1); return '"Sende dursun aslında..." dedi ama zarfı cebine koydu.'; } }
@@ -2857,6 +2902,7 @@ KE.WEEKLY_KINDS = [
       if (KE.advanceEra) { try { KE.advanceEra(g); } catch (e) { /* eksik veri */ } }
     }
     if (g.flags && g.flags.empire && (g.era || 1) < 4) g.era = 4;
+    (g.branches || []).forEach((b) => { if (b.stockLevel < 1.15) b.stockLevel = 1.15; });
     return g;
   };
   S.valid = (g) => !!(g && typeof g === 'object' && Array.isArray(g.branches) && g.branches.length && Array.isArray(g.staff) && typeof g.day === 'number' && g.mode && KE.MODES[g.mode]);
@@ -2988,7 +3034,7 @@ KE.WEEKLY_KINDS = [
     if (Cu.flags && Cu.flags.empire && !(P.flags && P.flags.empire)) maxRep += 5; // imparatorluk satın alımı
     const newLoans = (Cu.loans || []).slice((P.loans || []).length).reduce((a, l) => a + (l.amount || 0), 0);
     if ((Cu.loans || []).length < (P.loans || []).length) return bad('kredi silinmiş');
-    const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + ((KE.GOALS.find((g) => g.id === k) || {}).reward || 0), 0);
+    const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + KE.goalReward(Cu, KE.GOALS.find((g) => g.id === k) || {}), 0);
     if (Cu.cash > maxCash + newLoans + goalCash + 1) return bad('kasa açıklanamayan biçimde arttı');
     if (Cu.reputation > maxRep + 0.6) return bad('itibar artmış');
     if (Cu.contract && JSON.stringify(Cu.contract) !== JSON.stringify(P.contract)) {

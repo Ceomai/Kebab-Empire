@@ -21,14 +21,14 @@
     UI.go('map');
     const usta = KE.G.staff[0];
     UI.modal(`<div class="evcard"><div class="ev-fig">${KE.figure(KE.staffLook(usta), { mood: 'happy', label: usta.name })}</div><div class="stack"><span class="kicker">Hikâye</span><h2>Babadan kalan dükkân</h2>
-      <div class="journal">Babamın ${KE.district(B()).name}'deki küçük dükkânının anahtarını avucumda sıktım. Paslı kepengi kaldırdığımda içeri sabah güneşi doldu. ${esc(usta.name)} önlüğünü bağlarken gülümsedi: "Baban bu ocağın başında otuz yıl ekmek çıkardı. Biz de çıkaracağız." Kasada ${KE.tl(KE.G.cash)} var. Önce bir menü, sonra bir mahalle, sonra bütün şehir.</div>
-      <ul class="chk"><li>${IC('map')}<span>Haritadaki binalara tıklayarak hal, muhasebe, usta pazarı ve çiftliğe gidersin.</span></li><li>${IC('users')}<span>Usta yalnızca pişirir. Kasa sipariş alır, komi/garson yemeği masaya götürür. Görevleri ve molaları sen ayarlarsın.</span></li><li>${IC('chart')}<span>Gün sonunda bahşişi dağıtır, ay sonunda bordroyu ve vergileri ödersin.</span></li></ul>
+      <div class="journal">Babamın ${KE.ek(KE.district(B()).name, 'de')}ki küçük dükkânının anahtarını avucumda sıktım. Paslı kepengi kaldırdığımda içeri sabah güneşi doldu. ${esc(usta.name)} önlüğünü bağlarken gülümsedi: "Baban bu ocağın başında otuz yıl ekmek çıkardı. Biz de çıkaracağız." Kasada ${KE.tl(KE.G.cash)} var. Önce bir menü, sonra bir mahalle, sonra bütün şehir.</div>
+      <ul class="chk"><li>${IC('map')}<span>Haritadaki binalara tıklayarak hal, muhasebe ve usta pazarına gidersin. Merkez Ofis ve çiftlik ileriki dönemlerde açılır.</span></li><li>${IC('users')}<span>Usta yalnızca pişirir. Kasa sipariş alır, komi/garson yemeği masaya götürür. Görevleri ve molaları sen ayarlarsın.</span></li><li>${IC('chart')}<span>Gün sonunda bahşişi dağıtır, ay sonunda bordroyu ve vergileri ödersin.</span></li></ul>
       <div class="acts"><button class="btn big green" data-a="closeModal">Haydi bismillah</button></div></div></div>`, { cls: 'event' });
   };
   A.closeModal = () => UI.closeModal();
   A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">Oyun her gün sonunda bu tarayıcıya kaydedilir.</p></div>
-    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="view">${IC('eye')}Görünüm ve yazı boyutu</button><button class="btn ghost" data-a="legal">${IC('lock')}Gizlilik ve koşullar</button><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
+    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="guide">${IC('book')}Oyun kılavuzu</button><button class="btn ghost" data-a="view">${IC('eye')}Görünüm ve yazı boyutu</button><button class="btn ghost" data-a="legal">${IC('lock')}Gizlilik ve koşullar</button><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
   A.exportSave = () => { if (!KE.G) return; if (KE.G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; } KE.SAVE.exportFile(KE.G); UI.toast('Yedek dosyası indirildi.', 'good'); };
   A.importSave = () => {
@@ -109,6 +109,7 @@
     b.prices[d.p] = Math.max(5, b.prices[d.p] + step * +d.d);
     UI.render();
   };
+  A.pricesToMarket = () => { const b = B(); const M = MODE(); M.products.concat([M.drink]).forEach((p) => { if (b.prices[p.id] != null) b.prices[p.id] = KE.marketPrice(KE.G, p); }); UI.toast('Fiyatlar piyasa fiyatına çekildi.', 'good'); UI.render(); };
   A.tier = (d) => { B().tier = +d.i; UI.render(); UI.toast('Tedarik kalitesi: ' + KE.TIERS[+d.i].name, 'good'); };
   A.stockLevel = (d) => { B().stockLevel = +d.v; UI.render(); };
   A.buy = (d) => { const c = KE.buyExtra(KE.G, B(), d.k, +d.q); UI.toast(`${KE.tl(c)} malzeme alındı.`); UI.render(); };
@@ -137,7 +138,7 @@
     const s = KE.G.staff.find((x) => x.id === d.id);
     const ustas = KE.branchStaff(KE.G, KE.G.branches.find((x) => x.id === s.branchId)).filter((x) => x.role === 'usta');
     if (!ustas.length) { UI.toast('Bu şubede çırağa öğretecek usta yok.', 'bad'); return; }
-    UI.picker(`${s.name} kimin yanında yetişsin?`, 'Çırak, mentorünün uzmanlıklarını her gün biraz öğrenir.', [{ id: null, label: 'Mentor yok', sub: 'Kendi başına öğrensin', sel: !s.mentorId }].concat(ustas.map((u) => ({ id: u.id, label: u.name, sub: `Öğretme ${Math.round(u.teach * 100)} · ${Object.entries(u.spec).map(([p, v]) => pn(p) + ' ★' + v).join(', ')}`, art: `<span class="avatar">${KE.portrait(KE.staffLook(u), { mood: 'happy' })}</span>`, sel: s.mentorId === u.id }))), (o) => { s.mentorId = o.id; if (o.id) UI.toast(`${s.name} artık ${o.label}'nın yanında.`, 'good'); UI.render(); });
+    UI.picker(`${s.name} kimin yanında yetişsin?`, 'Çırak, mentorünün uzmanlıklarını her gün biraz öğrenir.', [{ id: null, label: 'Mentor yok', sub: 'Kendi başına öğrensin', sel: !s.mentorId }].concat(ustas.map((u) => ({ id: u.id, label: u.name, sub: `Öğretme ${Math.round(u.teach * 100)} · ${Object.entries(u.spec).map(([p, v]) => pn(p) + ' ★' + v).join(', ')}`, art: `<span class="avatar">${KE.portrait(KE.staffLook(u), { mood: 'happy' })}</span>`, sel: s.mentorId === u.id }))), (o) => { s.mentorId = o.id; if (o.id) UI.toast(`${s.name} artık ${KE.ek(o.label, 'in')} yanında.`, 'good'); UI.render(); });
   };
   A.pickTransfer = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
@@ -255,7 +256,7 @@
     const sig = G.signature && !G.signature.family ? G.signature : null;
     UI.closeModal();
     UI.modal(`<div class="mhead"><span class="kicker">${IC('users')} ${(G.gen || 1) + 1}. kuşak</span><h2>Yeni nesil</h2><p>İmparatorluk ${esc(G.shopName || G.branches[0].name)} adıyla şeref kürsüsüne yazılır. Torunun yeni bir mahallede, küçük bir dükkânla sıfırdan başlar.</p></div>
-      <ul class="chk"><li>${IC('chef')}<span><b>Mirasın:</b> ${heir ? `${esc(heir.name)}'nın bütün uzmanlıkları ilk ustana geçer` : 'ailenin ocak bilgisi'}${sig ? `, aile tarifi ${esc(KE.MODES[G.mode].products.find((p) => p.id === sig.pid).name)} ilk günden menüde öne çıkar` : ''}.</span></li>
+      <ul class="chk"><li>${IC('chef')}<span><b>Mirasın:</b> ${heir ? `${esc(KE.ek(heir.name, 'in'))} bütün uzmanlıkları ilk ustana geçer` : 'ailenin ocak bilgisi'}${sig ? `, aile tarifi ${esc(KE.MODES[G.mode].products.find((p) => p.id === sig.pid).name)} ilk günden menüde öne çıkar` : ''}.</span></li>
       <li>${IC('fire')}<span><b>Zorluk:</b> "Lüks Kebap" Cüneyt Bey'in oğluna geçti; rakip bu sefer daha güçlü başlar.</span></li>
       <li>${IC('lock')}<span>Kayıtlı oyunun silinmez; ana menüden yedeğini alabilirsin. Yeni nesli başlattığında kayıt yuvası yeni oyuna geçer.</span></li></ul>
       <div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn gold" data-a="newGenYes">${IC('play')}Yeni nesli başlat</button></div>`);
@@ -295,7 +296,7 @@
   };
   A.flagship = () => {
     const G = KE.G;
-    UI.picker('Hangi şube amiral dükkân olsun?', `Amiral dükkân ${KE.tl(KE.flagshipCost(G))}: o şubede müşteri +%20, semt şampiyonluğu çıtası 3 puan düşer.`, G.branches.map((b) => ({ id: b.id, label: b.name, sub: KE.district(b).name, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>` })), (o) => { const r = KE.buildFlagship(G, o.id); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('flagship', { day: G.day }); UI.toast(`${o.label} artık zincirin amiral dükkânı!`, 'gold'); if (UI.confetti) UI.confetti(); UI.render(); });
+    UI.picker('Hangi şube amiral dükkân olsun?', `Amiral dükkân ${KE.tl(KE.flagshipCost(G))}: o şubede müşteri +%40, zincirin geri kalanında +%8, semt şampiyonluğu çıtası 3 puan düşer.`, G.branches.map((b) => ({ id: b.id, label: b.name, sub: KE.district(b).name, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>` })), (o) => { const r = KE.buildFlagship(G, o.id); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('flagship', { day: G.day }); UI.toast(`${o.label} artık zincirin amiral dükkânı!`, 'gold'); if (UI.confetti) UI.confetti(); UI.render(); });
   };
   A.contract = (d) => {
     const G = KE.G;

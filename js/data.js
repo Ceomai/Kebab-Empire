@@ -163,8 +163,8 @@ KE.MODES = {
         { name: 'Döner kesme robotu', speed: 1.3, cost: 95000 } ] },
       cold:    { name: 'Soğutma', levels: [
         { name: 'Tezgâh altı dolap', waste: 0.06, cost: 0 },
-        { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 45000 },
-        { name: 'Soğuk oda', waste: 0.015, cost: 120000 } ] },
+        { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 25000 },
+        { name: 'Soğuk oda', waste: 0.015, cost: 65000 } ] },
       service: { name: 'Servis', levels: [
         { name: 'Klasik tezgâh ve 4 masa', patience: 1.0, queue: 8, tables: 4, cost: 0 },
         { name: 'Self servis tezgâh ve 6 masa', patience: 1.15, queue: 10, tables: 6, cost: 35000 },
@@ -223,8 +223,8 @@ KE.MODES = {
         { name: 'Zırh tezgâhı ve hazırlık mutfağı', speed: 1.25, quality: 0.6, cost: 105000 } ] },
       cold:    { name: 'Soğutma', levels: [
         { name: 'Tezgâh altı dolap', waste: 0.06, cost: 0 },
-        { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 45000 },
-        { name: 'Soğuk oda', waste: 0.015, cost: 120000 } ] },
+        { name: 'Dik tip endüstriyel dolap', waste: 0.035, cost: 25000 },
+        { name: 'Soğuk oda', waste: 0.015, cost: 65000 } ] },
       service: { name: 'Salon', levels: [
         { name: '5 masalık salon', patience: 1.0, queue: 6, tables: 5, cost: 0 },
         { name: '7 masa ve yer sofrası köşesi', patience: 1.15, queue: 8, tables: 7, cost: 45000 },
@@ -266,11 +266,11 @@ KE.specialDay = function (day) {
 KE.FARM_COST = 650000;
 KE.FARM_MONTHLY = 38000;   // bakıcı ücreti, enerji, veteriner
 KE.FARM = {
-  dana:  { name: 'Dana', unit: 'baş', young: 52000, feed: 1050, days: 24, batch: 1, caps: [4, 8, 12], upCost: [0, 160000, 300000],
+  dana:  { name: 'Dana', unit: 'baş', young: 44000, feed: 1050, days: 24, batch: 1, caps: [8, 16, 24], upCost: [0, 160000, 300000],
            yield: { doner: { et: 135 }, kebap: { kiyma: 135 } }, desc: 'Döner ve kıyma için besi danası. Uzun büyür, çok et verir.' },
-  kuzu:  { name: 'Kuzu', unit: 'baş', young: 8800, feed: 230, days: 14, batch: 1, caps: [12, 24, 36], upCost: [0, 90000, 170000],
+  kuzu:  { name: 'Kuzu', unit: 'baş', young: 7400, feed: 230, days: 14, batch: 1, caps: [24, 48, 72], upCost: [0, 90000, 170000],
            yield: { doner: { kuzu: 15 }, kebap: { kuzu: 11, kiyma: 4, ciger: 0.9 } }, desc: 'Şiş, cağ ve ciğer için kuzu.' },
-  tavuk: { name: 'Tavuk', unit: 'adet', young: 60, feed: 19, days: 8, batch: 50, caps: [150, 300, 450], upCost: [0, 60000, 120000],
+  tavuk: { name: 'Tavuk', unit: 'adet', young: 60, feed: 19, days: 8, batch: 50, caps: [300, 600, 900], upCost: [0, 60000, 120000],
            yield: { doner: { tavuk: 1.05 } }, modes: ['doner'], desc: 'Tavuk döner için kümes. Hızlı döner, ucuz beslenir.' }
 };
 
@@ -358,8 +358,8 @@ KE.ERAS = [
 KE.PLACE_ERA = { ajans: 2, subeler: 2, ciftlik: 3 };
 
 /* ---------- Büyük yatırımlar (3. dönem) ---------- */
-KE.SIGNATURE = { cost: [300000, 800000, 2000000], days: 10, traffic: 0.05, names: ['Usta işi', 'Şehrin tarifi', 'Efsane tarif'] };
-KE.FLAGSHIP = { cost: 4000000, traffic: 1.2 };
+KE.SIGNATURE = { cost: [300000, 800000, 2000000], days: 10, traffic: 0.08, names: ['Usta işi', 'Şehrin tarifi', 'Efsane tarif'] };
+KE.FLAGSHIP = { cost: 2500000, traffic: 1.4, chain: 1.08 };
 KE.CONTRACT_KINDS = [
   { id: 'stadyum', name: 'Stadyum maç günü', who: 'Kulüp yönetimi', qty: [300, 600], morale: 8 },
   { id: 'fabrika', name: 'Fabrika yemekhanesi', who: 'Merterli Tekstil', qty: [200, 400], morale: 5 },
@@ -376,3 +376,31 @@ KE.WEEKLY_KINDS = [
   { kind: 'tips', text: 'Bu hafta {t} bahşiş topla' },
   { kind: 'sat', text: 'Haftanın memnuniyet ortalaması %{t} ve üstü olsun' }
 ];
+
+/* ---------- Türkçe ek uyumu: özel isimlere kesme işaretiyle ek ----------
+   KE.ek('Burak', 'in') → "Burak'ın" · KE.ek('İsmail Usta', 'e') → "İsmail Usta'ya" · KE.ek('Kulealtı', 'de') → "Kulealtı'nda" */
+KE.ek = function (word, kind) {
+  const w = String(word || ''), lower = w.toLocaleLowerCase('tr');
+  const vs = lower.match(/[aeıioöuü]/g); const v = vs ? vs[vs.length - 1] : 'e';
+  const last = lower.slice(-1), vowelEnd = /[aeıioöuü]/.test(last), hard = /[çfhkpsşt]/.test(last);
+  // istisnalar: ince okunan alıntı isimler (Kemal'in), iyelikli birleşik adlar (Kulealtı'nda, Usta Pazarı'na)
+  const thin = /(kemal|cemal|celal|bilal|hilal|ikbal|kemal bey)$/.test(lower);
+  const poss = /(.altı|pazarı|bürosu|kahvesi|çiftliği|ajansı|ofisi|sanayi)$/.test(lower) && !/sanayi$/.test(lower);
+  const back = !thin && 'aıou'.includes(v), round = 'ouöü'.includes(v);
+  const i4 = back ? (round ? 'u' : 'ı') : (round ? 'ü' : 'i'), a2 = back ? 'a' : 'e';
+  const d = hard ? 't' : 'd';
+  const s = { in: (vowelEnd ? 'n' : '') + i4 + 'n', e: (poss ? 'n' : vowelEnd ? 'y' : '') + a2, de: (poss ? 'n' : '') + (poss ? 'd' : d) + a2, den: (poss ? 'nd' : d) + a2 + 'n', le: (vowelEnd ? 'y' : '') + 'l' + a2, i: (poss ? 'n' : vowelEnd ? 'y' : '') + i4 }[kind];
+  return w + "'" + s;
+};
+/* Sayıya ek: söylenişin son kelimesine göre (15:38 → "otuz sekiz" → 15:38'de, 14:00 → "on dört" → 14:00'te) */
+KE.ekSayi = function (str, kind) {
+  const W1 = ['', 'bir', 'iki', 'üç', 'dört', 'beş', 'altı', 'yedi', 'sekiz', 'dokuz'], W10 = ['', 'on', 'yirmi', 'otuz', 'kırk', 'elli', 'altmış', 'yetmiş', 'seksen', 'doksan'];
+  const parts = String(str).split(/[:.]/).map(Number);
+  let n = parts.length > 1 && parts[1] !== 0 ? parts[1] : parts[0];
+  n = Math.abs(Math.round(n)) % 100;
+  const word = n === 0 ? 'sıfır' : n % 10 ? W1[n % 10] : W10[n / 10];
+  const suf = KE.ek(word, kind).slice(word.length + 1);
+  return str + "'" + suf;
+};
+/* "de/da" bağlacı: önceki kelimeye uyar (Tavuk Dürüm de, Tavuk Porsiyon da) */
+KE.dA = function (word) { const vs = String(word).toLocaleLowerCase('tr').match(/[aeıioöuü]/g); const v = vs ? vs[vs.length - 1] : 'e'; return word + ('aıou'.includes(v) ? ' da' : ' de'); };

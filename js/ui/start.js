@@ -42,7 +42,7 @@
       <div class="t-dish d1">${KE.ART.dish('adana')}</div><div class="t-dish d2">${KE.ART.dish('lahmacun')}</div><div class="t-dish d3">${KE.ART.dish('et_durum')}</div><div class="t-dish d4">${KE.ART.dish('kunefe')}</div>
       <div class="t-front">
         <div class="t-logo"><span class="t-mark">${KE.ART.logo()}</span><h1><span>Kebab</span><em>Empire</em></h1><span class="t-ribbon">Döner ve kebap işletme oyunu</span></div>
-        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost round langbtn" data-a="lang" aria-label="Dil / Language" title="Dil / Language">${(KE.I18N ? KE.I18N.lang : 'tr').toUpperCase()}</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
+        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost" data-a="guide">${IC('book')}Kılavuz</button><button class="btn big ghost round langbtn" data-a="lang" aria-label="Dil / Language" title="Dil / Language">${(KE.I18N ? KE.I18N.lang : 'tr').toUpperCase()}</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
         ${(() => { const h = UI.hall ? UI.hall() : []; return h.length ? `<div class="t-hall"><span class="kicker">${IC('crown')}Şeref kürsüsü</span>${h.slice(0, 3).map((x) => `<span><b>${esc(x.shop)}</b> · ${x.gen}. kuşak · ${x.days} günde imparator</span>`).join('')}</div>` : ''; })()}
       </div>
     </main>`;
@@ -120,11 +120,151 @@
       if (ng.legacy && ng.legacy.spec) ng.masters.forEach((m) => { m.spec = Object.assign({}, ng.legacy.spec); m.wage = KE.wageFor(m.spec, 'usta'); });
     }
     return `<main class="screen">${steps(3)}<div class="row between"><h1 class="stitle">Ocağın başına kim geçecek?</h1><button class="btn sm ghost" data-a="ngStep" data-to="newDistrict">${IC('arrow')}Geri</button></div>
-      ${ng.legacy && ng.legacy.spec ? `<p class="note heirnote">${IC('star')}<span>Hangi ustayı seçersen seç, ${esc(ng.legacy.heirName || 'aile ustası')}'nın uzmanlıkları ona geçer.</span></p>` : ''}
+      ${ng.legacy && ng.legacy.spec ? `<p class="note heirnote">${IC('star')}<span>Hangi ustayı seçersen seç, ${esc(KE.ek(ng.legacy.heirName || 'aile ustası', 'in'))} uzmanlıkları ona geçer.</span></p>` : ''}
       <p class="lead light">Usta yalnızca pişirir; uzman olduğu ürünü seven müşteriyi dükkâna çeker. Yanına bir çırak, bir kasiyer ve bir ${ng.mode === 'kebap' ? 'garson' : 'komi'} veriliyor.</p>
       <div class="grid g3">${ng.masters.map((s, i) => masterCard(s, { sel: ng.master === i, actions: `<button class="btn ${ng.master === i ? 'green' : ''}" data-a="pickMaster" data-i="${i}">${ng.master === i ? IC('check') + 'Seçildi' : 'Bu usta'}</button>` })).join('')}</div>
       <div class="row end"><button class="btn big green" data-a="startGame" ${ng.master == null ? 'disabled' : ''}>Kepengi kaldır ${IC('play')}</button></div></main>`;
   };
+
+
+  /* =================== OYUN KILAVUZU ===================
+     Ana menüden ve oyun içi menüden açılır. Her bölüm: simge, başlık, kısa giriş, maddeler. */
+  const GUIDE = [
+    { id: 'baslangic', ic: 'play', t: 'İlk adımlar', lead: 'Babadan kalan küçük bir dükkânla başlarsın. Amaç önce mahallede tutunmak, sonra şubeleşmek, en sonunda rakip zincir "Lüks Kebap"ı satın alıp şehrin tek kebap imparatoru olmak.', items: [
+      'Önce modunu seç: <b>Döner</b> kalabalık ve hızlı servis, düşük kâr payı demek; <b>Kebap</b> masaya oturan müşteri, uzun pişirme ve yüksek hesap demek.',
+      'Semtin müşteri karışımını, kirayı ve rekabeti belirler. Kampüstepe öğrenci, Kulealtı plaza çalışanı, Sultanpazarı turist, Bostansahil aile doludur.',
+      'İlk ustanı seç. Usta yalnızca pişirir; uzman olduğu ürünü seven müşteriyi dükkâna çeker. Yanına bir çırak, bir kasiyer ve bir komi/garson verilir.',
+      'İlk gün kısa bir rehber çıkar. İstersen atlayabilirsin; bu kılavuz her zaman ana menüde ve oyun içi menüde durur.'
+    ] },
+    { id: 'gun', ic: 'clock', t: 'Bir günün akışı', lead: 'Her gün üç evreden oluşur: sabah hazırlığı, servis ve kapanış.', items: [
+      '<b>Sabah:</b> Haritada yerleri gez (hal, usta pazarı, eleman bürosu…), fiyatları ve görevleri ayarla. Olay kartı gelirse kararını ver.',
+      '<b>Servis (10:00–23:00):</b> Dükkânda müşteriler gelir, sipariş verir, yer ve gider. Hızı 1×, 2× ya da 4× yapabilir, istediğin an "Hızlı ileri" ile günü bitirebilirsin.',
+      '<b>Kapanış:</b> Günün raporunu görürsün, bahşişin nasıl dağıtılacağını seçersin ve günlüğünü okursun.',
+      '<b>Hızlı gün:</b> Servisi izlemek istemediğin günlerde sabah ekranındaki "Hızlı gün" düğmesi servisi atlayıp doğrudan sonuca geçer.',
+      'Oyun her gün sonunda tarayıcıya kaydedilir. Menüden dosyaya yedek alabilir, başka cihazda yükleyebilirsin.'
+    ] },
+    { id: 'servis', ic: 'store', t: 'Servis ve tezgâh', lead: 'Müşteri kapıdan girer, kasada sipariş verir, usta pişirir, komi/garson yemeği masaya götürür, müşteri yer ve bahşiş bırakır.', items: [
+      'Kuyruk uzarsa müşteriler beklemekten sıkılıp gider; yemek gecikirse masada kalkarlar; yer yoksa kapıdan döner.',
+      'Sahnedeki yoğunluk göstergesi kırmızıya dönen yeri gösterir: kuyruk uzarsa kasaya, tabak beklerse servise bir kişi daha ver.',
+      '<b>Tezgâh:</b> İstersen tezgâha geçip siparişleri kendin hazırlarsın. Adımları doğru sırayla seç; hızlı ve hatasız olursan kalite artar. Her gün tezgâhta 6 sipariş hazırlamak bonus hedeftir (iki kat ödül).',
+      'Bir müşterinin en sevdiği ürünü o ürünün uzmanı pişirirse "Ellerine sağlık!" der; memnuniyet ve bahşiş artar.'
+    ] },
+    { id: 'ekip', ic: 'users', t: 'Ekip, roller ve moral', lead: 'Her rolün tek bir işi vardır; doğru kişiyi doğru göreve vermek servisin hızını belirler.', items: [
+      '<b>Usta / çırak:</b> Pişirir. Yıldızları (★1–5) ürün bazındadır ve pişirdikçe artar. Çırağı bir ustanın yanına mentor olarak verirsen ondan öğrenir; 3 yıldıza ulaşınca usta yapabilirsin.',
+      '<b>Kasiyer:</b> Sipariş ve ödeme alır. <b>Komi/garson:</b> Yemeği masaya götürür, masaları toplar.',
+      '<b>Temizlik görevlisi:</b> Salonu temiz tutar. Ölçümlerimizde memnuniyeti yaklaşık 8 puan artıran en verimli işe alımdır.',
+      '<b>Kurye:</b> Paket siparişleri getirir. Mutfağa ek iş yükler; ancak mutfakta boş kapasite varsa kâr getirir.',
+      '<b>Şube müdürü:</b> İkinci şubeyle birlikte görünür. Ekibi yoğunluğa göre kendisi yönetir ve sabah stok ile fiyat ayarlarını yapar.',
+      '<b>Moral:</b> Bahşiş, kostüm, dinlenme odası ve molalar morali artırır; aşırı yorgunluk ve geciken maaş düşürür. Morali 18\'in altına düşen çalışan istifa edebilir.',
+      '<b>Mola:</b> Enerjisi biten çalışanı sakin saatte molaya gönder. Otomatik ekip yönetimi açıksa bunu kendisi yapar ve hiçbir görevi tamamen boş bırakmaz.'
+    ] },
+    { id: 'kadro', ic: 'lock', t: 'Kadro sınırı ve dükkânı büyütmek', lead: 'Bir şubede çalışabilecek kişi sayısı dükkânın büyüklüğüne bağlıdır.', items: [
+      '<b>Mutfak</b> (usta + çırak): ocak yeri + 1. <b>Salon</b> (kasiyer + garson): masa sayısının yarısı. <b>Paket ve temizlik:</b> salon seviyesi + 1. <b>Müdür:</b> 1.',
+      'Sınırı Mobilya ve Dekor\'daki ocak ve salon yükseltmeleri açar. Ekipman kartları, yükseltmenin kaç kişilik yer açacağını yazar.',
+      'Ocak yükseltmesi ancak o ocağı kullanacak pişirmecin varsa müşteri getirir; boş ocak yeri işe yaramaz.',
+      'Hazırlık ekipmanı pişirmeyi hızlandırır, soğutma fireyi azaltır; ikisi de mutfak darboğaz olduğunda fark yaratır.'
+    ] },
+    { id: 'fiyat', ic: 'coin', t: 'Menü ve fiyatlar', lead: 'Fiyat, kâr ile müşteri arasında bir denge kurar.', items: [
+      'Her ürünün bir piyasa fiyatı vardır ve enflasyonla birlikte her ay artar. Fiyatlarını güncellemezsen kâr payın sessizce erir; dükkân ekranı bunu uyarır ve tek tuşla piyasaya çekebilirsin.',
+      'Piyasanın üstündeki fiyat, müşteriyi tipine göre kaçırır: öğrenci ve inşaat ekibi en hassas, gurme ve turist en az hassastır.',
+      'İtibar yükseldikçe müşteriler daha yüksek fiyata katlanır (itibar 90\'da yaklaşık %10). İmza tarif de bu toleransı artırır.',
+      'Piyasanın altındaki fiyat kapıya biraz daha fazla müşteri getirir ve memnuniyeti artırır; ama dükkânın zaten doluysa gelenler kapıdan döner.',
+      'Bazı ürünler itibar arttıkça açılır; bazıları ise yalnızca o ürünü bilen bir usta varsa menüye girebilir.'
+    ] },
+    { id: 'tedarik', ic: 'cart', t: 'Hal, stok ve tedarik', lead: 'Kasap Rıza her sabah stoğu son günlerin kullanımına göre tamamlar.', items: [
+      '<b>Sabah siparişi:</b> "Normal" her gün için yeterlidir. "Bol" yalnızca maç, bayram ve kampanya günlerinde işe yarar; diğer günler fazlası fire olur.',
+      'Gün içinde bir ürünün malzemesi biterse o ürün satılamaz; günlükte hangi saatte bittiği yazar.',
+      '<b>Tedarik kalitesi:</b> Ucuz malzeme kâr payını artırır ama memnuniyeti ve itibarı düşürür. Premium malzeme pahalıdır ama memnuniyeti belirgin artırır.',
+      'Hal ekranından gün içinde ek alım da yapabilirsin.'
+    ] },
+    { id: 'kapasite', ic: 'queue', t: 'Kapasite: en önemli darboğaz', lead: 'Gelen her müşteriye hizmet edemezsin. Hizmet alamadan gidenlerin oranı, büyümenin en net göstergesidir.', items: [
+      'Dükkânın sabah ekranında "Kapasite: dün %x kaçtı" yazar. Bu oran %12\'yi geçerse uyarı çıkar.',
+      'Kapasite doluyken reklam, dekor ya da indirim gibi müşteri getiren her şey büyük ölçüde boşa gider: gelenler kapıdan döner.',
+      'Kapasiteyi artırmanın yolları: kasaya ve servise kişi eklemek, boş ocak yerine pişirmeci almak, salonu büyütmek.',
+      'Kapanış raporundaki öneriler, o gün en çok müşteriyi neden kaybettiğini ve ne yapacağını söyler.'
+    ] },
+    { id: 'bahsis', ic: 'gift', t: 'Bahşiş kuralları', lead: 'Kapanışta bahşiş kavanozunu nasıl dağıtacağını seçersin; bu seçim ekibin moralini belirler.', items: [
+      '<b>Eşit paylaşım:</b> Herkese eşit; moral dengeli artar.',
+      '<b>Ustaya ağırlık:</b> Ustalar iki pay alır, keyiflenir; çıraklar ustalarından %30 daha hızlı öğrenir. Diğerleri biraz bozulur.',
+      '<b>Performansa göre:</b> Kim çok iş çıkardıysa o çok alır; çalışkanlar mutlu olur.',
+      '<b>Kasaya al:</b> Bahşiş işletmeye kalır. Kısa vadede nakit sağlar ama ekip her gün biraz küser; uzun süre yapılırsa moral ve hız düşer.'
+    ] },
+    { id: 'temizlik', ic: 'broom', t: 'Temizlik ve denetim', lead: 'Temizlik her müşteriyle düşer; temizlik görevlisi ve masa toplamak yükseltir.', items: [
+      'Belediye denetiminde temizlik 55\'in altındaysa ceza yersin (Muhtar Kemal Bey hikâyesini tamamlarsan eşik 45\'e iner).',
+      'Temizlik memnuniyeti doğrudan etkiler; 35\'in altında ekip de yavaşlar.',
+      'Belediye ekranından hijyen eğitimi ve derin temizlik satın alabilirsin.'
+    ] },
+    { id: 'donemler', ic: 'target', t: 'Dönemler', lead: 'Oyun dört dönemden oluşur. Her dönemin şartları tamamlanınca yeni yerler ve özellikler açılır.', items: [
+      '<b>1. Mahalle dükkânı:</b> Bir haftayı kârla kapat, itibarı 40\'a çıkar, bir ekipmanı yükselt.',
+      '<b>2. Semtin yıldızı:</b> Reklam Ajansı ve Merkez Ofis (yeni şube açma) açılır. Geçmek için: bir semt tacı, üç şube, ayda 3 milyon ₺ ciro, itibar 65.',
+      '<b>3. Şehrin zinciri:</b> Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: beş şube, imza tarifin 2. seviyesi, dört toplu sipariş.',
+      '<b>4. İmparatorluk yolu:</b> "Lüks Kebap"ı satın alma teklifi açılır.',
+      'Haritadaki şehir panelinde içinde bulunduğun dönem ve eksik şartlar görünür; bir şarta dokununca ilgili yere gidersin.'
+    ] },
+    { id: 'subeler', ic: 'store', t: 'Şubeler ve Merkez Ofis', lead: 'Yeni şubeleri Merkez Ofis\'ten açarsın. Bütün şubeler aynı anda çalışır; şube şeridinden canlı izlersin.', items: [
+      'Yeni şubeye Usta Pazarı\'ndan bir usta, Eleman Bürosu\'ndan kasiyer ve komi/garson al. Ustasız şube kepenk açamaz.',
+      '<b>Müdürlü şube:</b> Müdürün olan şube sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar. İstersen şube kartından kapatabilirsin.',
+      '<b>Merkezi mutfak:</b> Üç şubeden sonra açılır, bütün şubelerde malzeme maliyetini %12 düşürür ve yaklaşık iki ayda kendini öder.',
+      'Üç ve daha fazla şubede gün sonu, uzun günlük yerine şube şube bir özet tablo olur; her hafta sonunda haftalık rapor gelir.'
+    ] },
+    { id: 'sampiyon', ic: 'crown', t: 'Semt şampiyonluğu', lead: 'Her ay sonunda, ayın memnuniyet ortalaması "Lüks Kebap"ın o semtteki çıtasını geçen şube semt şampiyonu olur.', items: [
+      'Şampiyon şube bir ay boyunca %6 daha fazla müşteri çeker; itibar da artar.',
+      'Rakip güçlendikçe çıta yükselir; rakibin yerleştiği semtte çıta ayrıca 4 puan yüksektir.',
+      'Ay içinde en az 250 müşteriye hizmet etmek gerekir.'
+    ] },
+    { id: 'rakip', ic: 'fire', t: 'Rakip: Cüneyt Bey ve "Lüks Kebap"', lead: 'Rakip oyun boyunca altı hamle yapar: semtine şube açar, fiyat savaşı başlatır, ustanı kapmaya çalışır, tacına göz diker, karalama kampanyası yürütür ve sonunda zincirini satın almayı teklif eder.', items: [
+      'Her hamlede bir seçim yaparsın; seçimin "kazandın / kaybettin" olarak sayılır ve rakibin gücünü değiştirir.',
+      'Rakip gücü, semt şampiyonluğu çıtasını yükseltir. Merkez Ofis\'teki rakip panelinde karneni ve sıradaki hamleyi görürsün.',
+      'Gazete, rakip hamlesinden sonraki hafta olayı manşete taşır.'
+    ] },
+    { id: 'mudavim', ic: 'heart', t: 'Müdavimler ve hikâyeleri', lead: 'Altı müdavim dükkânına düzenli uğrar. Sevdikleri yemeği iyi yaparsan gönülleri (kalpleri) dolar.', items: [
+      '5 kalpte arkadaşlarını getirirler, 8 kalpte mahallede seni överler; gazeteye bile çıkarlar.',
+      'Avukat Selin, Emekli Kemal Bey ve Öğrenci Elif\'in üçer bölümlük hikâyeleri vardır: gönül 3, 6 ve 8 kalbe ulaştıkça yeni bölüm gelir.',
+      'Hikâyelerin sonu kalıcı ödüller getirir: Selin cezaları yarıya indirir, Kemal Bey denetimde yanında olur, Elif öğrencileri getirir.',
+      'Mahalle Kahvesi\'nde müdavimlerini, hedeflerini, günlük arşivini ve gazeteyi görürsün.'
+    ] },
+    { id: 'hedefler', ic: 'star', t: 'Günlük, haftalık ve büyük hedefler', lead: 'Her gün, her hafta ve oyun boyunca tutturabileceğin hedefler vardır.', items: [
+      '<b>Günün hedefleri:</b> Her sabah üç küçük hedef ve bir bonus hedef gelir. Tutturdukça ek para ve biraz itibar kazanırsın; ödül şube sayısıyla büyür.',
+      '<b>Haftalık meydan okuma:</b> Şehir panelinde ilerleme çubuğuyla görünür; ödülü büyüktür.',
+      '<b>Hedefler:</b> Mahalle Kahvesi\'ndeki hedefler (ikinci şube, milyonluk ay, üç taç…) ödülleriyle birlikte enflasyon ve zincirin büyüklüğüyle büyür.',
+      '<b>İtibar:</b> 70\'in üstünde her gün biraz aşınır; tepede kalmak için memnuniyeti yüksek tutmak gerekir.'
+    ] },
+    { id: 'yatirim', ic: 'chart', t: 'Büyük yatırımlar (3. dönem)', lead: 'Kasadaki parayı büyümeye çevirmenin yolları Merkez Ofis\'tedir.', items: [
+      '<b>İmza tarif:</b> Bir ürünü zincirin imzası yaparsın (3 seviye, her biri 10 gün sürer). Her seviye bütün şubelerde müşteriyi %8 artırır ve müşterilerin fiyata toleransını %4 yükseltir.',
+      '<b>Amiral dükkân:</b> Bir şubeyi şehrin simgesi yaparsın: o şubede müşteri %40, diğer şubelerde %8 artar; semt tacı çıtası 3 puan düşer.',
+      '<b>Toplu siparişler:</b> Her hafta stadyum, düğün, festival gibi üç teklif gelir; haftada biri kabul edilir. Gün sonunda teslim edilir, iyi para getirir ama ekibin morali düşer.',
+      '<b>Besi çiftliği:</b> Kendi etini yetiştirirsin; çiftlik eti haldekinden yaklaşık %25 ucuzdur. Ağılları büyüttükçe daha çok şubeyi besler.'
+    ] },
+    { id: 'para', ic: 'coin', t: 'Para, banka ve muhasebe', lead: 'Ay sonunda kira, bordro, vergiler ve faturalar ödenir; Muhasebe ekranında her kalemi görürsün.', items: [
+      'Bordro gerçekçi hesaplanır: SGK, gelir vergisi, damga vergisi ve işveren payları ayrı ayrı gösterilir. Maaşlar gecikirse SGK teşviki kaybolur.',
+      '<b>Banka:</b> Nakit sıkışırsa esnaf kredisi alabilirsin (aylık %3,4 faiz). Krediyi erken kapatırsan indirim yapılır.',
+      'Çalışanlar zaman zaman zam ister; bir kişiye en fazla 60 günde bir zam yapılabilir ve her rolün bir maaş tavanı vardır.',
+      'Reklam Ajansı\'nda kampanyalar müşteri getirir; ama dükkânın doluysa önce kapasiteyi büyüt.'
+    ] },
+    { id: 'son', ic: 'crown', t: 'İmparatorluk ve yeni nesil', lead: 'Son hedef: "Lüks Kebap" zincirini satın alıp şehrin tek kebap imparatoru olmak.', items: [
+      'Şartlar: 4. dönem, yedi semtin hepsinde şube, üç semt tacı, itibar 80 ve satın alma bedeli (enflasyonla artar).',
+      'Satın alınca rakip oyundan çıkar, müşterileri sana gelir; oyun "Kebap İmparatoru" unvanıyla sürer.',
+      '<b>Yeni nesil:</b> Final ekranından torununla yeni bir mahallede sıfırdan başlayabilirsin. En iyi ustanın uzmanlıkları ve aile tarifin miras kalır; rakip daha güçlü başlar.',
+      'Biten imparatorluklar ana menüdeki şeref kürsüsüne yazılır.'
+    ] },
+    { id: 'ipucu', ic: 'bolt', t: 'İpuçları', lead: 'Deneyimli patronlardan kısa notlar:', items: [
+      'İlk alımın temizlik görevlisi olsun; ucuzdur ve memnuniyeti hemen yükseltir.',
+      'Kapanış raporunu oku: en çok müşteriyi nerede kaybettiğini ve ne yapacağını söyler.',
+      'Fiyatlarını ayda bir kontrol et ya da şubelere müdür al; enflasyon sessizce kâr payını yer.',
+      'Reklam vermeden önce kapasite oranına bak; %12\'nin üstündeyse önce ekibi ya da salonu büyüt.',
+      'Çırakları iyi bir ustanın yanına mentor olarak ver; ustalar hem ucuzlar hem sadık olur.',
+      'Rakibin hamlelerine karşı müdavimlerini sıcak tut: sadık müdavimler taç savaşında seni korur.'
+    ] }
+  ];
+  SCREENS.guide = () => {
+    const back = KE.G && UI.guideFrom ? UI.guideFrom : 'title';
+    return `<main class="screen guide">
+      <div class="pagehead"><button class="btn sm ghost" data-a="go" data-s="${back}">${IC('arrow')}${back === 'title' ? 'Ana menü' : 'Geri'}</button><div class="ph-t"><span class="kicker">Oyun kılavuzu</span><h1>Kebab Empire nasıl oynanır?</h1><p>Dükkânını yönetmek için bilmen gereken her şey, konu konu.</p></div></div>
+      <nav class="guide-toc" aria-label="Konular">${GUIDE.map((s) => `<a href="#g-${s.id}" class="chip">${s.t}</a>`).join('')}</nav>
+      <div class="guide-list">${GUIDE.map((s) => `<section class="panel guide-sec" id="g-${s.id}"><div class="gs-h"><span class="gs-ic">${IC(s.ic)}</span><h2>${s.t}</h2></div><p class="lead">${s.lead}</p><ul class="gs-items">${s.items.map((x) => `<li>${x}</li>`).join('')}</ul></section>`).join('')}</div>
+      <div class="row center"><button class="btn big green" data-a="go" data-s="${back}">${IC('check')}Anladım</button></div></main>`;
+  };
+  A.guide = () => { UI.guideFrom = KE.G && UI.screen !== 'title' ? UI.screen : null; document.querySelectorAll('.modal-bg').forEach((m) => m.remove()); UI.go('guide'); };
 
   Object.assign(H, { statl, masterCard });
 })();

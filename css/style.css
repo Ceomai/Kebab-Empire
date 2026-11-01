@@ -1281,3 +1281,17 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: 0.001
 .dg.bonus, .daily .dg[data-bonus] { border-style: dashed; }
 .chips.center { justify-content: center; }
 .moodrow[hidden] { display: none; }
+/* ---------- Oyun kılavuzu ---------- */
+.screen.guide { max-width: 920px; }
+.guide-toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 16px; position: sticky; top: 0; z-index: 5; background: var(--kagit); padding: 8px 0; }
+.guide-toc .chip { text-decoration: none; color: var(--murekkep); cursor: pointer; }
+.guide-toc .chip:hover { background: var(--altin); }
+.guide-list { display: flex; flex-direction: column; gap: 14px; }
+.guide-sec { scroll-margin-top: 120px; }
+.gs-h { display: flex; align-items: center; gap: 10px; }
+.gs-h h2 { margin: 0; }
+.gs-ic { width: 40px; height: 40px; border-radius: 12px; background: var(--sumak); color: #fff; display: grid; place-items: center; flex: none; }
+.gs-ic .ic { width: 22px; height: 22px; }
+.gs-items { margin: 6px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 7px; line-height: 1.5; }
+.gs-items b { color: var(--sumak); }
+@media (max-width: 760px) { .guide-toc { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .guide-toc .chip { flex: none; } }
