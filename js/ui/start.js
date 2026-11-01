@@ -138,7 +138,7 @@
     ] },
     { id: 'gun', ic: 'clock', t: 'Bir günün akışı', lead: 'Her gün üç evreden oluşur: sabah hazırlığı, servis ve kapanış.', items: [
       '<b>Sabah:</b> Haritada yerleri gez (hal, usta pazarı, eleman bürosu…), fiyatları ve görevleri ayarla. Olay kartı gelirse kararını ver.',
-      '<b>Servis (10:00–23:00):</b> Dükkânda müşteriler gelir, sipariş verir, yer ve gider. Hızı 1×, 2× ya da 4× yapabilir, istediğin an "Hızlı ileri" ile günü bitirebilirsin.',
+      '<b>Servis (10:00–23:00):</b> Dükkânda müşteriler gelir, sipariş verir, yer ve gider. Hızı 1×, 2× ya da 4× yapabilir, istediğin an "Günü hızlı bitir" ile günü sonlandırabilirsin.',
       '<b>Kapanış:</b> Günün raporunu görürsün, bahşişin nasıl dağıtılacağını seçersin ve günlüğünü okursun.',
       '<b>Hızlı gün:</b> Servisi izlemek istemediğin günlerde sabah ekranındaki "Hızlı gün" düğmesi servisi atlayıp doğrudan sonuca geçer.',
       'Oyun her gün sonunda tarayıcıya kaydedilir. Menüden dosyaya yedek alabilir, başka cihazda yükleyebilirsin.'
