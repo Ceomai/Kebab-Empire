@@ -1,9 +1,13 @@
 /* Kebab Empire — ekonomi: para biçimi, takvim, fiyatlar, bordro, aylık kapanış */
 (function () {
   const E = () => KE.ECON;
-  const fmtTL = new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 });
-  KE.tl = (v) => (v < 0 ? '−' : '') + fmtTL.format(Math.round(Math.abs(v))) + ' ₺';
-  KE.num = (v, d) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: d || 0, minimumFractionDigits: d || 0 }).format(v);
+  /* Sayı ve para biçimi seçili dile göre (para birimi her dilde TL) */
+  const LOC = { tr: 'tr-TR', en: 'en-GB', de: 'de-DE' };
+  KE.locale = () => LOC[(KE.I18N && KE.I18N.lang) || 'tr'] || 'tr-TR';
+  const fmts = {};
+  const fmt = (d) => { const k = KE.locale() + d; return fmts[k] || (fmts[k] = new Intl.NumberFormat(KE.locale(), { maximumFractionDigits: d, minimumFractionDigits: d })); };
+  KE.tl = (v) => (v < 0 ? '−' : '') + fmt(0).format(Math.round(Math.abs(v))) + ' ₺';
+  KE.num = (v, d) => fmt(d || 0).format(v);
   KE.clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   /* ---------- Takvim: 1. gün = 2 Mart 2026 Pazartesi ---------- */
@@ -12,7 +16,7 @@
   const GUNLER = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
   KE.AYLAR = AYLAR;
   KE.dateOf = (day) => new Date(START + (day - 1) * 86400000);
-  KE.dateStr = (day) => { const d = KE.dateOf(day); return `${d.getUTCDate()} ${AYLAR[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+  KE.dateStr = (day) => { const d = KE.dateOf(day); return `${d.getUTCDate()}${KE.locale() === 'de-DE' ? '.' : ''} ${AYLAR[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
   KE.weekday = (day) => GUNLER[KE.dateOf(day).getUTCDay()];
   KE.isWeekend = (day) => { const w = KE.dateOf(day).getUTCDay(); return w === 0 || w === 6; };
   KE.isMonthEnd = (day) => KE.dateOf(day + 1).getUTCMonth() !== KE.dateOf(day).getUTCMonth();

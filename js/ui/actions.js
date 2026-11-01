@@ -28,7 +28,7 @@
   A.closeModal = () => UI.closeModal();
   A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">Oyun her gün sonunda bu tarayıcıya kaydedilir.</p></div>
-    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
+    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="view">${IC('eye')}Görünüm ve yazı boyutu</button><button class="btn ghost" data-a="legal">${IC('lock')}Gizlilik ve koşullar</button><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
   A.exportSave = () => { if (!KE.G) return; if (KE.G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; } KE.SAVE.exportFile(KE.G); UI.toast('Yedek dosyası indirildi.', 'good'); };
   A.importSave = () => {
@@ -218,6 +218,43 @@
     if (fn) fn(el, e);
   });
 
+  /* Görünüm: yazı boyutu ve hareket */
+  const A11Y_KEY = 'kebab-empire-a11y';
+  UI.a11y = (() => { try { return JSON.parse(localStorage.getItem(A11Y_KEY) || '{}'); } catch (e) { return {}; } })();
+  UI.applyA11y = function () {
+    const z = UI.a11y.zoom || 1;
+    document.documentElement.style.setProperty('--zoom', String(z));
+    document.body.classList.toggle('zoomed', z !== 1);
+    document.body.classList.toggle('calm', !!UI.a11y.calm);
+  };
+  A.view = () => {
+    UI.closeModal();
+    UI.picker('Görünüm', 'Yazı boyutu ve hareket ayarı. Seçim bu cihazda saklanır.', [
+      { label: 'Normal yazı', sub: 'Varsayılan', key: 'z1', sel: (UI.a11y.zoom || 1) === 1 },
+      { label: 'Büyük yazı', sub: '%15 daha büyük', key: 'z115', sel: UI.a11y.zoom === 1.15 },
+      { label: 'Çok büyük yazı', sub: '%30 daha büyük', key: 'z13', sel: UI.a11y.zoom === 1.3 },
+      { label: UI.a11y.calm ? 'Hareketleri aç' : 'Hareketleri azalt', sub: 'Bulut, dalga, zıplayan rozetler ve yürüyüş animasyonları', key: 'calm' }
+    ], (o) => {
+      if (o.key === 'calm') UI.a11y.calm = !UI.a11y.calm; else UI.a11y.zoom = { z1: 1, z115: 1.15, z13: 1.3 }[o.key];
+      try { localStorage.setItem(A11Y_KEY, JSON.stringify(UI.a11y)); } catch (e) { /* yok */ }
+      UI.applyA11y(); UI.render();
+    });
+  };
+  /* Gizlilik ve kullanım koşulları (özet; tam metin docs/ klasöründe) */
+  A.legal = () => {
+    UI.closeModal();
+    const mail = KE.CONTACT ? `<a href="mailto:${esc(KE.CONTACT)}">${esc(KE.CONTACT)}</a>` : 'oyunun yayın sayfasındaki iletişim adresi';
+    UI.modal(`<div class="mhead"><h2>Gizlilik ve koşullar</h2></div><div class="stack legal">
+      <h3>Gizlilik</h3>
+      <p>Oyun varsayılan olarak hiçbir veri göndermez; kaydın yalnızca bu cihazda tutulur. Yazı tipleri ve bütün dosyalar oyunla birlikte gelir, üçüncü taraf sunuculara istek yapılmaz.</p>
+      <p>Bulut kaydını açarsan anonim bir hesap oluşur; kaydın, takma adın ve gün sonuçların Avrupa Birliği'ndeki sunucularda tutulur. Kullanım istatistiklerine ayrıca izin verirsen hangi ekranların açıldığı gibi oyun içi olaylar kaydedilir ve 180 günde silinir. Hata raporları kişisel veri içermez.</p>
+      <p>Menü → Hesap ve gizlilik ekranından rızalarını geri alabilir ve bütün bulut verilerini silebilirsin.</p>
+      <h3>Kullanım koşulları</h3>
+      <p>Kebab Empire ücretsiz bir eğlence oyunudur. Oyundaki semtler, kişiler, dükkânlar ve rakamlar kurgudur; vergi ve bordro hesapları gerçeğe yakın tahminlerdir, mali tavsiye değildir.</p>
+      <p>Şehir sıralamasında hile yapmak, başkasını taklit eden ya da hakaret içeren takma ad kullanmak yasaktır; bu durumda sonuçlar ve hesap silinebilir.</p>
+      <p>İletişim: ${mail}</p>
+    </div><div class="acts"><button class="btn green" data-a="closeModal">Tamam</button></div>`);
+  };
   /* Dil seçimi */
   A.lang = () => {
     if (!KE.I18N) return;
@@ -255,5 +292,5 @@
   };
   A.deleteData = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Bütün bulut verilerin silinsin mi?</h2><p>Bulut kaydın, sıralama sonuçların, istatistiklerin ve anonim hesabın kalıcı olarak silinir. Bu cihazdaki oyun kalır.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="deleteDataYes">Evet, sil</button></div>`); };
   A.deleteDataYes = async () => { try { await KE.CLOUD.deleteMyData(); UI.closeModal(); UI.toast('Bulut verilerin silindi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
-  UI.boot = function () { UI.go('title'); if (CL() && KE.CLOUD.needsConsent()) setTimeout(() => UI.privacyModal(true), 900); };
+  UI.boot = function () { UI.applyA11y(); UI.go('title'); if (CL() && KE.CLOUD.needsConsent()) setTimeout(() => UI.privacyModal(true), 900); };
 })();

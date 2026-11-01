@@ -92,6 +92,7 @@
     const f = document.getElementById('cityframe');
     if (!f) return;
     KE.MAP.mount(f, mapOpts());
+    if (UI.a11y && UI.a11y.calm) f.querySelectorAll('svg').forEach((sv) => { if (/** @type {any} */ (sv).pauseAnimations) /** @type {any} */ (sv).pauseAnimations(); });
     if (f.scrollWidth > f.clientWidth + 4 && KE.G) {
       const P = KE.MAP.POS[B().district] || { x: 700, y: 430 };
       const sv = f.querySelector('svg');

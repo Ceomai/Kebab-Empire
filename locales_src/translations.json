@@ -4054,5 +4054,789 @@
  "Yeni oyun kur": {
   "en": "Set up new game",
   "de": "Neues Spiel einrichten"
+ },
+ "Burası şehir haritası, ana menün. Sağ üstte günün hedefi ve sayıları var.": {
+  "en": "This is the city map, your main menu. Top right shows today's goal and numbers.",
+  "de": "Das ist der Stadtplan, dein Hauptmenü. Oben rechts stehen das Tagesziel und die Zahlen."
+ },
+ "Yapılacaklar saate göre dizilir. Bir işe dokununca haritada dükkânından oraya rota çizilir; tıklayınca oraya gidersin.": {
+  "en": "Tasks are sorted by time. Hover a task to see the route from your shop on the map; click to go there.",
+  "de": "Aufgaben sind nach Uhrzeit sortiert. Zeigst du auf eine Aufgabe, erscheint der Weg von deinem Laden; ein Klick bringt dich hin."
+ },
+ "Hal, usta pazarı, banka, çiftlik… Şehirdeki bütün yerler burada. Numaralı olanlarda seni bekleyen iş var.": {
+  "en": "Market, master market, bank, farm… Every place in the city is here. Numbered ones have a task waiting.",
+  "de": "Großmarkt, Meistermarkt, Bank, Hof… Alle Orte der Stadt sind hier. Nummerierte haben eine Aufgabe für dich."
+ },
+ "Şimdi dükkâna geçelim.": {
+  "en": "Now let's go to the shop.",
+  "de": "Jetzt gehen wir in den Laden."
+ },
+ "Fiyatları buradan ayarla. Piyasanın çok üstü öğrenciyi ve işçiyi kaçırır.": {
+  "en": "Set prices here. Far above market scares off students and workers.",
+  "de": "Hier stellst du die Preise ein. Weit über Marktpreis vertreibt Studierende und Arbeiter."
+ },
+ "Hazırsan kepengi aç. Bütün şubeler aynı anda çalışır.": {
+  "en": "When you're ready, raise the shutter. All branches run at the same time.",
+  "de": "Wenn du bereit bist, zieh den Rollladen hoch. Alle Filialen laufen gleichzeitig."
+ },
+ "Yoğunluk göstergesi. Kırmızıya dönen yere bir kişi daha ver: kuyruk uzarsa kasaya, tabak beklerse servise.": {
+  "en": "Workload gauges. Add a person where it turns red: to the till if the queue grows, to service if plates wait.",
+  "de": "Auslastungsanzeige. Wo es rot wird, braucht es eine Person mehr: bei langer Schlange an die Kasse, bei wartenden Tellern in den Service."
+ },
+ "Yorulan çalışanı sakin saatte molaya gönder, yoğun saatte geri çağır. İstersen otomatik yönetimi açık bırak.": {
+  "en": "Send tired staff on break in quiet hours and call them back at peak. Or leave automatic management on.",
+  "de": "Schick Müde in ruhigen Stunden in die Pause und hol sie zur Stoßzeit zurück. Oder lass die Automatik an."
+ },
+ "İstersen tezgâha geçip siparişleri kendin hazırlarsın: adımları doğru sırayla seç, hızlı ve hatasız olursa kalite artar.": {
+  "en": "You can step behind the counter and make orders yourself: pick the steps in order; fast and flawless means higher quality.",
+  "de": "Du kannst selbst hinter die Theke: Wähle die Schritte in der richtigen Reihenfolge; schnell und fehlerfrei steigert die Qualität."
+ },
+ "Hızı buradan ayarla. Gün bitince bahşişi nasıl dağıtacağını seçip günlüğünü okuyacaksın. Kolay gelsin!": {
+  "en": "Set the speed here. At day's end you'll choose how to share tips and read your journal. Good luck!",
+  "de": "Hier stellst du das Tempo ein. Am Tagesende verteilst du das Trinkgeld und liest dein Tagebuch. Viel Erfolg!"
+ },
+ "Hepsi bitmiş!": {
+  "en": "Sold out!",
+  "de": "Alles aus!"
+ },
+ "{0} kalmamış!": {
+  "en": "No {0} left!",
+  "de": "Kein {0} mehr!"
+ },
+ "Öğle yoğunluğu başladı!": {
+  "en": "Lunch rush has started!",
+  "de": "Der Mittagsansturm beginnt!"
+ },
+ "Akşam yoğunluğu başladı!": {
+  "en": "Evening rush has started!",
+  "de": "Der Abendansturm beginnt!"
+ },
+ "Biten: {0}, {1}, {2}, {3}, {4}, {5}": {
+  "en": "Sold out: {0}, {1}, {2}, {3}, {4}, {5}",
+  "de": "Ausverkauft: {0}, {1}, {2}, {3}, {4}, {5}"
+ },
+ "Şerbet": {
+  "en": "Sherbet",
+  "de": "Scherbet"
+ },
+ "Yazı boyutu ve hareket ayarı. Seçim bu cihazda saklanır.": {
+  "en": "Text size and motion. Saved on this device.",
+  "de": "Textgröße und Bewegung. Wird auf diesem Gerät gespeichert."
+ },
+ "Görünüm": {
+  "en": "Display",
+  "de": "Darstellung"
+ },
+ "Görünüm ve yazı boyutu": {
+  "en": "Display and text size",
+  "de": "Darstellung und Textgröße"
+ },
+ "Normal yazı": {
+  "en": "Normal text",
+  "de": "Normale Schrift"
+ },
+ "Varsayılan": {
+  "en": "Default",
+  "de": "Standard"
+ },
+ "Büyük yazı": {
+  "en": "Large text",
+  "de": "Große Schrift"
+ },
+ "{0} daha büyük": {
+  "en": "{0} larger",
+  "de": "{0} größer"
+ },
+ "Çok büyük yazı": {
+  "en": "Extra large text",
+  "de": "Sehr große Schrift"
+ },
+ "Hareketleri azalt": {
+  "en": "Reduce motion",
+  "de": "Bewegung reduzieren"
+ },
+ "Hareketleri aç": {
+  "en": "Turn motion on",
+  "de": "Bewegung einschalten"
+ },
+ "Bulut, dalga, zıplayan rozetler ve yürüyüş animasyonları": {
+  "en": "Clouds, waves, bouncing badges and walking animations",
+  "de": "Wolken, Wellen, hüpfende Symbole und Laufanimationen"
+ },
+ "Gizlilik ve koşullar": {
+  "en": "Privacy and terms",
+  "de": "Datenschutz und Bedingungen"
+ },
+ "Gizlilik": {
+  "en": "Privacy",
+  "de": "Datenschutz"
+ },
+ "Oyun varsayılan olarak hiçbir veri göndermez; kaydın yalnızca bu cihazda tutulur. Yazı tipleri ve bütün dosyalar oyunla birlikte gelir, üçüncü taraf sunuculara istek yapılmaz.": {
+  "en": "By default the game sends no data; your save stays on this device only. Fonts and all files ship with the game; no requests go to third-party servers.",
+  "de": "Standardmäßig sendet das Spiel keine Daten; dein Spielstand bleibt nur auf diesem Gerät. Schriften und alle Dateien sind im Spiel enthalten; es gehen keine Anfragen an Drittserver."
+ },
+ "Bulut kaydını açarsan anonim bir hesap oluşur; kaydın, takma adın ve gün sonuçların Avrupa Birliği'ndeki sunucularda tutulur. Kullanım istatistiklerine ayrıca izin verirsen hangi ekranların açıldığı gibi oyun içi olaylar kaydedilir ve {0} günde silinir. Hata raporları kişisel veri içermez.": {
+  "en": "If you turn on cloud save, an anonymous account is created; your save, nickname and daily results are stored on servers in the European Union. If you also allow usage statistics, in-game events such as which screens are opened are recorded and deleted after {0} days. Error reports contain no personal data.",
+  "de": "Aktivierst du den Cloud-Speicher, wird ein anonymes Konto angelegt; Spielstand, Spitzname und Tagesergebnisse liegen auf Servern in der Europäischen Union. Erlaubst du zusätzlich Nutzungsstatistiken, werden Spielereignisse wie geöffnete Bildschirme erfasst und nach {0} Tagen gelöscht. Fehlerberichte enthalten keine personenbezogenen Daten."
+ },
+ "Menü → Hesap ve gizlilik ekranından rızalarını geri alabilir ve bütün bulut verilerini silebilirsin.": {
+  "en": "Under Menu → Account and privacy you can withdraw consent and delete all your cloud data.",
+  "de": "Unter Menü → Konto und Datenschutz kannst du Einwilligungen widerrufen und alle Cloud-Daten löschen."
+ },
+ "Kullanım koşulları": {
+  "en": "Terms of use",
+  "de": "Nutzungsbedingungen"
+ },
+ "Kebab Empire ücretsiz bir eğlence oyunudur. Oyundaki semtler, kişiler, dükkânlar ve rakamlar kurgudur; vergi ve bordro hesapları gerçeğe yakın tahminlerdir, mali tavsiye değildir.": {
+  "en": "Kebab Empire is a free entertainment game. Its districts, people, shops and figures are fictional; tax and payroll calculations are realistic estimates, not financial advice.",
+  "de": "Kebab Empire ist ein kostenloses Unterhaltungsspiel. Viertel, Personen, Läden und Zahlen sind erfunden; Steuer- und Lohnberechnungen sind realistische Schätzungen, keine Finanzberatung."
+ },
+ "Şehir sıralamasında hile yapmak, başkasını taklit eden ya da hakaret içeren takma ad kullanmak yasaktır; bu durumda sonuçlar ve hesap silinebilir.": {
+  "en": "Cheating in the city ranking or using nicknames that impersonate others or insult is forbidden; results and accounts may be deleted.",
+  "de": "Schummeln in der Stadtrangliste sowie Spitznamen, die andere nachahmen oder beleidigen, sind verboten; Ergebnisse und Konten können gelöscht werden."
+ },
+ "İletişim: oyunun yayın sayfasındaki iletişim adresi": {
+  "en": "Contact: the address on the game's publishing page",
+  "de": "Kontakt: die Adresse auf der Veröffentlichungsseite des Spiels"
+ },
+ "İletişim: {0}": {
+  "en": "Contact: {0}",
+  "de": "Kontakt: {0}"
+ },
+ "Tamam": {
+  "en": "OK",
+  "de": "OK"
+ },
+ "Asıl dil": {
+  "en": "Original language",
+  "de": "Originalsprache"
+ },
+ "Kültürel terimler korunur (iftar, usta, döner)": {
+  "en": "Cultural terms are kept (usta, döner)",
+  "de": "Kulturelle Begriffe bleiben erhalten (Usta, Döner)"
+ },
+ "Kulturelle Begriffe bleiben erhalten": {
+  "en": "Cultural terms are kept",
+  "de": "Kulturelle Begriffe bleiben erhalten"
+ },
+ "Elektrik kesintisi": {
+  "en": "Power cut",
+  "de": "Stromausfall"
+ },
+ "Sokakta trafo arızası var; elektrik akşama kadar gelmeyebilir. Emre bir jeneratörcünün numarasını buldu.": {
+  "en": "A transformer on the street has failed; power may not be back until evening. Emre found a generator rental number.",
+  "de": "Ein Trafo in der Straße ist ausgefallen; der Strom kommt vielleicht erst abends wieder. Emre hat die Nummer eines Generatorverleihs."
+ },
+ "Jeneratör kirala": {
+  "en": "Rent a generator",
+  "de": "Generator mieten"
+ },
+ "{0}, servis aksamaz": {
+  "en": "{0}, service carries on",
+  "de": "{0}, der Betrieb läuft weiter"
+ },
+ "Jeneratör homurdandı ama dükkân ışıl ışıl. Komşular bile sıraya girdi.": {
+  "en": "The generator grumbled, but the shop shone bright. Even the neighbours queued up.",
+  "de": "Der Generator brummte, aber der Laden strahlte. Sogar die Nachbarn standen Schlange."
+ },
+ "Bekle, gelince açarız": {
+  "en": "Wait, open when it's back",
+  "de": "Warten, öffnen, wenn er zurück ist"
+ },
+ "{0} gün müşteri −{1}": {
+  "en": "{0} day customers −{1}",
+  "de": "{0} Tag Kunden −{1}"
+ },
+ "Öğlen boyunca karanlıkta bekledik; elektrik ikindiye doğru geldi.": {
+  "en": "We waited in the dark through lunch; power came back in the afternoon.",
+  "de": "Wir warteten mittags im Dunkeln; der Strom kam am Nachmittag zurück."
+ },
+ "Tur otobüsü kapıda": {
+  "en": "A tour bus at the door",
+  "de": "Ein Reisebus vor der Tür"
+ },
+ "Bir tur rehberi, kırk kişilik grubunu yarın öğlen dükkâna getirmek istiyor. Tek şartı: grup menüsünde {0} indirim.": {
+  "en": "A tour guide wants to bring a group of forty tomorrow at noon. One condition: {0} off the group menu.",
+  "de": "Ein Reiseleiter will morgen Mittag eine Gruppe von vierzig bringen. Einzige Bedingung: {0} Rabatt auf das Gruppenmenü."
+ },
+ "Grup menüsünü kabul et": {
+  "en": "Accept the group menu",
+  "de": "Gruppenmenü annehmen"
+ },
+ "{0} gün turist +{1} itibar +{2}": {
+  "en": "{0} day tourists +{1}, reputation +{2}",
+  "de": "{0} Tag Touristen +{1}, Ruf +{2}"
+ },
+ "Kırk kişi kırk ayrı dilde \"çok güzel\" dedi. Rehber her hafta geleceğini söyledi.": {
+  "en": "Forty people said \"delicious\" in forty languages. The guide promised to come every week.",
+  "de": "Vierzig Leute sagten in vierzig Sprachen „köstlich“. Der Reiseleiter will jede Woche kommen."
+ },
+ "Rehber kartını bıraktı, karşıdaki lokantaya yöneldi.": {
+  "en": "The guide left a card and headed to the restaurant across the street.",
+  "de": "Der Reiseleiter ließ eine Karte da und ging ins Lokal gegenüber."
+ },
+ "Mahalle takımına sponsor": {
+  "en": "Sponsor the local team",
+  "de": "Sponsor des Viertelvereins"
+ },
+ "{0}'nin torununun oynadığı mahalle futbol takımının forması yok. Dükkânın adı forma göğsünde yazsın mı?": {
+  "en": "The neighbourhood football team where {0}'s grandson plays has no kit. Shall your shop's name go on the shirts?",
+  "de": "Die Fußballmannschaft im Viertel, in der der Enkel von {0} spielt, hat keine Trikots. Soll der Name deines Ladens auf die Brust?"
+ },
+ "Formaları biz yaptıralım": {
+  "en": "We'll pay for the kits",
+  "de": "Wir zahlen die Trikots"
+ },
+ "{0}, itibar +{1} {2} gün aile +{3}": {
+  "en": "{0}, reputation +{1}, {2} days families +{3}",
+  "de": "{0}, Ruf +{1}, {2} Tage Familien +{3}"
+ },
+ "Çocuklar ilk maçı formalarla kazandı. Veliler maçtan sonra dükkâna akın etti.": {
+  "en": "The kids won their first match in the new kits. Parents poured into the shop afterwards.",
+  "de": "Die Kinder gewannen ihr erstes Spiel in den neuen Trikots. Danach strömten die Eltern in den Laden."
+ },
+ "Bir kasa ayran gönder": {
+  "en": "Send a crate of ayran",
+  "de": "Eine Kiste Ayran schicken"
+ },
+ "Ayranlar devre arasında bitti. Teşekkür kartı geldi.": {
+  "en": "The ayran was gone by half-time. A thank-you card arrived.",
+  "de": "Der Ayran war zur Halbzeit leer. Eine Dankeskarte kam."
+ },
+ "{0} hastalandı": {
+  "en": "{0} is ill",
+  "de": "{0} ist krank"
+ },
+ "{0} sabah ateşler içinde geldi: \"Bir şeyim yok usta, çalışırım.\" Sesi kısık, gözleri yorgun.": {
+  "en": "{0} came in feverish: \"I'm fine, boss, I can work.\" Hoarse voice, tired eyes.",
+  "de": "{0} kam mit Fieber: „Mir geht's gut, Chef, ich kann arbeiten.“ Heisere Stimme, müde Augen."
+ },
+ "Eve gönder, dinlensin": {
+  "en": "Send them home to rest",
+  "de": "Nach Hause schicken"
+ },
+ "Bugün ustasız çalışırsın, moral +{0}": {
+  "en": "You work without them today, morale +{0}",
+  "de": "Heute ohne sie arbeiten, Laune +{0}"
+ },
+ "{0} gönülsüzce gitti. Ertesi gün turp gibi döndü.": {
+  "en": "{0} left reluctantly and came back fit as a fiddle the next day.",
+  "de": "{0} ging widerwillig und kam am nächsten Tag kerngesund zurück."
+ },
+ "Bugün idare etsin": {
+  "en": "Let them manage today",
+  "de": "Heute durchhalten lassen"
+ },
+ "Moral {0} kalite düşebilir": {
+  "en": "Morale {0}, quality may drop",
+  "de": "Laune {0}, Qualität kann sinken"
+ },
+ "{0} gün boyu öksürerek çalıştı. Ekip biraz kırgın.": {
+  "en": "{0} coughed through the whole day. The crew is a bit upset.",
+  "de": "{0} hustete den ganzen Tag. Das Team ist etwas verstimmt."
+ },
+ "Ev sahibi kira artışı istiyor": {
+  "en": "The landlord wants more rent",
+  "de": "Der Vermieter will mehr Miete"
+ },
+ "Ev sahibi telefonda: \"Piyasa uçtu, kirayı {0} artırmam lazım.\" {1} sözleşmeye bakıyor: yıllık artış TÜFE ile sınırlı.": {
+  "en": "The landlord on the phone: \"Prices went through the roof, I need {0} more rent.\" {1} checks the lease: yearly increases are capped at inflation.",
+  "de": "Der Vermieter am Telefon: „Die Preise explodieren, ich brauche {0} mehr Miete.“ {1} prüft den Vertrag: Erhöhungen sind an die Inflation gebunden."
+ },
+ "Sözleşmeyi hatırlat": {
+  "en": "Point to the lease",
+  "de": "Auf den Vertrag verweisen"
+ },
+ "Kira {0} artar, ev sahibi biraz bozulur": {
+  "en": "Rent rises {0}, the landlord sulks a little",
+  "de": "Miete steigt um {0}, der Vermieter ist etwas verstimmt"
+ },
+ "Ev sahibi homurdandı ama sözleşmeye uydu. Kira {0} arttı.": {
+  "en": "The landlord grumbled but kept to the lease. Rent rose {0}.",
+  "de": "Der Vermieter murrte, hielt sich aber an den Vertrag. Die Miete stieg um {0}."
+ },
+ "İstediğini ver": {
+  "en": "Give what he asks",
+  "de": "Geben, was er verlangt"
+ },
+ "Kira +{0}, itibar +{1} (iyi komşu)": {
+  "en": "Rent +{0}, reputation +{1} (good neighbour)",
+  "de": "Miete +{0}, Ruf +{1} (guter Nachbar)"
+ },
+ "Ev sahibi memnun, kapının önüne iki saksı çiçek bıraktı.": {
+  "en": "The landlord is happy and left two flower pots at the door.",
+  "de": "Der Vermieter ist zufrieden und stellte zwei Blumentöpfe vor die Tür."
+ },
+ "Soğutucu arızalandı": {
+  "en": "The fridge broke down",
+  "de": "Der Kühlschrank ist kaputt"
+ },
+ "Sabah dolabın içi ılıktı. Servisçi bugün gelebilir ama acil ücret istiyor.": {
+  "en": "The fridge was lukewarm this morning. A technician can come today but wants an emergency fee.",
+  "de": "Morgens war der Kühlschrank lauwarm. Ein Techniker kann heute kommen, will aber einen Notfallzuschlag."
+ },
+ "Acil servisi çağır": {
+  "en": "Call emergency service",
+  "de": "Notdienst rufen"
+ },
+ "Kompresör değişti, dolap yine buz gibi.": {
+  "en": "New compressor, the fridge is ice-cold again.",
+  "de": "Neuer Kompressor, der Kühlschrank ist wieder eiskalt."
+ },
+ "Yarına kadar idare et": {
+  "en": "Manage until tomorrow",
+  "de": "Bis morgen durchhalten"
+ },
+ "Stokun {0}'u bozulur": {
+  "en": "{0} of stock spoils",
+  "de": "{0} des Bestands verdirbt"
+ },
+ "Etin bir kısmını atmak zorunda kaldık. Ders aldık.": {
+  "en": "We had to throw out some meat. Lesson learned.",
+  "de": "Wir mussten Fleisch wegwerfen. Lektion gelernt."
+ },
+ "Televizyondan davet": {
+  "en": "An invitation from TV",
+  "de": "Einladung vom Fernsehen"
+ },
+ "Sabah kuşağındaki yemek programı ustanı canlı yayına çağırıyor. Bir günlüğüne dükkândan ayrılması gerekecek.": {
+  "en": "The morning cooking show wants your master live on air. They'll be away from the shop for a day.",
+  "de": "Die Morgen-Kochshow will deinen Meister live im Studio. Er ist dafür einen Tag weg."
+ },
+ "Ustayı yayına gönder": {
+  "en": "Send the master on air",
+  "de": "Den Meister ins Studio schicken"
+ },
+ "Bugün müşteri −{0} sonra {1} gün +{2} itibar +{3}": {
+  "en": "Customers −{0} today, then {1} days +{2}, reputation +{3}",
+  "de": "Heute Kunden −{0}, dann {1} Tage +{2}, Ruf +{3}"
+ },
+ "Usta kameraya göz kırptı, telefonlar susmadı. \"Televizyondaki dükkân burası mı?\"": {
+  "en": "The master winked at the camera and the phone never stopped. \"Is this the shop from TV?\"",
+  "de": "Der Meister zwinkerte in die Kamera, das Telefon stand nicht still. „Ist das der Laden aus dem Fernsehen?“"
+ },
+ "Dükkân boş kalmaz": {
+  "en": "The shop can't be left",
+  "de": "Der Laden bleibt nicht leer"
+ },
+ "Yapımcı başka bir ustayı aradı.": {
+  "en": "The producer called another master.",
+  "de": "Die Produktion rief einen anderen Meister an."
+ },
+ "Komşudan duman şikâyeti": {
+  "en": "A neighbour complains about smoke",
+  "de": "Nachbar beschwert sich über Rauch"
+ },
+ "Üst kattaki komşu belediyeye dilekçe vermiş: \"Davlumbazın dumanı camımdan giriyor.\" {0} uyarıyor.": {
+  "en": "The upstairs neighbour filed a complaint: \"Smoke from the hood comes in my window.\" {0} warns you.",
+  "de": "Der Nachbar von oben hat sich beschwert: „Der Rauch der Haube zieht in mein Fenster.“ {0} warnt dich."
+ },
+ "Karbon filtre taktır": {
+  "en": "Install a carbon filter",
+  "de": "Aktivkohlefilter einbauen"
+ },
+ "{0}, temizlik +{1}": {
+  "en": "{0}, cleanliness +{1}",
+  "de": "{0}, Sauberkeit +{1}"
+ },
+ "Filtre takıldı, komşu bir tabak baklava getirdi.": {
+  "en": "The filter is in, and the neighbour brought a plate of baklava.",
+  "de": "Der Filter ist drin, der Nachbar brachte einen Teller Baklava."
+ },
+ "Komşuya bir tepsi gönder": {
+  "en": "Send the neighbour a tray",
+  "de": "Dem Nachbarn ein Tablett schicken"
+ },
+ "{0}, {1} ihtimalle ceza": {
+  "en": "{0}, {1} chance of a fine",
+  "de": "{0}, {1} Wahrscheinlichkeit eines Bußgelds"
+ },
+ "Dilekçe işleme girdi: {0} ceza.": {
+  "en": "The complaint went through: {0} fine.",
+  "de": "Die Beschwerde wurde bearbeitet: {0} Bußgeld."
+ },
+ "Komşu yumuşadı, dilekçesini geri çekti.": {
+  "en": "The neighbour softened and withdrew the complaint.",
+  "de": "Der Nachbar wurde milde und zog die Beschwerde zurück."
+ },
+ "Meslek lisesinden stajyer": {
+  "en": "An intern from the vocational school",
+  "de": "Praktikant von der Berufsschule"
+ },
+ "Aşçılık bölümünden bir öğrenci staj yeri arıyor. Okul öğle yemeğini ve sigortayı karşılıyor.": {
+  "en": "A culinary student is looking for an internship. The school covers lunch and insurance.",
+  "de": "Ein Kochschüler sucht ein Praktikum. Die Schule übernimmt Mittagessen und Versicherung."
+ },
+ "Stajyeri al": {
+  "en": "Take the intern",
+  "de": "Praktikanten nehmen"
+ },
+ "Ekip morali +{0} {1} gün servis hızlanır": {
+  "en": "Crew morale +{0}, {1} days faster service",
+  "de": "Teamlaune +{0}, {1} Tage schnellerer Service"
+ },
+ "Stajyer ilk gün tabak taşıdı, ikinci gün soğan doğradı. Ekip ona abilik yapıyor.": {
+  "en": "Day one the intern carried plates, day two chopped onions. The crew has taken them under their wing.",
+  "de": "Am ersten Tag trug der Praktikant Teller, am zweiten schnitt er Zwiebeln. Das Team nimmt ihn unter seine Fittiche."
+ },
+ "Şu an bakamayız": {
+  "en": "We can't take one now",
+  "de": "Gerade nicht möglich"
+ },
+ "Okula teşekkür edip başka dönem için söz verdin.": {
+  "en": "You thanked the school and promised a place next term.",
+  "de": "Du hast der Schule gedankt und für nächstes Halbjahr zugesagt."
+ },
+ "Toptan alım fırsatı": {
+  "en": "Bulk purchase offer",
+  "de": "Großeinkauf-Angebot"
+ },
+ "Rıza: \"Elimde fazla mal var. İki haftalık siparişini peşin ödersen {0} indirim yaparım.\" Peşinat: {1}.": {
+  "en": "Rıza: \"I've got surplus stock. Pay two weeks' order up front and I'll give you {0} off.\" Upfront: {1}.",
+  "de": "Rıza: „Ich habe zu viel Ware. Zahl zwei Wochen im Voraus, dann gibt's {0} Rabatt.“ Vorauszahlung: {1}."
+ },
+ "Peşin öde": {
+  "en": "Pay up front",
+  "de": "Im Voraus zahlen"
+ },
+ "{0}, {1} gün malzeme −{2}": {
+  "en": "{0}, {1} days supplies −{2}",
+  "de": "{0}, {1} Tage Waren −{2}"
+ },
+ "Depo doldu, maliyetler düştü. Rıza memnun.": {
+  "en": "The storeroom is full and costs are down. Rıza is happy.",
+  "de": "Das Lager ist voll, die Kosten sind gesunken. Rıza ist zufrieden."
+ },
+ "Nakit elde kalsın": {
+  "en": "Keep the cash",
+  "de": "Bargeld behalten"
+ },
+ "Rıza omuz silkti: \"Sen bilirsin kardeşim.\"": {
+  "en": "Rıza shrugged: \"Your call, brother.\"",
+  "de": "Rıza zuckte mit den Schultern: „Deine Entscheidung, Bruder.“"
+ },
+ "Masada unutulan cüzdan": {
+  "en": "A wallet left on a table",
+  "de": "Eine vergessene Geldbörse"
+ },
+ "Kapanışta bir masanın altında dolu bir cüzdan bulundu. İçinde bir kimlik ve epey nakit var.": {
+  "en": "At closing, a full wallet turned up under a table, with an ID card and plenty of cash.",
+  "de": "Beim Schließen lag unter einem Tisch eine volle Geldbörse, mit Ausweis und viel Bargeld."
+ },
+ "Sahibini bul, teslim et": {
+  "en": "Find the owner and return it",
+  "de": "Den Besitzer finden und zurückgeben"
+ },
+ "İtibar +{0} ekip morali +{1}": {
+  "en": "Reputation +{0}, crew morale +{1}",
+  "de": "Ruf +{0}, Teamlaune +{1}"
+ },
+ "Sahibi ertesi gün çiçekle geldi; mahallede hikâyesi anlatılıyor.": {
+  "en": "The owner came by with flowers the next day; the story is going round the neighbourhood.",
+  "de": "Der Besitzer kam am nächsten Tag mit Blumen; die Geschichte macht im Viertel die Runde."
+ },
+ "Karakola bırak": {
+  "en": "Hand it to the police",
+  "de": "Bei der Polizei abgeben"
+ },
+ "Tutanak tutuldu, cüzdan sahibine ulaştı.": {
+  "en": "A report was filed and the wallet reached its owner.",
+  "de": "Ein Protokoll wurde aufgenommen, die Börse erreichte ihren Besitzer."
+ },
+ "Dükkânın kedisi": {
+  "en": "The shop cat",
+  "de": "Die Ladenkatze"
+ },
+ "Bir sokak kedisi birkaç gündür kapının önünde uyuyor. Müşteriler fotoğrafını çekiyor, bazıları sevmiyor.": {
+  "en": "A street cat has been sleeping at the door for days. Customers take photos; some don't like it.",
+  "de": "Eine Straßenkatze schläft seit Tagen vor der Tür. Gäste fotografieren sie, manche mögen das nicht."
+ },
+ "Mama kabı koy, adını Köfte koy": {
+  "en": "Put out a bowl and name her Köfte",
+  "de": "Napf hinstellen und sie Köfte nennen"
+ },
+ "{0} gün öğrenci ve turist +{1}": {
+  "en": "{0} days students and tourists +{1}",
+  "de": "{0} Tage Studierende und Touristen +{1}"
+ },
+ "Köfte artık dükkânın maskotu. Sosyal medyada kendi hesabı bile var.": {
+  "en": "Köfte is now the shop's mascot, with her own social media account.",
+  "de": "Köfte ist jetzt das Maskottchen des Ladens und hat sogar ein eigenes Social-Media-Konto."
+ },
+ "Hayvanseverlere haber ver": {
+  "en": "Call the animal lovers",
+  "de": "Tierschützer benachrichtigen"
+ },
+ "Gönüllüler kediyi aşılattı, yakındaki parka bir kulübe kurdu.": {
+  "en": "Volunteers had the cat vaccinated and built a shelter in the nearby park.",
+  "de": "Freiwillige ließen die Katze impfen und bauten ihr im Park eine Hütte."
+ },
+ "Kapının önünde yol çalışması": {
+  "en": "Road works outside",
+  "de": "Bauarbeiten vor der Tür"
+ },
+ "{0} kaldırımı söktü; bir hafta sürecekmiş. Yaya trafiği düşecek.": {
+  "en": "The {0} dug up the pavement; it'll take a week. Foot traffic will drop.",
+  "de": "{0} hat den Gehweg aufgerissen; das dauert eine Woche. Weniger Laufkundschaft."
+ },
+ "Yön tabelası ve paket kampanyası": {
+  "en": "Signs and a takeaway deal",
+  "de": "Hinweisschilder und Abholaktion"
+ },
+ "{0}, kayıp yarıya iner": {
+  "en": "{0}, losses halved",
+  "de": "{0}, Verlust halbiert"
+ },
+ "\"Kazıya rağmen açığız!\" tabelası işe yaradı.": {
+  "en": "The \"Open despite the digging!\" sign worked.",
+  "de": "Das Schild „Trotz Baustelle geöffnet!“ hat gewirkt."
+ },
+ "Sabret": {
+  "en": "Be patient",
+  "de": "Geduld haben"
+ },
+ "Toz toprak içinde bir hafta geçti.": {
+  "en": "A dusty week went by.",
+  "de": "Eine staubige Woche verging."
+ },
+ "Vergi incelemesi": {
+  "en": "Tax audit",
+  "de": "Steuerprüfung"
+ },
+ "Vergi müfettişi son üç ayın kayıtlarını istiyor. {0}: \"Defterler tamam ama bir hafta mesai lazım.\"": {
+  "en": "The tax inspector wants the last three months' records. {0}: \"The books are fine, but it'll take a week of overtime.\"",
+  "de": "Der Steuerprüfer will die Unterlagen der letzten drei Monate. {0}: „Die Bücher stimmen, aber das kostet eine Woche Überstunden.“"
+ },
+ "Muhasebeciye ek mesai öde": {
+  "en": "Pay the accountant overtime",
+  "de": "Buchhaltung Überstunden zahlen"
+ },
+ "{0}, sorunsuz": {
+  "en": "{0}, no problems",
+  "de": "{0}, problemlos"
+ },
+ "İnceleme temiz kapandı. Müfettiş giderken \"Defterleriniz örnek\" dedi.": {
+  "en": "The audit closed clean. Leaving, the inspector said, \"Your books are exemplary.\"",
+  "de": "Die Prüfung war sauber. Beim Gehen sagte der Prüfer: „Vorbildliche Bücher.“"
+ },
+ "Kendin hazırla": {
+  "en": "Do it yourself",
+  "de": "Selbst vorbereiten"
+ },
+ "{0} ihtimalle usulsüzlük cezası": {
+  "en": "{0} chance of an irregularity fine",
+  "de": "{0} Wahrscheinlichkeit eines Ordnungsgelds"
+ },
+ "Gece yarılarına kadar fatura sıraladın; inceleme temiz çıktı.": {
+  "en": "You sorted invoices until midnight; the audit came out clean.",
+  "de": "Du hast bis Mitternacht Rechnungen sortiert; die Prüfung war sauber."
+ },
+ "Birkaç fiş eksik çıktı: {0} usulsüzlük cezası.": {
+  "en": "A few receipts were missing: {0} irregularity fine.",
+  "de": "Ein paar Belege fehlten: {0} Ordnungsgeld."
+ },
+ "{0}'nın yeni tarif fikri": {
+  "en": "{0}'s new recipe idea",
+  "de": "Neue Rezeptidee von {0}"
+ },
+ "{0}: \"Memleketin usulü bir sos denesek? Bir hafta tadım yaparız, beğenilirse menüde kalır.\"": {
+  "en": "{0}: \"How about a sauce the way they make it back home? A week of tastings, and if people like it, it stays on the menu.\"",
+  "de": "{0}: „Wie wäre eine Soße wie in der Heimat? Eine Woche Verkostung, und wenn sie ankommt, bleibt sie auf der Karte.“"
+ },
+ "Dene, malzemesini al": {
+  "en": "Try it, buy the ingredients",
+  "de": "Ausprobieren, Zutaten kaufen"
+ },
+ "{0}, usta morali +{1} {2} gün gurme +{3}": {
+  "en": "{0}, master morale +{1}, {2} days foodies +{3}",
+  "de": "{0}, Meisterlaune +{1}, {2} Tage Feinschmecker +{3}"
+ },
+ "Sos tuttu! Gurmeler tarifini soruyor, usta sır vermiyor.": {
+  "en": "The sauce is a hit! Foodies ask for the recipe; the master keeps it secret.",
+  "de": "Die Soße ist ein Hit! Feinschmecker fragen nach dem Rezept, der Meister schweigt."
+ },
+ "Klasikten şaşmayalım": {
+  "en": "Stick to the classics",
+  "de": "Beim Klassiker bleiben"
+ },
+ "Usta morali {0}": {
+  "en": "Master morale {0}",
+  "de": "Meisterlaune {0}"
+ },
+ "Usta \"Peki\" dedi ama biraz bozuldu.": {
+  "en": "The master said \"Fine\" but was a little hurt.",
+  "de": "Der Meister sagte „Na gut“, war aber etwas gekränkt."
+ },
+ "Okul kermesi": {
+  "en": "School charity fair",
+  "de": "Schulbasar"
+ },
+ "Mahalle okulu kütüphane için kermes düzenliyor. {0} dükkândan bir stant bekliyor.": {
+  "en": "The local school is holding a fair for its library. {0} hopes the shop will run a stall.",
+  "de": "Die Schule im Viertel veranstaltet einen Basar für die Bibliothek. {0} hofft auf einen Stand des Ladens."
+ },
+ "Stant kur, gelir okula": {
+  "en": "Run a stall, proceeds to the school",
+  "de": "Stand aufbauen, Erlös an die Schule"
+ },
+ "{0} malzeme, itibar +{1} {2} gün aile +{3}": {
+  "en": "{0} supplies, reputation +{1}, {2} days families +{3}",
+  "de": "{0} Waren, Ruf +{1}, {2} Tage Familien +{3}"
+ },
+ "Stant ilk bir saatte tükendi. Okul müdürü teşekkür plaketi gönderdi.": {
+  "en": "The stall sold out in the first hour. The headteacher sent a thank-you plaque.",
+  "de": "Der Stand war in der ersten Stunde ausverkauft. Die Schulleitung schickte eine Dankesplakette."
+ },
+ "Bağış yap": {
+  "en": "Donate",
+  "de": "Spenden"
+ },
+ "Bağış makbuzu panoya asıldı.": {
+  "en": "The donation receipt was pinned to the board.",
+  "de": "Die Spendenquittung hängt am Brett."
+ },
+ "Yerel gazeteden röportaj": {
+  "en": "Local paper interview",
+  "de": "Interview mit der Lokalzeitung"
+ },
+ "Mahalle gazetesi \"Esnafın hikâyesi\" köşesi için seninle konuşmak istiyor. Fotoğraf için ekibin de gelmesini istiyorlar.": {
+  "en": "The neighbourhood paper wants to interview you for its \"Shopkeepers' stories\" column, with the crew in the photo.",
+  "de": "Die Viertelzeitung will dich für ihre Rubrik „Geschichten der Händler“ interviewen, mit dem Team auf dem Foto."
+ },
+ "Ekiple birlikte poz ver": {
+  "en": "Pose with the crew",
+  "de": "Mit dem Team posieren"
+ },
+ "Ekip morali +{0} {1} gün müşteri +{2}": {
+  "en": "Crew morale +{0}, {1} days customers +{2}",
+  "de": "Teamlaune +{0}, {1} Tage Kunden +{2}"
+ },
+ "Fotoğraf kasanın arkasına asıldı. Ekip gururlu.": {
+  "en": "The photo hangs behind the till. The crew is proud.",
+  "de": "Das Foto hängt hinter der Kasse. Das Team ist stolz."
+ },
+ "Yalnız konuş": {
+  "en": "Talk alone",
+  "de": "Allein sprechen"
+ },
+ "{0} gün müşteri +{1}": {
+  "en": "{0} days customers +{1}",
+  "de": "{0} Tage Kunden +{1}"
+ },
+ "Röportaj çıktı; birkaç yeni yüz \"Gazetede gördük\" dedi.": {
+  "en": "The interview ran; a few new faces said, \"We saw you in the paper.\"",
+  "de": "Das Interview erschien; ein paar neue Gesichter sagten: „Wir haben euch in der Zeitung gesehen.“"
+ },
+ "Paket platformu teklifi": {
+  "en": "Delivery platform offer",
+  "de": "Angebot einer Lieferplattform"
+ },
+ "Bir sipariş uygulaması dükkânı ana sayfada öne çıkarmayı teklif ediyor: bir hafta boyunca, cironun {0}'i komisyon.": {
+  "en": "A food app offers to feature the shop on its home page for a week, for {0} commission on revenue.",
+  "de": "Eine Bestell-App bietet an, den Laden eine Woche auf der Startseite zu zeigen, gegen {0} Provision vom Umsatz."
+ },
+ "Öne çıkalım": {
+  "en": "Get featured",
+  "de": "Hervorheben lassen"
+ },
+ "{0} gün müşteri +{1} malzeme +{2}": {
+  "en": "{0} days customers +{1}, supplies +{2}",
+  "de": "{0} Tage Kunden +{1}, Waren +{2}"
+ },
+ "Telefonlar ve tabletler aynı anda ötüyor. Emre motoru hiç durdurmadı.": {
+  "en": "Phones and tablets ping at once. Emre never stopped the scooter.",
+  "de": "Telefone und Tablets klingeln gleichzeitig. Emre stellte den Roller nie ab."
+ },
+ "Kendi müşterimiz yeter": {
+  "en": "Our own customers are enough",
+  "de": "Unsere Kunden reichen uns"
+ },
+ "Uygulamanın satış temsilcisi bir broşür bıraktı.": {
+  "en": "The app's sales rep left a brochure.",
+  "de": "Der Vertreter der App ließ eine Broschüre da."
+ },
+ "Ustalar yarışması": {
+  "en": "Masters' contest",
+  "de": "Meisterwettbewerb"
+ },
+ "Lonca bu ay şehrin ustalarını yarıştırıyor. Katılım ücreti var; birinci olanın dükkânı bütün şehirde konuşulacak.": {
+  "en": "The guild is holding a contest for the city's masters this month. There's an entry fee; the winner's shop will be the talk of the town.",
+  "de": "Die Zunft veranstaltet diesen Monat einen Wettbewerb für die Meister der Stadt. Es gibt eine Startgebühr; über den Laden des Siegers spricht die ganze Stadt."
+ },
+ "Ustamızı yarıştıralım": {
+  "en": "Enter our master",
+  "de": "Unseren Meister antreten lassen"
+ },
+ "{0}, yıldıza göre şans": {
+  "en": "{0}, odds depend on stars",
+  "de": "{0}, Chancen je nach Sternen"
+ },
+ "Birinci olduk! Kupa vitrinde, kuyruk sokağın sonunda.": {
+  "en": "We won! The trophy is in the window, the queue down the street.",
+  "de": "Wir haben gewonnen! Der Pokal steht im Fenster, die Schlange reicht bis ans Straßenende."
+ },
+ "Kıl payı ikinci olduk. Jüri \"Seneye sizi bekleriz\" dedi.": {
+  "en": "Second by a hair. The jury said, \"See you next year.\"",
+  "de": "Knapp Zweiter. Die Jury sagte: „Bis nächstes Jahr.“"
+ },
+ "Bu yıl izleyelim": {
+  "en": "Just watch this year",
+  "de": "Dieses Jahr nur zuschauen"
+ },
+ "Yarışmayı tribünden izledin; rakiplerin tekniklerini not ettin.": {
+  "en": "You watched from the stands and noted the rivals' techniques.",
+  "de": "Du hast von der Tribüne zugesehen und dir die Techniken der Konkurrenz notiert."
+ },
+ "Közde çevir": {
+  "en": "Turn over the coals",
+  "de": "Über der Glut wenden"
+ },
+ "Lavaşa al": {
+  "en": "Put on lavash",
+  "de": "Auf Lavash legen"
+ },
+ "Şişe diz": {
+  "en": "Thread the skewer",
+  "de": "Auf den Spieß stecken"
+ },
+ "{0} müşteri yemeğini beklerken kalktı.": {
+  "en": "{0} customers left while waiting for their food.",
+  "de": "{0} Gäste gingen, während sie aufs Essen warteten."
+ },
+ "Mutfak yetişmiyor: bir usta ya da çırak al, ocak sayısını artır.": {
+  "en": "The kitchen can't keep up: hire a master or apprentice and add grills.",
+  "de": "Die Küche kommt nicht hinterher: Stell einen Meister oder Lehrling ein und erweitere die Grills."
+ },
+ "İki farklı kayıt var": {
+  "en": "There are two different saves",
+  "de": "Es gibt zwei verschiedene Spielstände"
+ },
+ "Bulutta kaydın var": {
+  "en": "You have a cloud save",
+  "de": "Du hast einen Cloud-Spielstand"
+ },
+ "Şimdilik kapat": {
+  "en": "Close for now",
+  "de": "Vorerst schließen"
+ },
+ "Buluttaki oyun yüklendi.": {
+  "en": "Cloud game loaded.",
+  "de": "Cloud-Spiel geladen."
+ },
+ "Bu cihazdaki kayıt buluta yazıldı.": {
+  "en": "This device's save was written to the cloud.",
+  "de": "Der Spielstand dieses Geräts wurde in die Cloud geschrieben."
+ },
+ "Başka bir cihazda oynadığın oyun bulutta duruyor.": {
+  "en": "A game you played on another device is in the cloud.",
+  "de": "Ein Spiel von einem anderen Gerät liegt in der Cloud."
+ },
+ "Bu cihazdaki kayıt ile buluttaki kayıt farklı. Hangisiyle devam etmek istersin? Seçmediğin kayıt dosyaya yedeklenebilir.": {
+  "en": "The save on this device differs from the cloud save. Which one do you want to continue? The other can be backed up to a file.",
+  "de": "Der Spielstand auf diesem Gerät unterscheidet sich vom Cloud-Spielstand. Mit welchem willst du weiterspielen? Der andere kann in eine Datei gesichert werden."
+ },
+ "{0}, itibar +{1}": {
+  "en": "{0}, reputation +{1}",
+  "de": "{0}, Ruf +{1}"
  }
 }

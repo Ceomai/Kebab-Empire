@@ -1,19 +1,28 @@
 Kebab Empire
 Kebab
 Empire
+Dil / Language
+EN
+Load from backup file
+Sound
+XX
 Burgazada
 Heybeliada
 Büyükada
-Mehmet Usta
-Orhan Usta
-Seda
+Erkan Usta
+Serkan Usta
+Tuğba Usta
+Uğur Usta
+Mustafa
+Sevgi
+Hatice
+İbrahim
 Kemal
-Yeşim
-Nermin
-Aslı
-Ayşe
-Nazlı
-Kadir
+Tarık
+Selim
+Pilav
+Peynir
+İsmail
 Kadıçeşme
 Sultanpazarı
 Kulealtı
@@ -27,12 +36,18 @@ Caddebostan
 Merter / İkitelli
 Avcılar / Beyazıt
 Beşiktaş
-Cem Usta
-Zeynep Usta
-Kerem
-Ali
-Tarık
-Hasan
-Emine
-Ömer
-Fatma
+Dil / Language / Sprache
+Türkçe
+English
+Deutsch
+Çırak Yusuf
+Sinan Usta
+Nur Usta
+Yusuf
+Hüseyin
+Ahmet
+Emre
+Halil
+Seda
+Ayşe
+Dilimle

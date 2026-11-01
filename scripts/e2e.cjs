@@ -120,6 +120,9 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
       // veri metinleri
       const walk = (o, d) => { if (d > 6 || o == null) return; if (typeof o === 'string') return add(o); if (Array.isArray(o)) return o.forEach((x) => walk(x, d + 1)); if (typeof o === 'object') Object.entries(o).forEach(([k, v]) => { if (!/^(id|look|icon|color|c|theme|pid|steps|fav|kind|type|cast|outfit|hair|facial|head|skin|hairColor|outfitColor|accent|gender|age|scarf|roof|wall)$/.test(k)) walk(v, d + 1); }); };
       ['MODES', 'DISTRICTS', 'TRAITS', 'COSTUMES', 'DECOR', 'GOALS', 'SPECIAL', 'REGULARS', 'LINES', 'CUSTOMER_TYPES', 'ROLES', 'TIERS', 'REGIONS', 'CAST', 'POSITIONS'].forEach((k) => walk(KE[k], 0));
+      // rehber, ayarlar, yasal metin, bulut çakışması
+      (KE.UI.TUT || []).forEach((t) => add(t.text));
+      ['view', 'legal', 'lang'].forEach((a) => { try { KE.UI.A[a](); I.t(''); document.querySelectorAll('.modal-bg').forEach((m) => { const tw = document.createTreeWalker(m, NodeFilter.SHOW_TEXT); let n; while ((n = tw.nextNode())) add(n.nodeValue); m.querySelectorAll('[title],[aria-label],[placeholder]').forEach((e) => ['title', 'aria-label', 'placeholder'].forEach((k) => e.getAttribute(k) && add(e.getAttribute(k)))); m.remove(); }); } catch (x) { /* yok */ } });
       // olay kartları ve seçim sonuçları (kopya oyun üzerinde)
       const G0 = KE.G; const env = JSON.parse(JSON.stringify(KE.SAVE.envelope(G0)));
       (KE.EVENTS || []).forEach((e) => {

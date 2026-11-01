@@ -11,6 +11,8 @@ bağlayabilirsin.
 rehberin nerede bırakıldığı gibi oyun içi olaylar kaydedilir. Konum, rehber, reklam kimliği ya da cihaz
 parmak izi toplanmaz. Ölçümler 180 gün sonra silinir.
 
+**Üçüncü taraflar.** Yazı tipleri ve bütün oyun dosyaları oyunla birlikte gelir; Google ya da başka bir sunucuya istek yapılmaz. Bulut açıksa yalnızca Supabase (AB) ve hesap açılırken sahte hesapları engellemek için Cloudflare Turnstile kullanılır.
+
 **Hata raporları.** Oyun çökerse hata mesajı ve oyun sürümü gönderilir; kişisel veri içermez. Amaç
 yalnızca hatayı düzeltmektir (meşru menfaat).
 
@@ -18,4 +20,4 @@ yalnızca hatayı düzeltmektir (meşru menfaat).
 
 **Haklarım.** Oyunda *Menü → Hesap ve gizlilik → Bütün verilerimi sil* ile bulut kaydını, sonuçlarını,
 ölçümlerini ve anonim hesabını kalıcı olarak silebilirsin. Rızalarını aynı ekrandan istediğin zaman
-geri alabilirsin. Sorular için: (iletişim adresi eklenecek).
+geri alabilirsin. Sorular için: oyunun yayın sayfasındaki iletişim adresi (`VITE_CONTACT_EMAIL`). Kullanım koşulları: `docs/KULLANIM.md`.

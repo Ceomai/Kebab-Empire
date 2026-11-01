@@ -1117,3 +1117,18 @@ body::before { background: var(--kart); }
 .langbtn { font-family: var(--f-display); font-weight: 800; font-size: 16px; min-width: 58px; }
 .note { background: var(--krem); color: var(--murekkep-2); border-color: var(--kart-cizgi); }
 .savednote { align-items: center; background: #f2fbf6; border-color: #bfe6d1; color: var(--murekkep); } .savednote span { flex: 1; }
+
+/* ---------- Erişilebilirlik ---------- */
+body.zoomed #app, body.zoomed .modal-bg, body.zoomed .tut { zoom: var(--zoom, 1); }
+/* durumlar yalnızca renkle anlatılmasın */
+.hchip.warn b::after { content: " ▲"; font-size: .75em; }
+.hchip.crit b::after { content: " !"; font-weight: 900; }
+.dot.busy::after, .dot.off::after { content: ""; }
+.btab-t small .dot.busy { outline: 2px dashed rgba(0, 0, 0, .35); outline-offset: 1px; }
+.cp-task.urg .cp-tt b::before { content: "! "; color: var(--c); }
+/* hareketleri azalt (ayar ya da sistem tercihi) */
+body.calm *, body.calm *::before, body.calm *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; transition-duration: 0.001s !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.001s !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
+:focus-visible { outline: 3px solid var(--biber); outline-offset: 2px; }
+.citymap .place:focus-visible rect { stroke: var(--biber); stroke-width: 5; }
+.legal h3 { margin-top: 6px; } .legal p { font-size: 14px; color: var(--murekkep-2); }

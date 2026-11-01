@@ -1,0 +1,196 @@
+Burası şehir haritası, ana menün. Sağ üstte günün hedefi ve sayıları var.	This is the city map, your main menu. Top right shows today's goal and numbers.	Das ist der Stadtplan, dein Hauptmenü. Oben rechts stehen das Tagesziel und die Zahlen.
+Yapılacaklar saate göre dizilir. Bir işe dokununca haritada dükkânından oraya rota çizilir; tıklayınca oraya gidersin.	Tasks are sorted by time. Hover a task to see the route from your shop on the map; click to go there.	Aufgaben sind nach Uhrzeit sortiert. Zeigst du auf eine Aufgabe, erscheint der Weg von deinem Laden; ein Klick bringt dich hin.
+Hal, usta pazarı, banka, çiftlik… Şehirdeki bütün yerler burada. Numaralı olanlarda seni bekleyen iş var.	Market, master market, bank, farm… Every place in the city is here. Numbered ones have a task waiting.	Großmarkt, Meistermarkt, Bank, Hof… Alle Orte der Stadt sind hier. Nummerierte haben eine Aufgabe für dich.
+Şimdi dükkâna geçelim.	Now let's go to the shop.	Jetzt gehen wir in den Laden.
+Fiyatları buradan ayarla. Piyasanın çok üstü öğrenciyi ve işçiyi kaçırır.	Set prices here. Far above market scares off students and workers.	Hier stellst du die Preise ein. Weit über Marktpreis vertreibt Studierende und Arbeiter.
+Hazırsan kepengi aç. Bütün şubeler aynı anda çalışır.	When you're ready, raise the shutter. All branches run at the same time.	Wenn du bereit bist, zieh den Rollladen hoch. Alle Filialen laufen gleichzeitig.
+Yoğunluk göstergesi. Kırmızıya dönen yere bir kişi daha ver: kuyruk uzarsa kasaya, tabak beklerse servise.	Workload gauges. Add a person where it turns red: to the till if the queue grows, to service if plates wait.	Auslastungsanzeige. Wo es rot wird, braucht es eine Person mehr: bei langer Schlange an die Kasse, bei wartenden Tellern in den Service.
+Yorulan çalışanı sakin saatte molaya gönder, yoğun saatte geri çağır. İstersen otomatik yönetimi açık bırak.	Send tired staff on break in quiet hours and call them back at peak. Or leave automatic management on.	Schick Müde in ruhigen Stunden in die Pause und hol sie zur Stoßzeit zurück. Oder lass die Automatik an.
+İstersen tezgâha geçip siparişleri kendin hazırlarsın: adımları doğru sırayla seç, hızlı ve hatasız olursa kalite artar.	You can step behind the counter and make orders yourself: pick the steps in order; fast and flawless means higher quality.	Du kannst selbst hinter die Theke: Wähle die Schritte in der richtigen Reihenfolge; schnell und fehlerfrei steigert die Qualität.
+Hızı buradan ayarla. Gün bitince bahşişi nasıl dağıtacağını seçip günlüğünü okuyacaksın. Kolay gelsin!	Set the speed here. At day's end you'll choose how to share tips and read your journal. Good luck!	Hier stellst du das Tempo ein. Am Tagesende verteilst du das Trinkgeld und liest dein Tagebuch. Viel Erfolg!
+Hepsi bitmiş!	Sold out!	Alles aus!
+{0} kalmamış!	No {0} left!	Kein {0} mehr!
+Öğle yoğunluğu başladı!	Lunch rush has started!	Der Mittagsansturm beginnt!
+Akşam yoğunluğu başladı!	Evening rush has started!	Der Abendansturm beginnt!
+Biten: {0}, {1}, {2}, {3}, {4}, {5}	Sold out: {0}, {1}, {2}, {3}, {4}, {5}	Ausverkauft: {0}, {1}, {2}, {3}, {4}, {5}
+Şerbet	Sherbet	Scherbet
+Yazı boyutu ve hareket ayarı. Seçim bu cihazda saklanır.	Text size and motion. Saved on this device.	Textgröße und Bewegung. Wird auf diesem Gerät gespeichert.
+Görünüm	Display	Darstellung
+Görünüm ve yazı boyutu	Display and text size	Darstellung und Textgröße
+Normal yazı	Normal text	Normale Schrift
+Varsayılan	Default	Standard
+Büyük yazı	Large text	Große Schrift
+{0} daha büyük	{0} larger	{0} größer
+Çok büyük yazı	Extra large text	Sehr große Schrift
+Hareketleri azalt	Reduce motion	Bewegung reduzieren
+Hareketleri aç	Turn motion on	Bewegung einschalten
+Bulut, dalga, zıplayan rozetler ve yürüyüş animasyonları	Clouds, waves, bouncing badges and walking animations	Wolken, Wellen, hüpfende Symbole und Laufanimationen
+Gizlilik ve koşullar	Privacy and terms	Datenschutz und Bedingungen
+Gizlilik	Privacy	Datenschutz
+Oyun varsayılan olarak hiçbir veri göndermez; kaydın yalnızca bu cihazda tutulur. Yazı tipleri ve bütün dosyalar oyunla birlikte gelir, üçüncü taraf sunuculara istek yapılmaz.	By default the game sends no data; your save stays on this device only. Fonts and all files ship with the game; no requests go to third-party servers.	Standardmäßig sendet das Spiel keine Daten; dein Spielstand bleibt nur auf diesem Gerät. Schriften und alle Dateien sind im Spiel enthalten; es gehen keine Anfragen an Drittserver.
+Bulut kaydını açarsan anonim bir hesap oluşur; kaydın, takma adın ve gün sonuçların Avrupa Birliği'ndeki sunucularda tutulur. Kullanım istatistiklerine ayrıca izin verirsen hangi ekranların açıldığı gibi oyun içi olaylar kaydedilir ve {0} günde silinir. Hata raporları kişisel veri içermez.	If you turn on cloud save, an anonymous account is created; your save, nickname and daily results are stored on servers in the European Union. If you also allow usage statistics, in-game events such as which screens are opened are recorded and deleted after {0} days. Error reports contain no personal data.	Aktivierst du den Cloud-Speicher, wird ein anonymes Konto angelegt; Spielstand, Spitzname und Tagesergebnisse liegen auf Servern in der Europäischen Union. Erlaubst du zusätzlich Nutzungsstatistiken, werden Spielereignisse wie geöffnete Bildschirme erfasst und nach {0} Tagen gelöscht. Fehlerberichte enthalten keine personenbezogenen Daten.
+Menü → Hesap ve gizlilik ekranından rızalarını geri alabilir ve bütün bulut verilerini silebilirsin.	Under Menu → Account and privacy you can withdraw consent and delete all your cloud data.	Unter Menü → Konto und Datenschutz kannst du Einwilligungen widerrufen und alle Cloud-Daten löschen.
+Kullanım koşulları	Terms of use	Nutzungsbedingungen
+Kebab Empire ücretsiz bir eğlence oyunudur. Oyundaki semtler, kişiler, dükkânlar ve rakamlar kurgudur; vergi ve bordro hesapları gerçeğe yakın tahminlerdir, mali tavsiye değildir.	Kebab Empire is a free entertainment game. Its districts, people, shops and figures are fictional; tax and payroll calculations are realistic estimates, not financial advice.	Kebab Empire ist ein kostenloses Unterhaltungsspiel. Viertel, Personen, Läden und Zahlen sind erfunden; Steuer- und Lohnberechnungen sind realistische Schätzungen, keine Finanzberatung.
+Şehir sıralamasında hile yapmak, başkasını taklit eden ya da hakaret içeren takma ad kullanmak yasaktır; bu durumda sonuçlar ve hesap silinebilir.	Cheating in the city ranking or using nicknames that impersonate others or insult is forbidden; results and accounts may be deleted.	Schummeln in der Stadtrangliste sowie Spitznamen, die andere nachahmen oder beleidigen, sind verboten; Ergebnisse und Konten können gelöscht werden.
+İletişim: oyunun yayın sayfasındaki iletişim adresi	Contact: the address on the game's publishing page	Kontakt: die Adresse auf der Veröffentlichungsseite des Spiels
+İletişim: {0}	Contact: {0}	Kontakt: {0}
+Tamam	OK	OK
+Asıl dil	Original language	Originalsprache
+Kültürel terimler korunur (iftar, usta, döner)	Cultural terms are kept (usta, döner)	Kulturelle Begriffe bleiben erhalten (Usta, Döner)
+Kulturelle Begriffe bleiben erhalten	Cultural terms are kept	Kulturelle Begriffe bleiben erhalten
+Elektrik kesintisi	Power cut	Stromausfall
+Sokakta trafo arızası var; elektrik akşama kadar gelmeyebilir. Emre bir jeneratörcünün numarasını buldu.	A transformer on the street has failed; power may not be back until evening. Emre found a generator rental number.	Ein Trafo in der Straße ist ausgefallen; der Strom kommt vielleicht erst abends wieder. Emre hat die Nummer eines Generatorverleihs.
+Jeneratör kirala	Rent a generator	Generator mieten
+{0}, servis aksamaz	{0}, service carries on	{0}, der Betrieb läuft weiter
+Jeneratör homurdandı ama dükkân ışıl ışıl. Komşular bile sıraya girdi.	The generator grumbled, but the shop shone bright. Even the neighbours queued up.	Der Generator brummte, aber der Laden strahlte. Sogar die Nachbarn standen Schlange.
+Bekle, gelince açarız	Wait, open when it's back	Warten, öffnen, wenn er zurück ist
+{0} gün müşteri −{1}	{0} day customers −{1}	{0} Tag Kunden −{1}
+Öğlen boyunca karanlıkta bekledik; elektrik ikindiye doğru geldi.	We waited in the dark through lunch; power came back in the afternoon.	Wir warteten mittags im Dunkeln; der Strom kam am Nachmittag zurück.
+Tur otobüsü kapıda	A tour bus at the door	Ein Reisebus vor der Tür
+Bir tur rehberi, kırk kişilik grubunu yarın öğlen dükkâna getirmek istiyor. Tek şartı: grup menüsünde {0} indirim.	A tour guide wants to bring a group of forty tomorrow at noon. One condition: {0} off the group menu.	Ein Reiseleiter will morgen Mittag eine Gruppe von vierzig bringen. Einzige Bedingung: {0} Rabatt auf das Gruppenmenü.
+Grup menüsünü kabul et	Accept the group menu	Gruppenmenü annehmen
+{0} gün turist +{1} itibar +{2}	{0} day tourists +{1}, reputation +{2}	{0} Tag Touristen +{1}, Ruf +{2}
+Kırk kişi kırk ayrı dilde "çok güzel" dedi. Rehber her hafta geleceğini söyledi.	Forty people said "delicious" in forty languages. The guide promised to come every week.	Vierzig Leute sagten in vierzig Sprachen „köstlich“. Der Reiseleiter will jede Woche kommen.
+Rehber kartını bıraktı, karşıdaki lokantaya yöneldi.	The guide left a card and headed to the restaurant across the street.	Der Reiseleiter ließ eine Karte da und ging ins Lokal gegenüber.
+Mahalle takımına sponsor	Sponsor the local team	Sponsor des Viertelvereins
+{0}'nin torununun oynadığı mahalle futbol takımının forması yok. Dükkânın adı forma göğsünde yazsın mı?	The neighbourhood football team where {0}'s grandson plays has no kit. Shall your shop's name go on the shirts?	Die Fußballmannschaft im Viertel, in der der Enkel von {0} spielt, hat keine Trikots. Soll der Name deines Ladens auf die Brust?
+Formaları biz yaptıralım	We'll pay for the kits	Wir zahlen die Trikots
+{0}, itibar +{1} {2} gün aile +{3}	{0}, reputation +{1}, {2} days families +{3}	{0}, Ruf +{1}, {2} Tage Familien +{3}
+Çocuklar ilk maçı formalarla kazandı. Veliler maçtan sonra dükkâna akın etti.	The kids won their first match in the new kits. Parents poured into the shop afterwards.	Die Kinder gewannen ihr erstes Spiel in den neuen Trikots. Danach strömten die Eltern in den Laden.
+Bir kasa ayran gönder	Send a crate of ayran	Eine Kiste Ayran schicken
+Ayranlar devre arasında bitti. Teşekkür kartı geldi.	The ayran was gone by half-time. A thank-you card arrived.	Der Ayran war zur Halbzeit leer. Eine Dankeskarte kam.
+{0} hastalandı	{0} is ill	{0} ist krank
+{0} sabah ateşler içinde geldi: "Bir şeyim yok usta, çalışırım." Sesi kısık, gözleri yorgun.	{0} came in feverish: "I'm fine, boss, I can work." Hoarse voice, tired eyes.	{0} kam mit Fieber: „Mir geht's gut, Chef, ich kann arbeiten.“ Heisere Stimme, müde Augen.
+Eve gönder, dinlensin	Send them home to rest	Nach Hause schicken
+Bugün ustasız çalışırsın, moral +{0}	You work without them today, morale +{0}	Heute ohne sie arbeiten, Laune +{0}
+{0} gönülsüzce gitti. Ertesi gün turp gibi döndü.	{0} left reluctantly and came back fit as a fiddle the next day.	{0} ging widerwillig und kam am nächsten Tag kerngesund zurück.
+Bugün idare etsin	Let them manage today	Heute durchhalten lassen
+Moral {0} kalite düşebilir	Morale {0}, quality may drop	Laune {0}, Qualität kann sinken
+{0} gün boyu öksürerek çalıştı. Ekip biraz kırgın.	{0} coughed through the whole day. The crew is a bit upset.	{0} hustete den ganzen Tag. Das Team ist etwas verstimmt.
+Ev sahibi kira artışı istiyor	The landlord wants more rent	Der Vermieter will mehr Miete
+Ev sahibi telefonda: "Piyasa uçtu, kirayı {0} artırmam lazım." {1} sözleşmeye bakıyor: yıllık artış TÜFE ile sınırlı.	The landlord on the phone: "Prices went through the roof, I need {0} more rent." {1} checks the lease: yearly increases are capped at inflation.	Der Vermieter am Telefon: „Die Preise explodieren, ich brauche {0} mehr Miete.“ {1} prüft den Vertrag: Erhöhungen sind an die Inflation gebunden.
+Sözleşmeyi hatırlat	Point to the lease	Auf den Vertrag verweisen
+Kira {0} artar, ev sahibi biraz bozulur	Rent rises {0}, the landlord sulks a little	Miete steigt um {0}, der Vermieter ist etwas verstimmt
+Ev sahibi homurdandı ama sözleşmeye uydu. Kira {0} arttı.	The landlord grumbled but kept to the lease. Rent rose {0}.	Der Vermieter murrte, hielt sich aber an den Vertrag. Die Miete stieg um {0}.
+İstediğini ver	Give what he asks	Geben, was er verlangt
+Kira +{0}, itibar +{1} (iyi komşu)	Rent +{0}, reputation +{1} (good neighbour)	Miete +{0}, Ruf +{1} (guter Nachbar)
+Ev sahibi memnun, kapının önüne iki saksı çiçek bıraktı.	The landlord is happy and left two flower pots at the door.	Der Vermieter ist zufrieden und stellte zwei Blumentöpfe vor die Tür.
+Soğutucu arızalandı	The fridge broke down	Der Kühlschrank ist kaputt
+Sabah dolabın içi ılıktı. Servisçi bugün gelebilir ama acil ücret istiyor.	The fridge was lukewarm this morning. A technician can come today but wants an emergency fee.	Morgens war der Kühlschrank lauwarm. Ein Techniker kann heute kommen, will aber einen Notfallzuschlag.
+Acil servisi çağır	Call emergency service	Notdienst rufen
+Kompresör değişti, dolap yine buz gibi.	New compressor, the fridge is ice-cold again.	Neuer Kompressor, der Kühlschrank ist wieder eiskalt.
+Yarına kadar idare et	Manage until tomorrow	Bis morgen durchhalten
+Stokun {0}'u bozulur	{0} of stock spoils	{0} des Bestands verdirbt
+Etin bir kısmını atmak zorunda kaldık. Ders aldık.	We had to throw out some meat. Lesson learned.	Wir mussten Fleisch wegwerfen. Lektion gelernt.
+Televizyondan davet	An invitation from TV	Einladung vom Fernsehen
+Sabah kuşağındaki yemek programı ustanı canlı yayına çağırıyor. Bir günlüğüne dükkândan ayrılması gerekecek.	The morning cooking show wants your master live on air. They'll be away from the shop for a day.	Die Morgen-Kochshow will deinen Meister live im Studio. Er ist dafür einen Tag weg.
+Ustayı yayına gönder	Send the master on air	Den Meister ins Studio schicken
+Bugün müşteri −{0} sonra {1} gün +{2} itibar +{3}	Customers −{0} today, then {1} days +{2}, reputation +{3}	Heute Kunden −{0}, dann {1} Tage +{2}, Ruf +{3}
+Usta kameraya göz kırptı, telefonlar susmadı. "Televizyondaki dükkân burası mı?"	The master winked at the camera and the phone never stopped. "Is this the shop from TV?"	Der Meister zwinkerte in die Kamera, das Telefon stand nicht still. „Ist das der Laden aus dem Fernsehen?“
+Dükkân boş kalmaz	The shop can't be left	Der Laden bleibt nicht leer
+Yapımcı başka bir ustayı aradı.	The producer called another master.	Die Produktion rief einen anderen Meister an.
+Komşudan duman şikâyeti	A neighbour complains about smoke	Nachbar beschwert sich über Rauch
+Üst kattaki komşu belediyeye dilekçe vermiş: "Davlumbazın dumanı camımdan giriyor." {0} uyarıyor.	The upstairs neighbour filed a complaint: "Smoke from the hood comes in my window." {0} warns you.	Der Nachbar von oben hat sich beschwert: „Der Rauch der Haube zieht in mein Fenster.“ {0} warnt dich.
+Karbon filtre taktır	Install a carbon filter	Aktivkohlefilter einbauen
+{0}, temizlik +{1}	{0}, cleanliness +{1}	{0}, Sauberkeit +{1}
+Filtre takıldı, komşu bir tabak baklava getirdi.	The filter is in, and the neighbour brought a plate of baklava.	Der Filter ist drin, der Nachbar brachte einen Teller Baklava.
+Komşuya bir tepsi gönder	Send the neighbour a tray	Dem Nachbarn ein Tablett schicken
+{0}, {1} ihtimalle ceza	{0}, {1} chance of a fine	{0}, {1} Wahrscheinlichkeit eines Bußgelds
+Dilekçe işleme girdi: {0} ceza.	The complaint went through: {0} fine.	Die Beschwerde wurde bearbeitet: {0} Bußgeld.
+Komşu yumuşadı, dilekçesini geri çekti.	The neighbour softened and withdrew the complaint.	Der Nachbar wurde milde und zog die Beschwerde zurück.
+Meslek lisesinden stajyer	An intern from the vocational school	Praktikant von der Berufsschule
+Aşçılık bölümünden bir öğrenci staj yeri arıyor. Okul öğle yemeğini ve sigortayı karşılıyor.	A culinary student is looking for an internship. The school covers lunch and insurance.	Ein Kochschüler sucht ein Praktikum. Die Schule übernimmt Mittagessen und Versicherung.
+Stajyeri al	Take the intern	Praktikanten nehmen
+Ekip morali +{0} {1} gün servis hızlanır	Crew morale +{0}, {1} days faster service	Teamlaune +{0}, {1} Tage schnellerer Service
+Stajyer ilk gün tabak taşıdı, ikinci gün soğan doğradı. Ekip ona abilik yapıyor.	Day one the intern carried plates, day two chopped onions. The crew has taken them under their wing.	Am ersten Tag trug der Praktikant Teller, am zweiten schnitt er Zwiebeln. Das Team nimmt ihn unter seine Fittiche.
+Şu an bakamayız	We can't take one now	Gerade nicht möglich
+Okula teşekkür edip başka dönem için söz verdin.	You thanked the school and promised a place next term.	Du hast der Schule gedankt und für nächstes Halbjahr zugesagt.
+Toptan alım fırsatı	Bulk purchase offer	Großeinkauf-Angebot
+Rıza: "Elimde fazla mal var. İki haftalık siparişini peşin ödersen {0} indirim yaparım." Peşinat: {1}.	Rıza: "I've got surplus stock. Pay two weeks' order up front and I'll give you {0} off." Upfront: {1}.	Rıza: „Ich habe zu viel Ware. Zahl zwei Wochen im Voraus, dann gibt's {0} Rabatt.“ Vorauszahlung: {1}.
+Peşin öde	Pay up front	Im Voraus zahlen
+{0}, {1} gün malzeme −{2}	{0}, {1} days supplies −{2}	{0}, {1} Tage Waren −{2}
+Depo doldu, maliyetler düştü. Rıza memnun.	The storeroom is full and costs are down. Rıza is happy.	Das Lager ist voll, die Kosten sind gesunken. Rıza ist zufrieden.
+Nakit elde kalsın	Keep the cash	Bargeld behalten
+Rıza omuz silkti: "Sen bilirsin kardeşim."	Rıza shrugged: "Your call, brother."	Rıza zuckte mit den Schultern: „Deine Entscheidung, Bruder.“
+Masada unutulan cüzdan	A wallet left on a table	Eine vergessene Geldbörse
+Kapanışta bir masanın altında dolu bir cüzdan bulundu. İçinde bir kimlik ve epey nakit var.	At closing, a full wallet turned up under a table, with an ID card and plenty of cash.	Beim Schließen lag unter einem Tisch eine volle Geldbörse, mit Ausweis und viel Bargeld.
+Sahibini bul, teslim et	Find the owner and return it	Den Besitzer finden und zurückgeben
+İtibar +{0} ekip morali +{1}	Reputation +{0}, crew morale +{1}	Ruf +{0}, Teamlaune +{1}
+Sahibi ertesi gün çiçekle geldi; mahallede hikâyesi anlatılıyor.	The owner came by with flowers the next day; the story is going round the neighbourhood.	Der Besitzer kam am nächsten Tag mit Blumen; die Geschichte macht im Viertel die Runde.
+Karakola bırak	Hand it to the police	Bei der Polizei abgeben
+Tutanak tutuldu, cüzdan sahibine ulaştı.	A report was filed and the wallet reached its owner.	Ein Protokoll wurde aufgenommen, die Börse erreichte ihren Besitzer.
+Dükkânın kedisi	The shop cat	Die Ladenkatze
+Bir sokak kedisi birkaç gündür kapının önünde uyuyor. Müşteriler fotoğrafını çekiyor, bazıları sevmiyor.	A street cat has been sleeping at the door for days. Customers take photos; some don't like it.	Eine Straßenkatze schläft seit Tagen vor der Tür. Gäste fotografieren sie, manche mögen das nicht.
+Mama kabı koy, adını Köfte koy	Put out a bowl and name her Köfte	Napf hinstellen und sie Köfte nennen
+{0} gün öğrenci ve turist +{1}	{0} days students and tourists +{1}	{0} Tage Studierende und Touristen +{1}
+Köfte artık dükkânın maskotu. Sosyal medyada kendi hesabı bile var.	Köfte is now the shop's mascot, with her own social media account.	Köfte ist jetzt das Maskottchen des Ladens und hat sogar ein eigenes Social-Media-Konto.
+Hayvanseverlere haber ver	Call the animal lovers	Tierschützer benachrichtigen
+Gönüllüler kediyi aşılattı, yakındaki parka bir kulübe kurdu.	Volunteers had the cat vaccinated and built a shelter in the nearby park.	Freiwillige ließen die Katze impfen und bauten ihr im Park eine Hütte.
+Kapının önünde yol çalışması	Road works outside	Bauarbeiten vor der Tür
+{0} kaldırımı söktü; bir hafta sürecekmiş. Yaya trafiği düşecek.	The {0} dug up the pavement; it'll take a week. Foot traffic will drop.	{0} hat den Gehweg aufgerissen; das dauert eine Woche. Weniger Laufkundschaft.
+Yön tabelası ve paket kampanyası	Signs and a takeaway deal	Hinweisschilder und Abholaktion
+{0}, kayıp yarıya iner	{0}, losses halved	{0}, Verlust halbiert
+"Kazıya rağmen açığız!" tabelası işe yaradı.	The "Open despite the digging!" sign worked.	Das Schild „Trotz Baustelle geöffnet!“ hat gewirkt.
+Sabret	Be patient	Geduld haben
+Toz toprak içinde bir hafta geçti.	A dusty week went by.	Eine staubige Woche verging.
+Vergi incelemesi	Tax audit	Steuerprüfung
+Vergi müfettişi son üç ayın kayıtlarını istiyor. {0}: "Defterler tamam ama bir hafta mesai lazım."	The tax inspector wants the last three months' records. {0}: "The books are fine, but it'll take a week of overtime."	Der Steuerprüfer will die Unterlagen der letzten drei Monate. {0}: „Die Bücher stimmen, aber das kostet eine Woche Überstunden.“
+Muhasebeciye ek mesai öde	Pay the accountant overtime	Buchhaltung Überstunden zahlen
+{0}, sorunsuz	{0}, no problems	{0}, problemlos
+İnceleme temiz kapandı. Müfettiş giderken "Defterleriniz örnek" dedi.	The audit closed clean. Leaving, the inspector said, "Your books are exemplary."	Die Prüfung war sauber. Beim Gehen sagte der Prüfer: „Vorbildliche Bücher.“
+Kendin hazırla	Do it yourself	Selbst vorbereiten
+{0} ihtimalle usulsüzlük cezası	{0} chance of an irregularity fine	{0} Wahrscheinlichkeit eines Ordnungsgelds
+Gece yarılarına kadar fatura sıraladın; inceleme temiz çıktı.	You sorted invoices until midnight; the audit came out clean.	Du hast bis Mitternacht Rechnungen sortiert; die Prüfung war sauber.
+Birkaç fiş eksik çıktı: {0} usulsüzlük cezası.	A few receipts were missing: {0} irregularity fine.	Ein paar Belege fehlten: {0} Ordnungsgeld.
+{0}'nın yeni tarif fikri	{0}'s new recipe idea	Neue Rezeptidee von {0}
+{0}: "Memleketin usulü bir sos denesek? Bir hafta tadım yaparız, beğenilirse menüde kalır."	{0}: "How about a sauce the way they make it back home? A week of tastings, and if people like it, it stays on the menu."	{0}: „Wie wäre eine Soße wie in der Heimat? Eine Woche Verkostung, und wenn sie ankommt, bleibt sie auf der Karte.“
+Dene, malzemesini al	Try it, buy the ingredients	Ausprobieren, Zutaten kaufen
+{0}, usta morali +{1} {2} gün gurme +{3}	{0}, master morale +{1}, {2} days foodies +{3}	{0}, Meisterlaune +{1}, {2} Tage Feinschmecker +{3}
+Sos tuttu! Gurmeler tarifini soruyor, usta sır vermiyor.	The sauce is a hit! Foodies ask for the recipe; the master keeps it secret.	Die Soße ist ein Hit! Feinschmecker fragen nach dem Rezept, der Meister schweigt.
+Klasikten şaşmayalım	Stick to the classics	Beim Klassiker bleiben
+Usta morali {0}	Master morale {0}	Meisterlaune {0}
+Usta "Peki" dedi ama biraz bozuldu.	The master said "Fine" but was a little hurt.	Der Meister sagte „Na gut“, war aber etwas gekränkt.
+Okul kermesi	School charity fair	Schulbasar
+Mahalle okulu kütüphane için kermes düzenliyor. {0} dükkândan bir stant bekliyor.	The local school is holding a fair for its library. {0} hopes the shop will run a stall.	Die Schule im Viertel veranstaltet einen Basar für die Bibliothek. {0} hofft auf einen Stand des Ladens.
+Stant kur, gelir okula	Run a stall, proceeds to the school	Stand aufbauen, Erlös an die Schule
+{0} malzeme, itibar +{1} {2} gün aile +{3}	{0} supplies, reputation +{1}, {2} days families +{3}	{0} Waren, Ruf +{1}, {2} Tage Familien +{3}
+Stant ilk bir saatte tükendi. Okul müdürü teşekkür plaketi gönderdi.	The stall sold out in the first hour. The headteacher sent a thank-you plaque.	Der Stand war in der ersten Stunde ausverkauft. Die Schulleitung schickte eine Dankesplakette.
+Bağış yap	Donate	Spenden
+Bağış makbuzu panoya asıldı.	The donation receipt was pinned to the board.	Die Spendenquittung hängt am Brett.
+Yerel gazeteden röportaj	Local paper interview	Interview mit der Lokalzeitung
+Mahalle gazetesi "Esnafın hikâyesi" köşesi için seninle konuşmak istiyor. Fotoğraf için ekibin de gelmesini istiyorlar.	The neighbourhood paper wants to interview you for its "Shopkeepers' stories" column, with the crew in the photo.	Die Viertelzeitung will dich für ihre Rubrik „Geschichten der Händler“ interviewen, mit dem Team auf dem Foto.
+Ekiple birlikte poz ver	Pose with the crew	Mit dem Team posieren
+Ekip morali +{0} {1} gün müşteri +{2}	Crew morale +{0}, {1} days customers +{2}	Teamlaune +{0}, {1} Tage Kunden +{2}
+Fotoğraf kasanın arkasına asıldı. Ekip gururlu.	The photo hangs behind the till. The crew is proud.	Das Foto hängt hinter der Kasse. Das Team ist stolz.
+Yalnız konuş	Talk alone	Allein sprechen
+{0} gün müşteri +{1}	{0} days customers +{1}	{0} Tage Kunden +{1}
+Röportaj çıktı; birkaç yeni yüz "Gazetede gördük" dedi.	The interview ran; a few new faces said, "We saw you in the paper."	Das Interview erschien; ein paar neue Gesichter sagten: „Wir haben euch in der Zeitung gesehen.“
+Paket platformu teklifi	Delivery platform offer	Angebot einer Lieferplattform
+Bir sipariş uygulaması dükkânı ana sayfada öne çıkarmayı teklif ediyor: bir hafta boyunca, cironun {0}'i komisyon.	A food app offers to feature the shop on its home page for a week, for {0} commission on revenue.	Eine Bestell-App bietet an, den Laden eine Woche auf der Startseite zu zeigen, gegen {0} Provision vom Umsatz.
+Öne çıkalım	Get featured	Hervorheben lassen
+{0} gün müşteri +{1} malzeme +{2}	{0} days customers +{1}, supplies +{2}	{0} Tage Kunden +{1}, Waren +{2}
+Telefonlar ve tabletler aynı anda ötüyor. Emre motoru hiç durdurmadı.	Phones and tablets ping at once. Emre never stopped the scooter.	Telefone und Tablets klingeln gleichzeitig. Emre stellte den Roller nie ab.
+Kendi müşterimiz yeter	Our own customers are enough	Unsere Kunden reichen uns
+Uygulamanın satış temsilcisi bir broşür bıraktı.	The app's sales rep left a brochure.	Der Vertreter der App ließ eine Broschüre da.
+Ustalar yarışması	Masters' contest	Meisterwettbewerb
+Lonca bu ay şehrin ustalarını yarıştırıyor. Katılım ücreti var; birinci olanın dükkânı bütün şehirde konuşulacak.	The guild is holding a contest for the city's masters this month. There's an entry fee; the winner's shop will be the talk of the town.	Die Zunft veranstaltet diesen Monat einen Wettbewerb für die Meister der Stadt. Es gibt eine Startgebühr; über den Laden des Siegers spricht die ganze Stadt.
+Ustamızı yarıştıralım	Enter our master	Unseren Meister antreten lassen
+{0}, yıldıza göre şans	{0}, odds depend on stars	{0}, Chancen je nach Sternen
+Birinci olduk! Kupa vitrinde, kuyruk sokağın sonunda.	We won! The trophy is in the window, the queue down the street.	Wir haben gewonnen! Der Pokal steht im Fenster, die Schlange reicht bis ans Straßenende.
+Kıl payı ikinci olduk. Jüri "Seneye sizi bekleriz" dedi.	Second by a hair. The jury said, "See you next year."	Knapp Zweiter. Die Jury sagte: „Bis nächstes Jahr.“
+Bu yıl izleyelim	Just watch this year	Dieses Jahr nur zuschauen
+Yarışmayı tribünden izledin; rakiplerin tekniklerini not ettin.	You watched from the stands and noted the rivals' techniques.	Du hast von der Tribüne zugesehen und dir die Techniken der Konkurrenz notiert.
+Közde çevir	Turn over the coals	Über der Glut wenden
+Lavaşa al	Put on lavash	Auf Lavash legen
+Şişe diz	Thread the skewer	Auf den Spieß stecken
+{0} müşteri yemeğini beklerken kalktı.	{0} customers left while waiting for their food.	{0} Gäste gingen, während sie aufs Essen warteten.
+Mutfak yetişmiyor: bir usta ya da çırak al, ocak sayısını artır.	The kitchen can't keep up: hire a master or apprentice and add grills.	Die Küche kommt nicht hinterher: Stell einen Meister oder Lehrling ein und erweitere die Grills.
+İki farklı kayıt var	There are two different saves	Es gibt zwei verschiedene Spielstände
+Bulutta kaydın var	You have a cloud save	Du hast einen Cloud-Spielstand
+Şimdilik kapat	Close for now	Vorerst schließen
+Buluttaki oyun yüklendi.	Cloud game loaded.	Cloud-Spiel geladen.
+Bu cihazdaki kayıt buluta yazıldı.	This device's save was written to the cloud.	Der Spielstand dieses Geräts wurde in die Cloud geschrieben.
+Başka bir cihazda oynadığın oyun bulutta duruyor.	A game you played on another device is in the cloud.	Ein Spiel von einem anderen Gerät liegt in der Cloud.
+Bu cihazdaki kayıt ile buluttaki kayıt farklı. Hangisiyle devam etmek istersin? Seçmediğin kayıt dosyaya yedeklenebilir.	The save on this device differs from the cloud save. Which one do you want to continue? The other can be backed up to a file.	Der Spielstand auf diesem Gerät unterscheidet sich vom Cloud-Spielstand. Mit welchem willst du weiterspielen? Der andere kann in eine Datei gesichert werden.
+{0}, itibar +{1}	{0}, reputation +{1}	{0}, Ruf +{1}

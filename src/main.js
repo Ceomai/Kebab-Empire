@@ -43,6 +43,8 @@ import './cloud.js';
 import '../js/main.js';
 import { registerSW } from 'virtual:pwa-register';
 
+KE.CONTACT = import.meta.env.VITE_CONTACT_EMAIL || '';
+
 KE.CLOUD.init().finally(() => { KE.CONFIG.load(); if (KE.UI.checkCloud) KE.UI.checkCloud(); });
 if (KE.I18N.preferred() !== 'tr') KE.I18N.set(KE.I18N.preferred());
 
