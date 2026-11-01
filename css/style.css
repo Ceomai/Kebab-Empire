@@ -689,13 +689,13 @@ table.fin tr.click:hover td { background: #fff6e6; }
 .f-barn { position: absolute; left: 3%; top: 18%; width: 22%; }
 .f-fence { position: absolute; width: 46%; opacity: .95; }
 .f-fence.a { left: 30%; top: 50%; } .f-fence.b { right: -2%; top: 50%; }
-.fa { position: absolute; transform: translate(-50%, -100%); animation: wander 9s ease-in-out infinite alternate; }
+.fa { position: absolute; transform: translate(-50%, -100%); }
 .fa.dana { width: 9%; } .fa.kuzu { width: 7%; } .fa.tavuk { width: 4.4%; }
 .fa .art-animal { width: 100%; display: block; }
-.fa .leg { transform-box: fill-box; transform-origin: 50% 0; animation: legs .5s ease-in-out infinite alternate; }
-.fa .leg.l1 { animation-direction: alternate-reverse; }
+
+
 .fa .head { transform-box: fill-box; transform-origin: 0 50%; animation: nod 2.4s ease-in-out infinite; }
-@keyframes wander { 0% { margin-left: 0; } 45% { margin-left: 3cqw; } 55% { margin-left: 3cqw; } 100% { margin-left: -2cqw; } }
+
 @keyframes nod { 50% { transform: rotate(12deg); } }
 .f-truck { position: absolute; width: 15%; bottom: 4%; animation: truck 14s ease-in-out infinite; }
 @keyframes truck { 0% { left: -18%; } 40%, 60% { left: 40%; } 100% { left: 110%; } }
@@ -926,7 +926,7 @@ table.fin tr.click:hover td { background: #fff6e6; }
 .crownic { display: inline-flex; vertical-align: -2px; color: var(--altin); } .crownic .ic { width: 15px; height: 15px; }
 
 /* =====================================================================
-   Canlı İstanbul teması: krem kâğıt, tente şeridi, renkli ikon karoları
+   Canlı İstanbul teması: krem kâğıt, renkli ikon karoları
    ===================================================================== */
 :root { --zemin: #ece2cb; --kart: #fffaf0; --kart-cizgi: #f0e4c8; --krem: #fff1d6; }
 body {
@@ -939,9 +939,6 @@ body {
 body::before { background: var(--kart); }
 /* üst çubuk */
 .topbar { background: var(--kart); color: var(--murekkep); box-shadow: 0 8px 20px -14px rgba(60, 35, 15, .6); }
-.topbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: -10px; height: 10px; pointer-events: none;
-  background: radial-gradient(circle at 15px 0, var(--biber) 0 14px, transparent 14.5px) 0 0 / 60px 10px repeat-x,
-              radial-gradient(circle at 45px 0, #fff 0 14px, transparent 14.5px) 0 0 / 60px 10px repeat-x; filter: drop-shadow(0 3px 2px rgba(60, 35, 15, .15)); }
 .brand { color: var(--biber); } .brand b { color: var(--murekkep); }
 .tb-date { border-left-color: var(--kart-cizgi); } .tb-sub { color: var(--murekkep-2); opacity: 1; }
 .tb-clock, .tb-money, .tb-rep { background: var(--krem); box-shadow: none; }
@@ -1056,3 +1053,29 @@ body::before { background: var(--kart); }
 .tab:hover { background: #f8ecd3; }
 .tab.on { background: var(--kart); color: var(--biber); }
 .mapscreen2 .mapframe.big { background: #1477c2; align-items: flex-start; }
+
+/* ---------- Hareket: yürüyüş yönü, adım ve duraklama ---------- */
+@property --amp { syntax: '<number>'; inherits: true; initial-value: 0; }
+.fa { animation: faWalk 14s linear infinite; animation-delay: var(--d, 0s); }
+.fa .art-animal { transform-origin: 50% 80%; animation: faFace 14s linear infinite, faGait 14s linear infinite; animation-delay: var(--d, 0s); }
+.fa.tavuk, .fa.tavuk .art-animal { animation-duration: 9s; }
+.fa .leg { transform-box: fill-box; transform-origin: 50% 0; animation: faLeg .45s linear infinite alternate; }
+.fa .leg.l1 { animation-direction: alternate-reverse; }
+.fa.tavuk .leg { animation-duration: .25s; }
+@keyframes faWalk { 0% { margin-left: 0; } 35% { margin-left: 4cqw; } 50% { margin-left: 4cqw; } 85% { margin-left: 0; } 100% { margin-left: 0; } }
+@keyframes faFace { 0%, 42% { transform: scaleX(1); } 42.01%, 92% { transform: scaleX(-1); } 92.01%, 100% { transform: scaleX(1); } }
+@keyframes faGait { 0%, 34% { --amp: 1; } 36%, 49% { --amp: 0; } 51%, 84% { --amp: 1; } 86%, 100% { --amp: 0; } }
+@keyframes faLeg { from { transform: rotate(calc(var(--amp) * -18deg)); } to { transform: rotate(calc(var(--amp) * 18deg)); } }
+/* sahnedeki insanlar: bacaklar yalnızca yer değiştirirken oynar, gövde gidiş yönüne eğilir */
+.ent .ke-figure.walking .leg, .ent .ke-figure .leg { animation: none; }
+.ent.moving .fig .ke-figure .legL { animation: legs .36s ease-in-out infinite alternate; }
+.ent.moving .fig .ke-figure .legR { animation: legs .36s ease-in-out infinite alternate-reverse; }
+.ent.moving .fig { animation: stepR .36s ease-in-out infinite alternate; }
+.ent.flip.moving .fig { animation: stepL .36s ease-in-out infinite alternate; }
+@keyframes stepR { from { transform: rotate(4deg); } to { transform: translateY(-.3cqw) rotate(4deg); } }
+@keyframes stepL { from { transform: scaleX(-1) rotate(4deg); } to { transform: scaleX(-1) translateY(-.3cqw) rotate(4deg); } }
+.t-walk .ke-figure { transform: rotate(4deg); }
+/* Ramazan */
+.hchip.iftar { background: #2b2f63; color: #fff; } .hchip.iftar .ic { background: #ffc93c; color: #2b2f63; } .hchip.iftar em { color: #c9c3ff; }
+.hchip.iftar.on { background: #23a26d; } .hchip.iftar.on em { color: #e5fff2; }
+.iftarwait { position: absolute; left: 50%; bottom: 112%; transform: translateX(-50%); white-space: nowrap; background: #2b2f63; color: #ffe39a; font-size: .85cqw; font-weight: 800; border-radius: 99px; padding: .05cqw .55cqw; z-index: 4; }

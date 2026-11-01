@@ -247,16 +247,43 @@ KE.REGULARS = [
 
 /* ---------- Özel günler ---------- */
 KE.SPECIAL = {
-  ramazan: { name: 'Ramazan', desc: 'Gündüz sakin, iftarda dükkân dolar taşar. Aileler akşam erken gelir.', hours: { 10: 0.45, 11: 0.45, 12: 0.5, 13: 0.5, 14: 0.5, 15: 0.5, 16: 0.6, 17: 1.0, 18: 2.1, 19: 2.0, 20: 1.4, 21: 1.2, 22: 1.1 }, types: { aile: 1.6 }, theme: 'ramazan' },
+  ramazan: { name: 'Ramazan', desc: 'Gündüz oruç: yalnızca turistler ve oruç tutmayanlar gelir. İftardan önce paket kuyruğu, ezanla birlikte bütün masalar aynı anda dolar; teravihten sonra tatlı ve çay kalabalığı.', hours: {}, types: {}, tip: 1.12, theme: 'ramazan' },
   bayram: { name: 'Bayram', desc: 'Bayramlıklarıyla aileler sokakta. Bahşişler bol, herkes güler yüzlü.', hours: {}, types: { aile: 1.9, turist: 1.2, gece: 0.6 }, tip: 1.3, theme: 'bayram' },
   mac: { name: 'Maç akşamı', desc: 'Derbi günü. Akşam taraftarlar akın eder, Beşiktepe yerinden oynar.', hours: { 19: 1.3, 20: 1.6, 21: 2.0, 22: 2.2 }, types: { gece: 1.9, ogrenci: 1.3 }, theme: 'mac' },
   cuma: { name: 'Cuma', desc: 'Cuma namazından sonra öğle kalabalığı her zamankinden büyük.', hours: { 13: 1.5, 14: 1.4 }, types: { isci: 1.2 }, theme: null }
+};
+/* Ramazan: İstanbul'da iftar saati (dakika, gece yarısından). Ramazan dışında null. */
+KE.RAMAZAN = [['2026-02-18', '2026-03-19', 18 * 60 + 29], ['2027-02-08', '2027-03-08', 18 * 60 + 13]];
+KE.iftarMinute = function (day) {
+  const iso = KE.dateOf(day).toISOString().slice(0, 10);
+  const r = KE.RAMAZAN.find((x) => iso >= x[0] && iso <= x[1]);
+  if (!r) return null;
+  const off = Math.round((KE.dateOf(day) - new Date(r[0] + 'T00:00:00Z')) / 86400000);
+  return Math.round(r[2] + off * 1.75);
+};
+/* Ramazan günü dakikalık evre: oruc, hazirlik (paket), iftar (masalar dolar), aksam, teravih, gece */
+KE.ramazanPhase = function (absMin, iftar) {
+  if (absMin < iftar - 100) return 'oruc';
+  if (absMin < iftar - 25) return 'hazirlik';
+  if (absMin < iftar + 15) return 'iftar';
+  if (absMin < iftar + 50) return 'aksam';
+  if (absMin < iftar + 110) return 'teravih';
+  return 'gece';
+};
+KE.RAMAZAN_RATE = { oruc: 0.12, hazirlik: 0.8, iftar: 2.6, aksam: 1.5, teravih: 0.45, gece: 1.0 };
+KE.RAMAZAN_TYPES = {
+  oruc: { turist: 4, gurme: 0.5, aile: 0.2, isci: 0.4, beyaz: 0.6, ogrenci: 0.8, gece: 0.4 },
+  hazirlik: { aile: 1.6, beyaz: 1.3, isci: 1.2 },
+  iftar: { aile: 2.6, gurme: 1.4, beyaz: 1.2, gece: 0.3, isci: 0.8 },
+  aksam: { aile: 1.4, turist: 1.2 },
+  teravih: { turist: 1.4, ogrenci: 1.2 },
+  gece: { gece: 1.8, ogrenci: 1.5, aile: 0.7 }
 };
 KE.specialDay = function (day) {
   const d = KE.dateOf(day);
   const iso = d.toISOString().slice(0, 10);
   if (KE.holidayOf(day)) return Object.assign({ id: 'bayram' }, KE.SPECIAL.bayram, { name: KE.holidayOf(day) });
-  if ((iso >= '2026-02-18' && iso <= '2026-03-19') || (iso >= '2027-02-08' && iso <= '2027-03-08')) return Object.assign({ id: 'ramazan' }, KE.SPECIAL.ramazan);
+  if (KE.iftarMinute(day) != null) return Object.assign({ id: 'ramazan', iftar: KE.iftarMinute(day) }, KE.SPECIAL.ramazan);
   if (d.getUTCDay() === 6 && Math.floor(day / 7) % 2 === 0) return Object.assign({ id: 'mac' }, KE.SPECIAL.mac);
   if (d.getUTCDay() === 5) return Object.assign({ id: 'cuma' }, KE.SPECIAL.cuma);
   return null;

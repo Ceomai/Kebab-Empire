@@ -176,7 +176,8 @@
       ] }) });
 
   ev.push({ id: 'iftar', who: 'ayse', w: 0.5,
-    build: (G) => ({ title: 'Mahalle sofrası', text: 'Ayşe Teyze mahallede ihtiyaç sahipleri için bir sofra kuruluyor, dükkândan da katkı bekliyor.', ctx: {},
+    when: (G) => KE.iftarMinute(G.day + 1) != null,
+    build: (G) => ({ title: 'İftar sofrası', text: 'Ayşe Teyze yarın akşam mahallede ihtiyaç sahipleri için iftar sofrası kuruyor, dükkândan da katkı bekliyor.', ctx: {},
       choices: [
         { label: '50 porsiyon gönder', desc: `${KE.tl(9000)}, itibar +5, moral +3`, run: (G) => { G.cash -= 9000; KE.addExtra(G, 'other', 9000); G.reputation = clamp(G.reputation + 5, 0, 100); staffOf(G).forEach((s) => { s.morale = clamp(s.morale + 3, 0, 100); }); return 'Ayşe Teyze dualar etti. Mahallede adın hayırla anılıyor.'; } },
         { label: 'Bu sefer olmaz', desc: 'İtibar −1', run: (G) => { G.reputation = clamp(G.reputation - 1, 0, 100); return 'Ayşe Teyze bozulmadı ama biraz kırıldı.'; } }

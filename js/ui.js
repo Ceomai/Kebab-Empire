@@ -390,7 +390,8 @@
     }
     const sp = KE.specialDay(G.day);
     if (sp && sp.id === 'mac') add('ajans', 'Akşam maç var', 'Kalabalık gelir; ekibi ve stoku hazırla', 'eve');
-    else if (sp) add('ajans', sp.name, sp.desc, /ramazan|iftar/i.test(sp.id + sp.name) ? 'eve' : 'pm');
+    else if (sp && sp.iftar) { const ic = KE.clock(sp.iftar - KE.OPEN_HOUR * 60); add('ajans', `İftar ${ic}: masalar dolacak`, 'Gündüz oruç, dükkân sakin. Paket ve masa hazırlığını iftardan önce bitir.', 'eve'); out[out.length - 1].time = ic; }
+    else if (sp) add('ajans', sp.name, sp.desc, 'pm');
     let left = 99; for (let k = 0; k < 32; k++) if (KE.isMonthEnd(G.day + k)) { left = k; break; }
     if (left <= 3) add('office', left ? `Ay sonuna ${left} gün` : 'Bugün ay sonu', 'Maaş, SGK ve kira ödenecek', 'eve');
     if (!G.farm && G.day >= 10 && G.cash > 3000000) add('ciftlik', 'Çiftlik satılık', 'Kendi etini yetiştir, maliyet düşsün', 'pm');
@@ -595,7 +596,8 @@
     if (screen === 'map') { if (force || tickN % 12 === 0) { UI.mapRefresh(); const cp = document.querySelector('.citypanel'); if (cp) cp.outerHTML = cityPanel(cityTasks()); } return; }
     if (screen !== 'shop' || !L) return;
     KE.SCENE.update(G, b, L);
-    const rush = { 120: 'Öğle yoğunluğu başladı!', 540: 'Akşam yoğunluğu başladı!', 720: 'Son siparişler!' };
+    const ift = L.special && L.special.iftar ? L.special.iftar - KE.OPEN_HOUR * 60 : null;
+    const rush = ift != null ? { [ift - 100]: 'İftar hazırlığı: paket kuyruğu başladı', [ift - 25]: 'İftara az kaldı, masalar doluyor!', [ift]: 'Ezan okundu, afiyet olsun!', [ift + 110]: 'Teravih çıktı: tatlı ve çay saati', 720: 'Son siparişler!' } : { 120: 'Öğle yoğunluğu başladı!', 540: 'Akşam yoğunluğu başladı!', 720: 'Son siparişler!' };
     Object.keys(rush).forEach((m) => { if (L.minute >= +m && (UI.lastMin == null || UI.lastMin < +m) && UI.lastMinB === b.id) banner(rush[m]); });
     UI.lastMin = L.minute; UI.lastMinB = b.id;
     const ck = document.getElementById('clock');
@@ -1041,10 +1043,10 @@
         const heads = KE.penHeads(F.pens[k]);
         const show = k === 'tavuk' ? Math.min(10, Math.ceil(heads / 25)) : Math.min(8, heads);
         for (let n = 0; n < show; n++, i++) {
-          const zone = { dana: [6, 30], kuzu: [36, 60], tavuk: [66, 86] }[k];
+          const zone = { dana: [30, 50], kuzu: [54, 72], tavuk: [76, 92] }[k];
           const x = zone[0] + ((n * 37 + i * 11) % (zone[1] - zone[0]));
-          const y = 58 + ((n * 23 + i * 7) % 24);
-          animals += `<div class="fa ${k}" style="left:${x}%;top:${y}%;animation-delay:-${(n * 1.7) % 9}s;z-index:${Math.round(y)}">${KE.ART.animal(k)}</div>`;
+          const y = 70 + ((n * 23 + i * 7) % 20);
+          animals += `<div class="fa ${k}" style="left:${x}%;top:${y}%;--d:-${((n * 3.1 + i * 1.3) % 14).toFixed(1)}s;z-index:${Math.round(y)}">${KE.ART.animal(k)}</div>`;
         }
       });
     } else animals = `<div class="fa dana" style="left:18%;top:64%">${KE.ART.animal('dana')}</div><div class="fa kuzu" style="left:46%;top:70%">${KE.ART.animal('kuzu')}</div>`;

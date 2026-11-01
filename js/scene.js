@@ -45,7 +45,7 @@
         <div class="st-menu"><div class="st-menu-h">MENÜ</div><div class="st-menu-items">${menuItems.map((p) => `<div class="mi">${A().dish(p.id)}<b>${KE.tl(b.prices[p.id]).replace(' ₺', '')}</b></div>`).join('')}</div></div>
         <div class="st-decor">${wallDecor.map((id) => `<div class="wd">${A().decor(id)}</div>`).join('')}</div>
         <div class="st-window"><div class="st-street"></div></div>
-        ${(() => { const sp = KE.specialDay(G.day); if (!sp || !sp.theme) return ''; const cols = sp.theme === 'ramazan' ? ['#ffc93c', '#d7263d', '#23a26d', '#2f6fb5'] : sp.theme === 'bayram' ? ['#d7263d', '#fff', '#d7263d', '#fff'] : ['#7d3c98', '#fff', '#ffc93c', '#1b2631']; return `<div class="st-bunting">${Array.from({ length: 22 }, (_, i) => `<i style="--c:${cols[i % cols.length]}"></i>`).join('')}</div>${sp.theme === 'ramazan' ? `<div class="st-mahya">Hoş geldin ya şehr-i Ramazan</div>` : ''}`; })()}
+        ${(() => { const sp = KE.specialDay(G.day); if (!sp || !sp.theme) return ''; const cols = sp.theme === 'ramazan' ? ['#ffc93c', '#d7263d', '#23a26d', '#2f6fb5'] : sp.theme === 'bayram' ? ['#d7263d', '#fff', '#d7263d', '#fff'] : ['#7d3c98', '#fff', '#ffc93c', '#1b2631']; if (sp.theme !== 'ramazan') return ''; return `<div class="st-bunting">${Array.from({ length: 22 }, (_, i) => `<i style="--c:${cols[i % cols.length]}"></i>`).join('')}</div>${sp.theme === 'ramazan' ? `<div class="st-mahya">Hoş geldin ya şehr-i Ramazan</div>` : ''}`; })()}
         <div class="st-lamp l1">${A().lamp()}</div><div class="st-lamp l2">${A().lamp()}</div>
         <div class="st-clock"><i class="hh" id="st-hh"></i><i class="mm" id="st-mm"></i></div>
         <div class="st-shelf">${['#c0392b', '#e67e22', '#7d3c98', '#27ae60', '#d4ac0d'].map((c, i) => `<span class="jar" style="--c:${c};--h:${[70, 90, 60, 80, 75][i]}%"></span>`).join('')}</div>
@@ -89,15 +89,23 @@
     if (html != null && e.html !== html) { e.el.innerHTML = html; e.html = html; }
     if (e.x !== x || e.y !== y) {
       const dx = x - e.x;
-      e.el.classList.toggle('flip', dx < -0.5);
+      if (Math.abs(dx) > 0.5) e.el.classList.toggle('flip', dx < 0);
       e.el.style.left = x + '%'; e.el.style.top = y + '%';
-      e.moving = Math.abs(dx) + Math.abs(y - e.y) > 0.6;
+      if (Math.abs(dx) + Math.abs(y - e.y) > 0.6) markMoving(e);
       e.x = x; e.y = y;
     }
-    if (cls != null) e.el.className = 'ent ' + cls + (e.el.classList.contains('flip') ? ' flip' : '');
+    if (cls != null) e.el.className = 'ent ' + cls + (e.el.classList.contains('flip') ? ' flip' : '') + (e.moveT ? ' moving' : '');
     e.el.style.zIndex = z != null ? z : Math.round(y * 10);
     e.seen = true;
     return e;
+  }
+  /* Yürüme: geçiş süresi boyunca 'moving' sınıfı; varınca bacaklar durur */
+  function markMoving(e) {
+    const st = document.getElementById('stage');
+    const dur = st ? parseFloat(getComputedStyle(st).getPropertyValue('--walk')) || 0.9 : 0.9;
+    e.el.classList.add('moving');
+    clearTimeout(e.moveT);
+    e.moveT = setTimeout(() => { e.moveT = null; e.el.classList.remove('moving'); }, dur * 1000);
   }
   function sweep(prefix, onGone) {
     Object.keys(ent).forEach((k) => {
@@ -182,7 +190,6 @@
       const look = KE.staffLook(s);
       const html = `<div class="fig">${KE.figure(look, { mood: KE.moodFromValue(s.morale), pose, tray: !!tray, trayDish: tray ? A().dish(tray) : null, label: s.name })}</div>${s.energy < 25 ? '<span class="tired">Yorgun</span>' : ''}`;
       const e = place(layer, 's' + s.id, html, x, y, cls, z);
-      if (e) e.el.classList.toggle('moving', !!e.moving);
     });
 
     /* müşteriler */
@@ -207,17 +214,17 @@
       } else {
         const tp = S.tablePos(L.tables.length)[c.table] || { x: 30, y: 80 };
         x = tp.x - 1.5; y = tp.y - 4.2; cls = 'cust seated';
-        html = bubble + `<div class="bust">${KE.portrait(c.look, { mood, label: KE.CUSTOMER_TYPES[c.type].name })}</div>` + (c.state === 'eat' ? `<div class="eating">${A().dish(c.pid)}</div>` : '') + (c.count > 1 ? `<div class="bust b2">${KE.portrait(c.look2 || (c.look2 = KE.customerLook(c.type)), { mood })}</div>` : '');
+        if (c.waitIftar) html = '<span class="iftarwait">İftarı bekliyor</span>'; else html = '';
+        html += bubble + `<div class="bust">${KE.portrait(c.look, { mood, label: KE.CUSTOMER_TYPES[c.type].name })}</div>` + (c.state === 'eat' ? `<div class="eating">${A().dish(c.pid)}</div>` : '') + (c.count > 1 ? `<div class="bust b2">${KE.portrait(c.look2 || (c.look2 = KE.customerLook(c.type)), { mood })}</div>` : '');
       }
       const e = place('st-people', 'u' + c.id, html, x, y, cls, c.state === 'eat' || c.state === 'seat' ? Math.round((S.tablePos(L.tables.length)[c.table] || { y: 80 }).y * 10) - 4 : null, DOOR);
-      if (e && c.state === 'queue') e.el.classList.toggle('moving', !!e.moving);
     });
     sweep('s');
     sweep('u', (k, e) => {
       e.el.classList.add('leaving');
+      e.el.classList.toggle('flip', DOOR.x + 6 < e.x);
+      clearTimeout(e.moveT); e.el.classList.add('moving');
       e.el.style.left = DOOR.x + 6 + '%'; e.el.style.top = DOOR.y + '%';
-      const f = e.el.querySelector('.fig');
-      if (f) f.firstChild && f.firstChild.classList && f.firstChild.classList.add('walking');
       setTimeout(() => e.el.remove(), 1200);
     });
 
@@ -261,7 +268,11 @@
       ['tray', 'Bekleyen tabak', readyT, lvl(readyT, 2, 4)],
       ['table', 'Masa', `${occ}/${L.tables.length}`, lvl(occ / Math.max(1, L.tables.length), 0.75, 1)],
       ['broom', 'Kirli', dirty, lvl(dirty, 2, 3)]
-    ].map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join('');
+    ].map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join('') + (() => {
+      const sp = L.special; if (!sp || !sp.iftar) return '';
+      const left = sp.iftar - (KE.OPEN_HOUR * 60 + L.minute);
+      return left > 0 ? `<span class="hchip iftar" title="İftar ${KE.clock(sp.iftar - KE.OPEN_HOUR * 60)}">${KE.ART.icon('clock')}<b>${left >= 60 ? Math.floor(left / 60) + ' sa ' + (left % 60) + ' dk' : left + ' dk'}</b><em>İftara</em></span>` : left > -40 ? `<span class="hchip iftar on">${KE.ART.icon('heart')}<b>Afiyet olsun</b><em>İftar</em></span>` : '';
+    })();
   };
 
   let lastCoin = 0;
