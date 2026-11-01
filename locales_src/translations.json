@@ -8266,5 +8266,373 @@
  "Kızart": {
   "en": "Fry",
   "de": "Frittieren"
+ },
+ "Haftanın yarışı": {
+  "en": "Race of the week",
+  "de": "Rennen der Woche"
+ },
+ "Ailesine düşkün": {
+  "en": "Family-minded",
+  "de": "Familienmensch"
+ },
+ "Ara sıra izin ister; izin verilirse çok sevinir.": {
+  "en": "Asks for a day off now and then; is delighted if you say yes.",
+  "de": "Will ab und zu freinehmen; freut sich riesig, wenn du Ja sagst."
+ },
+ "Başka yerlerin tekliflerini dinler, yarışmalara can atar.": {
+  "en": "Listens to offers from elsewhere and is eager for competitions.",
+  "de": "Hört sich Angebote von anderswo an und brennt auf Wettbewerbe."
+ },
+ "Başka yere gözü yok; morali zor bozulur.": {
+  "en": "Has no eye on other places; morale is hard to shake.",
+  "de": "Schielt nicht nach anderen Läden; die Laune ist schwer zu trüben."
+ },
+ "Vakıf ve sponsorluk": {
+  "en": "Foundation & sponsorship",
+  "de": "Stiftung & Sponsoring"
+ },
+ "Kalıcı küçük etkiler. Bugüne kadar bağış: {0}": {
+  "en": "Small lasting effects. Donated so far: {0}",
+  "de": "Kleine, dauerhafte Effekte. Bisher gespendet: {0}"
+ },
+ "Seviye {0}/{1}": {
+  "en": "Level {0}/{1}",
+  "de": "Stufe {0}/{1}"
+ },
+ "Mahalle takımı sponsorluğu": {
+  "en": "Neighbourhood team sponsorship",
+  "de": "Sponsoring des Viertelvereins"
+ },
+ "Formalarda zincirin adı. Her seviye bütün şubelerde müşteri +{0}": {
+  "en": "The chain's name on the shirts. Each level: customers +{0} at all branches",
+  "de": "Der Name der Kette auf den Trikots. Jede Stufe: Gäste +{0} in allen Filialen"
+ },
+ "Okul bağışı": {
+  "en": "School donation",
+  "de": "Schulspende"
+ },
+ "Mahalle okuluna kütüphane ve burs. Her seviye itibar +{0} ve müşterinin fiyat toleransı +{1}": {
+  "en": "A library and scholarships for the neighbourhood school. Each level: reputation +{0} and customers' price tolerance +{1}",
+  "de": "Eine Bibliothek und Stipendien für die Schule im Viertel. Jede Stufe: Ruf +{0} und Preistoleranz der Gäste +{1}"
+ },
+ "Her akşam kapıda sıcak yemek. Her seviye itibarın tepede aşınmasını {0} azaltır; ekip morali +{1}": {
+  "en": "A hot meal at the door every evening. Each level reduces reputation erosion at the top by {0}; crew morale +{1}",
+  "de": "Jeden Abend eine warme Mahlzeit an der Tür. Jede Stufe verringert den Rufverlust an der Spitze um {0}; Laune im Team +{1}"
+ },
+ "Bağışlar \"Lüks Kebap\"ı satın alma bedeliyle aynı kasadan çıkar: önce imparatorluk mu, önce mahalle mi? İmparatorluktan sonra da açık kalır.": {
+  "en": "Donations come out of the same till as the price of buying \"Lüks Kebap\": empire first, or neighbourhood first? They stay open after the empire, too.",
+  "de": "Spenden kommen aus derselben Kasse wie der Kaufpreis für „Lüks Kebap“: erst das Imperium oder erst das Viertel? Auch nach dem Imperium bleiben sie verfügbar."
+ },
+ "Ailesine düşkün:": {
+  "en": "Family-minded:",
+  "de": "Familienmensch:"
+ },
+ "Hırslı:": {
+  "en": "Ambitious:",
+  "de": "Ehrgeizig:"
+ },
+ "Sadık:": {
+  "en": "Loyal:",
+  "de": "Treu:"
+ },
+ "Haftanın yarışı:": {
+  "en": "Race of the week:",
+  "de": "Rennen der Woche:"
+ },
+ "Ana menüden açılır. O hafta bütün oyuncular aynı semtte, aynı ustayla, aynı tohumla {0} gün oynar; müşteriler ve olaylar herkes için aynı gelir. Puan {1} günün toplam cirosudur. Yarış ayrı kaydedilir, ana oyununa dokunmaz; bulut açıksa günlerin doğrulanır ve haftalık sıralamaya girer.": {
+  "en": "Opens from the main menu. That week all players play {0} days in the same district, with the same master and the same seed; customers and events come the same for everyone. Your score is the total revenue of the {1} days. The race is saved separately and doesn't touch your main game; if cloud save is on, your days are verified and enter the weekly ranking.",
+  "de": "Startet im Hauptmenü. In dieser Woche spielen alle {0} Tage im selben Bezirk, mit demselben Meister und demselben Seed; Gäste und Ereignisse sind für alle gleich. Deine Punktzahl ist der Gesamtumsatz der {1} Tage. Das Rennen wird getrennt gespeichert und berührt dein Hauptspiel nicht; ist der Cloud-Speicher an, werden deine Tage geprüft und kommen in die Wochenrangliste."
+ },
+ "Rezervasyon defteri:": {
+  "en": "Reservation book:",
+  "de": "Reservierungsbuch:"
+ },
+ "{0} dönemde {1}'dan şube başına alınır, sabah açılıp kapatılır. Açıkken dolu saatte gelen müşteri kaçmaz, başka saate yönlendirilir; yer ayırtan müşteri daha sabırlıdır ve {2} daha çok harcar. Bedeli: yer ayırtmadan gelen kalabalığın {3}'i hiç gelmez. Rehber müfettişini geçmenin en sağlam yolu budur.": {
+  "en": "From era {0}, bought per branch at {1} and switched on or off each morning. While it's on, customers arriving at a full hour aren't lost but redirected to another time; customers with a reservation are more patient and spend {2} more. The cost: {3} of the walk-in crowd never comes. It's the surest way to pass the guidebook inspector.",
+  "de": "Ab Epoche {0} pro Filiale bei {1} erhältlich und jeden Morgen ein- oder ausschaltbar. Solange es aktiv ist, gehen Gäste zur vollen Stunde nicht verloren, sondern werden auf eine andere Uhrzeit umgeleitet; Gäste mit Reservierung sind geduldiger und geben {2} mehr aus. Der Preis: {3} der Laufkundschaft kommt gar nicht. Das ist der sicherste Weg, den Restaurantführer-Inspektor zu überzeugen."
+ },
+ "Bazı günler servis sırasında küçük bir olay çıkar: turist otobüsü, sönen ocak, fenalaşan bir çalışan, bastıran sağanak. Oyun durur ve seçim yaparsın. Karar vermezsen {0} dakika sonra şubenin müdürü varsa o en iyisini seçer; yoksa güvenli seçenek uygulanır. Tamirci bazen trafiğe takılır; tente müdavimlerin gönlünü kazanır.": {
+  "en": "Some days a small incident crops up during service: a tourist coach, a grill going out, a worker feeling faint, a sudden downpour. The game pauses and you choose. If you don't decide, after {0} minutes the branch manager, if there is one, picks the best option; otherwise the safe option is applied. The repairman sometimes gets stuck in traffic; the awning wins over the regulars.",
+  "de": "An manchen Tagen passiert während des Service ein kleiner Zwischenfall: ein Touristenbus, ein ausgehender Grill, ein Mitarbeiter, dem schlecht wird, ein Platzregen. Das Spiel hält an und du entscheidest. Entscheidest du nicht, wählt nach {0} Minuten der Filialleiter der Filiale, falls vorhanden, die beste Option; sonst gilt die sichere Option. Der Techniker steckt manchmal im Stau fest; die Markise gewinnt die Herzen der Stammgäste."
+ },
+ "Servis sırasında bir malzeme günün kalanına yetmeyecekse yan paneldeki \"Acil kurye\" düğmesi günün kalanının ihtiyacını getirir (dönerde normal fiyatın {0} katı, kebapta {1} katı). Günde bir kez kullanılır; ertesi sabah sipariş kendiliğinden \"Bol\"a geçer.": {
+  "en": "If an ingredient won't last the rest of the day during service, the \"Emergency courier\" button in the side panel brings what the rest of the day needs ({0} times the normal price for döner, {1} times for kebab). Usable once a day; the next morning the order switches to \"Plenty\" on its own.",
+  "de": "Reicht während des Service eine Zutat nicht für den Rest des Tages, bringt der Knopf „Eilkurier“ in der Seitenleiste den Bedarf für den restlichen Tag (bei Döner zum {0}-fachen, bei Kebab zum {1}-fachen Normalpreis). Einmal pro Tag nutzbar; am nächsten Morgen springt die Bestellung von selbst auf „Reichlich“."
+ },
+ "Her ustanın kalıcı bir huyu vardır ve kartında yazar.": {
+  "en": "Every master has a permanent quirk, shown on their card.",
+  "de": "Jeder Meister hat eine feste Eigenheit, die auf seiner Karte steht."
+ },
+ "usta ara sıra izin ister,": {
+  "en": "masters ask for a day off now and then,",
+  "de": "– solche Meister wollen ab und zu freinehmen,"
+ },
+ "hırslı": {
+  "en": "ambitious",
+  "de": "ehrgeizig"
+ },
+ "usta başka yerlerin tekliflerini dinler,": {
+  "en": "masters listen to offers from elsewhere,",
+  "de": "– solche hören sich Angebote von anderswo an,"
+ },
+ "sadık": {
+  "en": "loyal",
+  "de": "treu"
+ },
+ "usta başka yere bakmaz ve morali zor bozulur. Verdiğin kararlar moralini ve sadakatini etkiler.": {
+  "en": "masters don't look elsewhere and their morale is hard to shake. Your decisions affect their morale and loyalty.",
+  "de": "– solche schauen sich nicht anderswo um, und ihre Laune ist schwer zu trüben. Deine Entscheidungen wirken sich auf ihre Laune und Treue aus."
+ },
+ "Ekip her hafta bir bahşiş kuralı ister (kapanış ekranında yazar). O kuralı seçtiğin her gün herkesin morali biraz artar; hafta sonunda günlerin yarısında bile uygulanmadıysa ekip küser ve morali düşer.": {
+  "en": "Each week the crew asks for a tipping rule (shown on the closing screen). Every day you choose that rule, everyone's morale rises a little; if it wasn't applied on at least half the days by the end of the week, the crew sulks and morale drops.",
+  "de": "Jede Woche wünscht sich das Team eine Trinkgeldregel (steht im Abschlussbildschirm). An jedem Tag, an dem du diese Regel wählst, steigt die Laune aller ein wenig; wurde sie bis Wochenende nicht mindestens an der Hälfte der Tage angewendet, ist das Team eingeschnappt und die Laune sinkt."
+ },
+ "{0} dönemden sonra itibarın {1}'in üstündeyse rehber müfettişi bir şubeye gelir. Rezervasyon defteri olan şubede adı bir gün önceden defterde görünür (danışman kartı haber verir); öteki şubelere habersiz gelir. Memnuniyet {2} ve kaçan müşteri {3}'in altındaysa zincir bir yıldız kazanır (en çok {4}): her yıldız müşteriyi ve fiyat toleransını kalıcı olarak {5} artırır. Başarısız ziyaret itibar götürür.": {
+  "en": "After era {0}, if your reputation is above {1}, the guidebook inspector visits a branch. At a branch with a reservation book, the name shows up in the book a day in advance (the advisor card tips you off); other branches get an unannounced visit. If satisfaction reaches {2} and lost customers stay below {3}, the chain earns a star (up to {4}): each star permanently raises customers and price tolerance by {5}. A failed visit costs reputation.",
+  "de": "Ab Epoche {0} kommt bei einem Ruf über {1} der Restaurantführer-Inspektor in eine Filiale. In einer Filiale mit Reservierungsbuch steht sein Name schon einen Tag vorher im Buch (die Beraterkarte warnt dich); andere Filialen besucht er unangekündigt. Erreicht die Zufriedenheit {2} und bleiben die verlorenen Gäste unter {3}, bekommt die Kette einen Stern (höchstens {4}): Jeder Stern erhöht Gäste und Preistoleranz dauerhaft um {5}. Ein misslungener Besuch kostet Ruf."
+ },
+ "Müdürün olan şube sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar; kapasite yetmiyorsa ve yer varsa bürodan bir kasiyer ya da garson alır. Gün ortası kararlarında sen karar vermezsen o verir. İstersen şube kartından kapatabilirsin.": {
+  "en": "A branch with a manager sets its own morning stock from yesterday's sales and moves its prices to market once a week; if capacity falls short and there's room, it hires a cashier or waiter from the office. If you don't make midday decisions, the manager does. You can turn this off on the branch card.",
+  "de": "Eine Filiale mit Filialleiter stellt den Morgenbestand nach den gestrigen Verkäufen und die Preise einmal pro Woche selbst auf Marktniveau ein; reicht die Kapazität nicht und ist Platz, stellt sie über das Büro einen Kassierer oder Kellner ein. Triffst du die Entscheidungen am Mittag nicht, trifft der Filialleiter sie. Auf der Filialkarte kannst du das abschalten."
+ },
+ "Vakıf ve sponsorluk:": {
+  "en": "Foundation & sponsorship:",
+  "de": "Stiftung & Sponsoring:"
+ },
+ "{0}'te üç bağış var: mahalle takımı (her seviye müşteri +{1}), okul (itibar +{2} fiyat toleransı +{3}) ve aşevi (itibarın tepede aşınması {4} azalır, ekip morali +{5}). Her biri üç seviyedir ve pahalıdır: geç oyunda biriken paranın gideceği yer. Satın alma bedeliyle aynı kasadan çıkar; imparatorluktan sonra da açık kalır.": {
+  "en": "There are three donations at {0}: the neighbourhood team (customers +{1} per level), the school (reputation +{2}, price tolerance +{3}) and the soup kitchen (reputation erosion at the top reduced by {4}, crew morale +{5}). Each has three levels and is expensive: it's where late-game money goes. They come out of the same till as the buy-out price and stay open after the empire, too.",
+  "de": "In {0} gibt es drei Spenden: den Viertelverein (Gäste +{1} pro Stufe), die Schule (Ruf +{2}, Preistoleranz +{3}) und die Suppenküche (Rufverlust an der Spitze um {4} geringer, Laune im Team +{5}). Jede hat drei Stufen und ist teuer: Hier landet das Geld aus dem späten Spiel. Sie kommen aus derselben Kasse wie der Kaufpreis und bleiben auch nach dem Imperium verfügbar."
+ },
+ "Karar vermezsen {0} dakika sonra müdür \"Buyursunlar\" der.": {
+  "en": "If you don't decide, after {0} minutes the manager says \"Let them in\".",
+  "de": "Entscheidest du nicht, sagt der Filialleiter nach {0} Minuten „Herein mit ihnen“."
+ },
+ "Çoğu zaman on dakikada gelir; bazen trafiğe takılır ve ocak bir saat soğuk kalır.": {
+  "en": "Usually arrives in ten minutes; sometimes gets stuck in traffic and the grill stays cold for an hour.",
+  "de": "Kommt meist in zehn Minuten; manchmal steckt er im Stau und der Grill bleibt eine Stunde kalt."
+ },
+ "Karar vermezsen {0} dakika sonra müdür \"Tamirci çağır · {1}\" der.": {
+  "en": "If you don't decide, after {0} minutes the manager says \"Call a repairman · {1}\".",
+  "de": "Entscheidest du nicht, sagt der Filialleiter nach {0} Minuten „Techniker rufen · {1}“."
+ },
+ "Karar vermezsen {0} dakika sonra müdür \"Eve gönder\" der.": {
+  "en": "If you don't decide, after {0} minutes the manager says \"Send home\".",
+  "de": "Entscheidest du nicht, sagt der Filialleiter nach {0} Minuten „Nach Hause schicken“."
+ },
+ "İki saat boyunca müşteri yalnızca {0} azalır; bugün gelecek müdavimlerin gönlü +{1}": {
+  "en": "For two hours customers drop by only {0}; regulars coming today +{1} heart",
+  "de": "Zwei Stunden lang sinken die Gäste nur um {0}; Stammgäste, die heute kommen, +{1} Herz"
+ },
+ "Karar vermezsen {0} dakika sonra müdür \"Tente aç, çay ikram et · {1}\" der.": {
+  "en": "If you don't decide, after {0} minutes the manager says \"Put up the awning, serve tea · {1}\".",
+  "de": "Entscheidest du nicht, sagt der Filialleiter nach {0} Minuten „Markise ausfahren, Tee spendieren · {1}“."
+ },
+ "Rezervasyon defteri": {
+  "en": "Reservation book",
+  "de": "Reservierungsbuch"
+ },
+ "Müşteriler masa ayırtır.": {
+  "en": "Customers book tables.",
+  "de": "Gäste reservieren Tische."
+ },
+ "Dolu saatte gelen müşteri kaçmaz": {
+  "en": "Customers arriving at a full hour aren't lost",
+  "de": "Gäste zur vollen Stunde gehen nicht verloren"
+ },
+ ", başka saate yönlendirilir; yer ayırtan müşteri daha sabırlıdır ve {0} daha çok harcar. Bedeli: yer ayırtmadan gelen kalabalığın {1}'i hiç gelmez.": {
+  "en": ", but redirected to another time; customers with a reservation are more patient and spend {0} more. The cost: {1} of the walk-in crowd never comes.",
+  "de": ", sondern werden auf eine andere Uhrzeit umgeleitet; Gäste mit Reservierung sind geduldiger und geben {0} mehr aus. Der Preis: {1} der Laufkundschaft kommt gar nicht."
+ },
+ "Rehber müfettişi de yer ayırtır:": {
+  "en": "The guidebook inspector books too:",
+  "de": "Auch der Restaurantführer-Inspektor reserviert:"
+ },
+ "rezervasyonlu şubeye geleceği bir gün önceden defterde görünür, ekibi ve stoğu hazırlarsın. Yıldız için memnuniyet {0} kaçan müşteri {1}'in altında olmalı; yönlendirilen müşteri kaçmış sayılmaz.": {
+  "en": "a visit to a branch with reservations shows up in the book a day in advance, so you can get the crew and stock ready. For a star, satisfaction must reach {0} and lost customers must stay below {1}; redirected customers don't count as lost.",
+  "de": "sein Besuch in einer Filiale mit Reservierung steht einen Tag vorher im Buch, sodass du Team und Bestand vorbereiten kannst. Für einen Stern muss die Zufriedenheit {0} erreichen und die verlorenen Gäste müssen unter {1} bleiben; umgeleitete Gäste zählen nicht als verloren."
+ },
+ "Dün bu şubede gelenlerin {0}'ı hizmet alamadan gitti.": {
+  "en": "Yesterday {0} of the people who came to this branch left without being served.",
+  "de": "Gestern gingen {0} der Gäste dieser Filiale, ohne bedient zu werden."
+ },
+ "Defteri al · {0}": {
+  "en": "Get the book · {0}",
+  "de": "Buch kaufen · {0}"
+ },
+ "Rezervasyonla çalışıyor": {
+  "en": "Taking reservations",
+  "de": "Mit Reservierung"
+ },
+ "{0}: rezervasyon kapalı, kapı herkese açık.": {
+  "en": "{0}: reservations off, the door is open to everyone.",
+  "de": "{0}: Reservierung aus, die Tür steht allen offen."
+ },
+ "{0}: bugün rezervasyonla çalışıyor.": {
+  "en": "{0}: taking reservations today.",
+  "de": "{0}: arbeitet heute mit Reservierung."
+ },
+ "Müdür: {0}": {
+  "en": "Manager: {0}",
+  "de": "Filialleiter: {0}"
+ },
+ "Şube cirosu": {
+  "en": "Branch revenue",
+  "de": "Filialumsatz"
+ },
+ "{0} B": {
+  "en": "{0}k",
+  "de": "{0} Tsd."
+ },
+ "Son {0} gün ciro": {
+  "en": "Revenue, last {0} days",
+  "de": "Umsatz der letzten {0} Tage"
+ },
+ "istemişti; {0} günün {1}'inde uygulandı. Biraz küstüler: herkesin morali {2}": {
+  "en": "but it was applied on only {1} of {0} days. They're a little put out: everyone's morale {2}",
+  "de": "– angewendet wurde sie aber nur an {1} von {0} Tagen. Alle sind etwas eingeschnappt: Laune aller {2}"
+ },
+ "Ekibin haftalık isteği karşılandı ({0} günün {1}'inde Ustaya ağırlık).": {
+  "en": "The crew's weekly wish was met (Master gets more on {1} of {0} days).",
+  "de": "Der Wochenwunsch des Teams wurde erfüllt (Mehr für den Meister an {1} von {0} Tagen)."
+ },
+ "Güzel bir gün, patron. Rakamlar yüz güldürüyor.": {
+  "en": "A good day, boss. The numbers bring a smile.",
+  "de": "Ein guter Tag, Chef. Die Zahlen lassen einen lächeln."
+ },
+ "{0} müşteri kuyrukta bekleyemedi (gelenlerin {1}'i kaçtı)": {
+  "en": "{0} customers couldn't wait in the queue ({1} of arrivals lost)",
+  "de": "{0} Gäste konnten nicht in der Schlange warten ({1} der Gäste verloren)"
+ },
+ "Kapasite yetmediği için kaçanların değeri yaklaşık {0}.": {
+  "en": "Customers lost to lack of capacity were worth about {0}.",
+  "de": "Die wegen fehlender Kapazität verlorenen Gäste waren etwa {0} wert."
+ },
+ "Rezervasyon: {0} kişi başka saate yönlendirildi (kaçmış sayılmaz).": {
+  "en": "Reservations: {0} people redirected to another time (not counted as lost).",
+  "de": "Reservierung: {0} Personen auf eine andere Uhrzeit umgeleitet (zählen nicht als verloren)."
+ },
+ "Gün ortası · müdür karar verdi": {
+  "en": "Midday · the manager decided",
+  "de": "Mittag · der Filialleiter hat entschieden"
+ },
+ "Tamirci trafiğe takıldı; ocak bir saat soğuk kaldı.": {
+  "en": "The repairman got stuck in traffic; the grill stayed cold for an hour.",
+  "de": "Der Techniker steckte im Stau; der Grill blieb eine Stunde kalt."
+ },
+ "Kasiyer bembeyaz oldu, tezgâha tutundu: \"Bir şeyim yok patron, geçer.\"": {
+  "en": "The cashier went white as a sheet and grabbed the counter: \"I'm fine, boss, it'll pass.\"",
+  "de": "Der Kassierer wurde kreidebleich und hielt sich an der Theke fest: „Mir fehlt nichts, Chef, das geht vorbei.“"
+ },
+ "Mahallede dükkânı övüyor!": {
+  "en": "Singing the shop's praises around the neighbourhood!",
+  "de": "Lobt den Laden im ganzen Viertel!"
+ },
+ "{0} Ocakb": {
+  "en": "{0} Gri",
+  "de": "{0} Gri"
+ },
+ "{0} Ocakba": {
+  "en": "{0} Gril",
+  "de": "{0} Gril"
+ },
+ "{0} Oc": {
+  "en": "{0} G",
+  "de": "{0} G"
+ },
+ "{0} Ocakbaş": {
+  "en": "{0} Gril",
+  "de": "{0} Gril"
+ },
+ "{0} müşteri kuyrukta bekleyemedi (gelenlerin {1}'ü kaçtı)": {
+  "en": "{0} customers couldn't wait in the queue ({1} of arrivals lost)",
+  "de": "{0} Gäste konnten nicht in der Schlange warten ({1} der Gäste verloren)"
+ },
+ "Haftanın yarışı · {0}-W{1}": {
+  "en": "Race of the week · {0}-W{1}",
+  "de": "Rennen der Woche · {0}-W{1}"
+ },
+ "Herkes aynı dükkânla, aynı günlerle": {
+  "en": "Same shop, same days for everyone",
+  "de": "Gleicher Laden, gleiche Tage für alle"
+ },
+ "Bu hafta bütün oyuncular aynı semtte, aynı ustayla, aynı tohumla": {
+  "en": "This week every player plays in the same district, with the same master and the same seed, for",
+  "de": "Diese Woche spielen alle im selben Bezirk, mit demselben Meister und demselben Seed"
+ },
+ "oynar: müşteriler, olaylar ve fiyatlar herkes için aynı gelir. Fark senin kararlarında. Puan: {0} günün toplam cirosu.": {
+  "en": "and customers, events and prices come the same for everyone. The difference is in your decisions. Score: total revenue of {0} days.",
+  "de": "lang: Gäste, Ereignisse und Preise sind für alle gleich. Den Unterschied machen deine Entscheidungen. Punktzahl: Gesamtumsatz von {0} Tagen."
+ },
+ "Yarış ayrı kaydedilir, ana oyununa dokunmaz. Bulut kaydı kapalıysa puanın yalnızca bu cihazda tutulur.": {
+  "en": "The race is saved separately and doesn't touch your main game. If cloud save is off, your score is kept on this device only.",
+  "de": "Das Rennen wird getrennt gespeichert und berührt dein Hauptspiel nicht. Ist der Cloud-Speicher aus, bleibt deine Punktzahl nur auf diesem Gerät."
+ },
+ "{0}/{1} gün": {
+  "en": "{0}/{1} days",
+  "de": "{0}/{1} Tage"
+ },
+ "Yarış Dükkânı": {
+  "en": "Race Shop",
+  "de": "Rennladen"
+ },
+ "Mehmet görevi": {
+  "en": "Mehmet's job",
+  "de": "Aufgabe von Mehmet"
+ },
+ "Can görevi": {
+  "en": "Can's job",
+  "de": "Aufgabe von Can"
+ },
+ "{0} gün bitti": {
+  "en": "{0} days done",
+  "de": "{0} Tage vorbei"
+ },
+ "Toplam ciro:": {
+  "en": "Total revenue:",
+  "de": "Gesamtumsatz:"
+ },
+ "· ilk puanın": {
+  "en": "· your first score",
+  "de": "· deine erste Punktzahl"
+ },
+ "{0} müşteri kuyrukta bekleyemedi (gelenlerin {1}'yı kaçtı)": {
+  "en": "{0} customers couldn't wait in the queue ({1} of arrivals lost)",
+  "de": "{0} Gäste konnten nicht in der Schlange warten ({1} der Gäste verloren)"
+ },
+ "{0} tabak tezgâhta soğudu.": {
+  "en": "{0} plates went cold on the counter.",
+  "de": "{0} Teller wurden auf der Theke kalt."
+ },
+ "Servise bir komi/garson daha ver.": {
+  "en": "Put one more runner/waiter on service.",
+  "de": "Stell noch einen Läufer/Kellner in den Service."
+ },
+ "En iyin: {0}": {
+  "en": "Your best: {0}",
+  "de": "Deine Bestleistung: {0}"
+ },
+ "· en iyin {0}": {
+  "en": "· your best {0}",
+  "de": "· deine Bestleistung {0}"
+ },
+ "{0} müşteri kuyrukta bekleyemedi (gelenlerin {1}'yi kaçtı)": {
+  "en": "{0} customers couldn't wait in the queue ({1} of arrivals lost)",
+  "de": "{0} Gäste konnten nicht in der Schlange warten ({1} der Gäste verloren)"
+ },
+ "Şişi çevir": {
+  "en": "Turn the skewer",
+  "de": "Spieß drehen"
+ },
+ "Dün gelenlerin {0}'u hizmet alamadan gitti.": {
+  "en": "Yesterday {0} of arrivals left without being served.",
+  "de": "Gestern gingen {0} der Gäste, ohne bedient zu werden."
+ },
+ "{0}: usta, kasa ya da servis boş": {
+  "en": "{0}: master, till or service unstaffed",
+  "de": "{0}: Meister, Kasse oder Service unbesetzt"
+ },
+ "{0} müşteri istediğini bulamadı (gelenlerin {1}'u kaçtı)": {
+  "en": "{0} customers couldn't get what they wanted ({1} of arrivals lost)",
+  "de": "{0} Gäste bekamen nicht, was sie wollten ({1} der Gäste verloren)"
  }
 }
