@@ -357,7 +357,7 @@ table.fin tr.click:hover td { background: #fff6e6; }
 .mapframe.big { border-radius: 0; box-shadow: none; flex: 1; display: flex; }
 .mapframe svg { display: block; width: 100%; height: auto; }
 .mapframe.big svg { height: calc(100vh - 130px); min-height: 560px; width: 100%; object-fit: cover; }
-@media (max-width: 760px) { .mapframe { overflow-x: auto; } .mapframe svg { min-width: 900px; } .mapframe.big svg { height: auto; min-height: 0; } }
+@media (max-width: 760px) { .mapframe.big svg { height: auto; min-height: 0; } }
 .citymap .win { fill: #a9d0ea; } .citymap .win.dim { fill: #8bb7d6; }
 .citymap .lights .win { fill: #ffd36b; filter: drop-shadow(0 0 2px #ffcf5a); }
 .citymap .plbl { font: 800 13px var(--f-body); fill: var(--murekkep); }
@@ -1088,10 +1088,9 @@ body::before { background: var(--kart); }
 .mapinner svg.overlay { pointer-events: none; }
 .mapinner svg.overlay .place { pointer-events: auto; }
 @media (max-width: 760px) {
-  .mapscreen2 .mapframe.big { height: 58vh; min-height: 360px; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; display: block; }
-  .mapscreen2 .mapframe.big::-webkit-scrollbar { display: none; }
-  .mapscreen2 .mapinner { width: 1250px; }
-  .mapscreen2 .mapframe.big svg, .mapscreen2 .mapframe.big svg.base { width: 1250px; height: 768px; min-width: 0; min-height: 0; }
+  .mapscreen2 .mapframe.big { height: auto; overflow: hidden; display: block; }
+  .mapscreen2 .mapinner { width: 100%; }
+  .mapscreen2 .mapframe.big svg, .mapscreen2 .mapframe.big svg.base { width: 100%; height: auto; min-width: 0; min-height: 0; }
   .citypanel { border-radius: 22px 22px 0 0; margin-top: -18px; box-shadow: 0 -10px 26px -18px rgba(60, 35, 15, .6); }
   .cp-in { padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
   .cp-places { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
