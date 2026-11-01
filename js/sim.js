@@ -1113,7 +1113,7 @@
     hafta: (G) => !!(G.flags.profitWeek || (G.goals && G.goals.ilkhafta)),
     rep40: (G) => G.reputation >= 40,
     upg: (G) => G.branches.some((b) => Object.values(b.equipment).some((v) => v > 0)),
-    taclar2: (G) => G.branches.filter((b) => (b.champions || 0) > 0).length >= 2,
+    sampiyon: (G) => !!G.flags.champ,
     sube3: (G) => G.branches.length >= 3,
     ciro3m: (G) => G.ledger.months.some((m) => m.revenue >= 3000000),
     rep65: (G) => G.reputation >= 65,

@@ -38,6 +38,7 @@ for (const mode of (process.env.MODES || 'doner,kebap').split(',')) for (const f
     KE.finishService(G);
     const out = KE.finalizeDay(G);
     (out.eras || []).forEach((e) => rows.push(`--- dönem ${e.n} (${e.name}): gün ${G.day - 1}`));
+    if (process.env.DEBUG && out.month) rows.push("    şartlar: " + KE.eraStatus(G).req.map((r) => r.id + (r.ok ? "+" : "-")).join(" ") + " taç:" + G.branches.filter((b) => b.champions).length + " ay-ciro:" + Math.round(out.month.revenue / 1e6) + "M");
     const emp = KE.empireStatus(G); if (out.month) rows.push(`${out.month.name.padEnd(13)} ciro ${String(Math.round(out.month.revenue / 1000)).padStart(6)}B net ${String(Math.round(out.month.net / 1000)).padStart(6)}B pers ${String(Math.round(out.month.personnel / 1000)).padStart(5)}B çiftlik ${String(Math.round((out.month.farm || 0) / 1000)).padStart(4)}B | kasa ${String(Math.round(G.cash / 1000)).padStart(7)}B şube ${G.branches.length} itibar ${G.reputation.toFixed(0)} pİndeks ${G.priceIndex.toFixed(2)} | taç ${G.branches.filter((b) => b.champions).length} düello ${(G.rival.wins || 0)}-${(G.rival.losses || 0)} güç ${Math.round(G.rival.power)}`);
   }
   console.log(`\n== ${mode} ${farm ? '+çiftlik' : ''}`); rows.forEach((r) => console.log(r));
