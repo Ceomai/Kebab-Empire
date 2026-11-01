@@ -16,7 +16,7 @@ describe('dönemler', () => {
   it('şartlar tamamlanınca bir sonraki döneme geçilir ve yerler açılır', () => {
     const { KE } = loadGame(files);
     const G = playDays(KE, newGame(KE), 8);
-    G.flags.profitWeek = G.day; G.reputation = 45; G.branches[0].equipment.service = 1;
+    G.flags.profitWeek = G.day; G.ledger.months.push({ revenue: 1, net: 1 }); G.reputation = 45; G.branches[0].equipment.service = 1;
     const up = KE.advanceEra(G);
     expect(up.map((e) => e.n)).toEqual([2]);
     expect(KE.placeOpen(G, 'subeler')).toBe(true);
@@ -26,7 +26,7 @@ describe('dönemler', () => {
     const { KE } = loadGame(files);
     const G = playDays(KE, newGame(KE), 3);
     const env = clone(KE.SAVE.envelope(G));
-    delete env.game.era; env.v = 3; env.game.flags.profitWeek = 1; env.game.reputation = 50; env.game.branches[0].equipment.cook = 1;
+    delete env.game.era; env.v = 3; env.game.flags.profitWeek = 1; env.game.ledger.months.push({ revenue: 1, net: 1 }); env.game.reputation = 50; env.game.branches[0].equipment.cook = 1;
     delete env.sum;
     const g = KE.SAVE.open(env);
     expect(g.era).toBe(2);
@@ -137,10 +137,10 @@ describe('eski kayıtlar', () => {
   it('dönem kaydı olmayan ileri oyun imza tarif şartına takılmaz', () => {
     const { KE } = loadGame(files);
     const G = playDays(KE, newGame(KE), 3);
-    ['besiktepe', 'sultanpazari', 'kulealti', 'bostansahil'].forEach((d) => KE.openBranch(G, d));
+    ['besiktepe', 'sultanpazari', 'kulealti', 'bostansahil', 'merterli'].forEach((d) => KE.openBranch(G, d));
     G.flags.profitWeek = 1; G.flags.champ = true; G.reputation = 80; G.branches[0].equipment.cook = 1;
     G.branches.slice(0, 2).forEach((b) => { b.champions = 1; });
-    G.ledger.months.push({ revenue: 4e6 });
+    G.ledger.months.push({ revenue: 4e6, net: 1 });
     const env = clone(KE.SAVE.envelope(G));
     delete env.game.eraLog; env.game.era = 3; delete env.sum;
     const g = KE.SAVE.open(env);

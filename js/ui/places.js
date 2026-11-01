@@ -131,11 +131,11 @@
 
   /* ---------- Reklam ajansı ---------- */
   const CAMPAIGNS = [
-    { id: 'ilan', name: 'El ilanı dağıtımı', cost: 9000, days: 4, icon: 'map', desc: 'Sanayi ve konut sokaklarına ilan. Müşteri +%12, işçi ve aile +%30.', mods: [['traffic', 1.12], ['type:isci', 1.3], ['type:aile', 1.3]] },
-    { id: 'sosyal', name: 'Sosyal medya kampanyası', cost: 22000, days: 7, icon: 'heart', desc: 'Kısa videolar ve fenomen paylaşımları. Müşteri +%18, öğrenci ve gece +%50.', mods: [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]] },
-    { id: 'radyo', name: 'Radyo reklamı', cost: 35000, days: 7, icon: 'bolt', desc: 'Sabah trafiğinde jingle. Bütün şubelerde müşteri +%10, beyaz yaka +%30.', mods: [['traffic', 1.1], ['type:beyaz', 1.3]] },
-    { id: 'blog', name: 'Gurme blog daveti', cost: 15000, days: 5, icon: 'star', desc: 'Yemek yazarlarına tadım. Gurme +%60. Usta ★4 ve üstüyse itibar +4.', mods: [['type:gurme', 1.6]], rep: true },
-    { id: 'tabela', name: 'Işıklı tabela yenileme', cost: 30000, days: 0, icon: 'store', desc: 'Seçili şubede kalıcı olarak müşteri +%6. Şube başına bir kez.', sign: true }
+    { id: 'ilan', name: 'El ilanı dağıtımı', cost: 6000, days: 4, icon: 'map', desc: 'Sanayi ve konut sokaklarına ilan. Müşteri +%12, işçi ve aile +%30.', mods: [['traffic', 1.12], ['type:isci', 1.3], ['type:aile', 1.3]] },
+    { id: 'sosyal', name: 'Sosyal medya kampanyası', cost: 14000, days: 7, icon: 'heart', desc: 'Kısa videolar ve fenomen paylaşımları. Müşteri +%18, öğrenci ve gece +%50.', mods: [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]] },
+    { id: 'radyo', name: 'Radyo reklamı', cost: 24000, days: 7, icon: 'bolt', desc: 'Sabah trafiğinde jingle. Bütün şubelerde müşteri +%10, beyaz yaka +%30.', mods: [['traffic', 1.1], ['type:beyaz', 1.3]] },
+    { id: 'blog', name: 'Gurme blog daveti', cost: 10000, days: 5, icon: 'star', desc: 'Yemek yazarlarına tadım. Gurme +%60. Usta ★4 ve üstüyse itibar +4.', mods: [['type:gurme', 1.6]], rep: true },
+    { id: 'tabela', name: 'Işıklı tabela yenileme', cost: 20000, days: 0, icon: 'store', desc: 'Seçili şubede kalıcı olarak müşteri +%6. Şube başına bir kez.', sign: true }
   ];
   SCREENS.ajans = () => {
     const b = B();

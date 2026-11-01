@@ -77,6 +77,7 @@
     const act = KE.G.phase === 'morning' ? ['store', KE.G.branches.length > 1 ? 'Dükkâna geç, kepenkleri aç' : 'Dükkâna geç, kepengi aç'] : KE.G.phase === 'service' ? ['eye', 'Dükkâna bak'] : ['chart', 'Kapanış raporuna git'];
     return `<aside class="citypanel"><div class="cp-in">
       <div class="cp-head"><span class="kicker">${KE.weekday(KE.G.day)} · ${clockNow}</span><h2>${esc(B().name)}</h2></div>
+      ${UI.adviceCard(false)}
       ${goalRing()}
       ${eraCard()}${weeklyCard()}
       <div class="cp-sec">Yapılacaklar</div><div class="cp-tasks">${taskHtml}</div>
@@ -86,6 +87,60 @@
       ${KE.G.phase === 'morning' ? `<button class="btn ghost block quickday" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün: servisi atla, sonuca geç</button>` : ''}
     </div></aside>`;
   }
+
+  /* ---------- Danışman: "Bugün ne yapmalıyım?" ----------
+     Durumu tarayıp en önemli üç öneriyi, gerekçesi ve tek dokunuşluk eylemiyle sıralar. */
+  UI.advice = function () {
+    const G = KE.G, out = [];
+    const add = (pri, ic, title, why, btn, attrs) => out.push({ pri, ic, title, why, btn, attrs });
+    const morning = G.phase === 'morning';
+    G.branches.forEach((b) => {
+      const st = KE.branchStaff(G, b), multi = G.branches.length > 1, nm = multi ? b.name + ': ' : '';
+      if (!st.some(KE.isCook)) { add(0, 'chef', nm + 'ustasız şube', 'Usta olmadan kepenk açılmaz; bugün kapalı kalır.', 'Usta Pazarı', 'data-a="go" data-s="lonca"'); return; }
+      if (morning && !st.some((s) => s.pos === 'kasa')) add(0, 'cash', nm + 'kasada kimse yok', 'Sipariş alınamaz. Bir kasiyer ya da garsonu kasaya ver.', 'Ekibi düzenle', `data-a="viewBranch" data-id="${b.id}"`);
+      if (morning && !st.some((s) => s.pos === 'servis') && st.filter((s) => !KE.isCook(s)).length > 1) add(0, 'tray', nm + 'serviste kimse yok', 'Hazır yemekler tezgâhta soğur.', 'Ekibi düzenle', `data-a="viewBranch" data-id="${b.id}"`);
+      if (morning) {
+        const low = Object.keys(b.usage).filter((k) => b.usage[k] > 0 && (b.stock[k] || 0) / b.usage[k] < 0.9);
+        if (low.length) add(1, 'cart', nm + 'stok bir güne yetmiyor', 'Hal\'den ek alım yap; yoksa ürünler gün ortasında biter.', 'Hal\'e git', 'data-a="go" data-s="hal"');
+      }
+      const ys = G.lastSummary && G.lastSummary.branches[b.id] && G.lastSummary.branches[b.id].stats;
+      if (ys && ys.arrivals > 20) {
+        const lost = (ys.lostWait + ys.lostFull + ys.lostFood) / ys.arrivals;
+        if (lost >= 0.12) {
+          const cooks = st.filter(KE.isCook).length, stn = KE.stations(G, b);
+          const pct = `Dün gelenlerin %${KE.ekSayi(String(Math.round(lost * 100)), 'i')} hizmet alamadan gitti.` + '|';
+          if (ys.lostFood >= ys.lostWait && ys.lostFood >= ys.lostFull) {
+            if (cooks < stn && KE.canHire(G, b, 'usta').ok) add(1, 'chef', nm + 'mutfak yetişmiyor', pct + ` ${stn - cooks} ocak yeri boş: bir pişirmeci al.`, 'Usta Pazarı', 'data-a="go" data-s="lonca"');
+            else add(1, 'fire', nm + 'mutfak yetişmiyor', pct + ' Ocağı büyüt, sonra pişirmeci al.', 'Mobilya ve Dekor', 'data-a="go" data-s="dekor"');
+          } else if (ys.lostFull > ys.lostWait) add(1, 'table', nm + 'yer yetmiyor', pct + ' Salonu büyüt: masa ve kuyruk yeri artar.', 'Mobilya ve Dekor', 'data-a="go" data-s="dekor"');
+          else if (KE.canHire(G, b, 'kasiyer').ok) add(1, 'users', nm + 'kuyruk eriyemiyor', pct + ' Kasaya ya da servise bir kişi daha al.', 'Eleman Bürosu', 'data-a="go" data-s="buro"');
+          else add(1, 'table', nm + 'kuyruk eriyemiyor', pct + ' Salon kadrosu dolu: salonu büyüt, sonra eleman al.', 'Mobilya ve Dekor', 'data-a="go" data-s="dekor"');
+        }
+      }
+      if (morning && !KE.isManaged(G, b) && KE.priceRatio(G, b) < 0.95) add(1, 'coin', nm + 'fiyatlar enflasyonun gerisinde', `Fiyatların piyasanın %${Math.round((1 - KE.priceRatio(G, b)) * 100)} altında; kâr payın eriyor.`, 'Fiyatları güncelle', `data-a="advPrices" data-id="${b.id}"`);
+      if (b.cleanliness < 50 && !st.some((s) => s.role === 'temizlik') && KE.canHire(G, b, 'temizlik').ok) add(1, 'broom', nm + 'temizlik düşük', 'Memnuniyet düşer, denetimde ceza riski var. Temizlikçi en verimli işe alımdır.', 'Eleman Bürosu', 'data-a="go" data-s="buro"');
+      const sad = st.filter((s) => s.morale < 35);
+      if (sad.length) add(1, 'heart', nm + `${sad[0].name.split(' ')[0]} çok mutsuz`, 'Moral 18\'in altına inerse istifa eder. Zam, mola ya da kostüm moral yükseltir.', KE.isCook(sad[0]) ? 'Usta Pazarı' : 'Eleman Bürosu', `data-a="go" data-s="${KE.isCook(sad[0]) ? 'lonca' : 'buro'}"`);
+    });
+    if (G.cash < 0) add(0, 'coin', 'Kasa eksiye düştü', 'Maaşlar gecikirse SGK teşviki kaybolur. Kısa vadeli bir kredi çek.', 'Banka', 'data-a="go" data-s="banka"');
+    const es = KE.eraStatus(G), miss = es.next && es.req.find((r) => !r.ok);
+    /* dönem hedefi: şarta göre yapılacak somut iş */
+    const ERA_ACT = { hafta: ['shop', 'Kepengi aç', 'Her gün kârlı kapat: fiyatları ve stoku dengede tut.'], ay1: ['shop', 'Kepengi aç', 'Ay sonuna kadar kârda kal: giderleri kontrol et.'], rep40: ['shop', 'Kepengi aç', 'Memnun müşteri itibar getirir: kuyruğu kısa, tabağı sıcak tut.'], upg: ['dekor', 'Mobilya ve Dekor', 'Salonu büyütmek en çok getiren ilk yatırımdır.'], sampiyon: ['subeler', 'Merkez Ofis', 'Ay sonunda semtin memnuniyet çıtasını geç.'], sube3: ['subeler', 'Merkez Ofis', 'Yeni şube aç; ona usta ve ekip al.'], sube4: ['subeler', 'Merkez Ofis', 'Yeni şube aç; ona usta ve ekip al.'], ciro5m: ['shop', 'Kepengi aç', 'Ciro için kapasiteyi ve şubeleri büyüt.'], ciro3m: ['shop', 'Kepengi aç', 'Ciro için kapasiteyi ve şubeleri büyüt.'], rep65: ['shop', 'Kepengi aç', 'Memnuniyeti yüksek tut; hikâye ve olay kartları da itibar getirir.'], sube6: ['subeler', 'Merkez Ofis', 'Yeni şube aç.'], taclar2: ['subeler', 'Merkez Ofis', 'İki ayrı semtte ay sonu çıtasını geç; amiral dükkân yardımcı olur.'], imza2: ['subeler', 'Merkez Ofis', 'Ar-Ge mutfağında imza tarifi geliştir.'], kontrat6: ['subeler', 'Merkez Ofis', 'Her hafta bir toplu sipariş al.'] };
+    if (miss) { const ea = ERA_ACT[miss.id] || [ERA_PLACE[miss.id], 'Oraya git', '']; if (KE.placeOpen(G, ea[0])) add(2, 'target', miss.label, 'Dönem hedefi|' + (ea[2] || `${es.next.name} dönemine geçmek için.`), ea[1], `data-a="go" data-s="${ea[0]}"`); }
+    if (morning && (G.era || 1) >= 3 && !KE.contractTaken(G) && !G.contract) add(2, 'truck', 'Bu haftanın toplu siparişi bekliyor', 'Haftada bir alınır; iyi para getirir.', 'Merkez Ofis', 'data-a="go" data-s="subeler"');
+    if (morning && (G.era || 1) >= 3 && !G.sigWork && KE.signatureCost(G) != null && G.cash > KE.signatureCost(G) * 2) add(2, 'chef', 'İmza tarifini geliştir', 'Bütün şubelerde müşteri ve fiyat primi getirir.', 'Merkez Ofis', 'data-a="go" data-s="subeler"');
+    const emp = KE.empireStatus(G);
+    if (emp.ready && !emp.done) add(0, 'crown', '"Lüks Kebap" satılık!', 'Bütün şartlar tamam; teklifini ver.', 'Merkez Ofis', 'data-a="go" data-s="subeler"');
+    out.sort((a, c) => a.pri - c.pri);
+    if (!out.length && morning) add(3, 'check', 'Her şey yolunda', 'Ekibin hazır, stok yeterli. Kepengi aç ya da günü hızlı geç.', 'Kepengi aç', 'data-a="go" data-s="shop"');
+    return out.slice(0, 3);
+  };
+  UI.adviceCard = function (compact) {
+    const list = UI.advice();
+    if (!list.length) return '';
+    return `<div class="advice ${compact ? 'compact' : ''}"><span class="kicker">${IC('bolt')}Bugün ne yapmalıyım?</span>${list.map((a) => `<div class="adv p${a.pri}"><span class="adv-ic">${IC(a.ic)}</span><span class="adv-t"><b>${esc(a.title)}</b><small>${a.why.split('|').map((w) => `<span>${esc(w.replace(/^ +/, ''))}</span>`).join(' ')}</small></span><button class="btn xs ${a.pri === 0 ? 'red' : a.pri === 1 ? 'gold' : 'ghost'}" ${a.attrs}>${esc(a.btn)}</button></div>`).join('')}</div>`;
+  };
+  A.advPrices = (d) => { KE.G.activeBranch = d.id; A.pricesToMarket(); };
   UI.cityTasks = () => (KE.G ? cityTasks() : []);
   /* Telefon: bütün yerler, adları ve bekleyen işleriyle tek bir alt pencerede */
   A.places = () => {
@@ -96,7 +151,7 @@
   };
   A.goSheet = (d) => { if (!KE.placeOpen(KE.G, d.s)) { UI.go(d.s); return; } UI.closeModal(); UI.go(d.s); };
   /* Dönem kartı: hangi bölümdesin, sıradaki için ne lazım */
-  const ERA_PLACE = { hafta: 'office', rep40: 'kahve', upg: 'dekor', sampiyon: 'subeler', sube3: 'subeler', ciro3m: 'office', rep65: 'ajans', sube5: 'subeler', imza2: 'subeler', kontrat4: 'subeler' };
+  const ERA_PLACE = { hafta: 'office', rep40: 'kahve', upg: 'dekor', sampiyon: 'subeler', sube3: 'subeler', ciro3m: 'office', sube4: 'subeler', ciro5m: 'office', rep65: 'ajans', sube6: 'subeler', taclar2: 'subeler', imza2: 'subeler', kontrat6: 'subeler', ay1: 'office' };
   function eraCard() {
     const st = KE.eraStatus(KE.G);
     if (!st.next) return `<div class="cp-era last"><span class="era-n">${st.era}</span><span class="era-t"><small>${st.era}. dönem</small><b>${st.cur.name}</b><em>${KE.G.flags.empire ? 'İmparatorluk kuruldu.' : 'Son hedef Merkez Ofis\'te.'}</em></span></div>`;

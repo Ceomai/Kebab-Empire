@@ -30,7 +30,7 @@ const VARIANTS = {
   ekip_salon: (KE, G) => { G.branches[0].equipment.service = 1; G.cash -= KE.MODES[G.mode].equipment.service.levels[1].cost; },
   ocak_cirak: (KE, G) => { G.branches[0].equipment.cook = 1; G.cash -= KE.MODES[G.mode].equipment.cook.levels[1].cost; const m = G.market[0]; if (m) { m.branchId = G.branches[0].id; G.staff.push(m); } },
   salon_garson: (KE, G) => { G.branches[0].equipment.service = 1; G.cash -= KE.MODES[G.mode].equipment.service.levels[1].cost; hire(KE, G, 'garson'); },
-  reklam_sosyal: 'weekly', tabela: (KE, G) => { G.branches[0].signBoost = 1.06; G.cash -= 30000; }
+  reklam_sosyal: 'weekly', tabela: (KE, G) => { G.branches[0].signBoost = 1.06; G.cash -= 20000; }
 };
 const run = (mode, seed, name) => {
   const KE = load();
@@ -42,7 +42,7 @@ const run = (mode, seed, name) => {
   for (let d = 0; d < DAYS; d++) {
     if (process.env.NOEVENTS) G.pendingEvent = null;
     if (G.pendingEvent) KE.resolveEvent(G, (d * 7 + 3) % G.pendingEvent.choices.length);
-    if (v === 'weekly' && d % 7 === 0) { const c = Math.round(22000 * G.priceIndex); G.cash -= c; ads += c; [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]].forEach(([k, m]) => G.mods.push({ key: k, mult: m, days: 7 })); }
+    if (v === 'weekly' && d % 7 === 0) { const c = Math.round(14000 * G.priceIndex); G.cash -= c; ads += c; [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]].forEach(([k, m]) => G.mods.push({ key: k, mult: m, days: 7 })); }
     KE.startService(G); let g = 0; while (!KE.allDone(G) && g++ < 1500) KE.tickAll(G); KE.finishService(G);
     G.branches.forEach((b) => { const S = G.lastSummary.branches[b.id].stats; Object.keys(tot).forEach((k) => { if (k === 'satS') tot.satS += S.satSum; else if (k === 'satN') tot.satN += S.satN; else tot[k] += S[k] || 0; }); });
     KE.finalizeDay(G);

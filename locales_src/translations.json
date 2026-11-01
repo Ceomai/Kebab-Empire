@@ -1296,8 +1296,8 @@
   "de": "{0} Tische"
  },
  "Kepengi aç": {
-  "en": "Raise the shutter",
-  "de": "Rollladen hoch"
+  "en": "Open up",
+  "de": "Öffnen"
  },
  "Bugün özel gün": {
   "en": "Special day today",
@@ -2441,7 +2441,7 @@
  },
  "Mobilya ve Dekor": {
   "en": "Furniture & Decor",
-  "de": "Möbel & Dekor"
+  "de": "Möbel & Deko"
  },
  "Banka": {
   "en": "Bank",
@@ -6478,5 +6478,273 @@
  "Bir şubeni şehrin simgesine dönüştür: +4 masa, +1 ocak yeri, {0} fiyat primi; o şubede müşteri +{1} bütün zincirde +{2}": {
   "en": "Turn a branch into a city landmark: +4 tables, +1 grill slot, a {0} price premium; +{1} customers there, +{2} across the chain.",
   "de": "Mach eine Filiale zum Wahrzeichen: +4 Tische, +1 Grillplatz, {0} Preisaufschlag; dort +{1} Kunden, in der ganzen Kette +{2}."
+ },
+ "Bir ayı kârla kapat": {
+  "en": "Close a month in profit",
+  "de": "Schließe einen Monat mit Gewinn ab"
+ },
+ "Altı şubeli zincir": {
+  "en": "A six-branch chain",
+  "de": "Eine Kette mit sechs Filialen"
+ },
+ "Altı toplu sipariş teslim et": {
+  "en": "Deliver six bulk orders",
+  "de": "Liefere sechs Großaufträge"
+ },
+ "Bugün ne yapmalıyım?": {
+  "en": "What should I do today?",
+  "de": "Was soll ich heute tun?"
+ },
+ "Dönem hedefi": {
+  "en": "Era goal",
+  "de": "Epochenziel"
+ },
+ "Her şey yolunda": {
+  "en": "All good",
+  "de": "Alles in Ordnung"
+ },
+ "Ekibin hazır, stok yeterli. Kepengi aç ya da günü hızlı geç.": {
+  "en": "Your team is ready and stock is enough. Open up or run a quick day.",
+  "de": "Dein Team ist bereit, der Bestand reicht. Öffne den Laden oder spiel einen schnellen Tag."
+ },
+ "Oraya git": {
+  "en": "Go there",
+  "de": "Hingehen"
+ },
+ "Ekibi düzenle": {
+  "en": "Arrange the team",
+  "de": "Team einteilen"
+ },
+ "Hal'e git": {
+  "en": "Go to the market",
+  "de": "Zum Markt"
+ },
+ "Fiyatları güncelle": {
+  "en": "Update prices",
+  "de": "Preise aktualisieren"
+ },
+ "ustasız şube": {
+  "en": "branch without a master",
+  "de": "Filiale ohne Meister"
+ },
+ "{0}: ustasız şube": {
+  "en": "{0}: branch without a master",
+  "de": "{0}: Filiale ohne Meister"
+ },
+ "Usta olmadan kepenk açılmaz; bugün kapalı kalır.": {
+  "en": "Without a master the shop can't open; it stays closed today.",
+  "de": "Ohne Meister öffnet der Laden nicht; er bleibt heute zu."
+ },
+ "kasada kimse yok": {
+  "en": "nobody at the till",
+  "de": "niemand an der Kasse"
+ },
+ "{0}: kasada kimse yok": {
+  "en": "{0}: nobody at the till",
+  "de": "{0}: niemand an der Kasse"
+ },
+ "Sipariş alınamaz. Bir kasiyer ya da garsonu kasaya ver.": {
+  "en": "No orders can be taken. Put a cashier or waiter on the till.",
+  "de": "Es können keine Bestellungen aufgenommen werden. Setz einen Kassierer oder Kellner an die Kasse."
+ },
+ "serviste kimse yok": {
+  "en": "nobody on service",
+  "de": "niemand im Service"
+ },
+ "{0}: serviste kimse yok": {
+  "en": "{0}: nobody on service",
+  "de": "{0}: niemand im Service"
+ },
+ "Hazır yemekler tezgâhta soğur.": {
+  "en": "Ready dishes go cold on the counter.",
+  "de": "Fertige Gerichte werden auf der Theke kalt."
+ },
+ "stok bir güne yetmiyor": {
+  "en": "stock won't last the day",
+  "de": "Bestand reicht nicht für den Tag"
+ },
+ "{0}: stok bir güne yetmiyor": {
+  "en": "{0}: stock won't last the day",
+  "de": "{0}: Bestand reicht nicht für den Tag"
+ },
+ "Hal'den ek alım yap; yoksa ürünler gün ortasında biter.": {
+  "en": "Buy extra at the market, or dishes will run out mid-day.",
+  "de": "Kauf auf dem Markt nach, sonst sind Gerichte mittags aus."
+ },
+ "mutfak yetişmiyor": {
+  "en": "the kitchen can't keep up",
+  "de": "die Küche kommt nicht nach"
+ },
+ "{0}: mutfak yetişmiyor": {
+  "en": "{0}: the kitchen can't keep up",
+  "de": "{0}: die Küche kommt nicht nach"
+ },
+ "yer yetmiyor": {
+  "en": "not enough room",
+  "de": "nicht genug Platz"
+ },
+ "{0}: yer yetmiyor": {
+  "en": "{0}: not enough room",
+  "de": "{0}: nicht genug Platz"
+ },
+ "kuyruk eriyemiyor": {
+  "en": "the queue won't clear",
+  "de": "die Schlange wird nicht kürzer"
+ },
+ "{0}: kuyruk eriyemiyor": {
+  "en": "{0}: the queue won't clear",
+  "de": "{0}: die Schlange wird nicht kürzer"
+ },
+ "Dün gelenlerin {0}'i hizmet alamadan gitti.": {
+  "en": "{0} of yesterday's customers left without being served.",
+  "de": "{0} der gestrigen Kunden gingen ohne Bedienung."
+ },
+ "{0} ocak yeri boş: bir pişirmeci al.": {
+  "en": "{0} grill slots are empty: hire a cook.",
+  "de": "{0} Grillplätze sind frei: stell einen Koch ein."
+ },
+ "Ocağı büyüt, sonra pişirmeci al.": {
+  "en": "Upgrade the grill, then hire a cook.",
+  "de": "Vergrößere den Grill, dann stell einen Koch ein."
+ },
+ "Salonu büyüt: masa ve kuyruk yeri artar.": {
+  "en": "Expand the dining room: more tables and queue space.",
+  "de": "Vergrößere den Gastraum: mehr Tische und Platz in der Schlange."
+ },
+ "Kasaya ya da servise bir kişi daha al.": {
+  "en": "Hire one more person for the till or service.",
+  "de": "Stell eine weitere Person für Kasse oder Service ein."
+ },
+ "Salon kadrosu dolu: salonu büyüt, sonra eleman al.": {
+  "en": "The dining-room team is full: expand the room, then hire.",
+  "de": "Das Gastraum-Team ist voll: vergrößere den Raum, dann stell ein."
+ },
+ "Salon kadrosu dolu: önce salonu büyüt, sonra eleman al.": {
+  "en": "The dining-room team is full: expand the room first, then hire.",
+  "de": "Das Gastraum-Team ist voll: erst den Raum vergrößern, dann einstellen."
+ },
+ "Kasaya ya da servise bir kişi daha al; yoğun saatte molaları azalt.": {
+  "en": "Hire one more person for the till or service; cut breaks at peak hours.",
+  "de": "Stell eine weitere Person für Kasse oder Service ein; weniger Pausen zur Stoßzeit."
+ },
+ "Mutfak yetişmiyor: {0} ocak yeri boş, bir pişirmeci al.": {
+  "en": "The kitchen can't keep up: {0} grill slots are empty, hire a cook.",
+  "de": "Die Küche kommt nicht nach: {0} Grillplätze frei, stell einen Koch ein."
+ },
+ "Mutfak yetişmiyor: önce ocağı büyüt, sonra pişirmeci al.": {
+  "en": "The kitchen can't keep up: upgrade the grill first, then hire a cook.",
+  "de": "Die Küche kommt nicht nach: erst den Grill vergrößern, dann einen Koch einstellen."
+ },
+ "fiyatlar enflasyonun gerisinde": {
+  "en": "prices are behind inflation",
+  "de": "Preise hinken der Inflation hinterher"
+ },
+ "{0}: fiyatlar enflasyonun gerisinde": {
+  "en": "{0}: prices are behind inflation",
+  "de": "{0}: Preise hinken der Inflation hinterher"
+ },
+ "Fiyatların piyasanın {0} altında; kâr payın eriyor.": {
+  "en": "Your prices are {0} below the market; your margin is melting.",
+  "de": "Deine Preise liegen {0} unter dem Markt; deine Marge schmilzt."
+ },
+ "temizlik düşük": {
+  "en": "cleanliness is low",
+  "de": "Sauberkeit ist niedrig"
+ },
+ "{0}: temizlik düşük": {
+  "en": "{0}: cleanliness is low",
+  "de": "{0}: Sauberkeit ist niedrig"
+ },
+ "Memnuniyet düşer, denetimde ceza riski var. Temizlikçi en verimli işe alımdır.": {
+  "en": "Satisfaction drops and inspections may fine you. A cleaner is the most efficient hire.",
+  "de": "Die Zufriedenheit sinkt und Kontrollen können Bußgelder bringen. Eine Reinigungskraft ist die effizienteste Einstellung."
+ },
+ "{0} çok mutsuz": {
+  "en": "{0} is very unhappy",
+  "de": "{0} ist sehr unglücklich"
+ },
+ "{0}: {1} çok mutsuz": {
+  "en": "{0}: {1} is very unhappy",
+  "de": "{0}: {1} ist sehr unglücklich"
+ },
+ "Moral 18'in altına inerse istifa eder. Zam, mola ya da kostüm moral yükseltir.": {
+  "en": "Below morale 18 they'll quit. A raise, a break or a costume lifts morale.",
+  "de": "Unter Moral 18 kündigt die Person. Gehaltserhöhung, Pause oder Kostüm heben die Moral."
+ },
+ "Kasa eksiye düştü": {
+  "en": "The till is in the red",
+  "de": "Die Kasse ist im Minus"
+ },
+ "Maaşlar gecikirse SGK teşviki kaybolur. Kısa vadeli bir kredi çek.": {
+  "en": "Late wages lose the social security incentive. Take a short-term loan.",
+  "de": "Verspätete Löhne kosten den Sozialversicherungszuschuss. Nimm einen kurzfristigen Kredit."
+ },
+ "Bu haftanın toplu siparişi bekliyor": {
+  "en": "This week's bulk order is waiting",
+  "de": "Der Großauftrag dieser Woche wartet"
+ },
+ "Haftada bir alınır; iyi para getirir.": {
+  "en": "One per week; it pays well.",
+  "de": "Einmal pro Woche; er bringt gutes Geld."
+ },
+ "İmza tarifini geliştir": {
+  "en": "Develop your signature recipe",
+  "de": "Entwickle dein Signature-Rezept"
+ },
+ "Bütün şubelerde müşteri ve fiyat primi getirir.": {
+  "en": "Brings customers and a price premium to every branch.",
+  "de": "Bringt allen Filialen Kunden und einen Preisaufschlag."
+ },
+ "Bütün şartlar tamam; teklifini ver.": {
+  "en": "All requirements met; make your offer.",
+  "de": "Alle Bedingungen erfüllt; mach dein Angebot."
+ },
+ "Her gün kârlı kapat: fiyatları ve stoku dengede tut.": {
+  "en": "Close every day in profit: keep prices and stock in balance.",
+  "de": "Schließe jeden Tag mit Gewinn: halte Preise und Bestand im Gleichgewicht."
+ },
+ "Ay sonuna kadar kârda kal: giderleri kontrol et.": {
+  "en": "Stay in profit until month end: watch your costs.",
+  "de": "Bleib bis Monatsende im Gewinn: behalte die Kosten im Blick."
+ },
+ "Memnun müşteri itibar getirir: kuyruğu kısa, tabağı sıcak tut.": {
+  "en": "Happy customers bring reputation: keep the queue short and plates hot.",
+  "de": "Zufriedene Kunden bringen Ruf: kurze Schlange, heiße Teller."
+ },
+ "Salonu büyütmek en çok getiren ilk yatırımdır.": {
+  "en": "Expanding the dining room is the best first investment.",
+  "de": "Den Gastraum zu vergrößern ist die beste erste Investition."
+ },
+ "Ay sonunda semtin memnuniyet çıtasını geç.": {
+  "en": "Beat the district's satisfaction bar at month end.",
+  "de": "Übertriff am Monatsende die Zufriedenheitshürde des Bezirks."
+ },
+ "Yeni şube aç; ona usta ve ekip al.": {
+  "en": "Open a new branch and hire a master and a team for it.",
+  "de": "Eröffne eine neue Filiale und stell Meister und Team ein."
+ },
+ "Ciro için kapasiteyi ve şubeleri büyüt.": {
+  "en": "Grow capacity and branches for revenue.",
+  "de": "Für Umsatz Kapazität und Filialen ausbauen."
+ },
+ "Memnuniyeti yüksek tut; hikâye ve olay kartları da itibar getirir.": {
+  "en": "Keep satisfaction high; stories and event cards also bring reputation.",
+  "de": "Halte die Zufriedenheit hoch; Geschichten und Ereigniskarten bringen auch Ruf."
+ },
+ "Yeni şube aç.": {
+  "en": "Open a new branch.",
+  "de": "Eröffne eine neue Filiale."
+ },
+ "İki ayrı semtte ay sonu çıtasını geç; amiral dükkân yardımcı olur.": {
+  "en": "Beat the month-end bar in two districts; a flagship store helps.",
+  "de": "Übertriff in zwei Bezirken die Monatshürde; ein Flagship-Laden hilft."
+ },
+ "Ar-Ge mutfağında imza tarifi geliştir.": {
+  "en": "Develop the signature recipe in the R&D kitchen.",
+  "de": "Entwickle das Signature-Rezept in der Testküche."
+ },
+ "Her hafta bir toplu sipariş al.": {
+  "en": "Take one bulk order every week.",
+  "de": "Nimm jede Woche einen Großauftrag an."
  }
 }

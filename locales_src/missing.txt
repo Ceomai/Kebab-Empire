@@ -132,3 +132,26 @@ Emre Usta
 Burak
 Erkan
 {0} {1}:{2}'da bitti, ardından {3} de tükendi.
+Kılavuz
+Bir şubeni şehrin simgesine dönüştür: +{0} masa, +{1} ocak yeri, {2} fiyat primi; o şubede müşteri +{3} bütün zincirde +{4}
+Amiral dükkân {0}: o şubeye +{1} masa ve +{2} ocak yeri, müşteriler {3} daha yüksek fiyata katlanır; o şubede müşteri +{4} zincirde +{5} semt şampiyonluğu çıtası {6} puan düşer.
+Dönem hedefi: Altı şubeli zincir
+Dün gelenlerin {0}'i hizmet alamadan gitti. Salon kadrosu dolu: salonu büyüt, sonra eleman al.
+Mehmet Usta
+Büşra
+Cem
+Yeşim
+Biten: {0}, {1}, {2}
+Dün gelenlerin {0}'yi hizmet alamadan gitti. Ocağı büyüt, sonra pişirmeci al.
+{0} {1}:{2}'te bitti, ardından {3} de tükendi.
+Dün gelenlerin {0}'yi hizmet alamadan gitti. Salon kadrosu dolu: salonu büyüt, sonra eleman al.
+Dün gelenlerin {0}'ü hizmet alamadan gitti. Salon kadrosu dolu: salonu büyüt, sonra eleman al.
+{0}'in gönlü +{1}
+"Bu davayı kazanırsak ilk kutlama burada." {0} dosyaları toparlayıp koştu.
+{0} gülümsedi: "Sağ ol, ihtiyacım vardı."
+{0}'in davası: duruşma günü ({1}/{2})
+{0} telaşla geldi: "Yarın duruşma var, fırıncı Hüsnü Amca'ya tanıklık edecek esnaf lazım. Sen yıllardır komşususun."
+{0} davayı kazandı! ({1}/{2})
+{0} kapıdan "Kazandık!" diye girdi, arkasında Hüsnü Amca ve yarım mahalle. "Bundan sonra senin bütün sözleşmelerine ben bakarım, hem de bedava."
+Kutlama gece yarısına kadar sürdü. {0} artık dükkânın avukatı: cezalar ve sözleşmeler dert değil.
+Dün gelenlerin {0}'yi hizmet alamadan gitti.

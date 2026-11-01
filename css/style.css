@@ -1295,3 +1295,13 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: 0.001
 .gs-items { margin: 6px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 7px; line-height: 1.5; }
 .gs-items b { color: var(--sumak); }
 @media (max-width: 760px) { .guide-toc { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .guide-toc .chip { flex: none; } }
+/* ---------- Danışman ---------- */
+.advice { display: flex; flex-direction: column; gap: 6px; background: #fff; border: 2px solid var(--altin); border-radius: 16px; padding: 10px 12px; margin: 10px 0 4px; }
+.advice .kicker { display: inline-flex; align-items: center; gap: 5px; } .advice .kicker .ic { width: 14px; height: 14px; color: var(--kor-deep); }
+.adv { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.adv-ic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--krem); color: var(--murekkep); }
+.adv-ic .ic { width: 18px; height: 18px; }
+.adv.p0 .adv-ic { background: #fde3e1; color: var(--biber); } .adv.p1 .adv-ic { background: #fff1cc; color: var(--kor-deep); }
+.adv-t { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; } .adv-t b { font-size: 13.5px; } .adv-t small { font-size: 11.5px; color: var(--murekkep-2); }
+.advice.compact { margin: 0 0 12px; }
+@media (min-width: 761px) { .screen > .advice.compact { max-width: 760px; } }

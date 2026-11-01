@@ -195,9 +195,9 @@
       'Belediye ekranından hijyen eğitimi ve derin temizlik satın alabilirsin.'
     ] },
     { id: 'donemler', ic: 'target', t: 'Dönemler', lead: 'Oyun dört dönemden oluşur. Her dönemin şartları tamamlanınca yeni yerler ve özellikler açılır.', items: [
-      '<b>1. Mahalle dükkânı:</b> Bir haftayı kârla kapat, itibarı 40\'a çıkar, bir ekipmanı yükselt.',
-      '<b>2. Semtin yıldızı:</b> Reklam Ajansı ve Merkez Ofis (yeni şube açma) açılır. Geçmek için: bir semt tacı, üç şube, ayda 3 milyon ₺ ciro, itibar 65.',
-      '<b>3. Şehrin zinciri:</b> Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: beş şube, imza tarifin 2. seviyesi, dört toplu sipariş.',
+      '<b>1. Mahalle dükkânı:</b> Bir haftayı ve bir ayı kârla kapat, itibarı 40\'a çıkar, bir ekipmanı yükselt.',
+      '<b>2. Semtin yıldızı:</b> Reklam Ajansı ve Merkez Ofis (yeni şube açma) açılır. Geçmek için: dört şube, ayda 5 milyon ₺ ciro, itibar 65.',
+      '<b>3. Şehrin zinciri:</b> Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı, imza tarifin 2. seviyesi, altı toplu sipariş.',
       '<b>4. İmparatorluk yolu:</b> "Lüks Kebap"ı satın alma teklifi açılır.',
       'Haritadaki şehir panelinde içinde bulunduğun dönem ve eksik şartlar görünür; bir şarta dokununca ilgili yere gidersin.'
     ] },

@@ -48,7 +48,7 @@
   };
   const word = (v) => (I.dict[v] != null ? I.dict[v] : v);
   /* Türkçe ekler isme göre değişir (Burak'ın / Usta'nın): sözlükte ekin kalıbıyla da ara */
-  const canon = (k) => k.replace(/\}'n?[ıiuü]n(?=[^a-zçğıöşü]|$)/g, "}'İN").replace(/\}'n?[dt][ae]n(?=[^a-zçğıöşü]|$)/g, "}'DEN").replace(/\}'n?[dt][ae](ki)?(?=[^a-zçğıöşü]|$)/g, "}'DE$1").replace(/\}'[yn]?[ae](?=[^a-zçğıöşü]|$)/g, "}'E");
+  const canon = (k) => k.replace(/\}'n?[ıiuü]n(?=[^a-zçğıöşü]|$)/g, "}'İN").replace(/\}'[ny]?[ıiuü](?=[^a-zçğıöşü]|$)/g, "}'I").replace(/\}'n?[dt][ae]n(?=[^a-zçğıöşü]|$)/g, "}'DEN").replace(/\}'n?[dt][ae](ki)?(?=[^a-zçğıöşü]|$)/g, "}'DE$1").replace(/\}'[yn]?[ae](?=[^a-zçğıöşü]|$)/g, "}'E");
   let canonFor = null, canonMap = null;
   const canonDict = () => { if (canonFor !== I.dict) { canonFor = I.dict; canonMap = {}; Object.keys(I.dict).forEach((k) => { if (k.includes("}'")) canonMap[canon(k)] = I.dict[k]; }); } return canonMap; };
   I.t = function (text) {

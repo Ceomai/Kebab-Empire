@@ -50,6 +50,7 @@
     return `<main class="screen">
       <div class="pagehead"><div class="ph-t"><span class="kicker">Sabah hazırlığı · ${KE.weekday(KE.G.day)}</span><h1>${esc(b.name)}</h1><p class="ph-facts"><span>${IC('map')}${KE.district(b).name}</span><span>${IC('users')}~${Math.round(exp)} müşteri</span>${ys && ys.arrivals > 20 ? `<span class="${capLost >= 0.12 ? 'neg' : ''}" title="Dün kapasite yetmediği için hizmet alamadan gidenler">${IC('queue')}Kapasite: dün %${Math.round(capLost * 100)} kaçtı</span>` : ''}<span>${IC('fire')}${Math.min(stations, cooks.length)}/${stations} ocak</span><span>${IC('table')}${KE.tableCount(KE.G, b)} masa</span>${amb.concept ? `<span>${IC('star')}${amb.concept.name}</span>` : ''}</p></div>
         <div class="row"><button class="btn ghost" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün</button><button class="btn big green" data-a="openShop">${IC('store')}${KE.G.branches.length > 1 ? 'Bütün şubelerde kepengi aç' : 'Kepengi aç'}</button></div></div>
+      ${UI.adviceCard(true)}
       ${(() => { const sp = KE.specialDay(KE.G.day); return sp ? `<section class="special sp-${sp.theme || 'cuma'}"><span class="sp-badge">${IC(sp.id === 'mac' ? 'fire' : sp.id === 'cuma' ? 'users' : 'star')}</span><div><span class="kicker">Bugün özel gün</span><h2>${sp.name}</h2><p>${sp.desc}</p></div></section>` : ''; })()}
       ${(KE.G.daily || []).length ? `<section class="panel daypanel"><div class="sechead"><h2>Günün hedefleri</h2><span class="muted small">Tutturduğun her hedef ek para ve biraz itibar getirir.</span></div>${dailyHtml(false)}</section>` : ''}
       ${warn.length ? `<div class="alerts">${warn.map(([c, w]) => `<div class="alert ${c}">${IC(c === 'crit' ? 'bolt' : 'clock')}<span>${w}</span></div>`).join('')}</div>` : ''}
@@ -249,8 +250,9 @@
   function advice(b, S) {
     const out = [];
     const st = KE.branchStaff(KE.G, b);
-    const lost = [[S.lostWait, 'beklemekten sıkılıp gitti', 'Kasaya ikinci bir kişi ver ya da yoğun saatte molaları kaldır.'],
-      [S.lostFood, 'yemeğini beklerken kalktı', 'Mutfak yetişmiyor: bir usta ya da çırak al, ocak sayısını artır.'],
+    const freeSt = KE.stations(KE.G, b) - st.filter(KE.isCook).length;
+    const lost = [[S.lostWait, 'beklemekten sıkılıp gitti', KE.canHire(KE.G, b, 'kasiyer').ok ? 'Kasaya ya da servise bir kişi daha al; yoğun saatte molaları azalt.' : 'Salon kadrosu dolu: önce salonu büyüt, sonra eleman al.'],
+      [S.lostFood, 'yemeğini beklerken kalktı', freeSt > 0 && KE.canHire(KE.G, b, 'usta').ok ? `Mutfak yetişmiyor: ${freeSt} ocak yeri boş, bir pişirmeci al.` : 'Mutfak yetişmiyor: önce ocağı büyüt, sonra pişirmeci al.'],
       [S.lostFull, 'yer bulamadı', 'Kuyruk ya da masa yetmiyor: Mobilya ve Dekor\'dan salonu büyüt.'],
       [S.lostPrice, 'fiyatı görünce döndü', 'Bazı ürünler piyasanın çok üstünde; fiyatı biraz indir.'],
       [S.lostStock, 'istediğini bulamadı', 'Stok bitti: Hal\'de sabah siparişini "Bol" yap.']].sort((a, c) => c[0] - a[0]);

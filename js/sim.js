@@ -788,7 +788,7 @@
     Object.values(L.custs).forEach((c) => {
       if (c.state === 'queue') {
         c.wait++;
-        if (!c.ordering && c.wait > c.patience) { lose(L, c, 'lostWait', 'Bekletmeyin bizi!'); L.stats.repDelta -= 0.05 * c.count; removeCust(L, c, false); }
+        if (!c.ordering && c.wait > c.patience) { lose(L, c, 'lostWait', 'Bekletmeyin bizi!'); L.stats.repDelta -= 0.015 * c.count; removeCust(L, c, false); }
       } else if (c.state === 'seat' || c.state === 'pickup') {
         c.wait++;
         if (c.wait > c.patience * 1.9) {
@@ -796,7 +796,7 @@
           if (t && t.state === 'cook') return;
           if (t) L.tickets.splice(L.tickets.indexOf(t), 1);
           st.forEach((s) => { if (s.task && s.task.type === 'deliver' && t && s.task.ref === t.id) s.task = null; });
-          refund(L, c); lose(L, c, 'lostFood', 'Yemek gelmedi!'); L.stats.repDelta -= 0.15 * c.count; removeCust(L, c, false);
+          refund(L, c); lose(L, c, 'lostFood', 'Yemek gelmedi!'); L.stats.repDelta -= 0.08 * c.count; removeCust(L, c, false);
         }
       } else if (c.state === 'eat') {
         c.eatLeft -= 1;
@@ -937,7 +937,7 @@
         s.tipsMonth += share; s.tipsTotal += share; s.tipsToday = share;
         dm += Math.min(5, share / (s.wage / 30) * 6);
         /* kasaya alınan bahşiş: ekip payını görmez ama ay sonu primi sözüyle moralin bir kısmı korunur */
-        if (rule === 'kasa') dm += Math.min(5, (S.tips / Math.max(1, st.length)) / (s.wage / 30) * 6) * 0.4 - 1;
+        if (rule === 'kasa') dm += Math.min(5, (S.tips / Math.max(1, st.length)) / (s.wage / 30) * 6) * 0.6 - 0.5;
         if (rule === 'usta') dm += s.role === 'usta' ? 3 : -1;
         if (rule === 'performans') dm += s === perf[0] ? 4 : s === perf[perf.length - 1] ? -2.5 : 0.5;
         if (s.servedToday > limit * 1.6) dm -= 5; else if (s.servedToday > limit) dm -= 2;
@@ -983,7 +983,7 @@
     if (dRep > 0 && G.reputation > 55) dRep *= Math.max(0.08, 1 - (G.reputation - 55) / 50);
     G.reputation = clamp(G.reputation + dRep, 0, 100);
     /* tepede kalmak emek ister: 70'in üstünde itibar her gün biraz aşınır */
-    if (G.reputation > 70) G.reputation = clamp(G.reputation - (G.reputation - 70) / 55, 0, 100);
+    if (G.reputation > 70) G.reputation = clamp(G.reputation - (G.reputation - 70) * (G.reputation - 70) / 600, 0, 100);
     out.journal = KE.writeJournal(G, S0, out);
     G.journal.unshift({ day: G.day, date: KE.dateStr(G.day), text: out.journal });
     if (G.journal.length > 60) G.journal.length = 60;
@@ -1050,7 +1050,7 @@
       const days = G.ledger.days.filter((d) => d.month === key && d.branchId === b.id);
       const served = days.reduce((a, d) => a + d.served, 0);
       const sat = served ? days.reduce((a, d) => a + d.sat * d.served, 0) / served : 0;
-      const bar = Math.round(Math.min(86, 72 + G.rival.power * 0.08) + (G.rival.district === b.district ? 4 : 0) - (b.flagship ? 3 : 0));
+      const bar = Math.round(Math.min(86, (G.mode === 'kebap' ? 68 : 72) + G.rival.power * 0.08) + (G.rival.district === b.district ? 4 : 0) - (b.flagship ? 3 : 0));
       const won = served >= 250 && sat >= bar;
       if (won) { b.championUntil = G.day + 30; b.champions = (b.champions || 0) + 1; G.flags.champ = true; if (repWins++ < 3) G.reputation = clamp(G.reputation + 1, 0, 100); }
       return { id: b.id, name: b.name, district: KE.district(b).name, sat, bar, won, served };
@@ -1134,15 +1134,19 @@
   /* ---------- Dönemler ---------- */
   const ERA_TEST = {
     hafta: (G) => !!(G.flags.profitWeek || (G.goals && G.goals.ilkhafta)),
+    ay1: (G) => G.ledger.months.some((m) => m.net > 0),
     rep40: (G) => G.reputation >= 40,
     upg: (G) => G.branches.some((b) => Object.values(b.equipment).some((v) => v > 0)),
     sampiyon: (G) => !!G.flags.champ,
     sube3: (G) => G.branches.length >= 3,
+    sube4: (G) => G.branches.length >= 4,
+    ciro5m: (G) => G.ledger.months.some((m) => m.revenue >= 5000000),
     ciro3m: (G) => G.ledger.months.some((m) => m.revenue >= 3000000),
     rep65: (G) => G.reputation >= 65,
-    sube5: (G) => G.branches.length >= 5,
+    sube6: (G) => G.branches.length >= 6,
+    taclar2: (G) => G.branches.filter((b) => (b.champions || 0) > 0).length >= 2 || !!G.flags.legacyImza,
     imza2: (G) => !!(G.signature && !G.signature.family && G.signature.level >= 2) || !!G.flags.legacyImza,
-    kontrat4: (G) => (G.flags.contracts || 0) >= 4 || !!G.flags.legacyImza,
+    kontrat6: (G) => (G.flags.contracts || 0) >= 6 || !!G.flags.legacyImza,
     imza: (G) => !!(G.signature && !G.signature.family) || !!G.flags.legacyImza
   };
   KE.eraStatus = function (G) {

@@ -1,0 +1,70 @@
+Bugün ne yapmalıyım?	What should I do today?	Was soll ich heute tun?
+Dönem hedefi	Era goal	Epochenziel
+Her şey yolunda	All good	Alles in Ordnung
+Ekibin hazır, stok yeterli. Kepengi aç ya da günü hızlı geç.	Your team is ready and stock is enough. Open up or run a quick day.	Dein Team ist bereit, der Bestand reicht. Öffne den Laden oder spiel einen schnellen Tag.
+Kepengi aç	Open up	Öffnen
+Oraya git	Go there	Hingehen
+Usta Pazarı	Master Market	Meistermarkt
+Ekibi düzenle	Arrange the team	Team einteilen
+Hal'e git	Go to the market	Zum Markt
+Fiyatları güncelle	Update prices	Preise aktualisieren
+ustasız şube	branch without a master	Filiale ohne Meister
+{0}: ustasız şube	{0}: branch without a master	{0}: Filiale ohne Meister
+Usta olmadan kepenk açılmaz; bugün kapalı kalır.	Without a master the shop can't open; it stays closed today.	Ohne Meister öffnet der Laden nicht; er bleibt heute zu.
+kasada kimse yok	nobody at the till	niemand an der Kasse
+{0}: kasada kimse yok	{0}: nobody at the till	{0}: niemand an der Kasse
+Sipariş alınamaz. Bir kasiyer ya da garsonu kasaya ver.	No orders can be taken. Put a cashier or waiter on the till.	Es können keine Bestellungen aufgenommen werden. Setz einen Kassierer oder Kellner an die Kasse.
+serviste kimse yok	nobody on service	niemand im Service
+{0}: serviste kimse yok	{0}: nobody on service	{0}: niemand im Service
+Hazır yemekler tezgâhta soğur.	Ready dishes go cold on the counter.	Fertige Gerichte werden auf der Theke kalt.
+stok bir güne yetmiyor	stock won't last the day	Bestand reicht nicht für den Tag
+{0}: stok bir güne yetmiyor	{0}: stock won't last the day	{0}: Bestand reicht nicht für den Tag
+Hal'den ek alım yap; yoksa ürünler gün ortasında biter.	Buy extra at the market, or dishes will run out mid-day.	Kauf auf dem Markt nach, sonst sind Gerichte mittags aus.
+mutfak yetişmiyor	the kitchen can't keep up	die Küche kommt nicht nach
+{0}: mutfak yetişmiyor	{0}: the kitchen can't keep up	{0}: die Küche kommt nicht nach
+yer yetmiyor	not enough room	nicht genug Platz
+{0}: yer yetmiyor	{0}: not enough room	{0}: nicht genug Platz
+kuyruk eriyemiyor	the queue won't clear	die Schlange wird nicht kürzer
+{0}: kuyruk eriyemiyor	{0}: the queue won't clear	{0}: die Schlange wird nicht kürzer
+Dün gelenlerin {0}'i hizmet alamadan gitti.	{0} of yesterday's customers left without being served.	{0} der gestrigen Kunden gingen ohne Bedienung.
+{0} ocak yeri boş: bir pişirmeci al.	{0} grill slots are empty: hire a cook.	{0} Grillplätze sind frei: stell einen Koch ein.
+Ocağı büyüt, sonra pişirmeci al.	Upgrade the grill, then hire a cook.	Vergrößere den Grill, dann stell einen Koch ein.
+Salonu büyüt: masa ve kuyruk yeri artar.	Expand the dining room: more tables and queue space.	Vergrößere den Gastraum: mehr Tische und Platz in der Schlange.
+Kasaya ya da servise bir kişi daha al.	Hire one more person for the till or service.	Stell eine weitere Person für Kasse oder Service ein.
+Salon kadrosu dolu: salonu büyüt, sonra eleman al.	The dining-room team is full: expand the room, then hire.	Das Gastraum-Team ist voll: vergrößere den Raum, dann stell ein.
+Salon kadrosu dolu: önce salonu büyüt, sonra eleman al.	The dining-room team is full: expand the room first, then hire.	Das Gastraum-Team ist voll: erst den Raum vergrößern, dann einstellen.
+Kasaya ya da servise bir kişi daha al; yoğun saatte molaları azalt.	Hire one more person for the till or service; cut breaks at peak hours.	Stell eine weitere Person für Kasse oder Service ein; weniger Pausen zur Stoßzeit.
+Mutfak yetişmiyor: {0} ocak yeri boş, bir pişirmeci al.	The kitchen can't keep up: {0} grill slots are empty, hire a cook.	Die Küche kommt nicht nach: {0} Grillplätze frei, stell einen Koch ein.
+Mutfak yetişmiyor: önce ocağı büyüt, sonra pişirmeci al.	The kitchen can't keep up: upgrade the grill first, then hire a cook.	Die Küche kommt nicht nach: erst den Grill vergrößern, dann einen Koch einstellen.
+fiyatlar enflasyonun gerisinde	prices are behind inflation	Preise hinken der Inflation hinterher
+{0}: fiyatlar enflasyonun gerisinde	{0}: prices are behind inflation	{0}: Preise hinken der Inflation hinterher
+Fiyatların piyasanın {0} altında; kâr payın eriyor.	Your prices are {0} below the market; your margin is melting.	Deine Preise liegen {0} unter dem Markt; deine Marge schmilzt.
+temizlik düşük	cleanliness is low	Sauberkeit ist niedrig
+{0}: temizlik düşük	{0}: cleanliness is low	{0}: Sauberkeit ist niedrig
+Memnuniyet düşer, denetimde ceza riski var. Temizlikçi en verimli işe alımdır.	Satisfaction drops and inspections may fine you. A cleaner is the most efficient hire.	Die Zufriedenheit sinkt und Kontrollen können Bußgelder bringen. Eine Reinigungskraft ist die effizienteste Einstellung.
+{0} çok mutsuz	{0} is very unhappy	{0} ist sehr unglücklich
+{0}: {1} çok mutsuz	{0}: {1} is very unhappy	{0}: {1} ist sehr unglücklich
+Moral 18'in altına inerse istifa eder. Zam, mola ya da kostüm moral yükseltir.	Below morale 18 they'll quit. A raise, a break or a costume lifts morale.	Unter Moral 18 kündigt die Person. Gehaltserhöhung, Pause oder Kostüm heben die Moral.
+Kasa eksiye düştü	The till is in the red	Die Kasse ist im Minus
+Maaşlar gecikirse SGK teşviki kaybolur. Kısa vadeli bir kredi çek.	Late wages lose the social security incentive. Take a short-term loan.	Verspätete Löhne kosten den Sozialversicherungszuschuss. Nimm einen kurzfristigen Kredit.
+Bu haftanın toplu siparişi bekliyor	This week's bulk order is waiting	Der Großauftrag dieser Woche wartet
+Haftada bir alınır; iyi para getirir.	One per week; it pays well.	Einmal pro Woche; er bringt gutes Geld.
+İmza tarifini geliştir	Develop your signature recipe	Entwickle dein Signature-Rezept
+Bütün şubelerde müşteri ve fiyat primi getirir.	Brings customers and a price premium to every branch.	Bringt allen Filialen Kunden und einen Preisaufschlag.
+Bütün şartlar tamam; teklifini ver.	All requirements met; make your offer.	Alle Bedingungen erfüllt; mach dein Angebot.
+Her gün kârlı kapat: fiyatları ve stoku dengede tut.	Close every day in profit: keep prices and stock in balance.	Schließe jeden Tag mit Gewinn: halte Preise und Bestand im Gleichgewicht.
+Ay sonuna kadar kârda kal: giderleri kontrol et.	Stay in profit until month end: watch your costs.	Bleib bis Monatsende im Gewinn: behalte die Kosten im Blick.
+Memnun müşteri itibar getirir: kuyruğu kısa, tabağı sıcak tut.	Happy customers bring reputation: keep the queue short and plates hot.	Zufriedene Kunden bringen Ruf: kurze Schlange, heiße Teller.
+Salonu büyütmek en çok getiren ilk yatırımdır.	Expanding the dining room is the best first investment.	Den Gastraum zu vergrößern ist die beste erste Investition.
+Ay sonunda semtin memnuniyet çıtasını geç.	Beat the district's satisfaction bar at month end.	Übertriff am Monatsende die Zufriedenheitshürde des Bezirks.
+Yeni şube aç; ona usta ve ekip al.	Open a new branch and hire a master and a team for it.	Eröffne eine neue Filiale und stell Meister und Team ein.
+Ciro için kapasiteyi ve şubeleri büyüt.	Grow capacity and branches for revenue.	Für Umsatz Kapazität und Filialen ausbauen.
+Memnuniyeti yüksek tut; hikâye ve olay kartları da itibar getirir.	Keep satisfaction high; stories and event cards also bring reputation.	Halte die Zufriedenheit hoch; Geschichten und Ereigniskarten bringen auch Ruf.
+Yeni şube aç.	Open a new branch.	Eröffne eine neue Filiale.
+İki ayrı semtte ay sonu çıtasını geç; amiral dükkân yardımcı olur.	Beat the month-end bar in two districts; a flagship store helps.	Übertriff in zwei Bezirken die Monatshürde; ein Flagship-Laden hilft.
+Ar-Ge mutfağında imza tarifi geliştir.	Develop the signature recipe in the R&D kitchen.	Entwickle das Signature-Rezept in der Testküche.
+Her hafta bir toplu sipariş al.	Take one bulk order every week.	Nimm jede Woche einen Großauftrag an.
+Mobilya ve Dekor	Furniture & Decor	Möbel & Deko
+Eleman Bürosu	Staffing Office	Personalbüro
+Merkez Ofis	Head Office	Zentrale
+Banka	Bank	Bank
