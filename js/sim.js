@@ -347,7 +347,7 @@
       const st = G.regulars[r.id];
       if (KE.rand() < 0.3 + st.loyalty * 0.04) G.regularVisits.push({ rid: r.id, branchId: openB[st.visits % openB.length === 0 ? 0 : Math.floor(KE.rand() * openB.length)].id, minute: 60 + Math.floor(KE.rand() * 600) });
     });
-    G.staff.forEach((s) => { s.energy = 100; s.task = null; if (!KE.POSITIONS[s.role].includes(s.pos) || s.pos === 'mola') s.pos = KE.POSITIONS[s.role][0]; });
+    G.staff.forEach((s) => { s.energy = 100; s.task = null; if (s.prevPos) { s.pos = s.prevPos; delete s.prevPos; } if (!KE.POSITIONS[s.role].includes(s.pos) || s.pos === 'mola') s.pos = KE.POSITIONS[s.role][0]; });
     /* ekip bu hafta hangi bahşiş kuralını istiyor */
     if (!G.tipWish || G.tipWish.until < G.day) {
       const st = G.staff, cir = st.filter((s) => s.role === 'cirak' && s.mentorId).length, usta = st.filter((s) => s.role === 'usta').length;
@@ -425,7 +425,7 @@
     { id: 'ariza', def: 1, ic: 'fire', title: 'Ocaklardan biri söndü', cond: (G, b) => KE.stations(G, b) >= 2,
       text: () => 'Tüp bağlantısı kaçırıyor; ocak kendiliğinden söndü. Usta ellerini sildi, sana bakıyor.',
       choices: (G) => [{ label: 'Tamirci çağır · ' + KE.tl(KE.midCost(G, 'ariza')), desc: 'On dakikada gelir, ocak çalışmaya devam eder.' }, { label: 'İdare edelim', desc: 'Kapanışa kadar bir ocak eksik pişirilir.' }] },
-    { id: 'fenalik', def: 0, ic: 'heart', title: 'Bir çalışan fenalaştı', cond: (G, b) => frontOf(G, b).length >= 2,
+    { id: 'fenalik', def: 0, ic: 'heart', title: 'Bir çalışan fenalaştı', cond: (G, b) => frontOf(G, b).length >= 3,
       text: (G, b, M) => { const s = G.staff.find((x) => x.id === M.sid); return `${s ? s.name : 'Kasiyer'} bembeyaz oldu, tezgâha tutundu: "Bir şeyim yok patron, geçer."`; },
       choices: () => [{ label: 'Eve gönder', desc: 'Bugün çalışmaz; ekip bunu görür, herkesin morali +4.' }, { label: 'Biraz dayansın', desc: 'Çalışmaya devam eder ama morali −10, enerjisi −30.' }] },
     { id: 'yagmur', def: 1, ic: 'clock', title: 'Sağanak bastırdı',
@@ -455,16 +455,33 @@
     if (M.id === 'ariza') { if (i === 0) pay(KE.midCost(G, 'ariza')); else L.stationDown = 1; }
     if (M.id === 'fenalik') {
       const s = G.staff.find((x) => x.id === M.sid);
-      if (s && i === 0) { s.home = true; s.task = null; s.pos = 'mola'; KE.branchStaff(G, b).forEach((x) => { if (x !== s) x.morale = clamp(x.morale + 4, 0, 100); }); }
+      if (s && i === 0) {
+        s.home = true; KE.setPos(G, s, 'mola');
+        KE.branchStaff(G, b).forEach((x) => { if (x !== s) x.morale = clamp(x.morale + 4, 0, 100); });
+        /* kasa boş kalmasın: servisteki biri kasaya geçer */
+        const st = KE.branchStaff(G, b);
+        if (!st.some((x) => x.pos === 'kasa')) { const r = st.find((x) => !x.home && KE.POSITIONS[x.role].includes('kasa')); if (r) { r.prevPos = r.pos; KE.setPos(G, r, 'kasa'); } }
+      }
       if (s && i === 1) { s.morale = clamp(s.morale - 10, 0, 100); s.energy = Math.max(0, s.energy - 30); }
     }
     if (M.id === 'yagmur') { if (i === 0) pay(KE.midCost(G, 'yagmur')); L.rain = { until: L.minute + 120, mult: i === 0 ? 0.85 : 0.6 }; }
     return M;
   };
   /* Acil kurye: gün ortasında biten malzemeyi 1,5 katı fiyatına getirir (günde bir kez) */
+  /* günün kalanında beklenen talebin payı (saatlik eğriye göre) */
+  const restShare = (L) => {
+    const C = KE.HOUR_CURVE, sum = Object.values(C).reduce((a, v) => a + v, 0);
+    const h = KE.OPEN_HOUR + (L ? L.minute : 0) / 60;
+    return Object.keys(C).reduce((a, k) => a + C[k] * Math.max(0, Math.min(1, +k + 1 - h)), 0) / sum;
+  };
   KE.courierNeed = function (G, b) {
     let cost = 0; const items = {};
-    Object.keys(b.usage).forEach((k) => { const q = b.usage[k] * 0.4 - (b.stock[k] || 0); if (q > 0.01) { items[k] = q; cost += q * KE.ingPrice(G, b, k) * 1.5; } });
+    const L = G.live && G.live[b.id], rest = restShare(L), f = KE.demandFactor(G, b);
+    Object.keys(b.usage).forEach((k) => {
+      const want = b.usage[k] * f * rest * 1.1, have = b.stock[k] || 0;
+      /* yalnızca günün kalanına yetmeyecek malzeme, kalanın ihtiyacı kadar */
+      if (have < want * 0.6) { const q = want - have; items[k] = q; cost += q * KE.ingPrice(G, b, k) * 1.5; }
+    });
     return { cost, items };
   };
   KE.courier = function (G, b) {
@@ -864,6 +881,11 @@
     const sameJob = (s, x) => (KE.isCook(s) ? KE.isCook(x) : x.role === s.role);
     st.forEach((s) => { if (s.energy < (mgr ? 22 : 12) && s.pos !== 'mola') { const same = st.filter((x) => sameJob(s, x) && x !== s && x.pos !== 'mola'); if (same.length || (mgr && !peak)) KE.setPos(G, s, 'mola'); } });
     st.forEach((s) => { if (s.pos === 'mola' && !s.home && s.energy >= (mgr ? 85 : 80)) KE.setPos(G, s, KE.POSITIONS[s.role][0]); });
+    /* müdür olmasa da: kasada iki kişi varken servis boş kalmaz, kasa boşken servisteki biri kasaya geçer */
+    const fr = st.filter((s) => (s.role === 'kasiyer' || s.role === 'garson') && s.pos !== 'mola' && !s.home);
+    const ks = fr.filter((s) => s.pos === 'kasa'), sv = fr.filter((s) => s.pos === 'servis');
+    if (!ks.length && sv.length > 0 && fr.length) { const x = sv.find((s) => s.role === 'kasiyer') || sv.find((s) => !s.task) || sv[0]; KE.setPos(G, x, 'kasa'); }
+    else if (!sv.length && ks.length > 1) { const x = ks.find((s) => s.role === 'garson' && !s.task) || ks.find((s) => s.role === 'garson') || ks[ks.length - 1]; if (KE.POSITIONS[x.role].includes('servis')) { KE.setPos(G, x, 'servis'); } }
     if (!mgr) return;
     const stations = KE.stations(G, b);
     const working = cooks.filter((s) => s.pos === 'ocak');
