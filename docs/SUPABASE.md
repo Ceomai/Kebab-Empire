@@ -24,6 +24,11 @@ kullanım ölçümü ve hata raporu için:
    - `VITE_SUPABASE_URL` = `https://<proje-ref>.supabase.co`
    - `VITE_SUPABASE_ANON_KEY` = Project Settings → API → `anon` anahtarı (herkese açık anahtardır; güvenlik RLS ile sağlanır)
 
+   - `VITE_TURNSTILE_SITEKEY` = Cloudflare Turnstile site anahtarı (isteğe bağlı ama önerilir). Supabase'de
+     **Authentication → Attack Protection → CAPTCHA**: Turnstile seç ve gizli anahtarı gir. Böylece betikle
+     toplu anonim hesap açılamaz.
+   - `VITE_CONTACT_EMAIL` = gizlilik ve koşullar metninde görünecek iletişim adresi.
+
    Yerelde denemek için aynı değerleri `.env.local` dosyasına yaz (git'e girmez).
 
 ## Tablolar

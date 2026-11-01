@@ -25,11 +25,31 @@ C.consent = function () {
 };
 C.needsConsent = () => C.enabled && !C.consent();
 
+/* Cloudflare Turnstile (görünmez doğrulama): toplu sahte hesap açılmasını engeller.
+   VITE_TURNSTILE_SITEKEY tanımlıysa ve Supabase Auth'ta CAPTCHA açıksa kullanılır. */
+const SITEKEY = import.meta.env.VITE_TURNSTILE_SITEKEY;
+function turnstileToken() {
+  if (!SITEKEY) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const go = () => {
+      const box = document.createElement('div');
+      box.style.cssText = 'position:fixed;bottom:8px;right:8px;z-index:90';
+      document.body.appendChild(box);
+      /** @type {any} */ (window).turnstile.render(box, { sitekey: SITEKEY, size: 'invisible', callback: (t) => { box.remove(); resolve(t); }, 'error-callback': () => { box.remove(); resolve(null); } });
+    };
+    if (/** @type {any} */ (window).turnstile) return go();
+    const sc = document.createElement('script');
+    sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    sc.async = true; sc.onload = go; sc.onerror = () => resolve(null);
+    document.head.appendChild(sc);
+  });
+}
 async function ensureUser() {
   if (!sb) return null;
   const { data } = await sb.auth.getSession();
   if (data.session) { C.user = data.session.user; return C.user; }
-  const r = await sb.auth.signInAnonymously();
+  const captchaToken = await turnstileToken();
+  const r = await sb.auth.signInAnonymously(captchaToken ? { options: { captchaToken } } : undefined);
   if (r.error) throw r.error;
   C.user = r.data.user;
   return C.user;

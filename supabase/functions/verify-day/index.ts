@@ -21,8 +21,12 @@ Deno.serve(async (req) => {
     if (error || !row) return new Response(JSON.stringify({ error: 'kayıt yok' }), { status: 404, headers: cors });
     if (row.verified) return new Response(JSON.stringify({ ok: true, note: 'zaten doğrulanmış' }), { headers: cors });
     const morning = row.morning ?? {};
-    const r = KE.verifyDay(morning.envelope, row.action_log ?? [], morning.todayRule, { day: row.day, served: row.served, revenue: Number(row.revenue), reputation: Number(row.reputation) });
+    // zincir: bu kaydın son doğrulanmış gün sonu durumu
+    const { data: chain } = await admin.from('chain_state').select('day, end_envelope').eq('user_id', u.user.id).eq('save_id', row.save_id).maybeSingle();
+    const r = KE.verifyChain(chain ? chain.end_envelope : null, morning.envelope, row.action_log ?? [], morning.todayRule, { day: row.day, served: row.served, revenue: Number(row.revenue), reputation: Number(row.reputation) });
+    if (r.ok && r.end) await admin.from('chain_state').upsert({ user_id: u.user.id, save_id: row.save_id, day: r.end.day, end_envelope: r.end, updated_at: new Date().toISOString() });
     await admin.from('day_results').update({ verified: r.ok, verify_note: r.note, morning: null, action_log: null }).eq('id', id);
+    delete r.end;
     return new Response(JSON.stringify(r), { headers: { ...cors, 'Content-Type': 'application/json' } });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: cors });
