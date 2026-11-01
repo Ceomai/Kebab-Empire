@@ -196,6 +196,150 @@
         { label: 'Kalitemize güveniyoruz', desc: 'Rakip semtte, müşteri biraz azalır', run: (G) => { G.rival.district = branch(G).district; return 'Müdavimler sözünü verdi: "Biz seni bırakmayız."'; } }
       ] }) });
 
+  /* ---------- Ek olaylar ---------- */
+  const pay = (G, amt) => { G.cash -= amt; KE.addExtra(G, 'other', amt); };
+  const earn = (G, amt) => { G.cash += amt; KE.addExtra(G, 'other', -amt); };
+  const moraleAll = (G, d) => staffOf(G).forEach((s) => { s.morale = clamp(s.morale + d, 0, 100); });
+  const rep = (G, d) => { G.reputation = clamp(G.reputation + d, 0, 100); };
+  const P = (G, v) => Math.round(v * G.priceIndex / 100) * 100;
+
+  ev.push({ id: 'elektrik', who: 'emre', w: 0.7,
+    build: (G) => ({ title: 'Elektrik kesintisi', text: 'Sokakta trafo arızası var; elektrik akşama kadar gelmeyebilir. Emre bir jeneratörcünün numarasını buldu.', ctx: {},
+      choices: [
+        { label: 'Jeneratör kirala', desc: `${KE.tl(P(G, 9000))}, servis aksamaz`, run: (G) => { pay(G, P(G, 9000)); return 'Jeneratör homurdandı ama dükkân ışıl ışıl. Komşular bile sıraya girdi.'; } },
+        { label: 'Bekle, gelince açarız', desc: '1 gün müşteri −%35', run: (G) => { G.mods.push({ key: 'traffic:' + branch(G).id, mult: 0.65, days: 1, label: 'Elektrik kesintisi' }); return 'Öğlen boyunca karanlıkta bekledik; elektrik ikindiye doğru geldi.'; } }
+      ] }) });
+
+  ev.push({ id: 'turOtobusu', who: 'ajans', w: 0.6, when: (G) => ['sultanpazari', 'besiktepe', 'kadiceşme'].includes(branch(G).district),
+    build: (G) => ({ title: 'Tur otobüsü kapıda', text: 'Bir tur rehberi, kırk kişilik grubunu yarın öğlen dükkâna getirmek istiyor. Tek şartı: grup menüsünde %15 indirim.', ctx: {},
+      choices: [
+        { label: 'Grup menüsünü kabul et', desc: '1 gün turist +%180, itibar +2', run: (G) => { G.mods.push({ key: 'type:turist', mult: 2.8, days: 1, label: 'Tur grubu' }); rep(G, 2); return 'Kırk kişi kırk ayrı dilde "çok güzel" dedi. Rehber her hafta geleceğini söyledi.'; } },
+        { label: 'Bu sefer olmaz', desc: 'Bir şey olmaz', run: () => 'Rehber kartını bıraktı, karşıdaki lokantaya yöneldi.' }
+      ] }) });
+
+  ev.push({ id: 'mahalleTakimi', who: 'ayse', w: 0.6,
+    build: (G) => ({ title: 'Mahalle takımına sponsor', text: 'Ayşe Teyze\'nin torununun oynadığı mahalle futbol takımının forması yok. Dükkânın adı forma göğsünde yazsın mı?', ctx: {},
+      choices: [
+        { label: 'Formaları biz yaptıralım', desc: `${KE.tl(P(G, 12000))}, itibar +4, 10 gün aile +%20`, run: (G) => { pay(G, P(G, 12000)); rep(G, 4); G.mods.push({ key: 'type:aile', mult: 1.2, days: 10, label: 'Forma sponsoru' }); return 'Çocuklar ilk maçı formalarla kazandı. Veliler maçtan sonra dükkâna akın etti.'; } },
+        { label: 'Bir kasa ayran gönder', desc: `${KE.tl(P(G, 1500))}, itibar +1`, run: (G) => { pay(G, P(G, 1500)); rep(G, 1); return 'Ayranlar devre arasında bitti. Teşekkür kartı geldi.'; } }
+      ] }) });
+
+  ev.push({ id: 'ustaHasta', who: null, w: 0.7, when: (G) => staffOf(G).some((s) => KE.isCook(s)),
+    build: (G) => { const s = staffOf(G).filter(KE.isCook).sort((a, c) => a.energy - c.energy)[0];
+      return { title: `${s.name} hastalandı`, text: `${s.name} sabah ateşler içinde geldi: "Bir şeyim yok usta, çalışırım." Sesi kısık, gözleri yorgun.`, ctx: { sid: s.id }, who: s,
+        choices: [
+          { label: 'Eve gönder, dinlensin', desc: 'Bugün ustasız çalışırsın, moral +10', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale + 10, 0, 100); x.pos = 'mola'; G.mods.push({ key: 'traffic:' + branch(G).id, mult: 0.85, days: 1, label: 'Usta hasta' }); return `${x.name} gönülsüzce gitti. Ertesi gün turp gibi döndü.`; } },
+          { label: 'Bugün idare etsin', desc: 'Moral −8, kalite düşebilir', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale - 8, 0, 100); x.energy = Math.min(x.energy, 55); return `${x.name} gün boyu öksürerek çalıştı. Ekip biraz kırgın.`; } }
+        ] }; } });
+
+  ev.push({ id: 'kiraArtisi', who: 'zeynep', w: 0.45, when: (G) => G.day > 40,
+    build: (G) => { const b = branch(G); const inc = Math.round(b.rent * 0.25 / 1000) * 1000;
+      return { title: 'Ev sahibi kira artışı istiyor', text: `Ev sahibi telefonda: "Piyasa uçtu, kirayı ${KE.tl(inc)} artırmam lazım." Zeynep Hanım sözleşmeye bakıyor: yıllık artış TÜFE ile sınırlı.`, ctx: { inc },
+        choices: [
+          { label: 'Sözleşmeyi hatırlat', desc: 'Kira %10 artar, ev sahibi biraz bozulur', run: (G) => { const b = branch(G); b.rent = Math.round(b.rent * 1.1 / 1000) * 1000; return 'Ev sahibi homurdandı ama sözleşmeye uydu. Kira %10 arttı.'; } },
+          { label: 'İstediğini ver', desc: `Kira +${KE.tl(inc)}, itibar +1 (iyi komşu)`, run: (G, c) => { const b = branch(G); b.rent += c.inc; rep(G, 1); return 'Ev sahibi memnun, kapının önüne iki saksı çiçek bıraktı.'; } }
+        ] }; } });
+
+  ev.push({ id: 'dolapArizasi', who: 'emre', w: 0.55,
+    build: (G) => ({ title: 'Soğutucu arızalandı', text: 'Sabah dolabın içi ılıktı. Servisçi bugün gelebilir ama acil ücret istiyor.', ctx: {},
+      choices: [
+        { label: 'Acil servisi çağır', desc: `${KE.tl(P(G, 7500))}`, run: (G) => { pay(G, P(G, 7500)); return 'Kompresör değişti, dolap yine buz gibi.'; } },
+        { label: 'Yarına kadar idare et', desc: 'Stokun %30\'u bozulur', run: (G) => { const b = branch(G); Object.keys(b.stock).forEach((k) => { b.stock[k] *= 0.7; }); return 'Etin bir kısmını atmak zorunda kaldık. Ders aldık.'; } }
+      ] }) });
+
+  ev.push({ id: 'tvProgrami', who: 'ajans', w: 0.4, when: (G) => G.reputation >= 45,
+    build: (G) => ({ title: 'Televizyondan davet', text: 'Sabah kuşağındaki yemek programı ustanı canlı yayına çağırıyor. Bir günlüğüne dükkândan ayrılması gerekecek.', ctx: {},
+      choices: [
+        { label: 'Ustayı yayına gönder', desc: 'Bugün müşteri −%15, sonra 7 gün +%30, itibar +5', run: (G) => { G.mods.push({ key: 'traffic:' + branch(G).id, mult: 0.85, days: 1, label: 'Usta televizyonda' }); G.mods.push({ key: 'traffic', mult: 1.3, days: 8, label: 'Televizyon etkisi' }); rep(G, 5); return 'Usta kameraya göz kırptı, telefonlar susmadı. "Televizyondaki dükkân burası mı?"'; } },
+        { label: 'Dükkân boş kalmaz', desc: 'Bir şey olmaz', run: () => 'Yapımcı başka bir ustayı aradı.' }
+      ] }) });
+
+  ev.push({ id: 'komsuSikayet', who: 'bulent', w: 0.55,
+    build: (G) => ({ title: 'Komşudan duman şikâyeti', text: 'Üst kattaki komşu belediyeye dilekçe vermiş: "Davlumbazın dumanı camımdan giriyor." Bülent Bey uyarıyor.', ctx: {},
+      choices: [
+        { label: 'Karbon filtre taktır', desc: `${KE.tl(P(G, 14000))}, temizlik +10`, run: (G) => { pay(G, P(G, 14000)); const b = branch(G); b.cleanliness = clamp(b.cleanliness + 10, 0, 100); return 'Filtre takıldı, komşu bir tabak baklava getirdi.'; } },
+        { label: 'Komşuya bir tepsi gönder', desc: `${KE.tl(P(G, 800))}, %50 ihtimalle ceza`, run: (G) => { pay(G, P(G, 800)); if (KE.rand() < 0.5) return 'Komşu yumuşadı, dilekçesini geri çekti.'; const fine = P(G, 9000); G.cash -= fine; KE.addExtra(G, 'fines', fine); return `Dilekçe işleme girdi: ${KE.tl(fine)} ceza.`; } }
+      ] }) });
+
+  ev.push({ id: 'stajyer', who: 'buro', w: 0.5,
+    build: (G) => ({ title: 'Meslek lisesinden stajyer', text: 'Aşçılık bölümünden bir öğrenci staj yeri arıyor. Okul öğle yemeğini ve sigortayı karşılıyor.', ctx: {},
+      choices: [
+        { label: 'Stajyeri al', desc: 'Ekip morali +5, 15 gün servis hızlanır', run: (G) => { moraleAll(G, 5); G.mods.push({ key: 'patience', mult: 1.1, days: 15, label: 'Stajyer desteği' }); return 'Stajyer ilk gün tabak taşıdı, ikinci gün soğan doğradı. Ekip ona abilik yapıyor.'; } },
+        { label: 'Şu an bakamayız', desc: 'Bir şey olmaz', run: () => 'Okula teşekkür edip başka dönem için söz verdin.' }
+      ] }) });
+
+  ev.push({ id: 'toptanFirsat', who: 'riza', w: 0.6,
+    build: (G) => { const amt = P(G, 20000);
+      return { title: 'Toptan alım fırsatı', text: `Rıza: "Elimde fazla mal var. İki haftalık siparişini peşin ödersen %12 indirim yaparım." Peşinat: ${KE.tl(amt)}.`, ctx: { amt },
+        choices: [
+          { label: 'Peşin öde', desc: `${KE.tl(amt)}, 14 gün malzeme −%12`, run: (G, c) => { pay(G, c.amt); G.mods.push({ key: 'ing', mult: 0.88, days: 14, label: 'Toptan alım' }); return 'Depo doldu, maliyetler düştü. Rıza memnun.'; } },
+          { label: 'Nakit elde kalsın', desc: 'Bir şey olmaz', run: () => 'Rıza omuz silkti: "Sen bilirsin kardeşim."' }
+        ] }; } });
+
+  ev.push({ id: 'cuzdan', who: null, w: 0.5,
+    build: (G) => ({ title: 'Masada unutulan cüzdan', text: 'Kapanışta bir masanın altında dolu bir cüzdan bulundu. İçinde bir kimlik ve epey nakit var.', ctx: {},
+      choices: [
+        { label: 'Sahibini bul, teslim et', desc: 'İtibar +3, ekip morali +4', run: (G) => { rep(G, 3); moraleAll(G, 4); return 'Sahibi ertesi gün çiçekle geldi; mahallede hikâyesi anlatılıyor.'; } },
+        { label: 'Karakola bırak', desc: 'İtibar +1', run: (G) => { rep(G, 1); return 'Tutanak tutuldu, cüzdan sahibine ulaştı.'; } }
+      ] }) });
+
+  ev.push({ id: 'sokakKedisi', who: 'ayse', w: 0.5,
+    build: (G) => ({ title: 'Dükkânın kedisi', text: 'Bir sokak kedisi birkaç gündür kapının önünde uyuyor. Müşteriler fotoğrafını çekiyor, bazıları sevmiyor.', ctx: {},
+      choices: [
+        { label: 'Mama kabı koy, adını Köfte koy', desc: '10 gün öğrenci ve turist +%15', run: (G) => { G.mods.push({ key: 'type:ogrenci', mult: 1.15, days: 10, label: 'Kedi Köfte' }); G.mods.push({ key: 'type:turist', mult: 1.15, days: 10, label: 'Kedi Köfte' }); return 'Köfte artık dükkânın maskotu. Sosyal medyada kendi hesabı bile var.'; } },
+        { label: 'Hayvanseverlere haber ver', desc: 'İtibar +1', run: (G) => { rep(G, 1); return 'Gönüllüler kediyi aşılattı, yakındaki parka bir kulübe kurdu.'; } }
+      ] }) });
+
+  ev.push({ id: 'yolCalismasi', who: 'bulent', w: 0.5,
+    build: (G) => ({ title: 'Kapının önünde yol çalışması', text: 'Belediye kaldırımı söktü; bir hafta sürecekmiş. Yaya trafiği düşecek.', ctx: {},
+      choices: [
+        { label: 'Yön tabelası ve paket kampanyası', desc: `${KE.tl(P(G, 5000))}, kayıp yarıya iner`, run: (G) => { pay(G, P(G, 5000)); G.mods.push({ key: 'traffic:' + branch(G).id, mult: 0.88, days: 6, label: 'Yol çalışması' }); return '"Kazıya rağmen açığız!" tabelası işe yaradı.'; } },
+        { label: 'Sabret', desc: '6 gün müşteri −%25', run: (G) => { G.mods.push({ key: 'traffic:' + branch(G).id, mult: 0.75, days: 6, label: 'Yol çalışması' }); return 'Toz toprak içinde bir hafta geçti.'; } }
+      ] }) });
+
+  ev.push({ id: 'vergiDenetimi', who: 'zeynep', w: 0.4, when: (G) => G.day > 30,
+    build: (G) => ({ title: 'Vergi incelemesi', text: 'Vergi müfettişi son üç ayın kayıtlarını istiyor. Zeynep Hanım: "Defterler tamam ama bir hafta mesai lazım."', ctx: {},
+      choices: [
+        { label: 'Muhasebeciye ek mesai öde', desc: `${KE.tl(P(G, 8000))}, sorunsuz`, run: (G) => { pay(G, P(G, 8000)); return 'İnceleme temiz kapandı. Müfettiş giderken "Defterleriniz örnek" dedi.'; } },
+        { label: 'Kendin hazırla', desc: '%40 ihtimalle usulsüzlük cezası', run: (G) => { if (KE.rand() < 0.6) return 'Gece yarılarına kadar fatura sıraladın; inceleme temiz çıktı.'; const fine = P(G, 15000); G.cash -= fine; KE.addExtra(G, 'fines', fine); return `Birkaç fiş eksik çıktı: ${KE.tl(fine)} usulsüzlük cezası.`; } }
+      ] }) });
+
+  ev.push({ id: 'yeniTarif', who: 'lonca', w: 0.5, when: (G) => staffOf(G).some(KE.isCook),
+    build: (G) => { const s = staffOf(G).filter(KE.isCook).sort((a, c) => c.morale - a.morale)[0];
+      return { title: `${s.name}'nın yeni tarif fikri`, text: `${s.name}: "Memleketin usulü bir sos denesek? Bir hafta tadım yaparız, beğenilirse menüde kalır."`, ctx: { sid: s.id }, who: s,
+        choices: [
+          { label: 'Dene, malzemesini al', desc: `${KE.tl(P(G, 4000))}, usta morali +15, 7 gün gurme +%40`, run: (G, c) => { pay(G, P(G, 4000)); const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale + 15, 0, 100); G.mods.push({ key: 'type:gurme', mult: 1.4, days: 7, label: 'Yeni sos' }); return 'Sos tuttu! Gurmeler tarifini soruyor, usta sır vermiyor.'; } },
+          { label: 'Klasikten şaşmayalım', desc: 'Usta morali −5', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale - 5, 0, 100); return 'Usta "Peki" dedi ama biraz bozuldu.'; } }
+        ] }; } });
+
+  ev.push({ id: 'kermes', who: 'ayse', w: 0.5,
+    build: (G) => ({ title: 'Okul kermesi', text: 'Mahalle okulu kütüphane için kermes düzenliyor. Ayşe Teyze dükkândan bir stant bekliyor.', ctx: {},
+      choices: [
+        { label: 'Stant kur, gelir okula', desc: `${KE.tl(P(G, 6000))} malzeme, itibar +4, 7 gün aile +%15`, run: (G) => { pay(G, P(G, 6000)); rep(G, 4); G.mods.push({ key: 'type:aile', mult: 1.15, days: 7, label: 'Kermes' }); return 'Stant ilk bir saatte tükendi. Okul müdürü teşekkür plaketi gönderdi.'; } },
+        { label: 'Bağış yap', desc: `${KE.tl(P(G, 2500))}, itibar +2`, run: (G) => { pay(G, P(G, 2500)); rep(G, 2); return 'Bağış makbuzu panoya asıldı.'; } }
+      ] }) });
+
+  ev.push({ id: 'gazeteRoportaj', who: 'ajans', w: 0.5, when: (G) => G.reputation >= 35,
+    build: (G) => ({ title: 'Yerel gazeteden röportaj', text: 'Mahalle gazetesi "Esnafın hikâyesi" köşesi için seninle konuşmak istiyor. Fotoğraf için ekibin de gelmesini istiyorlar.', ctx: {},
+      choices: [
+        { label: 'Ekiple birlikte poz ver', desc: 'Ekip morali +8, 7 gün müşteri +%10', run: (G) => { moraleAll(G, 8); G.mods.push({ key: 'traffic', mult: 1.1, days: 7, label: 'Gazete röportajı' }); return 'Fotoğraf kasanın arkasına asıldı. Ekip gururlu.'; } },
+        { label: 'Yalnız konuş', desc: '7 gün müşteri +%6', run: (G) => { G.mods.push({ key: 'traffic', mult: 1.06, days: 7, label: 'Gazete röportajı' }); return 'Röportaj çıktı; birkaç yeni yüz "Gazetede gördük" dedi.'; } }
+      ] }) });
+
+  ev.push({ id: 'paketPlatform', who: 'emre', w: 0.45, when: (G) => G.staff.some((s) => s.role === 'kurye'),
+    build: (G) => ({ title: 'Paket platformu teklifi', text: 'Bir sipariş uygulaması dükkânı ana sayfada öne çıkarmayı teklif ediyor: bir hafta boyunca, cironun %8\'i komisyon.', ctx: {},
+      choices: [
+        { label: 'Öne çıkalım', desc: '7 gün müşteri +%18, malzeme +%8', run: (G) => { G.mods.push({ key: 'traffic', mult: 1.18, days: 7, label: 'Platform vitrini' }); G.mods.push({ key: 'ing', mult: 1.08, days: 7, label: 'Platform komisyonu' }); return 'Telefonlar ve tabletler aynı anda ötüyor. Emre motoru hiç durdurmadı.'; } },
+        { label: 'Kendi müşterimiz yeter', desc: 'Bir şey olmaz', run: () => 'Uygulamanın satış temsilcisi bir broşür bıraktı.' }
+      ] }) });
+
+  ev.push({ id: 'ustaYarismasi', who: 'lonca', w: 0.4, when: (G) => G.mode && KE.MODES[G.mode].products.some((p) => KE.bestStar(G, branch(G), p.id) >= 3),
+    build: (G) => ({ title: 'Ustalar yarışması', text: 'Lonca bu ay şehrin ustalarını yarıştırıyor. Katılım ücreti var; birinci olanın dükkânı bütün şehirde konuşulacak.', ctx: {},
+      choices: [
+        { label: 'Ustamızı yarıştıralım', desc: `${KE.tl(P(G, 5000))}, yıldıza göre şans`, run: (G) => { pay(G, P(G, 5000)); const b = branch(G); const best = Math.max(...KE.MODES[G.mode].products.map((p) => KE.bestStar(G, b, p.id))); if (KE.rand() < 0.15 + best * 0.12) { rep(G, 7); G.mods.push({ key: 'traffic', mult: 1.2, days: 10, label: 'Yarışma birinciliği' }); moraleAll(G, 10); return 'Birinci olduk! Kupa vitrinde, kuyruk sokağın sonunda.'; } rep(G, 1); return 'Kıl payı ikinci olduk. Jüri "Seneye sizi bekleriz" dedi.'; } },
+        { label: 'Bu yıl izleyelim', desc: 'Bir şey olmaz', run: () => 'Yarışmayı tribünden izledin; rakiplerin tekniklerini not ettin.' }
+      ] }) });
+
   KE.EVENTS = ev;
   KE.rollEvent = function (G) {
     if (G.day < 3 || KE.rand() > 0.42) return null;

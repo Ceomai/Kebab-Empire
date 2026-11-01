@@ -40,6 +40,10 @@
 
   /* ---------- İlk gün rehberi ---------- */
   const TUT = [
+    { phase: 'morning', screen: 'map', sel: '.cp-goal', text: 'Burası şehir haritası, ana menün. Sağ üstte günün hedefi ve sayıları var.' },
+    { phase: 'morning', screen: 'map', sel: '.cp-tasks', text: 'Yapılacaklar saate göre dizilir. Bir işe dokununca haritada dükkânından oraya rota çizilir; tıklayınca oraya gidersin.' },
+    { phase: 'morning', screen: 'map', sel: '.cp-places', text: 'Hal, usta pazarı, banka, çiftlik… Şehirdeki bütün yerler burada. Numaralı olanlarda seni bekleyen iş var.' },
+    { phase: 'morning', screen: 'map', sel: '.citypanel .btn.big', text: 'Şimdi dükkâna geçelim.' },
     { phase: 'morning', sel: '.daypanel', text: 'Her gün üç küçük hedefin olur. Tutturdukça ek para ve itibar gelir.' },
     { phase: 'morning', sel: '.crewlist', text: 'Ekibin burada. Usta yalnızca pişirir; kasiyer sipariş alır, komi yemeği masaya götürür. Görevi bu düğmelerle değiştirirsin.' },
     { phase: 'morning', sel: '.dishgrid', text: 'Fiyatları buradan ayarla. Piyasanın çok üstü öğrenciyi ve işçiyi kaçırır.' },
@@ -47,14 +51,16 @@
     { phase: 'service', sel: '.stagewrap', text: 'Müşteri kapıdan girer, kasada öder, usta pişirir, komi masaya götürür. Yemek bitince bahşiş kavanoza düşer.' },
     { phase: 'service', sel: '.st-hud', text: 'Yoğunluk göstergesi. Kırmızıya dönen yere bir kişi daha ver: kuyruk uzarsa kasaya, tabak beklerse servise.' },
     { phase: 'service', sel: '#crew', text: 'Yorulan çalışanı sakin saatte molaya gönder, yoğun saatte geri çağır. İstersen otomatik yönetimi açık bırak.' },
-    { phase: 'service', sel: '.speed', text: 'Hızı buradan ayarla. Gün bitince bahşişi dağıtıp günlüğünü okuyacaksın. Kolay gelsin!' }
+    { phase: 'service', sel: '#tezgahBtn', text: 'İstersen tezgâha geçip siparişleri kendin hazırlarsın: adımları doğru sırayla seç, hızlı ve hatasız olursa kalite artar.' },
+    { phase: 'service', sel: '.speed', text: 'Hızı buradan ayarla. Gün bitince bahşişi nasıl dağıtacağını seçip günlüğünü okuyacaksın. Kolay gelsin!' }
   ];
+  UI.TUT = TUT;
   UI.tutor = function () {
     document.querySelectorAll('.tut').forEach((x) => x.remove());
     document.querySelectorAll('.tut-hl').forEach((x) => x.classList.remove('tut-hl'));
-    if (!KE.G || KE.G.tut == null || KE.G.tut >= TUT.length || UI.screen !== 'shop' || document.querySelector('.modal-bg')) return;
+    if (!KE.G || KE.G.tut == null || KE.G.tut >= TUT.length || document.querySelector('.modal-bg')) return;
     const st = TUT[KE.G.tut];
-    if (st.phase !== KE.G.phase) return;
+    if (st.phase !== KE.G.phase || UI.screen !== (st.screen || 'shop')) return;
     const el = document.querySelector(st.sel);
     if (!el) return;
     el.classList.add('tut-hl');
@@ -108,6 +114,7 @@
     if (!document.querySelector('.modal-bg')) {
       if (modalQueue.length) modalQueue.shift()();
       else if (UI.holdEvent) { UI.holdEvent = false; if (KE.G && KE.G.pendingEvent && KE.G.phase === 'morning') H.showEvent(); }
+      if (!document.querySelector('.modal-bg')) setTimeout(UI.tutor, 80);
     }
   };
   const queueModal = (fn) => { if (document.querySelector('.modal-bg')) modalQueue.push(fn); else fn(); };

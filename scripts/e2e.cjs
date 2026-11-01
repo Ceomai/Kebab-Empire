@@ -35,6 +35,7 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
   await click('.modal [data-a="closeModal"]');
   await page.waitForTimeout(400);
   await shot('06-map');
+  for (let i = 0; i < 4; i++) { await click('[data-a="tutNext"]'); await page.waitForTimeout(250); }
   for (const s of ['hal', 'lonca', 'buro', 'terzi', 'dekor', 'banka', 'belediye', 'ajans', 'kahve', 'subeler', 'ciftlik', 'office']) {
     await page.evaluate((s) => KE.UI.go(s), s); await page.waitForTimeout(120);
     await shot('07-' + s, true);
@@ -42,7 +43,7 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
   await page.evaluate(() => KE.UI.go('shop')); await page.waitForTimeout(700);
   await shot('08a-tut');
   await click('[data-a="tutNext"]'); await page.waitForTimeout(600); await shot('08b-tut');
-  await page.evaluate(() => { KE.G.tut = 4; });
+  await page.evaluate(() => { KE.G.tut = 8; });
   await shot('08-morning', true);
   await click('[data-a="openShop"]');
   await page.waitForTimeout(700); await shot('08c-tut-service');

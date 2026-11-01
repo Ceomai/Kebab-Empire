@@ -43,7 +43,7 @@ import './cloud.js';
 import '../js/main.js';
 import { registerSW } from 'virtual:pwa-register';
 
-KE.CLOUD.init().finally(() => KE.CONFIG.load());
+KE.CLOUD.init().finally(() => { KE.CONFIG.load(); if (KE.UI.checkCloud) KE.UI.checkCloud(); });
 if (KE.I18N.preferred() !== 'tr') KE.I18N.set(KE.I18N.preferred());
 
 registerSW({

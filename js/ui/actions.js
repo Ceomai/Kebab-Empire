@@ -39,7 +39,7 @@
   A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Yeni oyunun kurulumuna geçilecek. Kayıtlı oyunun, yeni oyunu başlatana kadar silinmez; kurulumdan vazgeçip devam edebilirsin.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Yeni oyun kur</button></div>`); };
   A.doNew = () => { UI.save(); KE.G = null; UI.closeModal(); UI.ng = {}; UI.go('newMode'); };
   A.backToTitle = () => { UI.go('title'); };
-  A.tutNext = () => { KE.G.tut++; UI.tutor(); };
+  A.tutNext = () => { KE.G.tut++; if (KE.G.tut >= UI.TUT.length) track('tutorial_done', { day: KE.G.day }); UI.tutor(); };
   A.tutSkip = () => { track('tutorial_skip', { step: KE.G.tut }); KE.G.tut = 99; UI.tutor(); };
   A.pickOpt = (d) => { const o = UI.pickOptions[+d.i]; UI.closeModal(); if (H.pickCb) H.pickCb(o); };
 
@@ -225,11 +225,27 @@
     const cur = KE.I18N.lang;
     UI.picker('Dil / Language / Sprache', null, Object.entries(KE.I18N.langs).map(([k, v]) => ({ label: v, sub: k === 'tr' ? 'Asıl dil' : k === 'en' ? 'Kültürel terimler korunur (iftar, usta, döner)' : 'Kulturelle Begriffe bleiben erhalten', sel: k === cur, key: k })), (o) => { KE.I18N.set(o.key).then(() => UI.render()); });
   };
+  /* İki cihaz: bulutta daha yeni ya da farklı bir kayıt varsa hangisiyle devam edileceğini sor */
+  UI.checkCloud = async function () {
+    const cl = CL(); if (!cl || !cl.ready || UI.cloudChecked) return;
+    UI.cloudChecked = true;
+    const r = await cl.loadSave(); if (!r || !r.save || !r.save.game) return;
+    const local = KE.SAVE.read();
+    const cg = r.save.game, lg = local && local.game;
+    if (lg && lg.saveId === cg.saveId && lg.day >= cg.day) return;
+    const card = (g, where, act) => `<button class="pickopt" data-a="${act}"><span class="po-t"><b>${esc(g.shopName || 'Kayıt')} · ${where}</b><small>${KE.dateStr(g.day)} · kasa ${KE.tl(g.cash)} · ${g.branches.length} şube</small></span></button>`;
+    UI.pendingCloud = r.save;
+    UI.modal(`<div class="mhead"><h2>${lg ? 'İki farklı kayıt var' : 'Bulutta kaydın var'}</h2><p class="muted">${lg ? 'Bu cihazdaki kayıt ile buluttaki kayıt farklı. Hangisiyle devam etmek istersin? Seçmediğin kayıt dosyaya yedeklenebilir.' : 'Başka bir cihazda oynadığın oyun bulutta duruyor.'}</p></div>
+      <div class="pickgrid">${card(cg, 'bulut', 'useCloud')}${lg ? card(lg, 'bu cihaz', 'useLocal') : ''}</div>
+      <div class="acts"><button class="btn ghost" data-a="closeModal">Şimdilik kapat</button></div>`);
+  };
+  A.useCloud = () => { try { const g = KE.SAVE.open(UI.pendingCloud); if (KE.G && KE.G.saveId !== g.saveId) KE.SAVE.exportFile(KE.G); KE.G = g; UI.save(); UI.closeModal(); UI.go('map'); UI.toast('Buluttaki oyun yüklendi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
+  A.useLocal = () => { const r = KE.SAVE.read(); UI.closeModal(); if (r) { KE.G = r.game; KE.CLOUD.queueSave(KE.SAVE.envelope(r.game)); KE.CLOUD.flushSave(); UI.toast('Bu cihazdaki kayıt buluta yazıldı.', 'good'); } };
   /* Hesap ve gizlilik */
   A.privacy = () => { UI.closeModal(); UI.privacyModal(false); };
   A.consentSave = async () => {
     const v = { cloud: /** @type {HTMLInputElement} */ (document.getElementById('cs-cloud')).checked, analytics: /** @type {HTMLInputElement} */ (document.getElementById('cs-an')).checked, name: /** @type {HTMLInputElement} */ (document.getElementById('cs-name')).value };
-    try { await KE.CLOUD.setConsent(v); UI.closeModal(); UI.toast(v.cloud ? 'Bulut kaydı açık.' : 'Tercihin kaydedildi.', 'good'); if (KE.G) UI.save(); } catch (e) { UI.toast('Bağlanılamadı: ' + e.message, 'bad'); }
+    try { await KE.CLOUD.setConsent(v); UI.closeModal(); UI.toast(v.cloud ? 'Bulut kaydı açık.' : 'Tercihin kaydedildi.', 'good'); if (v.cloud) { UI.cloudChecked = false; await UI.checkCloud(); } if (KE.G) UI.save(); } catch (e) { UI.toast('Bağlanılamadı: ' + e.message, 'bad'); }
   };
   A.consentNone = async () => { await KE.CLOUD.setConsent({ cloud: false, analytics: false }); UI.closeModal(); };
   A.linkMail = async () => { const m = /** @type {HTMLInputElement} */ (document.getElementById('cs-mail')).value.trim(); if (!/^\S+@\S+\.\S+$/.test(m)) { UI.toast('Geçerli bir e-posta yaz.', 'bad'); return; } try { await KE.CLOUD.linkEmail(m); UI.toast('Onay bağlantısı e-postana gönderildi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
