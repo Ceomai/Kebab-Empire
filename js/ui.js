@@ -123,6 +123,7 @@
     const fn = SCREENS[screen] || SCREENS.title;
     const inGame = G && !['title', 'newMode', 'newDistrict', 'newMaster'].includes(screen);
     app().innerHTML = (inGame ? topbar() : '') + fn();
+    if (screen === 'map') UI.mapMount();
     if (screen === 'shop' && G && G.phase !== 'morning') { KE.SCENE.reset(); if (G.live) UI.sceneTick(true); renderTezgah(); }
     if (G && G.phase !== 'service') UI.save();
     if (inGame) setTimeout(UI.tutor, 60);
@@ -393,7 +394,8 @@
     tasks = tasks || cityTasks();
     const TL = { now: 'Şimdi', pm: 'Öğleden sonra', eve: 'Akşam' };
     const fw = Math.max(320, window.innerWidth - (window.innerWidth > 1000 ? 380 : 0)), fh = Math.max(600, window.innerHeight - 128);
-    return { fill: true, par: window.innerWidth > 1000 && fw / fh < 1400 / 860 ? 'xMidYMin meet' : 'xMidYMid slice', tasks: tasks.map((t) => ({ id: t.id, n: t.n, color: t.color, label: t.time || TL[t.when].replace('Öğleden sonra', 'Öğleden s.') })), route: UI.mapRoute || (tasks[0] && tasks[0].id) };
+    const phone = window.innerWidth <= 760;
+    return { fill: true, par: phone ? 'xMidYMid meet' : window.innerWidth > 1000 && fw / fh < 1400 / 860 ? 'xMidYMin meet' : 'xMidYMid slice', tasks: tasks.map((t) => ({ id: t.id, n: t.n, color: t.color, label: t.time || TL[t.when].replace('Öğleden sonra', 'Öğleden s.') })), route: UI.mapRoute || (tasks[0] && tasks[0].id) };
   }
   function goalRing() {
     const prog = KE.dailyProgress(G, false);
@@ -433,11 +435,24 @@
   }
   SCREENS.map = () => {
     const tasks = cityTasks();
-    return `<main class="mapscreen2"><div class="mapframe big">${KE.MAP.render(mapOpts(tasks))}</div>${cityPanel(tasks)}</main>`;
+    return `<main class="mapscreen2"><div class="mapframe big" id="cityframe"></div>${cityPanel(tasks)}</main>`;
   };
   UI.mapRefresh = function () {
-    const f = document.querySelector('.mapscreen2 .mapframe');
-    if (f) f.innerHTML = KE.MAP.render(mapOpts());
+    const f = document.getElementById('cityframe');
+    if (f) KE.MAP.update(f, mapOpts());
+  };
+  /* Haritayı yerleştir; telefonda aktif dükkânı ortala */
+  UI.mapMount = function () {
+    const f = document.getElementById('cityframe');
+    if (!f) return;
+    KE.MAP.mount(f, mapOpts());
+    if (f.scrollWidth > f.clientWidth + 4 && G) {
+      const P = KE.MAP.POS[B().district] || { x: 700, y: 430 };
+      const sv = f.querySelector('svg');
+      const k = sv.getBoundingClientRect().width / 1400;
+      f.scrollLeft = Math.max(0, P.x * k - f.clientWidth / 2);
+      f.scrollTop = Math.max(0, P.y * k - f.clientHeight / 2);
+    }
   };
   let rsz = 0;
   window.addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(() => UI.mapRefresh(), 200); });

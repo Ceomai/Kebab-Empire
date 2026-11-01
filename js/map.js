@@ -210,14 +210,44 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
   }
 
   /* opts: pick (semt seçimi), fill, tasks [{id, n, label, color}], route (yer id), focus (yer id) */
+  const DLBLS = () => `<g class="dlbls" font-family="Nunito, sans-serif" font-size="14.5" font-weight="800" text-anchor="middle" paint-order="stroke" stroke="#fffaf0" stroke-width="4" stroke-linejoin="round">${LABELS.map((l) => `<text x="${l[0]}" y="${l[1]}" class="dlbl" fill="#5b4a2e">${l[2]}</text>`).join('')}</g>`;
+  const svgOpen = (opts, cls) => `<svg preserveAspectRatio="${opts.par || (opts.fill ? 'xMidYMid slice' : 'xMidYMid meet')}" class="citymap ${cls || ''}" viewBox="0 0 1400 860" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Şehir haritası">`;
+  /* Tek parça çizim (semt seçimi gibi bir kez çizilen yerler için) */
   M.render = function (opts) {
     opts = opts || {};
     if (!BASE) BASE = buildBase();
+    const night = KE.G && KE.G.phase === 'closing' && !opts.pick;
+    return svgOpen(opts, (night ? 'night ' : '') + (opts.pick ? 'picking' : '')) + BASE + (opts.pick ? '' : DLBLS()) + M.overlay(opts) + '</svg>';
+  };
+  /* Katmanlı çizim: zemin bir kez ayrıştırılır ve saklanır, yalnızca üst katman güncellenir */
+  let baseEl = null;
+  M.mount = function (frame, opts) {
+    if (!BASE) BASE = buildBase();
+    if (!baseEl) { const t = document.createElement('div'); t.innerHTML = svgOpen(opts, 'base') + BASE + DLBLS() + '</svg>'; baseEl = t.firstChild; }
+    frame.classList.add('layered');
+    frame.innerHTML = '';
+    const inner = document.createElement('div'); inner.className = 'mapinner';
+    inner.appendChild(baseEl);
+    const ov = document.createElement('div'); ov.innerHTML = svgOpen(opts, 'overlay') + '</svg>';
+    inner.appendChild(ov.firstChild);
+    frame.appendChild(inner);
+    M.update(frame, opts);
+  };
+  M.update = function (frame, opts) {
+    const base = frame.querySelector('svg.base'), ov = frame.querySelector('svg.overlay');
+    if (!base || !ov) return M.mount(frame, opts);
+    const par = opts.par || (opts.fill ? 'xMidYMid slice' : 'xMidYMid meet');
+    [base, ov].forEach((el) => { if (el.getAttribute('preserveAspectRatio') !== par) el.setAttribute('preserveAspectRatio', par); });
+    const night = KE.G && KE.G.phase === 'closing';
+    base.classList.toggle('night', !!night); ov.classList.toggle('night', !!night);
+    ov.innerHTML = M.overlay(opts);
+  };
+  /* Üst katman: tesisler, dükkânlar, iş etiketleri, rota, bulutlar (ve seçim modunda semtler) */
+  M.overlay = function (opts) {
     const G = KE.G;
     const pick = !!opts.pick;
     const phase = G ? G.phase : 'morning';
-    let s = `<svg preserveAspectRatio="${opts.par || (opts.fill ? 'xMidYMid slice' : 'xMidYMid meet')}" class="citymap ${phase === 'closing' ? 'night' : ''} ${pick ? 'picking' : ''}" viewBox="0 0 1400 860" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Şehir haritası">${BASE}`;
-    if (!pick) s += `<g class="dlbls" font-family="Nunito, sans-serif" font-size="14.5" font-weight="800" text-anchor="middle" paint-order="stroke" stroke="#fffaf0" stroke-width="4" stroke-linejoin="round">${LABELS.map((l) => `<text x="${l[0]}" y="${l[1]}" class="dlbl" fill="#5b4a2e">${l[2]}</text>`).join('')}</g>`;
+    let s = '';
     if (phase === 'closing' && !pick) s += '<rect width="1400" height="860" fill="url(#kmNight)" pointer-events="none"/>';
 
     if (pick) {
@@ -230,7 +260,7 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
           <rect x="${P.x - W / 2}" y="${P.y - 60}" width="${W}" height="34" rx="17" fill="${sel ? '#d7263d' : '#fffaf0'}"/><path d="M${P.x - 7} ${P.y - 26} l7 8 l7 -8z" fill="${sel ? '#d7263d' : '#fffaf0'}"/>
           <text x="${P.x}" y="${P.y - 37}" text-anchor="middle" class="pickname ${sel ? 'on' : ''}">${esc(d.name)}</text></g></g>`;
       });
-      return s + '</svg>';
+      return s;
     }
 
     /* rota */
@@ -266,6 +296,6 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
     });
     /* bulutlar */
     s += '<g class="cl" pointer-events="none"><g fill="#fff" opacity=".75"><ellipse cx="100" cy="110" rx="60" ry="16"/><ellipse cx="128" cy="98" rx="34" ry="16"/></g><ellipse cx="110" cy="190" rx="56" ry="9" fill="#1d4a6b" opacity=".07"/></g><g class="cl cl2" pointer-events="none"><g fill="#fff" opacity=".7"><ellipse cx="200" cy="470" rx="64" ry="16"/><ellipse cx="230" cy="456" rx="38" ry="18"/></g></g>';
-    return s + '</svg>';
+    return s;
   };
 })();

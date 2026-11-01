@@ -1080,3 +1080,30 @@ body::before { background: var(--kart); }
 .hchip.iftar.on { background: #23a26d; } .hchip.iftar.on em { color: #e5fff2; }
 .iftarwait { position: absolute; left: 50%; bottom: 112%; transform: translateX(-50%); white-space: nowrap; background: #2b2f63; color: #ffe39a; font-size: .85cqw; font-weight: 800; border-radius: 99px; padding: .05cqw .55cqw; z-index: 4; }
 .stack .row { display: flex; gap: 8px; } .stack .row .grow { flex: 1; }
+
+/* ---------- Katmanlı harita ve telefon düzeni ---------- */
+.mapframe.layered { position: relative; }
+.mapinner { position: relative; width: 100%; }
+.mapinner svg.overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mapinner svg.overlay { pointer-events: none; }
+.mapinner svg.overlay .place { pointer-events: auto; }
+@media (max-width: 760px) {
+  .mapscreen2 .mapframe.big { height: 58vh; min-height: 360px; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; display: block; }
+  .mapscreen2 .mapframe.big::-webkit-scrollbar { display: none; }
+  .mapscreen2 .mapinner { width: 1250px; }
+  .mapscreen2 .mapframe.big svg, .mapscreen2 .mapframe.big svg.base { width: 1250px; height: 768px; min-width: 0; min-height: 0; }
+  .citypanel { border-radius: 22px 22px 0 0; margin-top: -18px; box-shadow: 0 -10px 26px -18px rgba(60, 35, 15, .6); }
+  .cp-in { padding: 18px 16px calc(18px + env(safe-area-inset-bottom, 0px)); }
+  .cp-places { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+  /* üst çubuk: tek satır, gereksizler gizli */
+  .tb-row { gap: 6px; padding-block: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .tb-row::-webkit-scrollbar { display: none; }
+  .brand, .tb-date, .tb-rep, .tb-clock span { display: none; }
+  .tb-clock, .tb-money { padding: 4px 9px; flex: none; }
+  .tb-clock b, .tb-money b { font-size: 16px; }
+  .tb-money small { display: none; }
+  .tb-nav { gap: 4px; }
+  .navbtn { padding: 7px 8px; } .navbtn span { display: none; } .tb-nav { margin-left: auto; }
+  .branchbar { padding-bottom: 8px; gap: 6px; }
+  .btab { padding: 4px 10px 4px 5px; } .btab-art { width: 34px; } .btab-t b { font-size: 13.5px; } .btab-t small { font-size: 11px; }
+}

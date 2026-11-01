@@ -300,4 +300,8 @@
     buro: { name: 'Tuğba Hanım', role: 'Eleman bürosu', look: { gender: 'k', age: 'genc', skin: '#e8b98f', hairColor: '#4a2f1d', hair: 'topuz', facial: 'none', glasses: true, head: 'basortusu', scarf: '#1f618d', outfit: 'gomlek', outfitColor: '#fdfefe' } },
     lonca: { name: 'Lonca Şeyhi Rauf Usta', role: 'Usta pazarı', look: { gender: 'e', age: 'yasli', skin: '#d9a273', hairColor: '#d0d0d0', hair: 'kel', facial: 'sakal', glasses: false, head: 'takke', accent: '#7d6608', outfit: 'yelek', outfitColor: '#4a235a' } }
   };
+  /* Aynı görünüş + aynı ayarlar için çizimi bir kez üret (sahne her dakika yeniden sorar) */
+  const memo = (fn) => { const cache = new Map(); return function (l, opts) { const k = JSON.stringify([l, opts || null]); let v = cache.get(k); if (v === undefined) { v = fn(l, opts); if (cache.size > 400) cache.clear(); cache.set(k, v); } return v; }; };
+  KE.portrait = memo(KE.portrait);
+  KE.figure = memo(KE.figure);
 })();
