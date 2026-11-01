@@ -144,7 +144,7 @@
       '<b>Kapanış:</b> Günün raporunu görürsün, bahşişin nasıl dağıtılacağını seçersin ve günlüğünü okursun.',
       '<b>Hızlı gün:</b> Servisi izlemek istemediğin günlerde sabah ekranındaki "Hızlı gün" düğmesi servisi atlayıp doğrudan sonuca geçer.',
       '<b>Haftayı hızlı geç:</b> Yedi semtin hepsinde şube açtıktan sonra açılır. Haftanın kalanını tek tuşla geçer; biri istifa ederse, ay kapanırsa, yeni döneme geçersen, müfettiş gelirse ya da bir karar beklerse durur.',
-      '<b>Yönlendirme düzeyi:</b> Menüden "Bugün ne yapmalıyım?" kartının ne kadar konuşacağını seçebilirsin: Çok, Az (yalnızca acil uyarılar) ya da Kapalı.',
+      '<b>Yönlendirme düzeyi:</b> Menüden "Bugün ne yapmalıyım?" kartının ne kadar konuşacağını seçebilirsin: Çok, Az (yalnızca acil uyarılar) ya da Sessiz.',
       'Oyun her gün sonunda tarayıcıya kaydedilir. Menüden dosyaya yedek alabilir, başka cihazda yükleyebilirsin.'
     ] },
     { id: 'servis', ic: 'store', t: 'Servis ve tezgâh', lead: 'Müşteri kapıdan girer, kasada sipariş verir, usta pişirir, komi/garson yemeği masaya götürür, müşteri yer ve bahşiş bırakır.', items: [

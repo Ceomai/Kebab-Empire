@@ -1,0 +1,156 @@
+{0} izin istiyor	{0} wants a day off	{0} möchte freinehmen
+{0} önlüğünü katlarken lafı dolandırdı: "Patron, memlekette kızımın nişanı var. Bugün bir çıkabilsem..."	{0} beat about the bush while folding their apron: "Boss, my daughter's engagement party is back home. If I could just get away today..."	{0} druckste beim Zusammenlegen der Schürze herum: „Chef, in der Heimat ist die Verlobung meiner Tochter. Wenn ich heute nur wegkönnte …“
+Git, gönlün rahat olsun	Go, with my blessing	Geh nur, mit gutem Gewissen
+Bugün çalışmaz; morali +{0}	Off work today; morale +{0}	Arbeitet heute nicht; Laune +{0}
+{0} elini öptü: "Sağ ol patron, bunu unutmam."	{0} kissed your hand respectfully: "Thanks, boss, I won't forget this."	{0} küsste dir respektvoll die Hand: „Danke, Chef, das vergesse ich dir nie.“
+Bugün olmaz, kalabalık var	Not today, it's busy	Heute nicht, es ist viel los
+Çalışır ama morali {0}	Works, but morale {0}	Arbeitet, aber Laune {0}
+{0} başını salladı, ama bütün gün suratı asık.	{0} nodded, but sulked all day.	{0} nickte, zog aber den ganzen Tag ein langes Gesicht.
+{0}'ya göz koyan var	Someone has an eye on {0}	Jemand hat ein Auge auf {0} geworfen
+Karşı sokaktaki otelin şefi {0}'yı yemeğe çıkarmış. "Bana iki katını veriyorlar patron, ama ben buraya alıştım..." diyor.	The chef of the hotel across the street took {0} out to dinner. "They're offering me double, boss, but I've got used to this place..."	Der Küchenchef des Hotels gegenüber hat {0} zum Essen ausgeführt. „Die bieten mir das Doppelte, Chef, aber ich hab mich hier eingelebt …“
+Maaş +{0} moral +{1}	Wage +{0}, morale +{1}	Lohn +{0}, Laune +{1}
+{0} gülümsedi: "Bu dükkânın ekmeğini yedim, bir yere gitmem."	{0} smiled: "I've earned my bread in this shop, I'm not going anywhere."	{0} lächelte: „Dieser Laden hat mich ernährt, ich gehe nirgendwohin.“
+Gönlünü al, zam yok	Win them over, no raise	Gut zureden, keine Erhöhung
+Moral {0}; morali {1}'in altına inerse kaçabilir	Morale {0}; if it drops below {1}, they may leave	Laune {0}; fällt sie unter {1}, könnte die Person gehen
+{0} "Peki" dedi, ama aklı otelde.	{0} said "All right", but their mind is on the hotel.	{0} sagte „Na gut“, ist aber mit den Gedanken beim Hotel.
+Üç semtte taç kazan	Win the crown in three districts	Gewinne die Krone in drei Bezirken
+Ekip yetişmiyor	Crew can't keep up	Team kommt nicht hinterher
+Stok yeterli	Stock sufficient	Bestand reicht
+Fiyat dengede	Prices balanced	Preise ausgewogen
+Stok eksik	Stock short	Bestand fehlt
+Açılış kontrolü:	Opening checklist:	Öffnungscheck:
+Dükkân ekranının başındaki dört madde (ekip, stok, fiyat, bekleyen karar) yeşilse kepengi açmaya hazırsın; eksik olanın yanındaki düğme tek dokunuşla düzeltir.	If the four items at the top of the shop screen (crew, stock, prices, pending decision) are green, you're ready to raise the shutters; the button next to anything missing fixes it in one tap.	Sind die vier Punkte oben im Ladenbildschirm (Team, Bestand, Preise, offene Entscheidung) grün, kannst du die Rollläden hochziehen; der Knopf neben einem fehlenden Punkt behebt ihn mit einem Tipp.
+Geri al:	Undo:	Rückgängig:
+Sabah, kepengi açmadan yaptığın son işlemi (işe alım, fiyat, satın alma, görev değişikliği) ekranın altındaki "Geri al" düğmesiyle geri alabilirsin.	In the morning, before raising the shutters, you can undo your last action (hiring, prices, purchases, job changes) with the "Undo" button at the bottom of the screen.	Morgens, bevor die Rollläden hochgehen, kannst du deine letzte Aktion (Einstellung, Preise, Einkauf, Aufgabenwechsel) mit dem Knopf „Rückgängig“ unten im Bildschirm zurücknehmen.
+Haftayı hızlı geç:	Fast-forward the week:	Woche vorspulen:
+Yedi semtin hepsinde şube açtıktan sonra açılır. Haftanın kalanını tek tuşla geçer; biri istifa ederse, ay kapanırsa, yeni döneme geçersen, müfettiş gelirse ya da bir karar beklerse durur.	Unlocks once you have branches in all seven districts. Skips the rest of the week with one tap; it stops if someone quits, the month closes, you enter a new era, an inspector arrives or a decision is waiting.	Wird freigeschaltet, sobald du in allen sieben Bezirken Filialen hast. Überspringt den Rest der Woche mit einem Tipp; hält an, wenn jemand kündigt, der Monat abgeschlossen wird, du in eine neue Epoche kommst, ein Inspektor auftaucht oder eine Entscheidung ansteht.
+Yönlendirme düzeyi:	Guidance level:	Hilfestufe:
+Menüden "Bugün ne yapmalıyım?" kartının ne kadar konuşacağını seçebilirsin: Çok, Az (yalnızca acil uyarılar) ya da Sessiz.	In the menu you can choose how much the "What should I do today?" card says: High, Low (urgent warnings only) or Silent.	Im Menü kannst du wählen, wie viel die Karte „Was soll ich heute tun?“ sagt: Viel, Wenig (nur dringende Warnungen) oder Still.
+Gün ortası kararları:	Midday decisions:	Entscheidungen am Mittag:
+Bazı günler servis sırasında küçük bir olay çıkar: turist otobüsü, sönen ocak, fenalaşan bir çalışan, bastıran sağanak. Oyun durur ve seçim yaparsın; karar vermezsen {0} dakika sonra güvenli seçenek uygulanır.	Some days a small incident crops up during service: a tour bus, a grill going out, a staff member feeling unwell, a sudden downpour. The game pauses and you choose; if you don't decide, the safe option is applied after {0} minutes.	An manchen Tagen passiert während des Service ein kleiner Zwischenfall: ein Reisebus, ein ausgegangener Grill, ein Mitarbeiter, dem schlecht wird, ein Platzregen. Das Spiel pausiert und du entscheidest; triffst du keine Wahl, wird nach {0} Minuten die sichere Option gewählt.
+Acil kurye:	Emergency courier:	Eilkurier:
+Servis sırasında malzeme bitmek üzereyse yan paneldeki "Acil kurye" düğmesi eksikleri normal fiyatın {0} katına hemen getirir. Günde bir kez kullanılabilir.	If ingredients are about to run out during service, the "Emergency courier" button in the side panel brings what's missing right away at {0} times the normal price. Usable once a day.	Gehen während des Service Zutaten aus, bringt der Knopf „Eilkurier“ in der Seitenleiste das Fehlende sofort zum {0}-fachen Normalpreis. Einmal pro Tag nutzbar.
+Ekip panosu:	Crew board:	Team-Tafel:
+Ekip panelinde "Pano" görünümüne geçersen görevleri sütun sütun görürsün. Bir kişiye dokun, sonra gideceği sütuna dokun; masaüstünde sürükleyip bırakabilirsin.	Switch the crew panel to "Board" view to see jobs column by column. Tap a person, then tap the column they should move to; on desktop you can drag and drop.	Schaltest du das Team-Fenster auf die Ansicht „Tafel“, siehst du die Aufgaben in Spalten. Tippe auf eine Person, dann auf die Zielspalte; am Desktop kannst du ziehen und ablegen.
+Ustaların huyları:	Masters' quirks:	Die Eigenheiten der Meister:
+Ustalar zaman zaman izin ister, çıraklarıyla atışır ya da başka yerden teklif alır. Verdiğin karar moralini ve sadakatini etkiler.	Now and then masters ask for a day off, squabble with their apprentices or get offers from elsewhere. Your decision affects their morale and loyalty.	Meister wollen ab und zu freinehmen, zanken mit ihren Lehrlingen oder bekommen Angebote von anderswo. Deine Entscheidung wirkt sich auf ihre Laune und Treue aus.
+Ekibin isteği:	The crew's wish:	Der Wunsch des Teams:
+Ekip her hafta bir kural ister (kapanış ekranında yazar). O kuralı seçtiğin her gün herkesin morali biraz daha artar; çırakları mentorlu ekipler çoğunlukla "Ustaya ağırlık" ister.	Each week the crew asks for a rule (shown on the closing screen). Every day you choose that rule, everyone's morale rises a little more; crews with mentored apprentices usually want "Master gets more".	Jede Woche wünscht sich das Team eine Regel (steht im Abschlussbildschirm). An jedem Tag, an dem du diese Regel wählst, steigt die Laune aller ein bisschen mehr; Teams mit Lehrlingen unter Mentoren wollen meist „Mehr für den Meister“.
+Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı (dönerde üç), imza tarifin {0} seviyesi, altı toplu sipariş.	The livestock farm and big investments unlock. To advance: six branches, two district crowns (three for döner), signature recipe level {0}, six bulk orders.	Mastbetrieb und große Investitionen werden freigeschaltet. Zum Aufstieg: sechs Filialen, zwei Bezirkskronen (drei beim Döner), Signature-Rezept Stufe {0}, sechs Großaufträge.
+Rehber yıldızı:	Guidebook star:	Führer-Stern:
+{0} dönemden sonra itibarın {1}'in üstündeyse rehber müfettişi habersiz bir şubeye gelir (danışman kartı o sabah haber verir). Memnuniyet {2} ve kaçan müşteri {3}'un altındaysa zincir bir yıldız kazanır (en çok {4}): her yıldız müşteriyi ve fiyat toleransını kalıcı olarak {5} artırır. Başarısız ziyaret itibar götürür.	After era {0}, if your reputation is above {1}, the guidebook inspector visits a branch unannounced (the advisor card tips you off that morning). If satisfaction reaches {2} and lost customers stay below {3}, the chain earns a star (up to {4}): each star permanently raises customers and price tolerance by {5}. A failed visit costs reputation.	Ab Epoche {0} kommt bei einem Ruf über {1} der Restaurantführer-Inspektor unangekündigt in eine Filiale (die Beraterkarte warnt dich am Morgen). Erreicht die Zufriedenheit {2} und bleiben die verlorenen Gäste unter {3}, bekommt die Kette einen Stern (höchstens {4}): Jeder Stern erhöht Gäste und Preistoleranz dauerhaft um {5}. Ein misslungener Besuch kostet Ruf.
+Hikâyelerin sonu kalıcı ödüller getirir: Selin cezaları yarıya indirir, Kemal Bey denetimde yanında olur, {0} öğrencileri getirir.	The stories' endings bring permanent rewards: Selin halves fines, Kemal Bey stands by you at inspections, {0} brings in students.	Die Enden der Geschichten bringen dauerhafte Belohnungen: Selin halbiert Strafen, Kemal Bey steht dir bei Kontrollen bei, {0} bringt Studierende mit.
+{0}'nda kampanyalar müşteri getirir; ama dükkânın doluysa önce kapasiteyi büyüt. Her kampanya kartı, dünkü rakamlarına göre tahmini kârı ya da zararı gösterir.	Campaigns at the {0} bring customers; but if your shop is full, grow capacity first. Each campaign card shows the estimated profit or loss based on yesterday's figures.	Kampagnen bei {0} bringen Gäste; ist dein Laden aber voll, erhöhe zuerst die Kapazität. Jede Kampagnenkarte zeigt den geschätzten Gewinn oder Verlust auf Basis der gestrigen Zahlen.
+Tadım menüsü (kebap):	Tasting menu (kebab):	Degustationsmenü (Kebab):
+Müşteri sayısını değil hesap ortalamasını artırır; dükkânın dolu olduğu günlerde de kazandırır.	Raises the average bill, not customer numbers; it pays off even on days when your shop is full.	Erhöht den Durchschnittsbon, nicht die Gästezahl; lohnt sich auch an Tagen, an denen dein Laden voll ist.
+Açılış kontrolü	Opening checklist	Öffnungscheck
+Ekip eksik	Crew short	Team unvollständig
+{0}, {1}: usta, kasa ya da servis boş	{0}, {1}: master, till or service unstaffed	{0}, {1}: Meister, Kasse oder Service unbesetzt
+Ekibe git	Go to crew	Zum Team
+Stok bugüne yeter	Stock lasts today	Bestand reicht für heute
+Fiyatlar güncel	Prices up to date	Preise aktuell
+Bekleyen karar yok	No pending decisions	Keine offenen Entscheidungen
+{0} pişirmeci var ama {1} ocak yeri var. Fazlası mola dönüşümünde işe yarar.	You have {0} cooks but only {1} grill slots. The extras help with break rotation.	Du hast {0} Köche, aber nur {1} Grillplätze. Die übrigen helfen beim Pausenwechsel.
+Ustasız şube bugün kapalı kalacak: {0}, {1}	Branches without a master will stay closed today: {0}, {1}	Filialen ohne Meister bleiben heute geschlossen: {0}, {1}
+Temizlik görevlisi ·	Cleaner ·	Reinigungskraft ·
+boş	empty	leer
+Bir kişiye dokun, sonra görev sütununa dokun. Masaüstünde sürükleyip bırakabilirsin.	Tap a person, then tap a job column. On desktop you can drag and drop.	Tippe auf eine Person, dann auf eine Aufgabenspalte. Am Desktop kannst du ziehen und ablegen.
+seçildi: gideceği sütuna dokun.	selected: tap the column to move them to.	ausgewählt: Tippe auf die Zielspalte.
+Son işlem geri alındı.	Last action undone.	Letzte Aktion rückgängig gemacht.
+Yönlendirme düzeyi	Guidance level	Hilfestufe
+"Bugün ne yapmalıyım?" kartı ve öneriler ne kadar konuşsun?	How much should the "What should I do today?" card and tips say?	Wie viel sollen die Karte „Was soll ich heute tun?“ und die Tipps sagen?
+Çok	High	Viel
+Bütün öneriler ve ipuçları (yeni başlayanlar için).	All suggestions and tips (for beginners).	Alle Vorschläge und Tipps (für Einsteiger).
+Yalnızca acil uyarılar: ustasız şube, boş kasa, eksik stok, eksi kasa.	Urgent warnings only: branch without a master, empty till, missing stock, negative cash.	Nur dringende Warnungen: Filiale ohne Meister, unbesetzte Kasse, fehlender Bestand, Minus in der Kasse.
+Danışman kartı gizlenir. Sabah kontrol listesi kalır.	The advisor card is hidden. The morning checklist stays.	Die Beraterkarte wird ausgeblendet. Die Morgen-Checkliste bleibt.
+Yönlendirme düzeyi: Çok	Guidance level: High	Hilfestufe: Viel
+Rehber müfettişi bugün {0} şubesinde	The guidebook inspector is at the {0} branch today	Der Restaurantführer-Inspektor ist heute in der Filiale {0}
+Habersiz geldi, kimseye söyleme!	Arrived unannounced, don't tell anyone!	Unangekündigt gekommen, nichts verraten!
+Yıldız için memnuniyet {0} ve kaçan müşteri {1}'un altında olmalı. Ekibi tam kadro koy, stoğu tamamla.	For a star, satisfaction must be {0} and lost customers below {1}. Fully staff the crew and top up the stock.	Für einen Stern braucht es Zufriedenheit {0} und verlorene Gäste unter {1}. Stell das Team komplett auf und füll den Bestand auf.
+Şubeye git	Go to branch	Zur Filiale
+dün gelenlerin {0}'i kapasite yetmediği için gitti. Reklamın getireceği müşterilerin çoğu da kapıdan dönecek; önce ekibi ya da salonu büyüt.	{0} of yesterday's customers left because capacity ran out. Most customers an ad brings would be turned away too; grow the team or the dining room first.	{0} der gestrigen Kunden gingen, weil die Kapazität nicht reichte. Die meisten Werbekunden würden auch abgewiesen; vergrößere zuerst Team oder Gastraum.
+Muhtemelen zarar: dükkân zaten dolu, gelen müşteri kapıdan döner.	Likely loss: the shop is already full, new customers will be turned away at the door.	Wahrscheinlich Verlust: Der Laden ist schon voll, neue Gäste kehren an der Tür um.
+{0} otobüsü kapıda	{0} bus at the door	{0}-Bus vor der Tür
+Bir rehber, {0} önünde durdu: "Kırk kişilik grubum aç, alabilir misiniz?"	A tour guide stopped in front of {0}: "My group of forty is hungry, can you fit us in?"	Ein Reiseleiter blieb vor {0} stehen: „Meine Gruppe von vierzig Leuten hat Hunger, könnt ihr uns nehmen?“
+Yarım saat kapı hiç durmaz (müşteri ×{0}). Yetişemezsen kaçanlar itibar götürür.	For half an hour the door never stops (customers ×{0}). If you can't keep up, those who leave cost reputation.	Eine halbe Stunde steht die Tür nicht still (Gäste ×{0}). Kommst du nicht hinterher, kosten die Abwanderer Ruf.
+Kibarca geri çevir	Politely decline	Höflich ablehnen
+Gün normal akışında sürer.	The day carries on as normal.	Der Tag läuft normal weiter.
+Karar vermezsen {0} dakika sonra "Kibarca geri çevir" uygulanır.	If you don't decide, "Politely decline" is applied after {0} minutes.	Entscheidest du nicht, wird nach {0} Minuten „Höflich ablehnen“ gewählt.
+Ocaklardan biri söndü	One of the grills went out	Einer der Grills ist ausgegangen
+Tüp bağlantısı kaçırıyor; ocak kendiliğinden söndü. Usta ellerini sildi, sana bakıyor.	The gas connection is leaking; the grill went out by itself. The master wiped his hands and is looking at you.	Der Gasanschluss ist undicht; der Grill ist von selbst ausgegangen. Der Meister wischt sich die Hände ab und sieht dich an.
+Tamirci çağır · {0}	Call a repairman · {0}	Techniker rufen · {0}
+On dakikada gelir, ocak çalışmaya devam eder.	Arrives in ten minutes, the grill keeps working.	Ist in zehn Minuten da, der Grill läuft weiter.
+İdare edelim	We'll make do	Wir kommen schon klar
+Kapanışa kadar bir ocak eksik pişirilir.	Cooking continues one grill short until closing.	Bis Ladenschluss wird mit einem Grill weniger gekocht.
+Karar vermezsen {0} dakika sonra "İdare edelim" uygulanır.	If you don't decide, "We'll make do" is applied after {0} minutes.	Entscheidest du nicht, wird nach {0} Minuten „Wir kommen schon klar“ gewählt.
+Bir çalışan fenalaştı	A staff member feels unwell	Einem Mitarbeiter ist schlecht
+{0} bembeyaz oldu, tezgâha tutundu: "Bir şeyim yok patron, geçer."	{0} has gone white as a sheet and is gripping the counter: "I'm fine, boss, it'll pass."	{0} ist kreidebleich und hält sich an der Theke fest: „Mir fehlt nichts, Chef, das geht vorbei.“
+Eve gönder	Send home	Nach Hause schicken
+Bugün çalışmaz; ekip bunu görür, herkesin morali +{0}	Off work today; the crew notices, everyone's morale +{0}	Arbeitet heute nicht; das Team sieht das, Laune aller +{0}
+Biraz dayansın	Let them tough it out	Soll durchhalten
+Çalışmaya devam eder ama morali {0} enerjisi {1}	Keeps working, but morale {0}, energy {1}	Arbeitet weiter, aber Laune {0}, Energie {1}
+Karar vermezsen {0} dakika sonra "Eve gönder" uygulanır.	If you don't decide, "Send home" is applied after {0} minutes.	Entscheidest du nicht, wird nach {0} Minuten „Nach Hause schicken“ gewählt.
+Sağanak bastırdı	A downpour hit	Ein Platzregen ist niedergegangen
+{0} önünde sokak bir anda boşaldı; yoldan geçenler saçak altına kaçıyor.	The street in front of {0} emptied in an instant; passers-by are running for cover under the eaves.	Die Straße vor {0} ist auf einen Schlag leer; Passanten flüchten unter die Vordächer.
+Tente aç, çay ikram et · {0}	Put up the awning, serve tea · {0}	Markise ausfahren, Tee spendieren · {0}
+İki saat boyunca müşteri yalnızca {0} azalır.	For two hours, customers drop by only {0}.	Zwei Stunden lang sinken die Gäste nur um {0}.
+İki saat boyunca müşteri {0} azalır.	For two hours, customers drop by {0}.	Zwei Stunden lang sinken die Gäste um {0}.
+Karar vermezsen {0} dakika sonra "Bekleyelim" uygulanır.	If you don't decide, "Let's wait it out" is applied after {0} minutes.	Entscheidest du nicht, wird nach {0} Minuten „Abwarten“ gewählt.
+{0} yeri yok	No room for {0}	Kein Platz für {0}
+Bütün şubeler ciro	Revenue, all branches	Umsatz aller Filialen
+Bütün şubeler bahşiş	Tips, all branches	Trinkgeld aller Filialen
+{0} ciro · {1} müşteri · memnuniyet {2}	{0} revenue · {1} customers · satisfaction {2}	{0} Umsatz · {1} Gäste · Zufriedenheit {2}
+En büyük kayıp	Biggest loss	Größter Verlust
+{0} müşteri istediğini bulamadı (gelenlerin {1}'ı kaçtı)	{0} customers couldn't get what they wanted ({1} of arrivals lost)	{0} Gäste bekamen nicht, was sie wollten ({1} der Gäste verloren)
+Yarın için	For tomorrow	Für morgen
+Gün ortası	Midday	Mittags
+Sağanak bastırdı: Tente aç, çay ikram et · {0}	Downpour: Put up the awning, serve tea · {0}	Platzregen: Markise ausfahren, Tee spendieren · {0}
+Ayrıntılar: rakamlar, satılan ürünler, kim ne kadar bahşiş alır	Details: figures, items sold, who gets how much in tips	Details: Zahlen, verkaufte Gerichte, wer wie viel Trinkgeld bekommt
+Satış yok	No sales	Keine Verkäufe
+Temizlik görevlisi · {0} iş	Cleaner · {0} tasks	Reinigungskraft · {0} Einsätze
+Şube müdürü · {0} iş	Branch manager · {0} tasks	Filialleiter · {0} Einsätze
+Ekip bu hafta	This week the crew wants	Das Team wünscht sich diese Woche
+Eşit paylaşım	Equal share	Gleich verteilen
+istiyor. Bu kuralı seçtiğin her gün herkesin morali biraz daha artar.	as the rule. Every day you choose this rule, everyone's morale rises a little more.	als Regel. An jedem Tag, an dem du diese Regel wählst, steigt die Laune aller ein bisschen mehr.
+Hedef tamamlandı:	Goal completed:	Ziel erreicht:
+· ödül {0}	· reward {0}	· Belohnung {0}
+Rehber yıldızı!	Guidebook star!	Führer-Stern!
+Müfettiş {0} şubesinden memnun ayrıldı (memnuniyet {1}). Zincirin {2} yıldızı: müşteri ve fiyat toleransı kalıcı olarak +{3} itibar +{4}	The inspector left the {0} branch satisfied (satisfaction {1}). Chain stars: {2}. Customers and price tolerance permanently +{3}, reputation +{4}	Der Inspektor verließ die Filiale {0} zufrieden (Zufriedenheit {1}). Sterne der Kette: {2}. Gäste und Preistoleranz dauerhaft +{3}, Ruf +{4}
+Rehber müfettişi memnun kalmadı.	The guidebook inspector wasn't satisfied.	Der Restaurantführer-Inspektor war nicht zufrieden.
+{0}: memnuniyet {1} kaçan müşteri {2} Yıldız için {3} memnuniyet ve {4}'dan az kayıp gerekir. İtibar {5}	{0}: satisfaction {1}, lost customers {2}. A star needs satisfaction of {3} and losses below {4}. Reputation {5}	{0}: Zufriedenheit {1}, verlorene Gäste {2}. Für einen Stern braucht es Zufriedenheit {3} und Verluste unter {4}. Ruf {5}
+Ekip yeterli	Crew sufficient	Team reicht
+Haftanın kalanını hızlı geç; önemli bir şey olursa durur	Fast-forward the rest of the week; stops if anything important happens	Rest der Woche vorspulen; hält an, wenn etwas Wichtiges passiert
+Haftayı hızlı geç	Fast-forward the week	Woche vorspulen
+{0}, {1}, {2}, {3}, {4}, {5}: usta, kasa ya da servis boş	{0}, {1}, {2}, {3}, {4}, {5}: master, till or service unstaffed	{0}, {1}, {2}, {3}, {4}, {5}: Meister, Kasse oder Service unbesetzt
+Bekleyen bir karar var	A decision is pending	Eine Entscheidung steht aus
+olay kartı cevap bekliyor	an event card is awaiting your answer	eine Ereigniskarte wartet auf Antwort
+Kartı aç	Open card	Karte öffnen
+Ustasız şube bugün kapalı kalacak: {0}, {1}, {2}, {3}, {4}, {5}	Branches without a master will stay closed today: {0}, {1}, {2}, {3}, {4}, {5}	Filialen ohne Meister bleiben heute geschlossen: {0}, {1}, {2}, {3}, {4}, {5}
+Haftayı hızlı geç (önemli bir şey olursa durur)	Fast-forward the week (stops if anything important happens)	Woche vorspulen (hält an, wenn etwas Wichtiges passiert)
+Tahmini kâr {0} günde: +{1}	Estimated profit over {0} days: +{1}	Geschätzter Gewinn in {0} Tagen: +{1}
+Tahmini sonuç {0} günde: aşağı yukarı başa baş	Estimated result over {0} days: roughly break-even	Geschätztes Ergebnis in {0} Tagen: etwa ausgeglichen
+Tadım menüsü	Tasting menu	Degustationsmenü
+Meze, ara sıcak ve tatlı eşliğinde tadım tabağı. Hesap ortalaması +{0} gurme +{1} Müşteri sayısını artırmaz; dolu dükkânda da kazandırır.	A tasting platter with meze, hot starters and dessert. Average bill +{0}, foodies +{1}. Doesn't increase customer numbers; pays off even in a full shop.	Ein Probierteller mit Meze, warmen Vorspeisen und Dessert. Durchschnittsbon +{0}, Feinschmecker +{1}. Erhöht die Gästezahl nicht; lohnt sich auch im vollen Laden.
+Tahmini kâr ilk ayda: +{0}	Estimated profit in the first month: +{0}	Geschätzter Gewinn im ersten Monat: +{0}
+Bir gün çalıştıktan sonra getiri tahmini burada görünür.	The return estimate appears here after a day of trading.	Die Ertragsprognose erscheint hier nach einem Geschäftstag.
+Açılış kontrolü · hepsi tamam, kepengi açabilirsin	Opening checklist · all set, you can raise the shutters	Öffnungscheck · alles bereit, du kannst die Rollläden hochziehen
+Ekip yerinde	Crew in place	Team ist da
+{0} müşteri kuyrukta bekleyemedi (gelenlerin {1}'u kaçtı)	{0} customers couldn't wait in the queue ({1} of arrivals left)	{0} Gäste konnten nicht in der Schlange warten ({1} der Gäste gingen)
+Dün gelenlerin {0}'yı hizmet alamadan gitti.	{0} of yesterday's customers left without being served.	{0} der gestrigen Gäste gingen ohne Bedienung.
+{0} müşteri istediğini bulamadı (gelenlerin {1}'yı kaçtı)	{0} customers couldn't get what they wanted ({1} of arrivals lost)	{0} Gäste bekamen nicht, was sie wollten ({1} der Gäste verloren)
+Dün gelenlerin {0}'ü hizmet alamadan gitti.	{0} of yesterday's customers left without being served.	{0} der gestrigen Gäste gingen ohne Bedienung.
+On toplu sipariş teslim et	Deliver ten bulk orders	Liefere zehn Großaufträge
+Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı (dönerde üç), imza tarifin {0} seviyesi, on toplu sipariş.	The livestock farm and big investments unlock. To advance: six branches, two district crowns (three for döner), signature recipe level {0}, ten bulk orders.	Mastbetrieb und große Investitionen werden freigeschaltet. Zum Aufstieg: sechs Filialen, zwei Bezirkskronen (drei beim Döner), Signature-Rezept Stufe {0}, zehn Großaufträge.
+Geri al	Undo	Rückgängig
+· x	· x	· x
+dün gelenlerin {0}'ü kapasite yetmediği için gitti. Reklamın getireceği müşterilerin çoğu da kapıdan dönecek; önce ekibi ya da salonu büyüt.	{0} of yesterday's customers left because capacity ran out. Most customers an ad brings would be turned away too; grow the team or the dining room first.	{0} der gestrigen Kunden gingen, weil die Kapazität nicht reichte. Die meisten Werbekunden würden auch abgewiesen; vergrößere zuerst Team oder Gastraum.
+Muhtemelen zarar {0} günde: {1}	Likely loss over {0} days: {1}	Wahrscheinlicher Verlust in {0} Tagen: {1}
+Eti sotele	Sauté the meat	Fleisch anbraten
+{0} müşteri istediğini bulamadı (gelenlerin {1}'yi kaçtı)	{0} customers couldn't get what they wanted ({1} of arrivals lost)	{0} Gäste bekamen nicht, was sie wollten ({1} der Gäste verloren)
+{0} {1}:{2}'te bitti, ardından {3} da tükendi.	{0} ran out at {1}:{2}, then {3} sold out too.	{0} war um {1}:{2} aus, danach war auch {3} ausverkauft.
+{0} müşteri istediğini bulamadı (gelenlerin {1}'ü kaçtı)	{0} customers couldn't get what they wanted ({1} of arrivals lost)	{0} Gäste bekamen nicht, was sie wollten ({1} der Gäste verloren)
+Sessiz	Silent	Still
+Yönlendirme: Çok	Guidance: High	Hilfestufe: Viel
+Yönlendirme: Az	Guidance: Low	Hilfestufe: Wenig
+Yönlendirme: Sessiz	Guidance: Silent	Hilfestufe: Still
+Kızart	Fry	Frittieren
