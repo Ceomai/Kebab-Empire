@@ -6,8 +6,7 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const clamp = KE.clamp;
   const IC = (n, c) => KE.ART.icon(n, c);
-  const SAVE_KEY = 'kebab-empire-save-v2';
-  let G = null;
+    let G = null;
   let screen = 'title', params = {};
   UI.ng = {};
   const MODE = () => KE.MODES[G ? G.mode : UI.ng.mode];
@@ -20,26 +19,18 @@
   const moodCls = (v) => v < 35 ? 'crit' : v < 60 ? 'warn' : 'ok';
   const avatar = (look, mood, label, size) => `<span class="avatar ${size || ''}">${KE.portrait(look, { mood, label })}</span>`;
 
-  /* ---------- Kayıt ---------- */
+  /* ---------- Kayıt (ayrıntılar save.js'te) ---------- */
   UI.save = function () {
     if (!G) return;
-    try { G.econAsgari = KE.ECON.asgariBrut; localStorage.setItem(SAVE_KEY, JSON.stringify(Object.assign({}, G, { live: null }))); } catch (e) { /* depolama yoksa geç */ }
+    if (!KE.SAVE.write(G) && KE.SAVE.lastError === 'quota' && !UI.quotaWarned) { UI.quotaWarned = true; UI.toast('Tarayıcı depolaması dolu; oyun kaydedilemedi. Menüden dosyaya yedekle.', 'bad'); }
   };
   UI.load = function () {
-    try {
-      const raw = localStorage.getItem(SAVE_KEY);
-      if (!raw) return null;
-      const g = JSON.parse(raw);
-      if (g.econAsgari) KE.ECON.asgariBrut = g.econAsgari;
-      if (g.phase === 'service') g.phase = 'morning';
-      if (g.phase === 'closing' && !g.lastSummary) g.phase = 'morning';
-      if (g.tut == null) g.tut = 99;
-      if (!g.regulars) { g.regulars = {}; KE.REGULARS.forEach((r) => { g.regulars[r.id] = { loyalty: 0, visits: 0 }; }); }
-      g.staff.forEach((s) => { s.task = null; if (s.energy == null) s.energy = 100; if (!s.pos) s.pos = KE.POSITIONS[s.role][0]; });
-      return g;
-    } catch (e) { return null; }
+    const r = KE.SAVE.read();
+    if (!r) return null;
+    if (r.warning) setTimeout(() => UI.toast(r.warning, 'bad'), 400);
+    return r.game;
   };
-  UI.hasSave = () => { try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } };
+  UI.hasSave = () => KE.SAVE.exists();
 
   /* ---------- İlk gün rehberi ---------- */
   const TUT = [
@@ -288,7 +279,7 @@
       <div class="t-dish d1">${KE.ART.dish('adana')}</div><div class="t-dish d2">${KE.ART.dish('lahmacun')}</div><div class="t-dish d3">${KE.ART.dish('et_durum')}</div><div class="t-dish d4">${KE.ART.dish('kunefe')}</div>
       <div class="t-front">
         <div class="t-logo"><span class="t-mark">${KE.ART.logo()}</span><h1><span>Kebab</span><em>Empire</em></h1><span class="t-ribbon">Döner ve kebap işletme oyunu</span></div>
-        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
+        <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
       </div>
     </main>`;
   };
@@ -1106,11 +1097,16 @@
   A.closeModal = () => UI.closeModal();
   A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">Oyun her gün sonunda bu tarayıcıya kaydedilir.</p></div>
-    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
+    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
+  A.exportSave = () => { if (!G) return; if (G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; } KE.SAVE.exportFile(G); UI.toast('Yedek dosyası indirildi.', 'good'); };
+  A.importSave = () => {
+    KE.SAVE.importFile().then((g) => { G = g; KE.G = G; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`${g.shopName} yüklendi · ${KE.dateStr(g.day)}`, 'good'); })
+      .catch((e) => UI.toast(e.message, 'bad'));
+  };
   A.toTitle = () => { UI.save(); UI.closeModal(); UI.go('title'); };
   A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Kayıtlı oyun silinecek ve yeni bir oyun başlayacak.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Evet, sıfırdan başla</button></div>`); };
-  A.doNew = () => { try { localStorage.removeItem(SAVE_KEY); } catch (e) { /* yok say */ } G = null; UI.closeModal(); UI.ng = {}; UI.go('newMode'); };
+  A.doNew = () => { KE.SAVE.clear(); G = null; UI.closeModal(); UI.ng = {}; UI.go('newMode'); };
   A.tutNext = () => { G.tut++; UI.tutor(); };
   A.tutSkip = () => { G.tut = 99; UI.tutor(); };
   A.pickOpt = (d) => { const o = UI.pickOptions[+d.i]; UI.closeModal(); if (pickCb) pickCb(o); };

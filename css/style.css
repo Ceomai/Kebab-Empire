@@ -1079,3 +1079,4 @@ body::before { background: var(--kart); }
 .hchip.iftar { background: #2b2f63; color: #fff; } .hchip.iftar .ic { background: #ffc93c; color: #2b2f63; } .hchip.iftar em { color: #c9c3ff; }
 .hchip.iftar.on { background: #23a26d; } .hchip.iftar.on em { color: #e5fff2; }
 .iftarwait { position: absolute; left: 50%; bottom: 112%; transform: translateX(-50%); white-space: nowrap; background: #2b2f63; color: #ffe39a; font-size: .85cqw; font-weight: 800; border-radius: 99px; padding: .05cqw .55cqw; z-index: 4; }
+.stack .row { display: flex; gap: 8px; } .stack .row .grow { flex: 1; }

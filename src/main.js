@@ -9,6 +9,7 @@ import '../js/economy.js';
 import '../js/sim.js';
 import '../js/farm.js';
 import '../js/narrative.js';
+import '../js/save.js';
 import '../js/map.js';
 import '../js/scene.js';
 import '../js/ui.js';
