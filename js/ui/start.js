@@ -210,8 +210,8 @@
     ] },
     { id: 'donemler', ic: 'target', t: 'Dönemler', lead: 'Oyun dört dönemden oluşur. Her dönemin şartları tamamlanınca yeni yerler ve özellikler açılır.', items: [
       '<b>1. Mahalle dükkânı:</b> Bir haftayı ve bir ayı kârla kapat, itibarı 40\'a çıkar, bir ekipmanı yükselt.',
-      '<b>2. Semtin yıldızı:</b> Reklam Ajansı ve Merkez Ofis (yeni şube açma) açılır. Geçmek için: dört şube, ayda 5 milyon ₺ ciro, itibar 65.',
-      '<b>3. Şehrin zinciri:</b> Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı (dönerde üç), imza tarifin 2. seviyesi, on toplu sipariş.',
+      '<b>2. Semtin yıldızı:</b> Reklam Ajansı ve Merkez Ofis (yeni şube açma) açılır. Geçmek için: dört şube, ayda 5 milyon ₺ ciro (kebapta 4 milyon), itibar 65.',
+      '<b>3. Şehrin zinciri:</b> Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı, imza tarifin 2. seviyesi, on toplu sipariş.',
       '<b>4. İmparatorluk yolu:</b> "Lüks Kebap"ı satın alma teklifi açılır.',
       '<b>Rehber yıldızı:</b> 3. dönemden sonra itibarın 88\'in üstündeyse rehber müfettişi bir şubeye gelir. Rezervasyon defteri olan şubede adı bir gün önceden defterde görünür (danışman kartı haber verir); öteki şubelere habersiz gelir. Memnuniyet %84 ve kaçan müşteri %15\'in altındaysa zincir bir yıldız kazanır (en çok 3): her yıldız müşteriyi ve fiyat toleransını kalıcı olarak %3 artırır. Başarısız ziyaret itibar götürür.',
       'Haritadaki şehir panelinde içinde bulunduğun dönem ve eksik şartlar görünür; bir şarta dokununca ilgili yere gidersin.'

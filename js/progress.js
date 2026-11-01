@@ -92,6 +92,7 @@
     sube3: (G) => G.branches.length >= 3,
     sube4: (G) => G.branches.length >= 4,
     ciro5m: (G) => G.ledger.months.some((m) => m.revenue >= 5000000),
+    ciro4m: (G) => G.ledger.months.some((m) => m.revenue >= 4000000),
     ciro3m: (G) => G.ledger.months.some((m) => m.revenue >= 3000000),
     rep65: (G) => G.reputation >= 65,
     sube6: (G) => G.branches.length >= 6,
