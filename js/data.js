@@ -247,39 +247,14 @@ KE.REGULARS = [
 
 /* ---------- Özel günler ---------- */
 KE.SPECIAL = {
-  ramazan: { name: 'Ramazan', desc: 'Gündüz oruç: yalnızca turistler ve oruç tutmayanlar gelir. İftardan önce paket kuyruğu, ezanla birlikte bütün masalar aynı anda dolar; teravihten sonra tatlı ve çay kalabalığı.', hours: {}, types: {}, tip: 1.12, theme: 'ramazan' },
   bayram: { name: 'Bayram', desc: 'Bayramlıklarıyla aileler sokakta. Bahşişler bol, herkes güler yüzlü.', hours: {}, types: { aile: 1.9, turist: 1.2, gece: 0.6 }, tip: 1.3, theme: 'bayram' },
   mac: { name: 'Maç akşamı', desc: 'Derbi günü. Akşam taraftarlar akın eder, Beşiktepe yerinden oynar.', hours: { 19: 1.3, 20: 1.6, 21: 2.0, 22: 2.2 }, types: { gece: 1.9, ogrenci: 1.3 }, theme: 'mac' },
   cuma: { name: 'Cuma', desc: 'Cuma namazından sonra öğle kalabalığı her zamankinden büyük.', hours: { 13: 1.5, 14: 1.4 }, types: { isci: 1.2 }, theme: null }
-};
-/* Ramazan: iftar saati (dakika, gece yarısından); Ramazan dışında null. Hesap calendar.js'te. */
-KE.iftarMinute = function (day) {
-  const t = KE.dateOf(day).getTime();
-  return KE.CAL.ramazanOn(t) ? KE.CAL.sunsetMinute(t) : null;
-};
-/* Ramazan günü dakikalık evre: oruc, hazirlik (paket), iftar (masalar dolar), aksam, teravih, gece */
-KE.ramazanPhase = function (absMin, iftar) {
-  if (absMin < iftar - 100) return 'oruc';
-  if (absMin < iftar - 25) return 'hazirlik';
-  if (absMin < iftar + 15) return 'iftar';
-  if (absMin < iftar + 50) return 'aksam';
-  if (absMin < iftar + 110) return 'teravih';
-  return 'gece';
-};
-KE.RAMAZAN_RATE = { oruc: 0.12, hazirlik: 0.8, iftar: 2.6, aksam: 1.5, teravih: 0.45, gece: 1.0 };
-KE.RAMAZAN_TYPES = {
-  oruc: { turist: 4, gurme: 0.5, aile: 0.2, isci: 0.4, beyaz: 0.6, ogrenci: 0.8, gece: 0.4 },
-  hazirlik: { aile: 1.6, beyaz: 1.3, isci: 1.2 },
-  iftar: { aile: 2.6, gurme: 1.4, beyaz: 1.2, gece: 0.3, isci: 0.8 },
-  aksam: { aile: 1.4, turist: 1.2 },
-  teravih: { turist: 1.4, ogrenci: 1.2 },
-  gece: { gece: 1.8, ogrenci: 1.5, aile: 0.7 }
 };
 KE.specialDay = function (day) {
   const d = KE.dateOf(day);
   const iso = d.toISOString().slice(0, 10);
   if (KE.religiousHolidayOf(day)) return Object.assign({ id: 'bayram' }, KE.SPECIAL.bayram, { name: KE.religiousHolidayOf(day) });
-  if (KE.iftarMinute(day) != null) return Object.assign({ id: 'ramazan', iftar: KE.iftarMinute(day) }, KE.SPECIAL.ramazan);
   if (d.getUTCDay() === 6 && Math.floor(day / 7) % 2 === 0) return Object.assign({ id: 'mac' }, KE.SPECIAL.mac);
   if (d.getUTCDay() === 5) return Object.assign({ id: 'cuma' }, KE.SPECIAL.cuma);
   return null;

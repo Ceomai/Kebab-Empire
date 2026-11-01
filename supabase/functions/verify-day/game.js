@@ -252,39 +252,14 @@ KE.REGULARS = [
 
 /* ---------- Özel günler ---------- */
 KE.SPECIAL = {
-  ramazan: { name: 'Ramazan', desc: 'Gündüz oruç: yalnızca turistler ve oruç tutmayanlar gelir. İftardan önce paket kuyruğu, ezanla birlikte bütün masalar aynı anda dolar; teravihten sonra tatlı ve çay kalabalığı.', hours: {}, types: {}, tip: 1.12, theme: 'ramazan' },
   bayram: { name: 'Bayram', desc: 'Bayramlıklarıyla aileler sokakta. Bahşişler bol, herkes güler yüzlü.', hours: {}, types: { aile: 1.9, turist: 1.2, gece: 0.6 }, tip: 1.3, theme: 'bayram' },
   mac: { name: 'Maç akşamı', desc: 'Derbi günü. Akşam taraftarlar akın eder, Beşiktepe yerinden oynar.', hours: { 19: 1.3, 20: 1.6, 21: 2.0, 22: 2.2 }, types: { gece: 1.9, ogrenci: 1.3 }, theme: 'mac' },
   cuma: { name: 'Cuma', desc: 'Cuma namazından sonra öğle kalabalığı her zamankinden büyük.', hours: { 13: 1.5, 14: 1.4 }, types: { isci: 1.2 }, theme: null }
-};
-/* Ramazan: iftar saati (dakika, gece yarısından); Ramazan dışında null. Hesap calendar.js'te. */
-KE.iftarMinute = function (day) {
-  const t = KE.dateOf(day).getTime();
-  return KE.CAL.ramazanOn(t) ? KE.CAL.sunsetMinute(t) : null;
-};
-/* Ramazan günü dakikalık evre: oruc, hazirlik (paket), iftar (masalar dolar), aksam, teravih, gece */
-KE.ramazanPhase = function (absMin, iftar) {
-  if (absMin < iftar - 100) return 'oruc';
-  if (absMin < iftar - 25) return 'hazirlik';
-  if (absMin < iftar + 15) return 'iftar';
-  if (absMin < iftar + 50) return 'aksam';
-  if (absMin < iftar + 110) return 'teravih';
-  return 'gece';
-};
-KE.RAMAZAN_RATE = { oruc: 0.12, hazirlik: 0.8, iftar: 2.6, aksam: 1.5, teravih: 0.45, gece: 1.0 };
-KE.RAMAZAN_TYPES = {
-  oruc: { turist: 4, gurme: 0.5, aile: 0.2, isci: 0.4, beyaz: 0.6, ogrenci: 0.8, gece: 0.4 },
-  hazirlik: { aile: 1.6, beyaz: 1.3, isci: 1.2 },
-  iftar: { aile: 2.6, gurme: 1.4, beyaz: 1.2, gece: 0.3, isci: 0.8 },
-  aksam: { aile: 1.4, turist: 1.2 },
-  teravih: { turist: 1.4, ogrenci: 1.2 },
-  gece: { gece: 1.8, ogrenci: 1.5, aile: 0.7 }
 };
 KE.specialDay = function (day) {
   const d = KE.dateOf(day);
   const iso = d.toISOString().slice(0, 10);
   if (KE.religiousHolidayOf(day)) return Object.assign({ id: 'bayram' }, KE.SPECIAL.bayram, { name: KE.religiousHolidayOf(day) });
-  if (KE.iftarMinute(day) != null) return Object.assign({ id: 'ramazan', iftar: KE.iftarMinute(day) }, KE.SPECIAL.ramazan);
   if (d.getUTCDay() === 6 && Math.floor(day / 7) % 2 === 0) return Object.assign({ id: 'mac' }, KE.SPECIAL.mac);
   if (d.getUTCDay() === 5) return Object.assign({ id: 'cuma' }, KE.SPECIAL.cuma);
   return null;
@@ -916,7 +891,7 @@ KE.GOALS = [
     G.ledger.months.push(report);
     G.monthExtras = { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 };
     G.priceIndex *= 1 + E().aylikEnflasyon;
-    if (monthNo === 12) KE.CAL.applyYear(KE.dateOf(day + 1).getUTCFullYear());
+    if (monthNo === 12) { KE.CAL.applyYear(KE.dateOf(day + 1).getUTCFullYear()); G.staff.forEach((s) => { if (s.wage < KE.ECON.asgariBrut) s.wage = KE.ECON.asgariBrut; }); }
     return report;
   };
 
@@ -1238,14 +1213,6 @@ KE.GOALS = [
     KE.branchStaff(G, b).forEach((s) => { s.servedToday = 0; s.tipsToday = 0; s.tasksToday = 0; s.minEnergy = 100; s.task = null; });
     const expected = KE.expectedCustomers(G, b);
     const curveSum = Object.values(KE.HOUR_CURVE).reduce((a, v) => a + v, 0);
-    const spd = KE.specialDay(G.day);
-    let ramW = null;
-    if (spd && spd.id === 'ramazan') {
-      ramW = [];
-      for (let m = 0; m < KE.MINUTES; m++) ramW.push(KE.RAMAZAN_RATE[KE.ramazanPhase(KE.OPEN_HOUR * 60 + m, spd.iftar)]);
-      const sum = ramW.reduce((a, v) => a + v, 0);
-      ramW = ramW.map((v) => v * 0.92 / sum);
-    }
     const tables = [];
     for (let i = 0; i < KE.tableCount(G, b); i++) tables.push({ id: i, occ: null, dirty: false, by: null });
     return {
@@ -1254,14 +1221,14 @@ KE.GOALS = [
         satSum: 0, satN: 0, matches: 0, byProduct: {}, hourly: new Array(14).fill(0), hourlyCust: new Array(14).fill(0), stockouts: {}, byType: {},
         repDelta: 0, best: null, playerServed: 0, gurmeHappy: 0, paket: 0, paketRev: 0, cold: 0 },
       fx: [], player: { active: false, tid: null, step: 0, errors: 0, start: 0, opts: [] }, done: false,
-      special: spd, ramW, ezan: false
+      special: KE.specialDay(G.day)
     };
   };
 
   const prodOf = (G, pid) => MODE(G).products.find((x) => x.id === pid);
   function availableProducts(G, b) { return MODE(G).products.filter((p) => KE.canMake(G, b, p)); }
 
-  function chooseType(G, b, hour, rph) {
+  function chooseType(G, b, hour) {
     const d = KE.district(b);
     const mode = MODE(G);
     const weights = [];
@@ -1275,7 +1242,6 @@ KE.GOALS = [
       w *= KE.modVal(G, 'type:' + t);
       const sp = KE.specialDay(G.day);
       if (sp && sp.types[t]) w *= sp.types[t];
-      if (rph && KE.RAMAZAN_TYPES[rph][t]) w *= KE.RAMAZAN_TYPES[rph][t];
       weights.push([t, w]);
     });
     let r = KE.rand() * weights.reduce((a, x) => a + x[1], 0);
@@ -1307,14 +1273,12 @@ KE.GOALS = [
   function spawn(G, b, L) {
     const hour = KE.OPEN_HOUR + Math.floor(L.minute / 60);
     const spH = L.special && L.special.hours[hour] ? L.special.hours[hour] : 1;
-    const rate = L.ramW ? L.expected * (L.ramW[L.minute] || 0) : L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH / L.curveSum / 60;
-    const rph = L.ramW ? KE.ramazanPhase(KE.OPEN_HOUR * 60 + L.minute, L.special.iftar) : null;
-    if (L.ramW && !L.ezan && KE.OPEN_HOUR * 60 + L.minute >= L.special.iftar) { L.ezan = true; }
+    const rate = L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH / L.curveSum / 60;
     (G.regularVisits || []).filter((v) => v.branchId === b.id && v.minute === L.minute).forEach((v) => spawnRegular(G, b, L, v.rid));
     L.spawnAcc += rate * rnd(0.6, 1.4);
     while (L.spawnAcc >= 1) {
       L.spawnAcc -= 1;
-      const type = chooseType(G, b, hour, rph);
+      const type = chooseType(G, b, hour);
       const ct = KE.CUSTOMER_TYPES[type];
       const count = ct.group && KE.rand() < 0.55 ? Math.round(rnd(ct.group[0], ct.group[1])) : 1;
       L.stats.arrivals += count;
@@ -1328,11 +1292,10 @@ KE.GOALS = [
       const price = b.prices[p.id];
       const ratio = price / KE.marketPrice(G, p);
       if (ratio > 1.08 + (1 - ct.priceSens) * 0.6 && KE.rand() < 0.85) { lose(L, c, 'lostPrice', 'Çok pahalı!'); L.fx.push({ t: 'pass', cid: id }); continue; }
-      let take = (ct.takeaway || 0) * (G.mode === 'kebap' ? 0.4 : 1);
-      if (rph === 'hazirlik') take = Math.max(take, 0.85); else if (rph === 'iftar' || rph === 'aksam') take *= 0.2;
+      const take = (ct.takeaway || 0) * (G.mode === 'kebap' ? 0.4 : 1);
       Object.assign(c, {
-        pid: p.id, price, ratio, state: 'queue', wait: 0, takeaway: KE.rand() < take, iftar: (rph === 'iftar' || rph === 'hazirlik') && type !== 'turist',
-        patience: ct.patience * KE.equip(G, b, 'service').patience * (G.mode === 'kebap' ? 1.5 : 1) * KE.modVal(G, 'patience') + (rph === 'iftar' ? Math.max(0, L.special.iftar - KE.OPEN_HOUR * 60 - L.minute) : 0),
+        pid: p.id, price, ratio, state: 'queue', wait: 0, takeaway: KE.rand() < take,
+        patience: ct.patience * KE.equip(G, b, 'service').patience * (G.mode === 'kebap' ? 1.5 : 1) * KE.modVal(G, 'patience'),
         eat: (ct.eat || 15) * (G.mode === 'kebap' ? 1.6 : 1) * rnd(0.8, 1.2)
       });
       L.custs[id] = c; L.queue.push(id);
@@ -1358,7 +1321,7 @@ KE.GOALS = [
     const kuryes = KE.branchStaff(G, b).filter((s) => s.role === 'kurye').length;
     if (!kuryes || L.minute > KE.MINUTES - 30) return;
     const hour = KE.OPEN_HOUR + Math.floor(L.minute / 60);
-    L.paketAcc += L.expected * 0.16 * (0.6 + G.reputation / 100) * (L.ramW ? (L.ramW[L.minute] || 0) * (KE.ramazanPhase(KE.OPEN_HOUR * 60 + L.minute, L.special.iftar) === 'hazirlik' ? 1.8 : 1) : (KE.HOUR_CURVE[hour] || 0.3) / L.curveSum / 60) * Math.min(1.6, 0.8 + kuryes * 0.4);
+    L.paketAcc += L.expected * 0.16 * (0.6 + G.reputation / 100) * (KE.HOUR_CURVE[hour] || 0.3) / L.curveSum / 60 * Math.min(1.6, 0.8 + kuryes * 0.4);
     while (L.paketAcc >= 1) {
       L.paketAcc -= 1;
       const avail = availableProducts(G, b).filter((p) => KE.hasStock(b, p, 1));
@@ -1659,8 +1622,6 @@ KE.GOALS = [
           refund(L, c); lose(L, c, 'lostFood', 'Yemek gelmedi!'); L.stats.repDelta -= 0.15 * c.count; removeCust(L, c, false);
         }
       } else if (c.state === 'eat') {
-        if (c.iftar && !L.ezan) { c.waitIftar = true; return; }
-        c.waitIftar = false;
         c.eatLeft -= 1;
         if (c.eatLeft <= 0) leave(G, b, L, c);
       }
@@ -2133,13 +2094,18 @@ KE.GOALS = [
   const ev = [];
   const branch = (G) => G.branches.find((x) => x.id === G.activeBranch);
   const staffOf = (G) => KE.branchStaff(G, branch(G));
+  /* Zam: kişi başı 60 günde bir, rol tavanını aşmadan */
+  const RAISE_CAP = { usta: 3.0, mudur: 2.4, cirak: 1.35, kasiyer: 1.6, garson: 1.6, temizlik: 1.45, kurye: 1.55 };
+  const canRaise = (G, s) => G.day - (s.raisedDay || s.hiredDay || 0) >= 60 && s.wage < KE.ECON.asgariBrut * (RAISE_CAP[s.role] || 1.6) * G.priceIndex;
+  const raise = (G, x, k) => { x.wage = Math.min(Math.round(x.wage * k / 100) * 100, Math.round(KE.ECON.asgariBrut * (RAISE_CAP[x.role] || 1.6) * G.priceIndex / 100) * 100); x.raisedDay = G.day; };
+  KE.canRaise = canRaise;
 
   ev.push({ id: 'rakipTeklif', who: 'rakip', w: 1.2,
-    when: (G) => staffOf(G).some((s) => s.role === 'usta' && s.morale < 55),
-    build: (G) => { const s = staffOf(G).filter((x) => x.role === 'usta').sort((a, c) => a.morale - c.morale)[0];
+    when: (G) => staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),
+    build: (G) => { const s = staffOf(G).filter((x) => x.role === 'usta' && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
       return { title: `${s.name}'ya rakipten teklif!`, text: `"Lüks Kebap" sahibi Cüneyt Bey, ${s.name}'ya %30 daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.`, ctx: { sid: s.id },
         choices: [
-          { label: 'Maaşına %15 zam yap', desc: 'Moral +22, maaş +%15', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.wage = Math.round(x.wage * 1.15 / 100) * 100; x.morale = clamp(x.morale + 22, 0, 100); return `${x.name} kaldı: "Bu dükkân benim de dükkânım."`; } },
+          { label: 'Maaşına %15 zam yap', desc: 'Moral +22, maaş +%15', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); raise(G, x, 1.15); x.morale = clamp(x.morale + 22, 0, 100); return `${x.name} kaldı: "Bu dükkân benim de dükkânım."`; } },
           { label: 'Oturup gönlünü al', desc: '%55 ihtimalle kalır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (KE.rand() < 0.55) { x.morale = clamp(x.morale + 10, 0, 100); return `Uzun bir çay sohbeti işe yaradı. ${x.name} kalıyor.`; } G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} teşekkür edip rakibe geçti. Ocağın başı boş kaldı.`; } },
           { label: 'Gitmek isteyen gider', desc: 'Usta ayrılır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} ayrıldı. Usta pazarında yeni birini bulmalısın.`; } }
         ] }; } });
@@ -2170,11 +2136,11 @@ KE.GOALS = [
       ] }) });
 
   ev.push({ id: 'zamTalebi', who: null, w: 1,
-    when: (G) => staffOf(G).some((s) => s.morale < 62 && G.day - s.hiredDay > 10),
-    build: (G) => { const s = staffOf(G).filter((x) => x.morale < 62).sort((a, c) => a.morale - c.morale)[0];
+    when: (G) => staffOf(G).some((s) => s.morale < 62 && G.day - s.hiredDay > 10 && canRaise(G, s)),
+    build: (G) => { const s = staffOf(G).filter((x) => x.morale < 62 && G.day - x.hiredDay > 10 && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
       return { title: `${s.name} zam istiyor`, text: `${s.name}: "Patron, kira arttı, mutfak masrafı arttı. Bir el atabilir misin?" Brüt maaşı şu an ${KE.tl(s.wage)}.`, ctx: { sid: s.id }, who: s,
         choices: [
-          { label: '%10 zam yap', desc: 'Moral +18', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.wage = Math.round(x.wage * 1.1 / 100) * 100; x.morale = clamp(x.morale + 18, 0, 100); return `${x.name}: "Sağ ol patron, hakkını helal et."`; } },
+          { label: '%10 zam yap', desc: 'Moral +18', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); raise(G, x, 1.1); x.morale = clamp(x.morale + 18, 0, 100); return `${x.name}: "Sağ ol patron, hakkını helal et."`; } },
           { label: 'Şimdilik olmaz', desc: 'Moral −10', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale - 10, 0, 100); return `${x.name} başını öne eğdi: "Anladım."`; } }
         ] }; } });
 
@@ -2221,14 +2187,6 @@ KE.GOALS = [
       choices: [
         { label: 'Pahalı da olsa kömür al', desc: '7 gün kömür ×2', run: (G) => { G.mods.push({ key: 'ing:komur', mult: 2, days: 7, label: 'Kömür krizi' }); return 'Közün tadından taviz yok.'; } },
         { label: 'Bir haftalığına gaza geç', desc: '7 gün müşteri memnuniyeti düşer', run: (G) => { G.mods.push({ key: 'patience', mult: 0.85, days: 7, label: 'Gazlı ocak' }); G.reputation = clamp(G.reputation - 2, 0, 100); return 'Müdavimler farkı hemen anladı: "Usta, bunda köz tadı yok."'; } }
-      ] }) });
-
-  ev.push({ id: 'iftar', who: 'ayse', w: 0.5,
-    when: (G) => KE.iftarMinute(G.day + 1) != null,
-    build: (G) => ({ title: 'İftar sofrası', text: 'Ayşe Teyze yarın akşam mahallede ihtiyaç sahipleri için iftar sofrası kuruyor, dükkândan da katkı bekliyor.', ctx: {},
-      choices: [
-        { label: '50 porsiyon gönder', desc: `${KE.tl(9000)}, itibar +5, moral +3`, run: (G) => { G.cash -= 9000; KE.addExtra(G, 'other', 9000); G.reputation = clamp(G.reputation + 5, 0, 100); staffOf(G).forEach((s) => { s.morale = clamp(s.morale + 3, 0, 100); }); return 'Ayşe Teyze dualar etti. Mahallede adın hayırla anılıyor.'; } },
-        { label: 'Bu sefer olmaz', desc: 'İtibar −1', run: (G) => { G.reputation = clamp(G.reputation - 1, 0, 100); return 'Ayşe Teyze bozulmadı ama biraz kırıldı.'; } }
       ] }) });
 
   ev.push({ id: 'ogrenciIndirim', who: null, w: 0.6,

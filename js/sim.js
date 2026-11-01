@@ -305,14 +305,6 @@
     KE.branchStaff(G, b).forEach((s) => { s.servedToday = 0; s.tipsToday = 0; s.tasksToday = 0; s.minEnergy = 100; s.task = null; });
     const expected = KE.expectedCustomers(G, b);
     const curveSum = Object.values(KE.HOUR_CURVE).reduce((a, v) => a + v, 0);
-    const spd = KE.specialDay(G.day);
-    let ramW = null;
-    if (spd && spd.id === 'ramazan') {
-      ramW = [];
-      for (let m = 0; m < KE.MINUTES; m++) ramW.push(KE.RAMAZAN_RATE[KE.ramazanPhase(KE.OPEN_HOUR * 60 + m, spd.iftar)]);
-      const sum = ramW.reduce((a, v) => a + v, 0);
-      ramW = ramW.map((v) => v * 0.92 / sum);
-    }
     const tables = [];
     for (let i = 0; i < KE.tableCount(G, b); i++) tables.push({ id: i, occ: null, dirty: false, by: null });
     return {
@@ -321,14 +313,14 @@
         satSum: 0, satN: 0, matches: 0, byProduct: {}, hourly: new Array(14).fill(0), hourlyCust: new Array(14).fill(0), stockouts: {}, byType: {},
         repDelta: 0, best: null, playerServed: 0, gurmeHappy: 0, paket: 0, paketRev: 0, cold: 0 },
       fx: [], player: { active: false, tid: null, step: 0, errors: 0, start: 0, opts: [] }, done: false,
-      special: spd, ramW, ezan: false
+      special: KE.specialDay(G.day)
     };
   };
 
   const prodOf = (G, pid) => MODE(G).products.find((x) => x.id === pid);
   function availableProducts(G, b) { return MODE(G).products.filter((p) => KE.canMake(G, b, p)); }
 
-  function chooseType(G, b, hour, rph) {
+  function chooseType(G, b, hour) {
     const d = KE.district(b);
     const mode = MODE(G);
     const weights = [];
@@ -342,7 +334,6 @@
       w *= KE.modVal(G, 'type:' + t);
       const sp = KE.specialDay(G.day);
       if (sp && sp.types[t]) w *= sp.types[t];
-      if (rph && KE.RAMAZAN_TYPES[rph][t]) w *= KE.RAMAZAN_TYPES[rph][t];
       weights.push([t, w]);
     });
     let r = KE.rand() * weights.reduce((a, x) => a + x[1], 0);
@@ -374,14 +365,12 @@
   function spawn(G, b, L) {
     const hour = KE.OPEN_HOUR + Math.floor(L.minute / 60);
     const spH = L.special && L.special.hours[hour] ? L.special.hours[hour] : 1;
-    const rate = L.ramW ? L.expected * (L.ramW[L.minute] || 0) : L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH / L.curveSum / 60;
-    const rph = L.ramW ? KE.ramazanPhase(KE.OPEN_HOUR * 60 + L.minute, L.special.iftar) : null;
-    if (L.ramW && !L.ezan && KE.OPEN_HOUR * 60 + L.minute >= L.special.iftar) { L.ezan = true; }
+    const rate = L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH / L.curveSum / 60;
     (G.regularVisits || []).filter((v) => v.branchId === b.id && v.minute === L.minute).forEach((v) => spawnRegular(G, b, L, v.rid));
     L.spawnAcc += rate * rnd(0.6, 1.4);
     while (L.spawnAcc >= 1) {
       L.spawnAcc -= 1;
-      const type = chooseType(G, b, hour, rph);
+      const type = chooseType(G, b, hour);
       const ct = KE.CUSTOMER_TYPES[type];
       const count = ct.group && KE.rand() < 0.55 ? Math.round(rnd(ct.group[0], ct.group[1])) : 1;
       L.stats.arrivals += count;
@@ -395,11 +384,10 @@
       const price = b.prices[p.id];
       const ratio = price / KE.marketPrice(G, p);
       if (ratio > 1.08 + (1 - ct.priceSens) * 0.6 && KE.rand() < 0.85) { lose(L, c, 'lostPrice', 'Çok pahalı!'); L.fx.push({ t: 'pass', cid: id }); continue; }
-      let take = (ct.takeaway || 0) * (G.mode === 'kebap' ? 0.4 : 1);
-      if (rph === 'hazirlik') take = Math.max(take, 0.85); else if (rph === 'iftar' || rph === 'aksam') take *= 0.2;
+      const take = (ct.takeaway || 0) * (G.mode === 'kebap' ? 0.4 : 1);
       Object.assign(c, {
-        pid: p.id, price, ratio, state: 'queue', wait: 0, takeaway: KE.rand() < take, iftar: (rph === 'iftar' || rph === 'hazirlik') && type !== 'turist',
-        patience: ct.patience * KE.equip(G, b, 'service').patience * (G.mode === 'kebap' ? 1.5 : 1) * KE.modVal(G, 'patience') + (rph === 'iftar' ? Math.max(0, L.special.iftar - KE.OPEN_HOUR * 60 - L.minute) : 0),
+        pid: p.id, price, ratio, state: 'queue', wait: 0, takeaway: KE.rand() < take,
+        patience: ct.patience * KE.equip(G, b, 'service').patience * (G.mode === 'kebap' ? 1.5 : 1) * KE.modVal(G, 'patience'),
         eat: (ct.eat || 15) * (G.mode === 'kebap' ? 1.6 : 1) * rnd(0.8, 1.2)
       });
       L.custs[id] = c; L.queue.push(id);
@@ -425,7 +413,7 @@
     const kuryes = KE.branchStaff(G, b).filter((s) => s.role === 'kurye').length;
     if (!kuryes || L.minute > KE.MINUTES - 30) return;
     const hour = KE.OPEN_HOUR + Math.floor(L.minute / 60);
-    L.paketAcc += L.expected * 0.16 * (0.6 + G.reputation / 100) * (L.ramW ? (L.ramW[L.minute] || 0) * (KE.ramazanPhase(KE.OPEN_HOUR * 60 + L.minute, L.special.iftar) === 'hazirlik' ? 1.8 : 1) : (KE.HOUR_CURVE[hour] || 0.3) / L.curveSum / 60) * Math.min(1.6, 0.8 + kuryes * 0.4);
+    L.paketAcc += L.expected * 0.16 * (0.6 + G.reputation / 100) * (KE.HOUR_CURVE[hour] || 0.3) / L.curveSum / 60 * Math.min(1.6, 0.8 + kuryes * 0.4);
     while (L.paketAcc >= 1) {
       L.paketAcc -= 1;
       const avail = availableProducts(G, b).filter((p) => KE.hasStock(b, p, 1));
@@ -726,8 +714,6 @@
           refund(L, c); lose(L, c, 'lostFood', 'Yemek gelmedi!'); L.stats.repDelta -= 0.15 * c.count; removeCust(L, c, false);
         }
       } else if (c.state === 'eat') {
-        if (c.iftar && !L.ezan) { c.waitIftar = true; return; }
-        c.waitIftar = false;
         c.eatLeft -= 1;
         if (c.eatLeft <= 0) leave(G, b, L, c);
       }

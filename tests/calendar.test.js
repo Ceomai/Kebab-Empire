@@ -37,10 +37,6 @@ describe('takvim', () => {
     expect(Math.abs(m('2026-06-21') - (20 * 60 + 40))).toBeLessThanOrEqual(5);
     expect(Math.abs(m('2026-12-21') - (17 * 60 + 40))).toBeLessThanOrEqual(5);
   });
-  it('oyun günü Ramazan ise iftar saati verilir', () => {
-    expect(KE.iftarMinute(1)).toBeGreaterThan(18 * 60 + 30);
-    expect(KE.iftarMinute(40)).toBeNull();
-  });
   it('ekonomi yıl yıl türetilir', () => {
     expect(KE.CAL.econYear(2026).asgariBrut).toBe(33030);
     const e = KE.CAL.econYear(2028);
@@ -57,11 +53,9 @@ describe('takvim', () => {
 describe('uzaktan ayar', () => {
   it('yalnızca beyaz listedeki ve geçerli değerleri uygular', () => {
     const { KE } = loadGame(['data', 'calendar', 'characters', 'economy', 'sim', 'config']);
-    KE.CONFIG.apply({ version: 5, econYears: { 2027: { asgariBrut: 42000, gvDilim: [[250000, 0.15], [null, 0.4]] } }, ramazanRate: { iftar: 3, bogus: 9 }, trafficMul: { doner: 99 }, evil: 'x' });
+    KE.CONFIG.apply({ version: 5, econYears: { 2027: { asgariBrut: 42000, gvDilim: [[250000, 0.15], [null, 0.4]] } }, trafficMul: { doner: 99 }, evil: 'x' });
     expect(KE.CAL.econYear(2027).asgariBrut).toBe(42000);
     expect(KE.CAL.econYear(2027).gvDilim[1][0]).toBe(Infinity);
-    expect(KE.RAMAZAN_RATE.iftar).toBe(3);
-    expect(KE.RAMAZAN_RATE.bogus).toBeUndefined();
     expect(KE.MODES.doner.trafficMul).not.toBe(99);
     expect(KE.CONFIG.version).toBe(5);
   });

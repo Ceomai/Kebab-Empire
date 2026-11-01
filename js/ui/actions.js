@@ -127,7 +127,7 @@
     KE.G.staff.push(s); KE.G.workers = KE.G.workers.filter((x) => x.id !== s.id);
     UI.toast(`${s.name} işe başladı.`, 'good'); UI.render();
   };
-  A.raise = (d) => { const s = KE.G.staff.find((x) => x.id === d.id); s.wage = Math.round(s.wage * 1.1 / 100) * 100; s.morale = clamp(s.morale + 12, 0, 100); UI.toast(`${s.name}: "Sağ ol patron!" Yeni brüt: ${KE.tl(s.wage)}`, 'good'); UI.render(); };
+  A.raise = (d) => { const s = KE.G.staff.find((x) => x.id === d.id); s.wage = Math.round(s.wage * 1.1 / 100) * 100; s.raisedDay = KE.G.day; s.morale = clamp(s.morale + 12, 0, 100); UI.toast(`${s.name}: "Sağ ol patron!" Yeni brüt: ${KE.tl(s.wage)}`, 'good'); UI.render(); };
   A.promote = (d) => { KE.G.flags.promoted = true; const s = KE.G.staff.find((x) => x.id === d.id); s.role = 'usta'; s.pos = 'ocak'; s.name = s.name.replace(/^Çırak /, '') + (s.name.includes('Usta') ? '' : ' Usta'); s.wage = Math.max(s.wage, KE.wageFor(s.spec, 'usta')); s.morale = clamp(s.morale + 25, 0, 100); s.mentorId = null; KE.checkGoals(KE.G).forEach((g) => UI.toast('Hedef tamamlandı: ' + g.name, 'gold')); UI.toast(`${s.name} artık usta!`, 'gold'); UI.render(); };
   A.pickMentor = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);

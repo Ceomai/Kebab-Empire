@@ -85,13 +85,18 @@
   const ev = [];
   const branch = (G) => G.branches.find((x) => x.id === G.activeBranch);
   const staffOf = (G) => KE.branchStaff(G, branch(G));
+  /* Zam: kişi başı 60 günde bir, rol tavanını aşmadan */
+  const RAISE_CAP = { usta: 3.0, mudur: 2.4, cirak: 1.35, kasiyer: 1.6, garson: 1.6, temizlik: 1.45, kurye: 1.55 };
+  const canRaise = (G, s) => G.day - (s.raisedDay || s.hiredDay || 0) >= 60 && s.wage < KE.ECON.asgariBrut * (RAISE_CAP[s.role] || 1.6) * G.priceIndex;
+  const raise = (G, x, k) => { x.wage = Math.min(Math.round(x.wage * k / 100) * 100, Math.round(KE.ECON.asgariBrut * (RAISE_CAP[x.role] || 1.6) * G.priceIndex / 100) * 100); x.raisedDay = G.day; };
+  KE.canRaise = canRaise;
 
   ev.push({ id: 'rakipTeklif', who: 'rakip', w: 1.2,
-    when: (G) => staffOf(G).some((s) => s.role === 'usta' && s.morale < 55),
-    build: (G) => { const s = staffOf(G).filter((x) => x.role === 'usta').sort((a, c) => a.morale - c.morale)[0];
+    when: (G) => staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),
+    build: (G) => { const s = staffOf(G).filter((x) => x.role === 'usta' && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
       return { title: `${s.name}'ya rakipten teklif!`, text: `"Lüks Kebap" sahibi Cüneyt Bey, ${s.name}'ya %30 daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.`, ctx: { sid: s.id },
         choices: [
-          { label: 'Maaşına %15 zam yap', desc: 'Moral +22, maaş +%15', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.wage = Math.round(x.wage * 1.15 / 100) * 100; x.morale = clamp(x.morale + 22, 0, 100); return `${x.name} kaldı: "Bu dükkân benim de dükkânım."`; } },
+          { label: 'Maaşına %15 zam yap', desc: 'Moral +22, maaş +%15', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); raise(G, x, 1.15); x.morale = clamp(x.morale + 22, 0, 100); return `${x.name} kaldı: "Bu dükkân benim de dükkânım."`; } },
           { label: 'Oturup gönlünü al', desc: '%55 ihtimalle kalır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (KE.rand() < 0.55) { x.morale = clamp(x.morale + 10, 0, 100); return `Uzun bir çay sohbeti işe yaradı. ${x.name} kalıyor.`; } G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} teşekkür edip rakibe geçti. Ocağın başı boş kaldı.`; } },
           { label: 'Gitmek isteyen gider', desc: 'Usta ayrılır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} ayrıldı. Usta pazarında yeni birini bulmalısın.`; } }
         ] }; } });
@@ -122,11 +127,11 @@
       ] }) });
 
   ev.push({ id: 'zamTalebi', who: null, w: 1,
-    when: (G) => staffOf(G).some((s) => s.morale < 62 && G.day - s.hiredDay > 10),
-    build: (G) => { const s = staffOf(G).filter((x) => x.morale < 62).sort((a, c) => a.morale - c.morale)[0];
+    when: (G) => staffOf(G).some((s) => s.morale < 62 && G.day - s.hiredDay > 10 && canRaise(G, s)),
+    build: (G) => { const s = staffOf(G).filter((x) => x.morale < 62 && G.day - x.hiredDay > 10 && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
       return { title: `${s.name} zam istiyor`, text: `${s.name}: "Patron, kira arttı, mutfak masrafı arttı. Bir el atabilir misin?" Brüt maaşı şu an ${KE.tl(s.wage)}.`, ctx: { sid: s.id }, who: s,
         choices: [
-          { label: '%10 zam yap', desc: 'Moral +18', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.wage = Math.round(x.wage * 1.1 / 100) * 100; x.morale = clamp(x.morale + 18, 0, 100); return `${x.name}: "Sağ ol patron, hakkını helal et."`; } },
+          { label: '%10 zam yap', desc: 'Moral +18', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); raise(G, x, 1.1); x.morale = clamp(x.morale + 18, 0, 100); return `${x.name}: "Sağ ol patron, hakkını helal et."`; } },
           { label: 'Şimdilik olmaz', desc: 'Moral −10', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale - 10, 0, 100); return `${x.name} başını öne eğdi: "Anladım."`; } }
         ] }; } });
 
@@ -173,14 +178,6 @@
       choices: [
         { label: 'Pahalı da olsa kömür al', desc: '7 gün kömür ×2', run: (G) => { G.mods.push({ key: 'ing:komur', mult: 2, days: 7, label: 'Kömür krizi' }); return 'Közün tadından taviz yok.'; } },
         { label: 'Bir haftalığına gaza geç', desc: '7 gün müşteri memnuniyeti düşer', run: (G) => { G.mods.push({ key: 'patience', mult: 0.85, days: 7, label: 'Gazlı ocak' }); G.reputation = clamp(G.reputation - 2, 0, 100); return 'Müdavimler farkı hemen anladı: "Usta, bunda köz tadı yok."'; } }
-      ] }) });
-
-  ev.push({ id: 'iftar', who: 'ayse', w: 0.5,
-    when: (G) => KE.iftarMinute(G.day + 1) != null,
-    build: (G) => ({ title: 'İftar sofrası', text: 'Ayşe Teyze yarın akşam mahallede ihtiyaç sahipleri için iftar sofrası kuruyor, dükkândan da katkı bekliyor.', ctx: {},
-      choices: [
-        { label: '50 porsiyon gönder', desc: `${KE.tl(9000)}, itibar +5, moral +3`, run: (G) => { G.cash -= 9000; KE.addExtra(G, 'other', 9000); G.reputation = clamp(G.reputation + 5, 0, 100); staffOf(G).forEach((s) => { s.morale = clamp(s.morale + 3, 0, 100); }); return 'Ayşe Teyze dualar etti. Mahallede adın hayırla anılıyor.'; } },
-        { label: 'Bu sefer olmaz', desc: 'İtibar −1', run: (G) => { G.reputation = clamp(G.reputation - 1, 0, 100); return 'Ayşe Teyze bozulmadı ama biraz kırıldı.'; } }
       ] }) });
 
   ev.push({ id: 'ogrenciIndirim', who: null, w: 0.6,

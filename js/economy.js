@@ -125,7 +125,7 @@
     G.ledger.months.push(report);
     G.monthExtras = { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 };
     G.priceIndex *= 1 + E().aylikEnflasyon;
-    if (monthNo === 12) KE.CAL.applyYear(KE.dateOf(day + 1).getUTCFullYear());
+    if (monthNo === 12) { KE.CAL.applyYear(KE.dateOf(day + 1).getUTCFullYear()); G.staff.forEach((s) => { if (s.wage < KE.ECON.asgariBrut) s.wage = KE.ECON.asgariBrut; }); }
     return report;
   };
 

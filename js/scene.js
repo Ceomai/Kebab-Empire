@@ -215,8 +215,7 @@
       } else {
         const tp = S.tablePos(L.tables.length)[c.table] || { x: 30, y: 80 };
         x = tp.x - 1.5; y = tp.y - 4.2; cls = 'cust seated';
-        if (c.waitIftar) html = '<span class="iftarwait">İftarı bekliyor</span>'; else html = '';
-        html += bubble + `<div class="bust">${KE.portrait(c.look, { mood, label: KE.CUSTOMER_TYPES[c.type].name })}</div>` + (c.state === 'eat' ? `<div class="eating">${A().dish(c.pid)}</div>` : '') + (c.count > 1 ? `<div class="bust b2">${KE.portrait(c.look2 || (c.look2 = KE.customerLook(c.type)), { mood })}</div>` : '');
+        html = bubble + `<div class="bust">${KE.portrait(c.look, { mood, label: KE.CUSTOMER_TYPES[c.type].name })}</div>` + (c.state === 'eat' ? `<div class="eating">${A().dish(c.pid)}</div>` : '') + (c.count > 1 ? `<div class="bust b2">${KE.portrait(c.look2 || (c.look2 = KE.customerLook(c.type)), { mood })}</div>` : '');
       }
       const e = place('st-people', 'u' + c.id, html, x, y, cls, c.state === 'eat' || c.state === 'seat' ? Math.round((S.tablePos(L.tables.length)[c.table] || { y: 80 }).y * 10) - 4 : null, DOOR);
     });
@@ -269,11 +268,7 @@
       ['tray', 'Bekleyen tabak', readyT, lvl(readyT, 2, 4)],
       ['table', 'Masa', `${occ}/${L.tables.length}`, lvl(occ / Math.max(1, L.tables.length), 0.75, 1)],
       ['broom', 'Kirli', dirty, lvl(dirty, 2, 3)]
-    ].map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join('') + (() => {
-      const sp = L.special; if (!sp || !sp.iftar) return '';
-      const left = sp.iftar - (KE.OPEN_HOUR * 60 + L.minute);
-      return left > 0 ? `<span class="hchip iftar" title="İftar ${KE.clock(sp.iftar - KE.OPEN_HOUR * 60)}">${KE.ART.icon('clock')}<b>${left >= 60 ? Math.floor(left / 60) + ' sa ' + (left % 60) + ' dk' : left + ' dk'}</b><em>İftara</em></span>` : left > -40 ? `<span class="hchip iftar on">${KE.ART.icon('heart')}<b>Afiyet olsun</b><em>İftar</em></span>` : '';
-    })();
+    ].map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join('')
   };
 
   let lastCoin = 0;

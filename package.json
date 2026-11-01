@@ -11,6 +11,7 @@
     "test": "vitest run",
     "typecheck": "tsc -p jsconfig.json",
     "sim": "node scripts/sim-balance.cjs",
+    "sim:year": "node scripts/sim-year.cjs",
     "e2e": "node scripts/e2e.cjs",
     "build:edge": "node scripts/build-edge.mjs"
   },

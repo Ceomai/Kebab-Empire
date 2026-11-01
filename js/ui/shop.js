@@ -142,8 +142,7 @@
     if (UI.screen === 'map') { if (force || tickN % 12 === 0) { UI.mapRefresh(); const cp = document.querySelector('.citypanel'); if (cp) cp.outerHTML = H.cityPanel(H.cityTasks()); } return; }
     if (UI.screen !== 'shop' || !L) return;
     KE.SCENE.update(KE.G, b, L);
-    const ift = L.special && L.special.iftar ? L.special.iftar - KE.OPEN_HOUR * 60 : null;
-    const rush = ift != null ? { [ift - 100]: 'İftar hazırlığı: paket kuyruğu başladı', [ift - 25]: 'İftara az kaldı, masalar doluyor!', [ift]: 'Ezan okundu, afiyet olsun!', [ift + 110]: 'Teravih çıktı: tatlı ve çay saati', 720: 'Son siparişler!' } : { 120: 'Öğle yoğunluğu başladı!', 540: 'Akşam yoğunluğu başladı!', 720: 'Son siparişler!' };
+    const rush = { 120: 'Öğle yoğunluğu başladı!', 540: 'Akşam yoğunluğu başladı!', 720: 'Son siparişler!' };
     Object.keys(rush).forEach((m) => { if (L.minute >= +m && (UI.lastMin == null || UI.lastMin < +m) && UI.lastMinB === b.id) banner(rush[m]); });
     UI.lastMin = L.minute; UI.lastMinB = b.id;
     const ck = document.getElementById('clock');

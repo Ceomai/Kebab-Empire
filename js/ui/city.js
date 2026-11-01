@@ -29,8 +29,7 @@
     }
     const sp = KE.specialDay(KE.G.day);
     if (sp && sp.id === 'mac') add('ajans', 'Akşam maç var', 'Kalabalık gelir; ekibi ve stoku hazırla', 'eve');
-    else if (sp && sp.iftar) { const ic = KE.clock(sp.iftar - KE.OPEN_HOUR * 60); add('ajans', `İftar ${ic}: masalar dolacak`, 'Gündüz oruç, dükkân sakin. Paket ve masa hazırlığını iftardan önce bitir.', 'eve'); out[out.length - 1].time = ic; }
-    else if (sp) add('ajans', sp.name, sp.desc, 'pm');
+    if (sp && sp.id !== 'mac') add('ajans', sp.name, sp.desc, 'pm');
     let left = 99; for (let k = 0; k < 32; k++) if (KE.isMonthEnd(KE.G.day + k)) { left = k; break; }
     if (left <= 3) add('office', left ? `Ay sonuna ${left} gün` : 'Bugün ay sonu', 'Maaş, SGK ve kira ödenecek', 'eve');
     if (!KE.G.farm && KE.G.day >= 10 && KE.G.cash > 3000000) add('ciftlik', 'Çiftlik satılık', 'Kendi etini yetiştir, maliyet düşsün', 'pm');
