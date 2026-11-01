@@ -1,5 +1,22 @@
 /* Kebab Empire — derleme girişi.
    Oyun dosyaları window.KE ad alanını sırayla doldurur; sıra önemlidir. */
+/* Yazı tipleri pakete gömülü: Google sunucusuna istek gitmez (GDPR), ilk açılış da internetsiz çalışır */
+import '@fontsource/baloo-2/latin-600.css';
+import '@fontsource/baloo-2/latin-ext-600.css';
+import '@fontsource/baloo-2/latin-700.css';
+import '@fontsource/baloo-2/latin-ext-700.css';
+import '@fontsource/baloo-2/latin-800.css';
+import '@fontsource/baloo-2/latin-ext-800.css';
+import '@fontsource/nunito/latin-400.css';
+import '@fontsource/nunito/latin-ext-400.css';
+import '@fontsource/nunito/latin-600.css';
+import '@fontsource/nunito/latin-ext-600.css';
+import '@fontsource/nunito/latin-700.css';
+import '@fontsource/nunito/latin-ext-700.css';
+import '@fontsource/nunito/latin-800.css';
+import '@fontsource/nunito/latin-ext-800.css';
+import '@fontsource/kalam/latin-400.css';
+import '@fontsource/kalam/latin-ext-400.css';
 import '../css/style.css';
 import '../js/data.js';
 import '../js/calendar.js';

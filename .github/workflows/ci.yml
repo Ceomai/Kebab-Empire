@@ -43,9 +43,34 @@ jobs:
           node scripts/e2e.cjs doner
           node scripts/e2e.cjs kebap
 
+  cross-browser:
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Uçtan uca test (${{ matrix.browser }})
+        env:
+          BROWSER: ${{ matrix.browser }}
+        run: |
+          npx playwright install --with-deps ${{ matrix.browser }}
+          npx vite preview --port 4173 &
+          sleep 4
+          node scripts/e2e.cjs doner
+          node scripts/e2e.cjs kebap
+
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: test
+    needs: [test, cross-browser]
     runs-on: ubuntu-latest
     permissions:
       pages: write

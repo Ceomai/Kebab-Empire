@@ -96,14 +96,25 @@
     S.on = on;
     S.wanted = on;
     try { localStorage.setItem('kebab-empire-sound', on ? '1' : '0'); } catch (e) { /* yok say */ }
-    if (on) { if (ctx.state === 'suspended') ctx.resume(); startMusic(); S.play('open'); } else if (ctx) stopMusic();
+    if (on) { S.unlock(); startMusic(); S.play('open'); } else if (ctx) stopMusic();
     return true;
   };
   S.toggle = () => S.set(!S.on);
-  /* Tercih açıksa ilk tıklamada sesi başlat (tarayıcı kuralı) */
-  document.addEventListener('pointerdown', function first(e) {
-    if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('[data-a="sound"]')) { document.removeEventListener('pointerdown', first); return; }
-    document.removeEventListener('pointerdown', first);
+  /* Tercih açıksa ilk dokunuşta sesi başlat (tarayıcı kuralı). iOS Safari ses bağlamını yalnızca
+     touchend/click içinde açar; sessiz bir tampon çalmak kilidi kesin kaldırır. */
+  const GESTURES = ['pointerdown', 'touchend', 'click', 'keydown'];
+  function first(e) {
+    GESTURES.forEach((g) => document.removeEventListener(g, first, true));
+    if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('[data-a="sound"]')) return;
     if (S.wanted && !S.on) S.set(true);
-  });
+  }
+  GESTURES.forEach((g) => document.addEventListener(g, first, true));
+  S.unlock = function () {
+    if (!ctx) return;
+    if (ctx.state !== 'running') ctx.resume();
+    try { const b = ctx.createBuffer(1, 1, 22050), src = ctx.createBufferSource(); src.buffer = b; src.connect(ctx.destination); src.start(0); } catch (e) { /* yok */ }
+  };
+  ['touchend', 'click'].forEach((g) => document.addEventListener(g, () => { if (S.on && ctx && ctx.state !== 'running') S.unlock(); }, true));
+  /* Arka plandan dönünce (iOS bağlamı askıya alır) sürdür */
+  document.addEventListener('visibilitychange', () => { if (!ctx) return; if (document.visibilityState === 'visible' && S.on) S.unlock(); });
 })();

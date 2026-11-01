@@ -1,7 +1,8 @@
-const { chromium } = require('playwright');
+const pw = require('playwright');
+const BROWSER = process.env.BROWSER || 'chromium';
 const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() + '/ke-e2e-');
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await pw[BROWSER].launch();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   page.on('pageerror', e => errors.push('PAGEERROR ' + e.message + ' @ ' + (e.stack || '').split('\n').slice(1, 3).join(' | ')));
