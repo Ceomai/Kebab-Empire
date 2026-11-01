@@ -73,10 +73,12 @@
   }
   SCREENS.buro = () => {
     const b = B();
+    /* şube müdürü ikinci şubeyle anlam kazanır; o zamana kadar listede yok */
+    const multi = KE.G.branches.length >= 2 || KE.G.staff.some((s) => s.role === 'mudur');
     const mine = KE.G.staff.filter((s) => !KE.isCook(s));
     return `<main class="screen">${head('Eleman Bürosu', 'Kasa, servis, temizlik, paket ve yönetim ekibi', null, 'buro')}
       <section class="panel"><div class="sechead"><h2>Adaylar</h2><span class="small muted">İşe aldığın kişi <b>${esc(b.name)}</b> şubesinde başlar. Liste her pazar yenilenir.</span></div>
-        ${capBar(b, ['salon', 'destek', 'yonetim'])}<div class="rolekey">${['kasiyer', 'garson', 'temizlik', 'kurye', 'mudur'].map((r) => `<span><b>${r === 'garson' ? (KE.G.mode === 'doner' ? 'Komi' : 'Garson') : KE.ROLES[r].name}</b>${KE.ROLES[r].desc}</span>`).join('')}</div><div class="grid g3">${KE.G.workers.map((s) => workerCard(s, false, b)).join('')}</div></section>
+        ${capBar(b, multi ? ['salon', 'destek', 'yonetim'] : ['salon', 'destek'])}<div class="rolekey">${['kasiyer', 'garson', 'temizlik', 'kurye'].concat(multi ? ['mudur'] : []).map((r) => `<span><b>${r === 'garson' ? (KE.G.mode === 'doner' ? 'Komi' : 'Garson') : KE.ROLES[r].name}</b>${KE.ROLES[r].desc}</span>`).join('')}</div><div class="grid g3">${KE.G.workers.filter((s) => multi || s.role !== 'mudur').map((s) => workerCard(s, false, b)).join('')}</div></section>
       <section class="panel"><div class="sechead"><h2>Kadro (ustalar hariç)</h2></div>${morningOnly()}<div class="grid g3">${mine.map((s) => workerCard(s, true)).join('') || '<p class="muted">Henüz kimse yok.</p>'}</div></section></main>`;
   };
 
@@ -207,7 +209,7 @@
         const mgr = st.find((s) => s.role === 'mudur');
         return `<article class="card branch ${b.id === KE.G.activeBranch ? 'sel' : ''}"><div class="br-art">${KE.ART.storefront(b.name, '#d7263d', true)}</div><span class="kicker">${d.name}</span><h3>${esc(b.name)}</h3>
           <div class="chips"><span class="chip">${st.length} kişi</span><span class="chip ${mgr ? 'gr' : 'rd'}">${mgr ? 'Müdür: ' + esc(mgr.name) : 'Müdür yok'}</span><span class="chip">Temizlik ${Math.round(b.cleanliness)}</span>${b.flagship ? `<span class="chip gd">${IC('star')}Amiral</span>` : ''}</div>
-          ${mgr ? `<label class="managed"><input type="checkbox" data-a="toggleManaged" data-id="${b.id}" ${b.managed !== false ? 'checked' : ''}><span><b>Müdür yönetsin</b><small>Sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar.${b.managedNote && b.managedNote.length ? ' Bugün: ' + b.managedNote.map((n) => ({ stok: 'stok artırıldı', fire: 'fire için stok azaltıldı', fiyat: 'fiyatlar güncellendi' })[n]).join(', ') + '.' : ''}</small></span></label>` : '<p class="tiny muted">Müdür alırsan şubenin sabah ayarlarını o yapar.</p>'}
+          ${mgr ? `<label class="managed"><input type="checkbox" data-a="toggleManaged" data-id="${b.id}" ${b.managed !== false ? 'checked' : ''}><span><b>Müdür yönetsin</b><small>Sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar.${b.managedNote && b.managedNote.length ? ' Bugün: ' + b.managedNote.map((n) => ({ stok: 'stok artırıldı', fire: 'fire için stok azaltıldı', fiyat: 'fiyatlar güncellendi' })[n]).join(', ') + '.' : ''}</small></span></label>` : (KE.G.branches.length >= 2 ? '<p class="tiny muted">Müdür alırsan şubenin sabah ayarlarını o yapar.</p>' : '')}
           ${h.length > 1 ? lineChart([{ name: 'Son 7 gün ciro', color: '#f28c28', values: h.map((x) => x.revenue), area: true }], h.map((x) => String(KE.dateOf(x.day).getUTCDate())), { h: 120, label: 'Şube cirosu' }) : '<p class="small muted">Henüz yeterli veri yok.</p>'}
           <div class="pc-foot">${b.id !== KE.G.activeBranch ? `<button class="btn sm green" data-a="viewBranch" data-id="${b.id}">${IC('eye')}Bu şubeye geç</button>` : `<button class="btn sm" data-a="go" data-s="shop">${IC('store')}Dükkâna git</button>`}</div></article>`;
       }

@@ -80,7 +80,7 @@
         <div class="seg" role="group" aria-label="${esc(s.name)} görevi">${KE.POSITIONS[s.role].map((p) => `<button class="${s.pos === p ? 'on' : ''}" data-a="setPos" data-id="${s.id}" data-p="${p}" title="${KE.POS_NAMES[p]}" aria-pressed="${s.pos === p}">${IC(POS_IC[p])}<span>${KE.POS_NAMES[p]}</span></button>`).join('')}</div>
       </div>`;
     }).join('');
-    return `<div class="crewhead"><label class="switch lbl"><input type="checkbox" id="auto-${b.id}" data-c="autoStaff" data-b="${b.id}" ${b.autoStaff ? 'checked' : ''}><i></i><span><b>Otomatik ekip yönetimi</b><small>${mgr ? `Müdür ${esc(mgr.name)} yoğunluğa göre görev ve mola düzenler.` : 'Müdür yok: yalnızca bitkin düşenleri molaya gönderir. Görevleri sen ayarla.'}</small></span></label></div>
+    return `<div class="crewhead"><label class="switch lbl"><input type="checkbox" id="auto-${b.id}" data-c="autoStaff" data-b="${b.id}" ${b.autoStaff ? 'checked' : ''}><i></i><span><b>Otomatik ekip yönetimi</b><small>${mgr ? `Müdür ${esc(mgr.name)} yoğunluğa göre görev ve mola düzenler.` : KE.G.branches.length >= 2 ? 'Müdür yok: yalnızca bitkin düşenleri molaya gönderir. Görevleri sen ayarla.' : 'Bitkin düşenleri molaya gönderir. Görevleri sen ayarla.'}</small></span></label></div>
       <div class="crewlist">${rows || '<p class="muted">Bu şubede henüz kimse yok.</p>'}</div>`;
   }
 

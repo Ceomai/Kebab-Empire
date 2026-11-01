@@ -6290,5 +6290,9 @@
  "Adını semtte duyur, yeni dükkânlar aç. \"Lüks Kebap\" seni fark etti.": {
   "en": "Make a name in the district and open new shops. \"Lüks Kebap\" has noticed you.",
   "de": "Mach dir im Bezirk einen Namen und eröffne neue Läden. „Lüks Kebap“ ist auf dich aufmerksam geworden."
+ },
+ "Bitkin düşenleri molaya gönderir. Görevleri sen ayarla.": {
+  "en": "Sends exhausted staff on a break. You assign the tasks.",
+  "de": "Schickt erschöpfte Leute in die Pause. Die Aufgaben verteilst du."
  }
 }
