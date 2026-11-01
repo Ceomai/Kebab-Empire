@@ -28,7 +28,7 @@
   /* Statik iskelet */
   S.html = function (G, b) {
     const M = KE.MODES[G.mode];
-    const stations = KE.equip(G, b, 'cook').stations;
+    const stations = KE.stations(G, b);
     const amb = KE.ambience(G, b);
     const lux = b.decor.filter((id) => (KE.DECOR.find((d) => d.id === id) || {}).style === 'lüks').length >= 2;
     const menuItems = M.products.filter((p) => b.menu[p.id]).slice(0, 7);
@@ -125,7 +125,7 @@
     if (stageId !== b.id) { S.reset(); stageId = b.id; }
     const M = KE.MODES[G.mode];
     const st = KE.branchStaff(G, b);
-    const stations = KE.equip(G, b, 'cook').stations;
+    const stations = KE.stations(G, b);
     const cooking = KE.cookingStaff(G, b);
     const tablePos = S.tablePos(L.tables.length);
     const speed = G.speed || 1;

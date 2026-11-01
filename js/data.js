@@ -341,7 +341,7 @@ KE.GOALS = [
   { id: 'imparator', name: 'Kebap İmparatoru', desc: '"Lüks Kebap" zincirini satın al ve şehrin tek kebap imparatoru ol.', reward: 0, final: true }
 ];
 /* Oyun sonu: "Lüks Kebap" zincirini satın almak için şartlar */
-KE.EMPIRE = { branches: 7, crowns: 3, reputation: 80, price: 60000000 };
+KE.EMPIRE = { branches: 7, crowns: 3, reputation: 80, price: 85000000 };
 
 /* ---------- Dönemler: oyun dört bölüm hâlinde açılır ----------
    Her dönemin üç şartı vardır; hepsi tamamlanınca bir sonraki döneme geçilir ve yeni yerler açılır. */
@@ -359,7 +359,7 @@ KE.PLACE_ERA = { ajans: 2, subeler: 2, ciftlik: 3 };
 
 /* ---------- Büyük yatırımlar (3. dönem) ---------- */
 KE.SIGNATURE = { cost: [300000, 800000, 2000000], days: 10, traffic: 0.08, names: ['Usta işi', 'Şehrin tarifi', 'Efsane tarif'] };
-KE.FLAGSHIP = { cost: 2500000, traffic: 1.4, chain: 1.08 };
+KE.FLAGSHIP = { cost: 2500000, traffic: 1.15, chain: 1.05 };
 KE.CONTRACT_KINDS = [
   { id: 'stadyum', name: 'Stadyum maç günü', who: 'Kulüp yönetimi', qty: [300, 600], morale: 8 },
   { id: 'fabrika', name: 'Fabrika yemekhanesi', who: 'Merterli Tekstil', qty: [200, 400], morale: 5 },

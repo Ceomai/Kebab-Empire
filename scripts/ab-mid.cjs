@@ -17,7 +17,7 @@ const V = {
   mudur_kapali: (KE, G) => G.branches.forEach((b) => { b.managed = false; }),
   merkezi_mutfak: (KE, G) => { G.centralKitchen = true; G.cash -= 450000 * G.priceIndex; },
   ciftlik: (KE, G) => { KE.buyFarm(G); KE.farmKinds(G).forEach((k) => { KE.buyAnimals(G, k); KE.buyAnimals(G, k); }); },
-  amiral: (KE, G) => KE.buildFlagship(G, G.branches[0].id),
+  amiral: (KE, G) => { KE.buildFlagship(G, G.branches[0].id); const b = G.branches[0]; Object.keys(b.prices).forEach((k) => { b.prices[k] = Math.round(b.prices[k] * 1.08 / 5) * 5; }); },
   imza_1: (KE, G) => KE.startSignature(G, KE.MODES[G.mode].products[0].id),
   toplu_siparis: 'contract',
   tabela_hepsi: (KE, G) => G.branches.forEach((b) => { b.signBoost = 1.06; G.cash -= 30000; })
@@ -29,8 +29,10 @@ const run = (mode, seed, name) => {
   if (typeof v === 'function') v(KE, G);
   let served = 0, satS = 0, satN = 0;
   for (let d = 0; d < DAYS; d++) {
+    if (process.env.NOEVENTS) G.pendingEvent = null;
     if (G.pendingEvent) KE.resolveEvent(G, (d * 7 + 3) % G.pendingEvent.choices.length);
     if (name === 'imza_1' && !G.sigWork && G.signature && G.signature.level === 1 && d === 30) KE.startSignature(G, G.signature.pid);
+    if (name === 'imza_1' && d === 45) G.branches.forEach((b) => Object.keys(b.prices).forEach((k) => { b.prices[k] = Math.round(b.prices[k] * 1.06 / 5) * 5; }));
     if (v === 'contract' && !KE.contractTaken(G)) { const o = KE.contractOffers(G)[0]; if (o) KE.acceptContract(G, o.id, G.branches[0].id); }
     if (G.farm && d % 10 === 0) KE.farmKinds(G).forEach((k) => { if (G.cash > 2e6) KE.buyAnimals(G, k); });
     KE.startService(G); let g = 0; while (!KE.allDone(G) && g++ < 2000) KE.tickAll(G); KE.finishService(G);
@@ -41,7 +43,7 @@ const run = (mode, seed, name) => {
 };
 for (const mode of MODES) {
   const rows = {};
-  for (const name of Object.keys(V)) { const rs = []; for (let s = 1; s <= SEEDS; s++) rs.push(run(mode, 2000 + s * 31, name)); const avg = (k) => rs.reduce((a, r) => a + r[k], 0) / rs.length; rows[name] = { cash: avg('cash'), rep: avg('rep'), served: avg('served'), sat: avg('sat') }; }
+  for (const name of Object.keys(V).filter((n) => !process.env.ONLY || n === 'base' || process.env.ONLY.split(',').includes(n))) { const rs = []; for (let s = 1; s <= SEEDS; s++) rs.push(run(mode, 2000 + s * 31, name)); const avg = (k) => rs.reduce((a, r) => a + r[k], 0) / rs.length; rows[name] = { cash: avg('cash'), rep: avg('rep'), served: avg('served'), sat: avg('sat') }; }
   const B = rows.base;
   console.log(`\n== ${mode} · 4 şube · ${DAYS} gün · ${SEEDS} tohum`);
   Object.entries(rows).forEach(([n, r]) => { const f = (v, b, d) => (n === 'base' ? v.toFixed(d) : ((v - b >= 0 ? '+' : '') + (v - b).toFixed(d))); console.log(n.padEnd(16) + f(r.cash / 1e6, B.cash / 1e6, 2).padStart(9) + 'M' + f(r.rep, B.rep, 1).padStart(8) + f(r.served, B.served, 0).padStart(9) + f(r.sat, B.sat, 1).padStart(8)); });

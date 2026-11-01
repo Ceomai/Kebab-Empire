@@ -11,7 +11,7 @@
     const st = KE.branchStaff(KE.G, b);
     const exp = KE.expectedCustomers(KE.G, b);
     const amb = KE.ambience(KE.G, b);
-    const stations = KE.equip(KE.G, b, 'cook').stations;
+    const stations = KE.stations(KE.G, b);
     const cooks = st.filter(KE.isCook);
     const warn = [];
     if (!cooks.length) warn.push(['crit', 'Bu şubede usta yok. Usta Pazarı\'ndan birini al; ustasız şube bugün kapalı kalır.']);

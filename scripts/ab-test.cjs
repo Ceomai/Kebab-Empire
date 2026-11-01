@@ -40,6 +40,7 @@ const run = (mode, seed, name) => {
   if (typeof v === 'function') v(KE, G);
   const tot = { served: 0, lost: 0, satS: 0, satN: 0, tips: 0, lostWait: 0, lostFood: 0, lostFull: 0, lostPrice: 0, lostStock: 0, paket: 0 };
   for (let d = 0; d < DAYS; d++) {
+    if (process.env.NOEVENTS) G.pendingEvent = null;
     if (G.pendingEvent) KE.resolveEvent(G, (d * 7 + 3) % G.pendingEvent.choices.length);
     if (v === 'weekly' && d % 7 === 0) { const c = Math.round(22000 * G.priceIndex); G.cash -= c; ads += c; [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]].forEach(([k, m]) => G.mods.push({ key: k, mult: m, days: 7 })); }
     KE.startService(G); let g = 0; while (!KE.allDone(G) && g++ < 1500) KE.tickAll(G); KE.finishService(G);
@@ -51,10 +52,11 @@ const run = (mode, seed, name) => {
 };
 for (const mode of MODES) {
   const rows = {};
-  for (const name of Object.keys(VARIANTS)) {
+  for (const name of Object.keys(VARIANTS).filter((n) => !process.env.ONLY || n === 'base' || process.env.ONLY.split(',').includes(n))) {
     const rs = []; for (let s = 1; s <= SEEDS; s++) rs.push(run(mode, 1000 + s * 17, name));
     const avg = (k) => rs.reduce((a, r) => a + r[k], 0) / rs.length;
     rows[name] = { cash: avg('cash'), rep: avg('rep'), served: avg('served'), sat: avg('sat'), lost: avg('lost'), morale: avg('morale') };
+    if (process.env.DETAIL) { const dk = {}; rs.forEach((r) => Object.entries(r.detail).forEach(([k, v]) => { dk[k] = (dk[k] || 0) + v / rs.length; })); console.log(name, Object.entries(dk).map(([k, v]) => k + ':' + Math.round(v)).join(' ')); }
   }
   const B = rows.base;
   console.log(`\n== ${mode} · ${DAYS} gün · ${SEEDS} tohum ortalaması (fark = seçenek − temel)`);

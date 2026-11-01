@@ -187,7 +187,7 @@
       '<b>Eşit paylaşım:</b> Herkese eşit; moral dengeli artar.',
       '<b>Ustaya ağırlık:</b> Ustalar iki pay alır, keyiflenir; çıraklar ustalarından %30 daha hızlı öğrenir. Diğerleri biraz bozulur.',
       '<b>Performansa göre:</b> Kim çok iş çıkardıysa o çok alır; çalışkanlar mutlu olur.',
-      '<b>Kasaya al:</b> Bahşiş işletmeye kalır. Kısa vadede nakit sağlar ama ekip her gün biraz küser; uzun süre yapılırsa moral ve hız düşer.'
+      '<b>Kasaya al:</b> Bahşiş işletmeye kalır, ekip ay sonu primi sözüyle idare eder. Kısa vadede nakit sağlar; uzun süre yapılırsa moral, hız ve itibar düşer.'
     ] },
     { id: 'temizlik', ic: 'broom', t: 'Temizlik ve denetim', lead: 'Temizlik her müşteriyle düşer; temizlik görevlisi ve masa toplamak yükseltir.', items: [
       'Belediye denetiminde temizlik 55\'in altındaysa ceza yersin (Muhtar Kemal Bey hikâyesini tamamlarsan eşik 45\'e iner).',
@@ -231,7 +231,7 @@
     ] },
     { id: 'yatirim', ic: 'chart', t: 'Büyük yatırımlar (3. dönem)', lead: 'Kasadaki parayı büyümeye çevirmenin yolları Merkez Ofis\'tedir.', items: [
       '<b>İmza tarif:</b> Bir ürünü zincirin imzası yaparsın (3 seviye, her biri 10 gün sürer). Her seviye bütün şubelerde müşteriyi %8 artırır ve müşterilerin fiyata toleransını %4 yükseltir.',
-      '<b>Amiral dükkân:</b> Bir şubeyi şehrin simgesi yaparsın: o şubede müşteri %40, diğer şubelerde %8 artar; semt tacı çıtası 3 puan düşer.',
+      '<b>Amiral dükkân:</b> Bir şubeyi şehrin simgesi yaparsın: +4 masa, +1 ocak yeri ve daha uzun kuyrukla kapasitesi büyür, müşteriler orada %10 daha yüksek fiyata katlanır. O şubede müşteri %15, diğer şubelerde %5 artar; semt tacı çıtası 3 puan düşer.',
       '<b>Toplu siparişler:</b> Her hafta stadyum, düğün, festival gibi üç teklif gelir; haftada biri kabul edilir. Gün sonunda teslim edilir, iyi para getirir ama ekibin morali düşer.',
       '<b>Besi çiftliği:</b> Kendi etini yetiştirirsin; çiftlik eti haldekinden yaklaşık %25 ucuzdur. Ağılları büyüttükçe daha çok şubeyi besler.'
     ] },

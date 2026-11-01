@@ -186,7 +186,7 @@
       ${G.sigWork ? `<span class="chip or">${IC('clock')}Hazırlanıyor: ${Math.max(0, G.sigWork.ready - G.day)} gün kaldı</span>` : cost == null ? `<span class="chip gr">${IC('check')}Efsane seviyede</span>` : `<div class="pc-foot"><b>${KE.tl(cost)}</b><button class="btn sm green" data-a="signature" ${G.cash < cost ? 'disabled' : ''}>${sig ? 'Geliştir' : 'Tarif seç'}</button></div>`}</article>`;
     const fl = G.branches.find((b) => b.flagship);
     const flBox = `<article class="card inv"><span class="kicker">${IC('star')}Amiral dükkân</span><h3>${fl ? esc(fl.name) : 'Zincirin vitrini'}</h3>
-      <p class="small">${fl ? 'Amiral dükkânda müşteri +%40, zincirin diğer şubelerinde +%8; şampiyonluk çıtası 3 puan aşağıda.' : 'Bir şubeni şehrin simgesine dönüştür: o şubede müşteri +%40, bütün zincirde +%8, semt tacını korumak kolaylaşır.'}</p>
+      <p class="small">${fl ? 'Amiral dükkânda +4 masa, +1 ocak yeri ve daha uzun kuyruk; müşteriler %10 daha yüksek fiyata katlanır. Müşteri o şubede +%15, zincirde +%5; şampiyonluk çıtası 3 puan aşağıda.' : 'Bir şubeni şehrin simgesine dönüştür: +4 masa, +1 ocak yeri, %10 fiyat primi; o şubede müşteri +%15, bütün zincirde +%5.'}</p>
       ${fl ? `<span class="chip gr">${IC('check')}Açıldı</span>` : `<div class="pc-foot"><b>${KE.tl(KE.flagshipCost(G))}</b><button class="btn sm green" data-a="flagship" ${G.cash < KE.flagshipCost(G) || G.phase !== 'morning' ? 'disabled' : ''}>Şube seç</button></div>`}</article>`;
     const taken = KE.contractTaken(G);
     const offers = KE.contractOffers(G);

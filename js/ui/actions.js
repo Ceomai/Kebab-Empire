@@ -296,7 +296,7 @@
   };
   A.flagship = () => {
     const G = KE.G;
-    UI.picker('Hangi şube amiral dükkân olsun?', `Amiral dükkân ${KE.tl(KE.flagshipCost(G))}: o şubede müşteri +%40, zincirin geri kalanında +%8, semt şampiyonluğu çıtası 3 puan düşer.`, G.branches.map((b) => ({ id: b.id, label: b.name, sub: KE.district(b).name, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>` })), (o) => { const r = KE.buildFlagship(G, o.id); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('flagship', { day: G.day }); UI.toast(`${o.label} artık zincirin amiral dükkânı!`, 'gold'); if (UI.confetti) UI.confetti(); UI.render(); });
+    UI.picker('Hangi şube amiral dükkân olsun?', `Amiral dükkân ${KE.tl(KE.flagshipCost(G))}: o şubeye +4 masa ve +1 ocak yeri, müşteriler %10 daha yüksek fiyata katlanır; o şubede müşteri +%15, zincirde +%5, semt şampiyonluğu çıtası 3 puan düşer.`, G.branches.map((b) => ({ id: b.id, label: b.name, sub: KE.district(b).name, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>` })), (o) => { const r = KE.buildFlagship(G, o.id); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('flagship', { day: G.day }); UI.toast(`${o.label} artık zincirin amiral dükkânı!`, 'gold'); if (UI.confetti) UI.confetti(); UI.render(); });
   };
   A.contract = (d) => {
     const G = KE.G;

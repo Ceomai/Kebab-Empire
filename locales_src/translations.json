@@ -6466,5 +6466,17 @@
  "Şehre her gelişinde uğrayan {0}, dükkânı herkese öneriyor.": {
   "en": "{0}, who drops by on every visit to the city, recommends the shop to everyone.",
   "de": "{0}, der bei jedem Stadtbesuch vorbeikommt, empfiehlt den Laden allen."
+ },
+ "Bahşiş işletmeye kalır. Ekip ay sonu primi sözüyle idare eder; kısa vadede nakit sağlar ama moral ve itibar zamanla düşer.": {
+  "en": "Tips stay with the business. The team makes do with the promise of a month-end bonus; cash in the short run, but morale and reputation slide over time.",
+  "de": "Das Trinkgeld bleibt im Betrieb. Das Team begnügt sich mit dem Versprechen einer Monatsprämie; kurzfristig Geld, aber Moral und Ruf sinken mit der Zeit."
+ },
+ "Amiral dükkânda +4 masa, +1 ocak yeri ve daha uzun kuyruk; müşteriler {0} daha yüksek fiyata katlanır. Müşteri o şubede +{1} zincirde +{2} şampiyonluk çıtası {3} puan aşağıda.": {
+  "en": "The flagship gets +4 tables, +1 grill slot and a longer queue; customers accept {0} higher prices. Customers +{1} there, +{2} across the chain; championship bar {3} points lower.",
+  "de": "Der Flagship-Laden hat +4 Tische, +1 Grillplatz und eine längere Schlange; Kunden akzeptieren {0} höhere Preise. Dort +{1} Kunden, in der Kette +{2}; Meisterschaftshürde {3} Punkte niedriger."
+ },
+ "Bir şubeni şehrin simgesine dönüştür: +4 masa, +1 ocak yeri, {0} fiyat primi; o şubede müşteri +{1} bütün zincirde +{2}": {
+  "en": "Turn a branch into a city landmark: +4 tables, +1 grill slot, a {0} price premium; +{1} customers there, +{2} across the chain.",
+  "de": "Mach eine Filiale zum Wahrzeichen: +4 Tische, +1 Grillplatz, {0} Preisaufschlag; dort +{1} Kunden, in der ganzen Kette +{2}."
  }
 }
