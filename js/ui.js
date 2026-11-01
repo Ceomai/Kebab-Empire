@@ -567,7 +567,7 @@
     while (acc >= KE.MINUTE_MS) { acc -= KE.MINUTE_MS; KE.tickAll(G); ticked = true; if (KE.allDone(G)) break; }
     if (ticked) {
       const L = G.live[G.activeBranch];
-      if (L && L.player.active && L.player.tid == null && KE.playerTake(G)) renderTezgah();
+      if (L && L.player.active && L.player.tid == null && KE.act(G, 'ptake')) renderTezgah();
       UI.sceneTick();
     }
     if (KE.allDone(G)) {
@@ -1112,8 +1112,7 @@
   A.pickOpt = (d) => { const o = UI.pickOptions[+d.i]; UI.closeModal(); if (pickCb) pickCb(o); };
 
   A.viewBranch = (d) => {
-    if (G.live && G.live[G.activeBranch] && G.live[G.activeBranch].player.active) KE.playerToggle(G, false);
-    G.activeBranch = d.id;
+    if (G.phase === 'service' && G.live) KE.act(G, 'active', d.id); else G.activeBranch = d.id;
     if (['map', 'subeler', 'title'].includes(screen)) UI.go('shop'); else UI.render();
   };
   A.openShop = () => {
@@ -1130,18 +1129,19 @@
   A.setPos = (d) => {
     const s = G.staff.find((x) => x.id === d.id);
     if (!s) return;
-    KE.setPos(G, s, d.p);
     const b = G.branches.find((x) => x.id === s.branchId);
-    if (b.autoStaff && G.phase === 'service') { b.autoStaff = false; UI.toast('Görevleri elle ayarladın; otomatik ekip yönetimi kapatıldı.'); }
+    const wasAuto = b.autoStaff && G.phase === 'service';
+    KE.act(G, 'setPos', s.id, d.p);
+    if (wasAuto) UI.toast('Görevleri elle ayarladın; otomatik ekip yönetimi kapatıldı.');
     UI.crewHover = 0;
     const cr = document.getElementById('crew');
     if (cr && G.phase !== 'morning') cr.innerHTML = crewPanel(b, true); else UI.render();
   };
-  A.tezgah = () => { const L = G.live[G.activeBranch]; KE.playerToggle(G, !L.player.active); if (L.player.active) KE.playerTake(G); renderTezgah(); UI.sceneTick(); };
+  A.tezgah = () => { const L = G.live[G.activeBranch]; KE.act(G, 'ptoggle', !L.player.active); if (L.player.active) KE.act(G, 'ptake'); renderTezgah(); UI.sceneTick(); };
   A.step = (d) => {
-    const r = KE.playerStep(G, d.l);
+    const r = KE.act(G, 'pstep', d.l);
     if (r.ok === false) { renderTezgah(); const box = document.getElementById('stepbtns'); if (box) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); } return; }
-    if (r.done) KE.playerTake(G);
+    if (r.done) KE.act(G, 'ptake');
     renderTezgah(); UI.sceneTick();
   };
   A.fastForward = () => { KE.finishService(G); UI.render(); showClosing(); };
@@ -1258,7 +1258,7 @@
   const C = {};
   C.menuToggle = (el) => { B().menu[el.dataset.p] = el.checked; UI.render(); };
   C.priceSet = (el) => { const v = parseInt(el.value.replace(/\D/g, ''), 10); if (v > 0) B().prices[el.dataset.p] = v; UI.render(); };
-  C.autoStaff = (el) => { const b = G.branches.find((x) => x.id === el.dataset.b); b.autoStaff = el.checked; UI.toast(el.checked ? 'Otomatik ekip yönetimi açık.' : 'Ekibi artık sen yönetiyorsun.'); };
+  C.autoStaff = (el) => { const b = G.branches.find((x) => x.id === el.dataset.b); KE.act(G, 'autoStaff', b.id, el.checked); UI.toast(el.checked ? 'Otomatik ekip yönetimi açık.' : 'Ekibi artık sen yönetiyorsun.'); };
   C.farmAuto = (el) => { G.farm.auto = el.checked; UI.render(); };
 
   document.addEventListener('click', (e) => {

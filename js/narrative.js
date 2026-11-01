@@ -1,6 +1,6 @@
 /* Kebab Empire — anlatı: gün sonu günlüğü, mahalle gazetesi, olay kartları, karakter repliği */
 (function () {
-  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const pname = (G, pid) => { const m = KE.MODES[G.mode]; const p = m.products.find((x) => x.id === pid); return p ? p.name : m.drink.name; };
   const clock = (min) => { const h = KE.OPEN_HOUR + Math.floor(min / 60), m = min % 60; return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
@@ -92,7 +92,7 @@
       return { title: `${s.name}'ya rakipten teklif!`, text: `"Lüks Kebap" sahibi Cüneyt Bey, ${s.name}'ya %30 daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.`, ctx: { sid: s.id },
         choices: [
           { label: 'Maaşına %15 zam yap', desc: 'Moral +22, maaş +%15', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.wage = Math.round(x.wage * 1.15 / 100) * 100; x.morale = clamp(x.morale + 22, 0, 100); return `${x.name} kaldı: "Bu dükkân benim de dükkânım."`; } },
-          { label: 'Oturup gönlünü al', desc: '%55 ihtimalle kalır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (Math.random() < 0.55) { x.morale = clamp(x.morale + 10, 0, 100); return `Uzun bir çay sohbeti işe yaradı. ${x.name} kalıyor.`; } G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} teşekkür edip rakibe geçti. Ocağın başı boş kaldı.`; } },
+          { label: 'Oturup gönlünü al', desc: '%55 ihtimalle kalır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (KE.rand() < 0.55) { x.morale = clamp(x.morale + 10, 0, 100); return `Uzun bir çay sohbeti işe yaradı. ${x.name} kalıyor.`; } G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} teşekkür edip rakibe geçti. Ocağın başı boş kaldı.`; } },
           { label: 'Gitmek isteyen gider', desc: 'Usta ayrılır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} ayrıldı. Usta pazarında yeni birini bulmalısın.`; } }
         ] }; } });
 
@@ -117,7 +117,7 @@
     build: (G) => ({ title: 'Bahşiş kavanozu kayboldu', text: 'Zeynep Hanım kasayı sayarken fark etti: dün akşamki bahşiş kavanozu yerinde yok. Ekip birbirine kuşkuyla bakıyor.', ctx: {},
       choices: [
         { label: 'Kasadan herkese öde', desc: `${KE.tl(4500)}, moral +6`, run: (G) => { G.cash -= 4500; KE.addExtra(G, 'other', 4500); staffOf(G).forEach((s) => { s.morale = clamp(s.morale + 6, 0, 100); }); return '"Patron bizi yarı yolda bırakmadı." Ekip rahatladı.'; } },
-        { label: 'Soruşturma başlat', desc: 'Moral −5, kavanoz belki bulunur', run: (G) => { staffOf(G).forEach((s) => { s.morale = clamp(s.morale - 5, 0, 100); }); return Math.random() < 0.5 ? 'Kavanoz depoda, un çuvallarının arkasında bulundu. Komi yanlışlıkla kaldırmış.' : 'Kavanoz bulunamadı. Ortam gergin.'; } },
+        { label: 'Soruşturma başlat', desc: 'Moral −5, kavanoz belki bulunur', run: (G) => { staffOf(G).forEach((s) => { s.morale = clamp(s.morale - 5, 0, 100); }); return KE.rand() < 0.5 ? 'Kavanoz depoda, un çuvallarının arkasında bulundu. Komi yanlışlıkla kaldırmış.' : 'Kavanoz bulunamadı. Ortam gergin.'; } },
         { label: 'Boş ver', desc: 'Moral −8', run: (G) => { staffOf(G).forEach((s) => { s.morale = clamp(s.morale - 8, 0, 100); }); return 'Ekip sessizce işine döndü ama kırgınlar.'; } }
       ] }) });
 
@@ -133,7 +133,7 @@
   ev.push({ id: 'etZammi', who: 'riza', w: 1,
     build: (G) => ({ title: 'Kasap Rıza\'dan zam haberi', text: '"Kusura bakma kardeşim, halde fiyatlar uçtu. Bu hafta et kalemlerine %15 zam yapmak zorundayım."', ctx: {},
       choices: [
-        { label: 'Pazarlık et', desc: '%50 ihtimalle %5\'e iner', run: (G) => { if (Math.random() < 0.5) { G.mods.push({ key: 'ing', mult: 1.05, days: 7, label: 'Et zammı' }); return '"Senin hatırın için %5 olsun." Rıza sözünün eri.'; } G.mods.push({ key: 'ing', mult: 1.15, days: 7, label: 'Et zammı' }); return '"Elimden gelen bu kadar." Zam %15 kaldı.'; } },
+        { label: 'Pazarlık et', desc: '%50 ihtimalle %5\'e iner', run: (G) => { if (KE.rand() < 0.5) { G.mods.push({ key: 'ing', mult: 1.05, days: 7, label: 'Et zammı' }); return '"Senin hatırın için %5 olsun." Rıza sözünün eri.'; } G.mods.push({ key: 'ing', mult: 1.15, days: 7, label: 'Et zammı' }); return '"Elimden gelen bu kadar." Zam %15 kaldı.'; } },
         { label: 'Kabul et', desc: '7 gün malzeme +%15, ilişki iyi', run: (G) => { G.mods.push({ key: 'ing', mult: 1.12, days: 7, label: 'Et zammı' }); return 'Rıza memnun. "Senin için en iyi parçaları ayıracağım." Zam %12\'de kaldı.'; } }
       ] }) });
 
@@ -201,10 +201,10 @@
 
   KE.EVENTS = ev;
   KE.rollEvent = function (G) {
-    if (G.day < 3 || Math.random() > 0.42) return null;
+    if (G.day < 3 || KE.rand() > 0.42) return null;
     const pool = ev.filter((e) => (!e.mode || e.mode === G.mode) && (!e.when || e.when(G)) && G.eventLog.slice(-4).indexOf(e.id) === -1);
     if (!pool.length) return null;
-    let tot = pool.reduce((a, e) => a + e.w, 0), r = Math.random() * tot;
+    let tot = pool.reduce((a, e) => a + e.w, 0), r = KE.rand() * tot;
     let e = pool[0];
     for (const x of pool) { if ((r -= x.w) <= 0) { e = x; break; } }
     const card = e.build(G);
@@ -212,6 +212,7 @@
     return { id: e.id, who: e.who, title: card.title, text: card.text, ctx: card.ctx, whoStaff: card.who ? card.who.id : null, choices: card.choices.map((c) => ({ label: c.label, desc: c.desc })) };
   };
   KE.resolveEvent = function (G, idx) {
+    KE.RNG.seed(G, 'event' + idx);
     const pe = G.pendingEvent;
     if (!pe) return '';
     const e = ev.find((x) => x.id === pe.id);

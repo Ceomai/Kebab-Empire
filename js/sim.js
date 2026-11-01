@@ -3,8 +3,16 @@
    Akış: müşteri gelir → kasada sipariş verir (kasiyer/garson) → usta pişirir → komi/garson masaya götürür
    → müşteri yer, bahşiş bırakır ve çıkar → masa toplanır. Ustalar yalnızca pişirir. */
 (function () {
-  const rnd = (a, b) => a + Math.random() * (b - a);
-  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  /* ---------- Tohumlu rastgelelik ----------
+     Oyun sonucunu etkileyen her rastgele karar KE.rand() ile verilir. Akış her gün ve evre için
+     oyunun tohumundan yeniden kurulur; aynı tohum + aynı oyuncu hamleleri = birebir aynı gün. */
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function mix(...xs) { let h = 2166136261; xs.forEach((x) => { String(x).split('').forEach((c) => { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }); h ^= 0x9e37; }); return h >>> 0; }
+  let stream = mulberry32(1);
+  KE.RNG = { seed: (G, tag) => { stream = mulberry32(mix(G.seed || 1, G.day, tag)); }, raw: (n) => { stream = mulberry32(n); } };
+  KE.rand = () => stream();
+  const rnd = (a, b) => a + KE.rand() * (b - a);
+  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const MODE = (G) => KE.MODES[G.mode];
   KE.STAR_NEED = [0, 40, 120, 300, 650, 1300];
@@ -30,7 +38,7 @@
   };
   KE.makeStaff = function (G, o) {
     const id = 's' + (G.nextId++);
-    const gender = o.gender || (Math.random() < 0.8 ? 'e' : 'k');
+    const gender = o.gender || (KE.rand() < 0.8 ? 'e' : 'k');
     const age = o.age || pick(['genc', 'orta', 'orta', 'yasli']);
     const s = {
       id, name: o.name, role: o.role, region: o.region || pick(Object.keys(KE.REGIONS)), gender, age,
@@ -52,14 +60,14 @@
     const prods = mode.products.map((p) => p.id);
     const n = pick([1, 1, 2, 2, 2, 3]);
     const spec = {};
-    const lvl = Math.random();
+    const lvl = KE.rand();
     for (let i = 0; i < n; i++) {
       const p = pick(prods);
       spec[p] = clamp(Math.round(rnd(1.6, lvl < 0.15 ? 5.4 : lvl < 0.5 ? 4.4 : 3.6)), 1, 5);
     }
-    const gender = Math.random() < 0.78 ? 'e' : 'k';
+    const gender = KE.rand() < 0.78 ? 'e' : 'k';
     const max = Math.max(...Object.values(spec));
-    const role = max <= 2 && Math.random() < 0.6 ? 'cirak' : 'usta';
+    const role = max <= 2 && KE.rand() < 0.6 ? 'cirak' : 'usta';
     const taken = new Set(G.staff.map((x) => x.name.replace(/^Çırak /, '').replace(/ Usta$/, '')).concat((G.market || []).map((x) => x.name.replace(/^Çırak /, '').replace(/ Usta$/, ''))));
     let first = pick(KE.NAMES[gender]);
     for (let i = 0; i < 12 && taken.has(first); i++) first = pick(KE.NAMES[gender]);
@@ -73,7 +81,7 @@
     return s;
   };
   KE.randomWorker = function (G, role) {
-    const gender = Math.random() < 0.6 ? 'e' : 'k';
+    const gender = KE.rand() < 0.6 ? 'e' : 'k';
     const first = pick(KE.NAMES[gender]);
     const s = KE.makeStaff(G, {
       name: first, role, gender, age: role === 'mudur' ? pick(['orta', 'yasli']) : pick(['genc', 'genc', 'orta']),
@@ -159,8 +167,10 @@
   /* ---------- Yeni oyun ---------- */
   KE.newGame = function (opts) {
     KE.CAL.applyYear(KE.dateOf(1).getUTCFullYear());
+    const seed0 = opts.seed || (Math.floor(Math.random() * 2147483646) + 1);
+    KE.RNG.raw(seed0);
     const G = {
-      v: 3, seed: opts.seed || (Math.floor(Math.random() * 2147483646) + 1), actionLog: [], saveId: 'g' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36), mode: opts.mode, owner: opts.owner || 'Patron', shopName: opts.shopName, day: 1, cash: 450000, reputation: 30,
+      v: 3, seed: seed0, actionLog: [], saveId: 'g' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36), mode: opts.mode, owner: opts.owner || 'Patron', shopName: opts.shopName, day: 1, cash: 450000, reputation: 30,
       priceIndex: 1, nextId: 1, staff: [], branches: [], activeBranch: null, loans: [], mods: [], tipRule: 'esit',
       ledger: { days: [], months: [] }, monthExtras: { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 }, journal: [], news: [], goals: {},
       phase: 'morning', rival: { power: 20, district: null }, market: [], workers: [], flags: {}, centralKitchen: false,
@@ -187,7 +197,7 @@
     const used = new Set(G.staff.map((s) => s.name));
     const tmpl = KE.MASTER_TEMPLATES[G.mode].filter((t) => !used.has(t.name) && t.role !== 'cirak');
     G.market = [];
-    if (tmpl.length && Math.random() < 0.7) {
+    if (tmpl.length && KE.rand() < 0.7) {
       const t = pick(tmpl);
       const s = KE.makeStaff(G, Object.assign({}, t, { role: 'usta' }));
       const max = Math.max(...Object.values(s.spec));
@@ -203,6 +213,7 @@
 
   /* ---------- Sabah: çiftlikten sevkiyat ve stok tamamlama ---------- */
   KE.morning = function (G) {
+    KE.RNG.seed(G, 'morning');
     G.today = {};
     if (G.farm) G.farm.bonus = {};
     G.branches.forEach((b) => {
@@ -225,7 +236,7 @@
     const openB = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
     if (openB.length) KE.REGULARS.forEach((r) => {
       const st = G.regulars[r.id];
-      if (Math.random() < 0.3 + st.loyalty * 0.04) G.regularVisits.push({ rid: r.id, branchId: openB[st.visits % openB.length === 0 ? 0 : Math.floor(Math.random() * openB.length)].id, minute: 60 + Math.floor(Math.random() * 600) });
+      if (KE.rand() < 0.3 + st.loyalty * 0.04) G.regularVisits.push({ rid: r.id, branchId: openB[st.visits % openB.length === 0 ? 0 : Math.floor(KE.rand() * openB.length)].id, minute: 60 + Math.floor(KE.rand() * 600) });
     });
     G.staff.forEach((s) => { s.energy = 100; s.task = null; if (!KE.POSITIONS[s.role].includes(s.pos) || s.pos === 'mola') s.pos = KE.POSITIONS[s.role][0]; });
     G.phase = 'morning';
@@ -251,7 +262,7 @@
       { kind: 'tips', target: Math.max(500, Math.round(exp * 14 * G.priceIndex / 100) * 100), text: (t) => `${KE.tl(t)} bahşiş topla` },
       { kind: 'match', target: Math.max(4, Math.round(exp * 0.08)), text: (t) => `${t} kez "Ellerine sağlık!" duy` }
     ];
-    const others = pool.slice(1).sort(() => Math.random() - 0.5).slice(0, 2);
+    const others = pool.slice(1).sort(() => KE.rand() - 0.5).slice(0, 2);
     G.daily = [pool[0]].concat(others).map((g) => ({ kind: g.kind, target: g.target, text: g.text(g.target), reward }));
   };
   function dailyTotals(G) {
@@ -281,6 +292,8 @@
 
   /* ---------- Servis ---------- */
   KE.startService = function (G) {
+    KE.RNG.seed(G, 'svc');
+    G.dayLog = [];
     G.phase = 'service';
     G.live = {};
     G.branches.forEach((b) => {
@@ -332,7 +345,7 @@
       if (rph && KE.RAMAZAN_TYPES[rph][t]) w *= KE.RAMAZAN_TYPES[rph][t];
       weights.push([t, w]);
     });
-    let r = Math.random() * weights.reduce((a, x) => a + x[1], 0);
+    let r = KE.rand() * weights.reduce((a, x) => a + x[1], 0);
     for (const [t, w] of weights) { if ((r -= w) <= 0) return t; }
     return weights[0][0];
   }
@@ -341,8 +354,8 @@
     if (!avail.length) return { p: null };
     const favs = (MODE(G).favorites[type] || []).map((id) => avail.find((p) => p.id === id)).filter(Boolean);
     let p = null;
-    if (favs.length && Math.random() < 0.72) {
-      const w = favs.map((_, i) => 3 - i); let r = Math.random() * w.reduce((a, x) => a + x, 0);
+    if (favs.length && KE.rand() < 0.72) {
+      const w = favs.map((_, i) => 3 - i); let r = KE.rand() * w.reduce((a, x) => a + x, 0);
       for (let i = 0; i < favs.length; i++) { if ((r -= w[i]) <= 0) { p = favs[i]; break; } }
     }
     if (!p) p = pick(avail);
@@ -370,7 +383,7 @@
       L.spawnAcc -= 1;
       const type = chooseType(G, b, hour, rph);
       const ct = KE.CUSTOMER_TYPES[type];
-      const count = ct.group && Math.random() < 0.55 ? Math.round(rnd(ct.group[0], ct.group[1])) : 1;
+      const count = ct.group && KE.rand() < 0.55 ? Math.round(rnd(ct.group[0], ct.group[1])) : 1;
       L.stats.arrivals += count;
       const id = L.nextId++;
       const c = { id, type, count, look: KE.customerLook(type), arrive: L.minute };
@@ -381,11 +394,11 @@
       const p = ch.p;
       const price = b.prices[p.id];
       const ratio = price / KE.marketPrice(G, p);
-      if (ratio > 1.08 + (1 - ct.priceSens) * 0.6 && Math.random() < 0.85) { lose(L, c, 'lostPrice', 'Çok pahalı!'); L.fx.push({ t: 'pass', cid: id }); continue; }
+      if (ratio > 1.08 + (1 - ct.priceSens) * 0.6 && KE.rand() < 0.85) { lose(L, c, 'lostPrice', 'Çok pahalı!'); L.fx.push({ t: 'pass', cid: id }); continue; }
       let take = (ct.takeaway || 0) * (G.mode === 'kebap' ? 0.4 : 1);
       if (rph === 'hazirlik') take = Math.max(take, 0.85); else if (rph === 'iftar' || rph === 'aksam') take *= 0.2;
       Object.assign(c, {
-        pid: p.id, price, ratio, state: 'queue', wait: 0, takeaway: Math.random() < take, iftar: (rph === 'iftar' || rph === 'hazirlik') && type !== 'turist',
+        pid: p.id, price, ratio, state: 'queue', wait: 0, takeaway: KE.rand() < take, iftar: (rph === 'iftar' || rph === 'hazirlik') && type !== 'turist',
         patience: ct.patience * KE.equip(G, b, 'service').patience * (G.mode === 'kebap' ? 1.5 : 1) * KE.modVal(G, 'patience') + (rph === 'iftar' ? Math.max(0, L.special.iftar - KE.OPEN_HOUR * 60 - L.minute) : 0),
         eat: (ct.eat || 15) * (G.mode === 'kebap' ? 1.6 : 1) * rnd(0.8, 1.2)
       });
@@ -538,12 +551,12 @@
         if (!alt.length) { lose(L, c, 'lostStock', p.name + ' kalmamış!'); removeCust(L, c, false); return; }
         c.pid = pick(alt).id; c.price = b.prices[c.pid]; c.ratio = c.price / KE.marketPrice(G, prodOf(G, c.pid));
       }
-      const drinks = Math.random() < MODE(G).drinkRate ? c.count : 0;
+      const drinks = KE.rand() < MODE(G).drinkRate ? c.count : 0;
       if (drinks) Object.entries(MODE(G).drink.ing).forEach(([k, q]) => { b.stock[k] = Math.max(0, (b.stock[k] || 0) - q * drinks); });
       const pay = c.price * c.count + drinks * b.prices[MODE(G).drink.id];
       c.paid = pay; c.orderedAt = L.minute; c.orderBy = s.id; c.state = c.takeaway ? 'pickup' : 'seat'; c.wait = 0;
       S.revenue += pay;
-      if (Math.random() < 0.66) S.card += pay; else S.cash += pay;
+      if (KE.rand() < 0.66) S.card += pay; else S.cash += pay;
       const h = Math.min(13, Math.floor(L.minute / 60));
       S.hourly[h] += pay; S.hourlyCust[h] += c.count;
       L.tickets.push({ id: L.nextId++, cid: c.id, pid: c.pid, count: c.count, state: 'wait', created: L.minute });
@@ -611,7 +624,7 @@
       r.loyalty = clamp(r.loyalty + gain, 0, 10); r.visits++;
       if (before < 8 && r.loyalty >= 8) { G.reputation = clamp(G.reputation + 1.5, 0, 100); r.praised = G.day; }
       (S.regulars = S.regulars || []).push({ id: c.regular, gain });
-      L.fx.push({ t: 'regular', cid: c.id, text: gain >= 0 ? R.says[Math.floor(Math.random() * R.says.length)] : 'Bu sefer olmadı evladım…' });
+      L.fx.push({ t: 'regular', cid: c.id, text: gain >= 0 ? R.says[Math.floor(KE.rand() * R.says.length)] : 'Bu sefer olmadı evladım…' });
     }
     if (c.takeaway) { leave(G, b, L, c); }
     else { c.state = 'eat'; c.eatLeft = c.eat; }
@@ -750,7 +763,8 @@
     Object.entries(p.ing).forEach(([k, q]) => { b.stock[k] -= q * t.count; });
     t.state = 'cook'; t.cook = 'player';
     const decoys = MODE(G).products.filter((x) => x.id !== p.id).flatMap((x) => x.steps).filter((s) => !p.steps.includes(s));
-    const opts = p.steps.concat([pick(decoys), pick(decoys)]).filter((v, i, a) => a.indexOf(v) === i).sort(() => Math.random() - 0.5);
+    const vpick = (a) => a[Math.floor(Math.random() * a.length)];
+    const opts = p.steps.concat([vpick(decoys), vpick(decoys)]).filter((v, i, a) => a.indexOf(v) === i).sort(() => Math.random() - 0.5);
     Object.assign(L.player, { tid: t.id, step: 0, errors: 0, start: L.minute, opts });
     return t;
   };
@@ -827,6 +841,9 @@
     return w.map(([s, v]) => [s, jar * v / tot]);
   };
   KE.finalizeDay = function (G, todayRule) {
+    KE.RNG.seed(G, 'close');
+    G.actionLog = (G.actionLog || []).concat([{ day: G.day, log: G.dayLog || [] }]).slice(-7);
+    G.dayLog = [];
     const S0 = G.lastSummary;
     const out = { levelUps: [], quits: [], branches: {} };
     G.branches.forEach((b) => {
@@ -870,7 +887,7 @@
           if (KE.gainXp(c, pid, m.teach * 4 * (1 + (tm.teachBonus || 0)) * (1 + (tc.xp || 0)))) out.levelUps.push({ name: c.name, pid, star: c.spec[pid], mentor: m.name });
         });
       });
-      st.forEach((s) => { if (s.morale < 18 && Math.random() < 0.3) { out.quits.push({ name: s.name, role: s.role, branch: b.name }); s.quit = true; } });
+      st.forEach((s) => { if (s.morale < 18 && KE.rand() < 0.3) { out.quits.push({ name: s.name, role: s.role, branch: b.name }); s.quit = true; } });
       b.cleanliness = clamp(b.cleanliness - 3, 5, 100);
       const fixed = (b.rent + KE.utilities(G, b) + st.reduce((a, s) => a + s.wage * (1 + KE.ECON.fazlaMesaiOrani) * 1.2 + KE.ECON.yolYardimiAylik, 0)) / 30;
       const sarf = S.revenue * KE.ECON.sarfOrani;
@@ -975,4 +992,35 @@
     return b;
   };
   KE.branchCost = (G, d) => Math.round((d.rent * 3 + 350000) * G.priceIndex / 1000) * 1000;
+  /* ---------- Oyuncu hamleleri: kayıt ve yeniden oynatma ----------
+     Servis sırasında sonucu etkileyen her oyuncu hamlesi { m: dakika, a: ad, x: argümanlar } olarak
+     günlüğe yazılır. Sabah durumu + tohum + günlük ile gün birebir yeniden oynatılabilir. */
+  const ACTS = {
+    setPos: (G, sid, pos) => { const s = G.staff.find((x) => x.id === sid); if (s) KE.setPos(G, s, pos); const b = s && G.branches.find((x) => x.id === s.branchId); if (b && G.phase === 'service') b.autoStaff = false; },
+    autoStaff: (G, bid, on) => { const b = G.branches.find((x) => x.id === bid); if (b) b.autoStaff = !!on; },
+    active: (G, bid) => { if (G.live && G.live[G.activeBranch] && G.live[G.activeBranch].player.active) KE.playerToggle(G, false); G.activeBranch = bid; },
+    ptoggle: (G, on) => KE.playerToggle(G, !!on),
+    ptake: (G) => KE.playerTake(G),
+    pstep: (G, label) => KE.playerStep(G, label)
+  };
+  KE.act = function (G, a, ...x) {
+    const L = G.phase === 'service' && G.live ? G.live[G.branches[0].id] : null;
+    const m = L ? L.minute : 0;
+    const r = ACTS[a](G, ...x);
+    if (L && (a !== 'ptake' || r)) (G.dayLog = G.dayLog || []).push({ m, a, x });
+    return r;
+  };
+  /* Sabah durumundaki (servis öncesi) bir oyunu, günlükteki hamlelerle sonuna kadar oynatır */
+  KE.replayService = function (G, log) {
+    KE.startService(G);
+    const q = (log || []).slice();
+    let guard = 0;
+    while (!KE.allDone(G) && guard++ < 2000) {
+      const m = G.live[G.branches[0].id].minute;
+      while (q.length && q[0].m <= m) { const e = q.shift(); if (ACTS[e.a]) ACTS[e.a](G, ...(e.x || [])); }
+      KE.tickAll(G);
+    }
+    KE.finishService(G);
+    return G.lastSummary;
+  };
 })();
