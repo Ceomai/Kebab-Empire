@@ -22,7 +22,6 @@
     if (KE.G.cash < 0) warn.push(['crit', 'Kasa eksiye düştü. Ay sonunda maaşlar gecikirse SGK teşviki kaybolur.']);
     const closedBranches = KE.G.branches.filter((x) => x.id !== b.id && !KE.branchStaff(KE.G, x).some(KE.isCook));
     if (closedBranches.length) warn.push(['warn', 'Ustasız şube bugün kapalı kalacak: ' + closedBranches.map((x) => esc(x.name)).join(', ')]);
-    const low = Object.entries(M.ingredients).filter(([k]) => b.usage[k] > 0 && (b.stock[k] || 0) / b.usage[k] < 0.9).map(([, ing]) => ing.name);
     /* kapasite: dün gelenlerin ne kadarı hizmet alamadan gitti */
     const ys = KE.G.lastSummary && KE.G.lastSummary.branches[b.id] && KE.G.lastSummary.branches[b.id].stats;
     const capLost = ys && ys.arrivals > 20 ? (ys.lostWait + ys.lostFull + ys.lostFood) / ys.arrivals : 0;
@@ -30,7 +29,6 @@
     /* enflasyon: fiyatlar piyasanın gerisinde kaldıysa */
     const pr = KE.priceRatio(KE.G, b);
     if (pr < 0.95) warn.push(['warn', `Fiyatların piyasanın ortalama %${Math.round((1 - pr) * 100)} altında; enflasyon maliyetleri artırıyor. <button class="btn xs green" data-a="pricesToMarket">Fiyatları piyasaya çek</button>`]);
-    if (low.length) warn.push(['warn', `Stok bir günü karşılamıyor: ${low.join(', ')}. Hal'den ek alım yap ya da sabah siparişini "Bol" yap.`]);
     const dishCards = M.products.concat([M.drink]).map((p) => {
       const isDrink = p.id === M.drink.id;
       const mp = KE.marketPrice(KE.G, p), price = b.prices[p.id], cost = KE.productCost(KE.G, b, p);
@@ -49,7 +47,8 @@
     }).join('');
     return `<main class="screen">
       <div class="pagehead"><div class="ph-t"><span class="kicker">Sabah hazırlığı · ${KE.weekday(KE.G.day)}</span><h1>${esc(b.name)}</h1><p class="ph-facts"><span>${IC('map')}${KE.district(b).name}</span><span>${IC('users')}~${Math.round(exp)} müşteri</span>${ys && ys.arrivals > 20 ? `<span class="${capLost >= 0.12 ? 'neg' : ''}" title="Dün kapasite yetmediği için hizmet alamadan gidenler">${IC('queue')}Kapasite: dün %${Math.round(capLost * 100)} kaçtı</span>` : ''}<span>${IC('fire')}${Math.min(stations, cooks.length)}/${stations} ocak</span><span>${IC('table')}${KE.tableCount(KE.G, b)} masa</span>${amb.concept ? `<span>${IC('star')}${amb.concept.name}</span>` : ''}</p></div>
-        <div class="row"><button class="btn ghost" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün</button><button class="btn big green" data-a="openShop">${IC('store')}${KE.G.branches.length > 1 ? 'Bütün şubelerde kepengi aç' : 'Kepengi aç'}</button></div></div>
+        <div class="row"><button class="btn ghost" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün</button>${KE.quickWeekOpen(KE.G) ? `<button class="btn ghost" data-a="quickWeek" title="Haftanın kalanını hızlı geç; önemli bir şey olursa durur">${IC('ff')}Haftayı hızlı geç</button>` : ''}<button class="btn big green ${checklistOk() ? 'ready' : ''}" data-a="openShop">${IC('store')}${KE.G.branches.length > 1 ? 'Bütün şubelerde kepengi aç' : 'Kepengi aç'}</button></div></div>
+      ${checklist()}
       ${UI.adviceCard(true)}
       ${(() => { const sp = KE.specialDay(KE.G.day); return sp ? `<section class="special sp-${sp.theme || 'cuma'}"><span class="sp-badge">${IC(sp.id === 'mac' ? 'fire' : sp.id === 'cuma' ? 'users' : 'star')}</span><div><span class="kicker">Bugün özel gün</span><h2>${sp.name}</h2><p>${sp.desc}</p></div></section>` : ''; })()}
       ${(KE.G.daily || []).length ? `<section class="panel daypanel"><div class="sechead"><h2>Günün hedefleri</h2><span class="muted small">Tutturduğun her hedef ek para ve biraz itibar getirir.</span></div>${dailyHtml(false)}</section>` : ''}
@@ -62,6 +61,28 @@
     </main>`;
   }
 
+  /* ---------- Sabah kontrol listesi: dört madde yeşilse kepenk hazır ---------- */
+  function checks() {
+    const G = KE.G, out = [];
+    const open = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
+    const crewBad = G.branches.filter((b) => { const st = KE.branchStaff(G, b); return !st.some(KE.isCook) || !st.some((s) => s.pos === 'kasa') || (st.filter((s) => !KE.isCook(s)).length > 1 && !st.some((s) => s.pos === 'servis')); });
+    out.push({ id: 'ekip', ic: 'users', ok: !crewBad.length, label: crewBad.length ? 'Ekip eksik' : 'Ekip yerinde', bad: crewBad.length ? (G.branches.length > 1 ? crewBad.map((b) => b.name).join(', ') + ': ' : '') + 'usta, kasa ya da servis boş' : '', btn: crewBad.length ? ['Ekibe git', `data-a="viewBranch" data-id="${crewBad[0].id}"`] : null });
+    const short = open.map((b) => [b, KE.shortfall(G, b)]).filter(([, x]) => x.items.length);
+    const cost = short.reduce((a, [, x]) => a + x.cost, 0);
+    out.push({ id: 'stok', ic: 'cart', ok: !short.length, label: short.length ? 'Stok bugüne yetmez' : 'Stok bugüne yeter', bad: short.length ? `${short.reduce((a, [, x]) => a + x.items.length, 0)} malzeme eksik` : '', btn: short.length ? [`Tamamla · ${KE.tl(cost)}`, 'data-a="topUpAll"'] : null });
+    const cheap = G.branches.filter((b) => !KE.isManaged(G, b) && KE.priceRatio(G, b) < 0.95), dear = G.branches.filter((b) => KE.priceRatio(G, b) > KE.priceTolerance(G, b) + 0.05);
+    out.push({ id: 'fiyat', ic: 'coin', ok: !cheap.length && !dear.length, label: cheap.length || dear.length ? 'Fiyatları gözden geçir' : 'Fiyatlar güncel', bad: cheap.length ? 'piyasanın gerisinde' : dear.length ? 'müşteriyi kaçıracak kadar pahalı' : '', btn: cheap.length || dear.length ? ['Piyasaya çek', `data-a="advPrices" data-id="${(cheap[0] || dear[0]).id}"`] : null });
+    out.push({ id: 'olay', ic: 'bolt', ok: !G.pendingEvent, label: G.pendingEvent ? 'Bekleyen bir karar var' : 'Bekleyen karar yok', bad: G.pendingEvent ? 'olay kartı cevap bekliyor' : '', btn: G.pendingEvent ? ['Kartı aç', 'data-a="showEventCard"'] : null });
+    return out;
+  }
+  function checklistOk() { return checks().every((c) => c.ok); }
+  function checklist() {
+    const list = checks(), all = list.every((c) => c.ok);
+    return `<section class="checklist ${all ? 'allok' : ''}"><span class="kicker">${IC('check')}Açılış kontrolü${all ? ' · hepsi tamam, kepengi açabilirsin' : ''}</span><div class="ck-grid">${list.map((c) => `<div class="ck ${c.ok ? 'ok' : 'no'}"><i>${IC(c.ok ? 'check' : c.ic)}</i><span><b>${c.label}</b>${c.ok ? '' : `<small>${esc(c.bad)}</small>`}</span>${c.btn ? `<button class="btn xs gold" ${c.btn[1]}>${esc(c.btn[0])}</button>` : ''}</div>`).join('')}</div></section>`;
+  }
+  A.topUpAll = () => { let c = 0; KE.G.branches.forEach((b) => { c += KE.topUpToday(KE.G, b); }); UI.toast(c ? `Bugünün ihtiyacı tamamlandı: ${KE.tl(c)}.` : 'Stok bugüne zaten yetiyor.', 'good'); UI.render(); };
+  A.showEventCard = () => H.showEvent();
+
   /* Günün hedefleri */
   function dailyHtml(live) {
     const list = live ? KE.dailyProgress(KE.G, false) : (KE.G.daily || []).map((g) => Object.assign({}, g, { p: 0, state: 'open' }));
@@ -71,6 +92,38 @@
 
   /* Ekip paneli: görev seçimi (sabah ve servis) */
   const POS_IC = { ocak: 'fire', kasa: 'cash', servis: 'tray', temizlik: 'broom', paket: 'scooter', yonetim: 'chart', mola: 'pause' };
+  /* Ekip panosu: görevler sütun sütun; bir kişiye dokun, sonra gideceği sütuna (masaüstünde sürükle-bırak da olur) */
+  function crewBoard(b, live) {
+    const st = KE.branchStaff(KE.G, b);
+    const cols = ['ocak', 'kasa', 'servis', 'temizlik', 'paket', 'yonetim', 'mola'].filter((p) => p === 'mola' || st.some((s) => KE.POSITIONS[s.role].includes(p)));
+    const pick = UI.crewPick && st.find((s) => s.id === UI.crewPick);
+    const cooking = live ? KE.cookingStaff(KE.G, b) : [];
+    return `<div class="crewboard ${pick ? 'picking' : ''}">${cols.map((p) => {
+      const can = pick && KE.POSITIONS[pick.role].includes(p) && pick.pos !== p;
+      const here = st.filter((s) => s.pos === p);
+      return `<div class="cb-col ${can ? 'drop' : ''} ${pick && !can && pick.pos !== p ? 'dim' : ''}" data-a="${can ? 'boardDrop' : 'noop'}" data-p="${p}" data-col="${p}"><div class="cb-h">${IC(POS_IC[p])}<b>${KE.POS_NAMES[p]}</b><small>${here.length}${p === 'ocak' ? '/' + KE.stations(KE.G, b) : ''}</small></div>
+        ${here.map((s) => `<button class="cb-chip ${UI.crewPick === s.id ? 'sel' : ''} ${live && p === 'ocak' && !cooking.includes(s) ? 'idle' : ''}" draggable="true" data-a="boardPick" data-id="${s.id}" title="${esc(roleName(s))}"><span class="avatar xs">${KE.portrait(KE.staffLook(s), { mood: KE.moodFromValue(s.morale) })}</span><span><b>${esc(s.name.replace(' Usta', ''))}</b><i class="cb-e" style="width:${Math.round(s.energy)}%"></i></span></button>`).join('') || '<small class="muted cb-empty">boş</small>'}
+      </div>`;
+    }).join('')}</div><p class="tiny muted">${pick ? `<b>${esc(pick.name)}</b> seçildi: gideceği sütuna dokun.` : 'Bir kişiye dokun, sonra görev sütununa dokun. Masaüstünde sürükleyip bırakabilirsin.'}</p>`;
+  }
+  A.noop = () => { if (UI.crewPick) { UI.crewPick = null; refreshCrew(); } };
+  A.boardPick = (d) => { UI.crewPick = UI.crewPick === d.id ? null : d.id; refreshCrew(); };
+  A.boardDrop = (d) => { const id = UI.crewPick; UI.crewPick = null; if (id) A.setPos({ id, p: d.p }); else refreshCrew(); };
+  A.crewView = (d) => { try { localStorage.setItem('kebab-empire-crewview', d.v); } catch (e) { /* yok */ } UI.crewPick = null; refreshCrew(true); };
+  const crewViewPref = () => { try { return localStorage.getItem('kebab-empire-crewview') || 'liste'; } catch (e) { return 'liste'; } };
+  function refreshCrew(full) {
+    const cr = document.getElementById('crew');
+    if (cr && KE.G.phase !== 'morning' && !full) cr.innerHTML = crewPanel(B(), true); else UI.render();
+  }
+  document.addEventListener('dragstart', (e) => { const el = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.cb-chip'); if (el) { UI.crewPick = el.dataset.id; e.dataTransfer.setData('text/plain', el.dataset.id); } });
+  document.addEventListener('dragover', (e) => { const col = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.cb-col'); if (col) e.preventDefault(); });
+  document.addEventListener('drop', (e) => {
+    const col = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.cb-col'); if (!col) return;
+    e.preventDefault();
+    const id = e.dataTransfer.getData('text/plain') || UI.crewPick; UI.crewPick = null;
+    const s = KE.G.staff.find((x) => x.id === id);
+    if (s && KE.POSITIONS[s.role].includes(col.dataset.col) && s.pos !== col.dataset.col) { UI.snapUndo(s.name + ' → ' + KE.POS_NAMES[col.dataset.col]); A.setPos({ id, p: col.dataset.col }); UI.undoChip(); } else refreshCrew();
+  });
   function crewPanel(b, live) {
     const st = KE.branchStaff(KE.G, b);
     const mgr = st.find((s) => s.role === 'mudur');
@@ -88,8 +141,10 @@
         <div class="seg" role="group" aria-label="${esc(s.name)} görevi">${KE.POSITIONS[s.role].map((p) => `<button class="${s.pos === p ? 'on' : ''}" data-a="setPos" data-id="${s.id}" data-p="${p}" title="${KE.POS_NAMES[p]}" aria-pressed="${s.pos === p}">${IC(POS_IC[p])}<span>${KE.POS_NAMES[p]}</span></button>`).join('')}</div>
       </div>`;
     }).join('');
-    return `<div class="crewhead"><label class="switch lbl"><input type="checkbox" id="auto-${b.id}" data-c="autoStaff" data-b="${b.id}" ${b.autoStaff ? 'checked' : ''}><i></i><span><b>Otomatik ekip yönetimi</b><small>${mgr ? `Müdür ${esc(mgr.name)} yoğunluğa göre görev ve mola düzenler.` : KE.G.branches.length >= 2 ? 'Müdür yok: yalnızca bitkin düşenleri molaya gönderir. Görevleri sen ayarla.' : 'Bitkin düşenleri molaya gönderir. Görevleri sen ayarla.'}</small></span></label></div>
-      <div class="crewlist">${rows || '<p class="muted">Bu şubede henüz kimse yok.</p>'}</div>`;
+    const view = crewViewPref();
+    const tog = `<div class="seg crewview">${[['liste', 'Liste'], ['pano', 'Pano']].map(([v, l]) => `<button class="${view === v ? 'on' : ''}" data-a="crewView" data-v="${v}"><span>${l}</span></button>`).join('')}</div>`;
+    return `<div class="crewhead">${tog}<label class="switch lbl"><input type="checkbox" id="auto-${b.id}" data-c="autoStaff" data-b="${b.id}" ${b.autoStaff ? 'checked' : ''}><i></i><span><b>Otomatik ekip yönetimi</b><small>${mgr ? `Müdür ${esc(mgr.name)} yoğunluğa göre görev ve mola düzenler.` : KE.G.branches.length >= 2 ? 'Müdür yok: yalnızca bitkin düşenleri molaya gönderir. Görevleri sen ayarla.' : 'Bitkin düşenleri molaya gönderir. Görevleri sen ayarla.'}</small></span></label></div>
+      ${view === 'pano' && st.length ? crewBoard(b, live) : `<div class="crewlist">${rows || '<p class="muted">Bu şubede henüz kimse yok.</p>'}</div>`}`;
   }
 
   function serviceView() {
@@ -105,7 +160,7 @@
             ${closing ? `<button class="btn big green block" data-a="showClosing">${IC('chart')}Kapanış raporu</button>` : `<div class="speed seg" role="group" aria-label="Oyun hızı">${[[0, 'stop', 'Dur'], [1, 'play', '1×'], [2, 'ff', '2×'], [4, 'ff', '4×']].map(([v, ic, l]) => `<button class="${KE.G.speed === v ? 'on' : ''}" data-a="speed" data-v="${v}">${IC(ic)}<span>${l}</span></button>`).join('')}</div>`}
           </div>
           <div class="panel" id="livestats"></div>
-          ${closing ? '' : `<div class="panel stack"><button class="btn gold block" id="tezgahBtn" data-a="tezgah">${IC('chef')}<span>${L && L.player.active ? 'Tezgâhtan çık' : 'Tezgâha geç'}</span></button><button class="btn sm ghost block" data-a="fastForward">${IC('ff')}Günü hızlı bitir</button></div>`}
+          ${closing ? '' : `<div class="panel stack"><button class="btn gold block" id="tezgahBtn" data-a="tezgah">${IC('chef')}<span>${L && L.player.active ? 'Tezgâhtan çık' : 'Tezgâha geç'}</span></button><button class="btn sm ghost block" data-a="fastForward">${IC('ff')}Günü hızlı bitir</button><div id="courierbox">${UI.courierHtml()}</div></div>`}
           ${(KE.G.daily || []).length && !closing ? '<div class="panel"><h3>Günün hedefleri</h3><div id="dailylive"></div></div>' : ''}
           ${KE.G.branches.length > 1 ? '<div class="panel"><h3>Bütün şubeler</h3><div id="branchlive"></div></div>' : ''}
         </aside>
@@ -127,7 +182,8 @@
     if (!KE.G.speed) return;
     acc += dt * KE.G.speed;
     let ticked = false;
-    while (acc >= KE.MINUTE_MS) { acc -= KE.MINUTE_MS; KE.tickAll(KE.G); ticked = true; if (KE.allDone(KE.G)) break; }
+    while (acc >= KE.MINUTE_MS) { acc -= KE.MINUTE_MS; KE.tickAll(KE.G); ticked = true; if (KE.allDone(KE.G) || KE.midPending(KE.G)) break; }
+    if (KE.midPending(KE.G)) { acc = 0; showMid(); return; }
     if (ticked) {
       const L = KE.G.live[KE.G.activeBranch];
       if (L && L.player.active && L.player.tid == null && KE.act(KE.G, 'ptake')) renderTezgah();
@@ -214,6 +270,15 @@
       <div class="tz-opts" id="stepbtns">${P.opts.map((o) => { const used = p.steps.indexOf(o) > -1 && p.steps.indexOf(o) < P.step; return `<button class="btn sm ${used ? 'ghost' : 'blue'}" data-a="step" data-l="${esc(o)}" ${used ? 'disabled' : ''}>${esc(o)}</button>`; }).join('')}</div></div></div>`;
   }
 
+  /* ---------- Gün ortası kararı ---------- */
+  function showMid() {
+    const G = KE.G, M = G.mid, D = KE.MIDS.find((x) => x.id === M.id), b = G.branches.find((x) => x.id === M.bid);
+    UI.modal(`<div class="mhead"><span class="kicker">${IC(D.ic)}${G.branches.length > 1 ? esc(b.name) + ' · ' : ''}${KE.clock(G.live[b.id].minute)}</span><h2>${esc(D.title)}</h2><p class="lead">${esc(D.text(G, b, M))}</p></div>
+      <div class="choices">${D.choices(G).map((c, i) => `<button class="choice" data-a="midChoice" data-i="${i}"><b>${esc(c.label)}</b><small>${esc(c.desc)}</small></button>`).join('')}</div>
+      <p class="tiny muted">Karar vermezsen ${KE.MID_WAIT} dakika sonra "${esc(D.choices(G)[D.def].label)}" uygulanır.</p>`, { cls: 'midev' });
+  }
+  H.showMid = showMid;
+
   /* ---------- Kapanış ---------- */
   function showClosing() {
     const S0 = KE.G.lastSummary;
@@ -229,23 +294,41 @@
     const html = `<div class="mhead split"><div><span class="kicker">${KE.dateStr(KE.G.day)} · ${KE.weekday(KE.G.day)}</span><h2>Gün sonu raporu</h2></div>${npc('zeynep', sum.sat > 75 ? 'Güzel bir gün, patron. Rakamlar yüz güldürüyor.' : 'Rakamlara birlikte bakalım; düzeltecek şeyler var.')}</div>
       ${KE.G.branches.length > 1 ? `<div class="kpis"><div class="kpi">${IC('coin')}<small>Bütün şubeler ciro</small><b>${KE.tl(tot)}</b></div><div class="kpi">${IC('gift')}<small>Bütün şubeler bahşiş</small><b>${KE.tl(tips)}</b></div></div>
         <div class="tabs">${KE.G.branches.map((x) => `<button class="tab ${x.id === tab ? 'on' : ''}" data-a="closeTab" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}
+      ${closeSummary(b, S, sum)}
+      <details class="closedet"><summary>${IC('chart')}Ayrıntılar: rakamlar, satılan ürünler, kim ne kadar bahşiş alır</summary>
       <div class="kpis">
         <div class="kpi">${IC('coin')}<small>Ciro</small><b>${KE.tl(S.revenue)}</b></div>
         <div class="kpi">${IC('users')}<small>Müşteri</small><b>${S.served}</b></div>
         <div class="kpi">${IC('heart')}<small>Memnuniyet</small><b>%${Math.round(sum.sat)}</b></div>
         <div class="kpi">${IC('gift')}<small>Bahşiş</small><b>${KE.tl(S.tips)}</b></div>
       </div>
-      ${advice(b, S).map((a) => `<div class="alert ${a[0]}">${IC(a[0] === 'ok' ? 'check' : 'bolt')}<span>${a[1]}</span></div>`).join('')}
+      ${advice(b, S).slice(1).map((a) => `<div class="alert ${a[0]}">${IC(a[0] === 'ok' ? 'check' : 'bolt')}<span>${a[1]}</span></div>`).join('')}
       <div><h4>Satılan ürünler</h4><div class="prodbars">${prods.map(([pid, n]) => `<div class="pbar">${KE.ART.dish(pid)}<span>${pn(pid)}</span>${bar(n / maxP * 100, 'or')}<b>${n}</b></div>`).join('') || '<p class="muted">Satış yok</p>'}</div></div>
+      <div class="shares">${preview.map(([s, v]) => `<div class="share"><span class="avatar sm">${KE.portrait(KE.staffLook(s), { mood: KE.moodFromValue(s.morale) })}</span><span><b>${esc(s.name)}</b><small>${roleName(s)} · ${Math.round(s.servedToday)} iş</small></span><b class="num">${KE.tl(v)}</b></div>`).join('')}</div>
+      </details>
       <section class="tipbox"><h3>${IC('gift')}Bahşiş dağıtımı <small class="muted">Bütün şubelerde uygulanır</small></h3>
         <div class="seg wide">${Object.entries(KE.TIP_RULES).map(([k, r]) => `<button class="${rule === k ? 'on' : ''}" data-a="tipToday" data-r="${k}"><span>${r.name}${k === KE.G.tipRule ? ' (varsayılan)' : ''}</span></button>`).join('')}</div>
         <p class="small">${KE.TIP_RULES[rule].desc}${rule !== KE.G.tipRule ? ` <b>Yalnızca bugün için.</b> <button class="btn xs ghost" data-a="tipRule" data-r="${rule}">Hep böyle yap</button>` : ''}</p>
-        <div class="shares">${preview.map(([s, v]) => `<div class="share"><span class="avatar sm">${KE.portrait(KE.staffLook(s), { mood: KE.moodFromValue(s.morale) })}</span><span><b>${esc(s.name)}</b><small>${roleName(s)} · ${Math.round(s.servedToday)} iş</small></span><b class="num">${KE.tl(v)}</b></div>`).join('')}</div></section>
+        ${KE.G.tipWish ? `<p class="small tipwish ${rule === KE.G.tipWish.rule ? 'ok' : ''}">${IC('heart')}<span>Ekip bu hafta <b>${KE.TIP_RULES[KE.G.tipWish.rule].name}</b> istiyor. Bu kuralı seçtiğin her gün herkesin morali biraz daha artar.</span></p>` : ''}</section>
       <div class="acts"><button class="btn big green" data-a="finalize">${IC('check')}Bahşişi dağıt ve günü kapat</button></div>`;
     document.querySelectorAll('.modal-bg').forEach((m) => m.remove());
     UI.modal(html, { wide: true });
   }
 
+  /* Kapanış: üç satırlık özet (kazanç, en büyük kayıp, yarın için tek öneri) */
+  function closeSummary(b, S, sum) {
+    const lostAll = S.lostWait + S.lostFull + S.lostFood + S.lostPrice + S.lostStock;
+    const big = [[S.lostWait, 'kuyrukta bekleyemedi'], [S.lostFood, 'yemeğini bekleyemedi'], [S.lostFull, 'yer bulamadı'], [S.lostPrice, 'fiyatı pahalı buldu'], [S.lostStock, 'istediğini bulamadı']].sort((a, c) => c[0] - a[0])[0];
+    const adv = advice(b, S)[0];
+    const pct = S.arrivals ? Math.round(lostAll / S.arrivals * 100) : 0;
+    const M = KE.G.mid;
+    return `<div class="closesum">
+      <div class="cs-row">${IC('coin')}<span><small>Bugün</small><b>${KE.tl(S.revenue)} ciro · ${S.served} müşteri · memnuniyet %${Math.round(sum.sat)}</b></span></div>
+      <div class="cs-row ${pct >= 12 ? 'bad' : ''}">${IC('queue')}<span><small>En büyük kayıp</small><b>${big[0] >= 3 ? `${big[0]} müşteri ${big[1]} (gelenlerin %${KE.ekSayi(String(pct), 'i')} kaçtı)` : 'Kayda değer kayıp yok'}</b></span></div>
+      <div class="cs-row ${adv[0]}">${IC(adv[0] === 'ok' ? 'check' : 'bolt')}<span><small>Yarın için</small><b>${adv[1]}</b></span></div>
+      ${M && M.choice != null && M.bid === b.id ? `<div class="cs-row">${IC((KE.MIDS.find((x) => x.id === M.id) || {}).ic || 'bolt')}<span><small>Gün ortası</small><b><span>${esc(KE.MIDS.find((x) => x.id === M.id).title)}</span> → <span>${esc(KE.MIDS.find((x) => x.id === M.id).choices(KE.G)[M.choice].label)}</span></b></span></div>` : ''}
+    </div>`;
+  }
   /* Kapanışta yalnızca harekete geçirilebilir öneriler */
   function advice(b, S) {
     const out = [];
@@ -274,6 +357,7 @@
     const staff = KE.G.staff.slice(0, 12);
     const pn2 = (pid) => (KE.MODES[KE.G.mode].products.find((p) => p.id === pid) || {}).name;
     const extra = [
+      out.inspect ? (out.inspect.pass ? `<li class="pos">${IC('star')}<span><b>Rehber yıldızı!</b> Müfettiş ${esc(out.inspect.branch)} şubesinden memnun ayrıldı (memnuniyet %${out.inspect.sat}). Zincirin ${out.inspect.stars}. yıldızı: müşteri ve fiyat toleransı kalıcı olarak +%3, itibar +3.</span></li>` : `<li class="neg">${IC('star')}<span><b>Rehber müfettişi memnun kalmadı.</b> ${esc(out.inspect.branch)}: memnuniyet %${out.inspect.sat}, kaçan müşteri %${out.inspect.lost}. Yıldız için %84 memnuniyet ve %10'dan az kayıp gerekir. İtibar −5.</span></li>`) : '',
       out.contract ? `<li class="pos">${IC('truck')}<span><b>${esc(out.contract.name)}</b> teslim edildi: ${out.contract.qty} porsiyon · net ${KE.tl(out.contract.net)}, itibar +1.</span></li>` : '',
       out.signature ? `<li class="pos">${IC('chef')}<span>Ar-Ge mutfağı bitirdi: <b>${esc(pn2(out.signature.pid))}</b> · <b>${KE.SIGNATURE.names[out.signature.level - 1]}</b> (seviye ${out.signature.level}/3)</span></li>` : '',
       out.weeklyDone ? `<li class="pos">${IC('target')}<span>Haftalık meydan okuma tamam: <b>${esc(out.weeklyDone.text)}</b> · ödül ${KE.tl(out.weeklyDone.reward)}, itibar +1.</span></li>` : '',

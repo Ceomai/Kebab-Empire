@@ -341,7 +341,7 @@ KE.GOALS = [
   { id: 'imparator', name: 'Kebap İmparatoru', desc: '"Lüks Kebap" zincirini satın al ve şehrin tek kebap imparatoru ol.', reward: 0, final: true }
 ];
 /* Oyun sonu: "Lüks Kebap" zincirini satın almak için şartlar */
-KE.EMPIRE = { branches: 7, crowns: 3, reputation: 80, price: 75000000 };
+KE.EMPIRE = { branches: 7, crowns: 3, reputation: 80, price: 90000000 };
 
 /* ---------- Dönemler: oyun dört bölüm hâlinde açılır ----------
    Her dönemin üç şartı vardır; hepsi tamamlanınca bir sonraki döneme geçilir ve yeni yerler açılır. */
@@ -351,7 +351,7 @@ KE.ERAS = [
   { n: 2, name: 'Semtin yıldızı', story: 'Adını semtte duyur, yeni dükkânlar aç. "Lüks Kebap" seni fark etti.',
     req: [{ id: 'sube4', label: 'Dört şubeli zincir' }, { id: 'ciro5m', label: 'Bir ayda 5 milyon ₺ ciro' }, { id: 'rep65', label: 'İtibar 65' }] },
   { n: 3, name: 'Şehrin zinciri', story: 'Şehrin dört bir yanına yayıl. Büyük yatırımlar ve toplu siparişler artık senin işin.',
-    req: [{ id: 'sube6', label: 'Altı şubeli zincir' }, { id: 'taclar2', label: 'İki semtte taç kazan' }, { id: 'imza2', label: 'İmza tarifi 2. seviyeye çıkar' }, { id: 'kontrat6', label: 'Altı toplu sipariş teslim et' }] },
+    req: [{ id: 'sube6', label: 'Altı şubeli zincir' }, { id: 'taclar2', label: 'İki semtte taç kazan', mode: 'kebap' }, { id: 'taclar3', label: 'Üç semtte taç kazan', mode: 'doner' }, { id: 'imza2', label: 'İmza tarifi 2. seviyeye çıkar' }, { id: 'kontrat6', label: 'On toplu sipariş teslim et' }] },
   { n: 4, name: 'İmparatorluk yolu', story: 'Son hesaplaşma: "Lüks Kebap"ı satın al, şehrin tek kebap imparatoru ol.', req: [] }
 ];
 /* Hangi yer hangi dönemde açılır (listede olmayan yerler baştan açık) */

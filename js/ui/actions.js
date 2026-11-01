@@ -28,7 +28,12 @@
   A.closeModal = () => UI.closeModal();
   A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">Oyun her gün sonunda bu tarayıcıya kaydedilir.</p></div>
-    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="guide">${IC('book')}Oyun kılavuzu</button><button class="btn ghost" data-a="view">${IC('eye')}Görünüm ve yazı boyutu</button><button class="btn ghost" data-a="legal">${IC('lock')}Gizlilik ve koşullar</button><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
+    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="guide">${IC('book')}Oyun kılavuzu</button><button class="btn ghost" data-a="guideLevel">${IC('bolt')}Yönlendirme düzeyi: ${({ cok: 'Çok', az: 'Az', kapali: 'Kapalı' })[UI.guideLevel()]}</button><button class="btn ghost" data-a="view">${IC('eye')}Görünüm ve yazı boyutu</button><button class="btn ghost" data-a="legal">${IC('lock')}Gizlilik ve koşullar</button><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
+  /* Yönlendirme düzeyi: yeni oyuncu her şeyi görür, deneyimli oyuncu yalnızca acil uyarıları */
+  UI.guideLevel = () => { try { return localStorage.getItem('kebab-empire-guide') || 'cok'; } catch (e) { return 'cok'; } };
+  A.guideLevel = () => UI.modal(`<div class="mhead"><h2>Yönlendirme düzeyi</h2><p class="muted">"Bugün ne yapmalıyım?" kartı ve öneriler ne kadar konuşsun?</p></div>
+    <div class="choices">${[['cok', 'Çok', 'Bütün öneriler ve ipuçları (yeni başlayanlar için).'], ['az', 'Az', 'Yalnızca acil uyarılar: ustasız şube, boş kasa, eksik stok, eksi kasa.'], ['kapali', 'Kapalı', 'Danışman kartı gizlenir. Sabah kontrol listesi kalır.']].map(([k, l, d]) => `<button class="choice ${UI.guideLevel() === k ? 'sel' : ''}" data-a="setGuide" data-v="${k}"><b>${l}</b><small>${d}</small></button>`).join('')}</div>`);
+  A.setGuide = (d) => { try { localStorage.setItem('kebab-empire-guide', d.v); } catch (e) { /* yok */ } UI.closeModal(); UI.render(); UI.toast('Yönlendirme: ' + ({ cok: 'Çok', az: 'Az', kapali: 'Kapalı' })[d.v]); };
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
   A.exportSave = () => { if (!KE.G) return; if (KE.G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; } KE.SAVE.exportFile(KE.G); UI.toast('Yedek dosyası indirildi.', 'good'); };
   A.importSave = () => {
@@ -77,11 +82,23 @@
     if (r.done) KE.act(KE.G, 'ptake');
     H.renderTezgah(); UI.sceneTick();
   };
+  A.midChoice = (d) => {
+    const M = KE.act(KE.G, 'mid', +d.i);
+    UI.closeModal();
+    if (M) { const D = KE.MIDS.find((x) => x.id === M.id); UI.toast(D.choices(KE.G)[M.choice].label + '.', 'good'); }
+    UI.render();
+  };
+  A.courier = (d) => {
+    const c = KE.act(KE.G, 'courier', d.id || KE.G.activeBranch);
+    UI.toast(c ? `Acil kurye yola çıktı: ${KE.tl(c)}. Biten malzemeler geldi.` : 'Kuryeye gerek yok.', c ? 'good' : '');
+    UI.render();
+  };
   A.fastForward = () => { KE.finishService(KE.G); UI.render(); H.showClosing(); };
   A.showClosing = () => H.showClosing();
   A.closeTab = (d) => { UI.closeTab = d.id; H.showClosing(); };
   A.tipToday = (d) => { UI.todayRule = d.r; H.showClosing(); };
-  A.finalize = () => {
+  /* Günü kapat: hesap, bulut doğrulaması, ölçüm (normal kapanış ve hızlı hafta ortak) */
+  function closeDayCore() {
     const S0 = KE.G.lastSummary, morning = UI.morningEnv; UI.morningEnv = null;
     const out = KE.finalizeDay(KE.G, UI.todayRule);
     const tot = { served: 0, revenue: 0 }; Object.values(S0.branches).forEach((x) => { tot.served += x.stats.served; tot.revenue += x.stats.revenue; });
@@ -90,6 +107,10 @@
       const lg = (KE.G.actionLog || []).slice(-1)[0];
       KE.CLOUD.submitDay({ saveId: KE.G.saveId, day: S0.day, month: KE.monthKey(S0.day), mode: KE.G.mode, district: KE.G.branches[0].district, served: tot.served, revenue: tot.revenue, reputation: KE.G.reputation, morning, todayRule: UI.todayRule || KE.G.tipRule, log: lg && lg.day === S0.day ? lg.log : [] });
     }
+    return out;
+  }
+  A.finalize = () => {
+    const out = closeDayCore();
     document.querySelectorAll('.modal-bg').forEach((m) => m.remove());
     UI.holdEvent = true;
     UI.go('shop');
@@ -226,14 +247,41 @@
     const el = /** @type {any} */ (e.target).closest('[data-a]');
     if (!el || el.disabled) return;
     const fn = A[el.dataset.a];
-    if (fn) { e.preventDefault(); fn(Object.assign({}, el.dataset), el, e); }
+    if (!fn) return;
+    e.preventDefault();
+    if (KE.G && KE.G.phase === 'morning' && UNDOABLE.has(el.dataset.a)) snap(el);
+    fn(Object.assign({}, el.dataset), el, e);
+    UI.undoChip();
   });
+  /* ---------- Geri al: sabah, kepenk açılmadan yapılan son işlem ---------- */
+  const UNDOABLE = new Set(['setPos', 'boardDrop', 'topUpAll', 'price', 'pricesToMarket', 'tier', 'stockLevel', 'topUpToday', 'buy', 'hireMaster', 'hireWorker', 'raise', 'promote', 'pickMentor', 'doFire', 'costume', 'upgrade', 'buyDecor', 'hygiene', 'campaign', 'openBranch', 'central', 'buyAnimal', 'upgradePen', 'toggleManaged', 'advBol', 'advPrices', 'buyFarm', 'loan', 'payoff', 'tipRule']);
+  function snap(el) {
+    const who = el.dataset.a === 'boardDrop' && KE.G.staff.find((x) => x.id === UI.crewPick);
+    const label = who ? who.name + ' → ' + KE.POS_NAMES[el.dataset.p] : String(el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 36);
+    UI.undo = { g: JSON.stringify(KE.G), label, day: KE.G.day, cash: KE.G.cash };
+  }
+  UI.snapUndo = (label) => { if (KE.G && KE.G.phase === 'morning') UI.undo = { g: JSON.stringify(KE.G), label, day: KE.G.day }; };
+  UI.undoChip = function () {
+    let chip = document.getElementById('undochip');
+    const u = UI.undo, G = KE.G;
+    const ok = u && G && G.phase === 'morning' && G.day === u.day && UI.screen !== 'title' && JSON.stringify(G) !== u.g;
+    if (!ok) { if (chip) chip.remove(); if (u && G && (G.phase !== 'morning' || G.day !== u.day)) UI.undo = null; return; }
+    if (!chip) { chip = document.createElement('button'); chip.id = 'undochip'; chip.className = 'undochip'; chip.dataset.a = 'undo'; document.body.appendChild(chip); }
+    chip.innerHTML = `${IC('arrow')}<span><b>Geri al</b>${u.label ? ' <small>· ' + esc(u.label) + '</small>' : ''}</span>`;
+  };
+  A.undo = () => {
+    const u = UI.undo;
+    if (!u || !KE.G || KE.G.phase !== 'morning' || KE.G.day !== u.day) { UI.undo = null; return; }
+    KE.G = JSON.parse(u.g); UI.undo = null;
+    UI.closeModal(); UI.render(); UI.toast('Son işlem geri alındı.', 'good');
+  };
   document.addEventListener('pointerover', (e) => { if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('#crew')) UI.crewHover = Date.now(); });
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && /** @type {any} */ (e.target).matches && /** @type {any} */ (e.target).matches('g.place[data-a]')) { e.preventDefault(); const fn = A[/** @type {any} */ (e.target).dataset.a]; if (fn) fn(Object.assign({}, /** @type {any} */ (e.target).dataset)); }
     if (e.key === 'Escape' && document.querySelector('.modal-bg .acts [data-a="closeModal"]')) UI.closeModal();
   });
   document.addEventListener('change', (e) => {
+    if (KE.G && KE.G.phase === 'morning' && /** @type {any} */ (e.target).dataset && /** @type {any} */ (e.target).dataset.c) { const t = /** @type {any} */ (e.target); UI.undo = { g: JSON.stringify(Object.assign({}, KE.G)), label: t.dataset.c === 'priceSet' ? 'fiyat değişikliği' : 'ayar', day: KE.G.day }; }
     const el = /** @type {any} */ (e.target).closest('[data-c]');
     if (!el) return;
     const fn = C[el.dataset.c];
@@ -302,6 +350,35 @@
     track('quick_day', { day: G.day });
     UI.go('shop');
     H.showClosing();
+  };
+  /* Geç oyun: bütün semtlerde şube açıldıktan sonra haftayı tek tuşla geç; önemli bir şey olursa durur */
+  KE.quickWeekOpen = (G) => G.branches.length >= KE.DISTRICTS.length;
+  A.quickWeek = () => {
+    const G = KE.G;
+    if (G.phase !== 'morning' || !KE.quickWeekOpen(G)) return;
+    if (G.pendingEvent) { H.showEvent(); return; }
+    const agg = { revenue: 0, net: 0, served: 0 };
+    let n = 0, out = null, why = '';
+    while (n < 7) {
+      UI.morningEnv = H.CL() && KE.CLOUD.ready ? JSON.parse(JSON.stringify(KE.SAVE.envelope(G))) : null;
+      UI.todayRule = null; UI.quickDayRun = true;
+      KE.startService(G); KE.finishService(G);
+      out = closeDayCore(); n++;
+      Object.values(out.branches).forEach((e) => { agg.revenue += e.revenue; agg.net += e.net; agg.served += e.served; });
+      if (out.quits.length) { why = `${out.quits[0].name} istifa etti.`; break; }
+      if (out.eras && out.eras.length) { why = 'Yeni döneme geçtin!'; break; }
+      if (out.inspect) { why = 'Rehber müfettişi geldi.'; break; }
+      if (out.month) { why = 'Ay kapandı.'; break; }
+      if (G.pendingEvent) { why = 'Bir karar seni bekliyor.'; break; }
+      if (G.cash < 0) { why = 'Kasa eksiye düştü.'; break; }
+      if (KE.isWeekEnd(G.day - 1)) break;
+    }
+    track('quick_week', { day: G.day, n });
+    UI.holdEvent = true;
+    UI.go('shop');
+    H.afterDay(out);
+    UI.toast(`${n} gün geçti: ${agg.served} müşteri, ciro ${KE.tl(agg.revenue)}, net ${KE.tl(agg.net)}.`, 'gold');
+    if (why) UI.toast('Durdum: ' + why);
   };
   A.toggleManaged = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); if (!b) return; b.managed = b.managed === false; UI.toast(b.managed ? `${b.name}: müdür sabah stok ve fiyatı kendisi ayarlayacak.` : `${b.name}: sabah ayarları artık sende.`); UI.render(); };
   A.signature = () => {

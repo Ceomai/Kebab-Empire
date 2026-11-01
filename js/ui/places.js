@@ -149,8 +149,28 @@
     { id: 'sosyal', name: 'Sosyal medya kampanyası', cost: 14000, days: 7, icon: 'heart', desc: 'Kısa videolar ve fenomen paylaşımları. Müşteri +%18, öğrenci ve gece +%50.', mods: [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]] },
     { id: 'radyo', name: 'Radyo reklamı', cost: 24000, days: 7, icon: 'bolt', desc: 'Sabah trafiğinde jingle. Bütün şubelerde müşteri +%10, beyaz yaka +%30.', mods: [['traffic', 1.1], ['type:beyaz', 1.3]] },
     { id: 'blog', name: 'Gurme blog daveti', cost: 10000, days: 5, icon: 'star', desc: 'Yemek yazarlarına tadım. Gurme +%60. Usta ★4 ve üstüyse itibar +4.', mods: [['type:gurme', 1.6]], rep: true },
+    { id: 'tadim', name: 'Tadım menüsü', cost: 12000, days: 7, icon: 'chef', mode: 'kebap', desc: 'Meze, ara sıcak ve tatlı eşliğinde tadım tabağı. Hesap ortalaması +%12, gurme +%30. Müşteri sayısını artırmaz; dolu dükkânda da kazandırır.', mods: [['spend', 1.12], ['type:gurme', 1.3]] },
     { id: 'tabela', name: 'Işıklı tabela yenileme', cost: 20000, days: 0, icon: 'store', desc: 'Seçili şubede kalıcı olarak müşteri +%6. Şube başına bir kez.', sign: true }
   ];
+  /* Kampanyanın beklenen getirisi: dünkü kapasite kaybı ve hesap ortalamasıyla kaba tahmin */
+  function campEstimate(c, b, cost, capLost, ys) {
+    if (!ys || !ys.served) return { cls: '', text: 'Bir gün çalıştıktan sonra getiri tahmini burada görünür.' };
+    const avg = ys.revenue / ys.served, margin = 0.45;
+    const days = c.days || 30;
+    const nb = c.id === 'radyo' ? KE.G.branches.length : 1;
+    let extraRev;
+    if (c.mods && c.mods.some(([k]) => k === 'spend')) extraRev = ys.revenue * 0.12 * days;
+    else {
+      const tr = c.sign ? 0.06 : ((c.mods || []).find(([k]) => k === 'traffic') || [0, 1.06])[1] - 1;
+      const reach = Math.max(0, 1 - capLost * 3);
+      extraRev = ys.arrivals * tr * reach * avg * days * nb;
+    }
+    const gain = Math.round(extraRev * margin - cost);
+    const per = c.days ? `${c.days} günde` : 'ilk ayda';
+    if (gain > cost * 0.3) return { cls: 'gr', text: `Tahmini kâr ${per}: +${KE.tl(gain)}` };
+    if (gain > -cost * 0.3) return { cls: '', text: `Tahmini sonuç ${per}: aşağı yukarı başa baş` };
+    return { cls: 'rd', text: capLost >= 0.12 ? `Muhtemelen zarar: dükkân zaten dolu, gelen müşteri kapıdan döner.` : `Muhtemelen zarar ${per}: ${KE.tl(-gain)}` };
+  }
   SCREENS.ajans = () => {
     const b = B();
     const active = KE.G.mods.filter((m) => m.camp);
@@ -158,7 +178,7 @@
     const capLost = ys && ys.arrivals > 20 ? (ys.lostWait + ys.lostFull + ys.lostFood) / ys.arrivals : 0;
     return `<main class="screen">${head('Reklam Ajansı', 'Doğru semte doğru kampanya', null, 'ajans')}
       ${capLost >= 0.12 ? `<div class="alert warn">${IC('queue')}<span><b>Dükkân zaten dolu:</b> dün gelenlerin %${KE.ekSayi(String(Math.round(capLost * 100)), 'i')} kapasite yetmediği için gitti. Reklamın getireceği müşterilerin çoğu da kapıdan dönecek; önce ekibi ya da salonu büyüt.</span></div>` : ''}
-      <div class="grid g3">${CAMPAIGNS.map((c) => { const cost = Math.round(c.cost * KE.G.priceIndex); const done = c.sign && b.signBoost; const run = active.find((m) => m.camp === c.id); return `<article class="card"><span class="kicker">${IC(c.icon)}${c.days ? c.days + ' gün' : 'Kalıcı'}</span><h3>${c.name}</h3><p class="small">${c.desc}</p><div class="pc-foot">${done ? `<span class="chip gr">${IC('check')}Yapıldı</span>` : run ? `<span class="chip bl">Sürüyor · ${run.days} gün</span>` : `<b>${KE.tl(cost)}</b><button class="btn sm green" data-a="campaign" data-id="${c.id}" ${KE.G.cash < cost ? 'disabled' : ''}>Başlat</button>`}</div></article>`; }).join('')}</div></main>`;
+      <div class="grid g3">${CAMPAIGNS.filter((c) => !c.mode || c.mode === KE.G.mode).map((c) => { const cost = Math.round(c.cost * KE.G.priceIndex); const done = c.sign && b.signBoost; const run = active.find((m) => m.camp === c.id); const est = campEstimate(c, b, cost, capLost, ys); return `<article class="card"><span class="kicker">${IC(c.icon)}${c.days ? c.days + ' gün' : 'Kalıcı'}</span><h3>${c.name}</h3><p class="small">${c.desc}</p>${est && !done && !run ? `<p class="campest ${est.cls}">${IC(est.cls === 'gr' ? 'check' : est.cls === 'rd' ? 'bolt' : 'chart')}<span>${est.text}</span></p>` : ''}<div class="pc-foot">${done ? `<span class="chip gr">${IC('check')}Yapıldı</span>` : run ? `<span class="chip bl">Sürüyor · ${run.days} gün</span>` : `<b>${KE.tl(cost)}</b><button class="btn sm green" data-a="campaign" data-id="${c.id}" ${KE.G.cash < cost ? 'disabled' : ''}>Başlat</button>`}</div></article>`; }).join('')}</div></main>`;
   };
 
   /* ---------- Mahalle kahvesi ---------- */

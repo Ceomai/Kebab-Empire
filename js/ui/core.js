@@ -165,6 +165,7 @@
     if (KE.G && KE.G.phase !== 'service') UI.save();
     if (inGame) setTimeout(UI.tutor, 60);
     if (inGame && !UI.holdEvent && KE.G.pendingEvent && KE.G.phase === 'morning' && !document.querySelector('.modal-bg')) H.showEvent();
+    if (UI.undoChip) UI.undoChip();
   };
 
   /* ---------- Üst çubuk ve şube şeridi ---------- */
@@ -206,6 +207,19 @@
   function branchTabs() {
     return KE.G.branches.map((b) => branchTab(b)).join('') + (KE.placeOpen(KE.G, 'subeler') && KE.G.branches.length < KE.DISTRICTS.length ? `<button class="btab add" data-a="go" data-s="subeler">${IC('plus')}<span>Şube aç</span></button>` : '');
   }
+  /* Şube sağlığı: ekip, stok, fiyat için üç küçük renkli nokta */
+  function health(b) {
+    const G = KE.G, st = KE.branchStaff(G, b), L = G.live && G.live[b.id];
+    const ys = G.lastSummary && G.lastSummary.branches && G.lastSummary.branches[b.id] && G.lastSummary.branches[b.id].stats;
+    const lost = ys && ys.arrivals > 20 ? (ys.lostWait + ys.lostFull + ys.lostFood) / ys.arrivals : 0;
+    const crew = !st.some(KE.isCook) ? ['r', 'Ustasız'] : lost >= 0.12 ? ['y', 'Ekip yetişmiyor'] : ['g', 'Ekip yeterli'];
+    let stock;
+    if (G.phase === 'service' && L) { const so = Object.keys(L.stats.stockouts).length; stock = so ? ['r', so + ' ürün bitti'] : ['g', 'Stok yeterli']; }
+    else { const sh = G.phase === 'morning' && G.today && G.today[b.id] ? KE.shortfall(G, b) : { items: [] }; stock = sh.items.length > 2 ? ['r', 'Stok eksik'] : sh.items.length ? ['y', 'Stok az eksik'] : ['g', 'Stok yeterli']; }
+    const r = KE.priceRatio(G, b), tol = KE.priceTolerance(G, b);
+    const price = r > tol + 0.05 ? ['r', 'Fiyat pahalı'] : r < 0.95 ? ['y', 'Fiyat piyasanın altında'] : ['g', 'Fiyat dengede'];
+    return `<span class="hdots">${[['users', crew], ['cart', stock], ['coin', price]].map(([, [c, t]]) => `<i class="hd ${c}" title="${t}"></i>`).join('')}</span>`;
+  }
   function branchTab(b) {
     const L = KE.G.live && KE.G.live[b.id];
     const act = b.id === KE.G.activeBranch;
@@ -213,7 +227,7 @@
     if (KE.G.phase === 'service' && L) { if (L.closed) { status = 'Ustası yok, kapalı'; dot = 'off'; } else if (L.done) { status = 'Kapandı'; dot = 'off'; } else { status = `${L.queue.length} sırada · ${KE.tl(L.stats.revenue)}`; dot = L.queue.length > 5 ? 'busy' : 'open'; } }
     if (KE.G.phase === 'closing') { status = 'Kepenk indi'; dot = 'off'; }
     if (KE.isManaged(KE.G, b) && KE.G.phase === 'morning') status = 'Müdür hazırlıyor';
-    return `<button class="btab ${act ? 'on' : ''}" role="tab" aria-selected="${act}" data-a="viewBranch" data-id="${b.id}"><span class="btab-art">${KE.ART.storefront('', act ? '#d7263d' : '#9a8b7a', KE.G.phase === 'service')}</span><span class="btab-t"><b>${esc(b.name)}${b.championUntil && KE.G.day <= b.championUntil ? ` <span class="crownic" title="Semt şampiyonu">${IC('crown')}</span>` : ''}</b><small><i class="dot ${dot}"></i>${status}</small></span></button>`;
+    return `<button class="btab ${act ? 'on' : ''}" role="tab" aria-selected="${act}" data-a="viewBranch" data-id="${b.id}"><span class="btab-art">${KE.ART.storefront('', act ? '#d7263d' : '#9a8b7a', KE.G.phase === 'service')}</span><span class="btab-t"><b>${esc(b.name)}${b.championUntil && KE.G.day <= b.championUntil ? ` <span class="crownic" title="Semt şampiyonu">${IC('crown')}</span>` : ''}</b><small><i class="dot ${dot}"></i>${status}</small></span>${KE.G.branches.length > 1 ? health(b) : ''}</button>`;
   }
   function todayRevenue() { return KE.G.live ? KE.G.branches.reduce((a, b) => a + (KE.G.live[b.id] ? KE.G.live[b.id].stats.revenue : 0), 0) : 0; }
   UI.refreshBars = function () {
@@ -223,6 +237,18 @@
     if (bb) bb.innerHTML = branchTabs();
     const m = document.querySelector('.tb-money b');
     if (m) m.textContent = KE.tl(KE.G.cash);
+    const cb = document.getElementById('courierbox');
+    if (cb) cb.innerHTML = UI.courierHtml();
+  };
+  /* Acil kurye: servis sırasında malzeme bitmek üzereyse (günde bir kez) */
+  UI.courierHtml = function () {
+    const G = KE.G, b = G.branches.find((x) => x.id === G.activeBranch), L = G.live && G.live[b.id];
+    if (!L || L.done || G.phase !== 'service') return '';
+    if (L.courier) return `<p class="tiny muted">${IC('truck')}Acil kurye bugün kullanıldı.</p>`;
+    const n = KE.courierNeed(G, b);
+    if (!n.cost) return '';
+    const so = Object.keys(L.stats.stockouts).length;
+    return `<div class="courier ${so ? 'urgent' : ''}"><small>${so ? `${so} ürün bitti.` : 'Bazı malzemeler bitmek üzere.'} Rıza'nın çırağı motorla getirebilir (normal fiyatın 1,5 katı).</small><button class="btn sm gold block" data-a="courier" data-id="${b.id}">${IC('truck')}Acil kurye · ${KE.tl(n.cost)}</button></div>`;
   };
 
   function npc(key, text) {

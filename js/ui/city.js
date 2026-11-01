@@ -84,7 +84,7 @@
       <div class="cp-sec">Yerler</div>
       <div class="cp-places">${KE.MAP.PLACES.map((p) => { const t = tasks.find((x) => x.id === p.id); const lk = !KE.placeOpen(KE.G, p.id); return `<button class="cp-pl ${lk ? 'lk' : ''}" data-a="go" data-s="${p.id}" data-route="${p.id}" style="--c:${lk ? '#a99a88' : p.color}" title="${esc(p.name)}${lk ? ' · ' + KE.PLACE_ERA[p.id] + '. dönem' : ''}" aria-label="${esc(p.name)}">${IC(lk ? 'lock' : p.icon)}${t ? `<b>${t.n}</b>` : ''}<small class="cp-pn">${esc(p.name)}</small></button>`; }).join('')}</div>
       <button class="btn big green block" data-a="go" data-s="shop">${IC(act[0])}${act[1]}</button>
-      ${KE.G.phase === 'morning' ? `<button class="btn ghost block quickday" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün: servisi atla, sonuca geç</button>` : ''}
+      ${KE.G.phase === 'morning' ? `<button class="btn ghost block quickday" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün: servisi atla, sonuca geç</button>${KE.quickWeekOpen(KE.G) ? `<button class="btn ghost block quickday" data-a="quickWeek">${IC('ff')}Haftayı hızlı geç (önemli bir şey olursa durur)</button>` : ''}` : ''}
     </div></aside>`;
   }
 
@@ -132,10 +132,11 @@
     const sp2 = morning && KE.specialDay(G.day + 1);
     /* her hafta gelen cuma bilinir; yalnızca maç ve bayram önceden haber verilir */
     if (sp2 && sp2.id !== 'cuma') add(2, 'star', `Yarın ${sp2.name}`, 'Kalabalık bekleniyor. Rıza siparişi kendisi artırır; ekibi tam kadro hazırla.', 'Hal tahmini', 'data-a="go" data-s="hal"');
+    if (morning && G.inspect) { const ib = G.branches.find((x) => x.id === G.inspect.bid); add(0, 'star', `Rehber müfettişi bugün ${ib.name} şubesinde`, 'Habersiz geldi, kimseye söyleme!|Yıldız için memnuniyet %84 ve kaçan müşteri %10\'un altında olmalı. Ekibi tam kadro koy, stoğu tamamla.', 'Şubeye git', `data-a="viewBranch" data-id="${ib.id}"`); }
     if (G.cash < 0) add(0, 'coin', 'Kasa eksiye düştü', 'Maaşlar gecikirse SGK teşviki kaybolur. Kısa vadeli bir kredi çek.', 'Banka', 'data-a="go" data-s="banka"');
     const es = KE.eraStatus(G), miss = es.next && es.req.find((r) => !r.ok);
     /* dönem hedefi: şarta göre yapılacak somut iş */
-    const ERA_ACT = { hafta: ['shop', 'Kepengi aç', 'Her gün kârlı kapat: fiyatları ve stoku dengede tut.'], ay1: ['shop', 'Kepengi aç', 'Ay sonuna kadar kârda kal: giderleri kontrol et.'], rep40: ['shop', 'Kepengi aç', 'Memnun müşteri itibar getirir: kuyruğu kısa, tabağı sıcak tut.'], upg: ['dekor', 'Mobilya ve Dekor', 'Salonu büyütmek en çok getiren ilk yatırımdır.'], sampiyon: ['subeler', 'Merkez Ofis', 'Ay sonunda semtin memnuniyet çıtasını geç.'], sube3: ['subeler', 'Merkez Ofis', 'Yeni şube aç; ona usta ve ekip al.'], sube4: ['subeler', 'Merkez Ofis', 'Yeni şube aç; ona usta ve ekip al.'], ciro5m: ['shop', 'Kepengi aç', 'Ciro için kapasiteyi ve şubeleri büyüt.'], ciro3m: ['shop', 'Kepengi aç', 'Ciro için kapasiteyi ve şubeleri büyüt.'], rep65: ['shop', 'Kepengi aç', 'Memnuniyeti yüksek tut; hikâye ve olay kartları da itibar getirir.'], sube6: ['subeler', 'Merkez Ofis', 'Yeni şube aç.'], taclar2: ['subeler', 'Merkez Ofis', 'İki ayrı semtte ay sonu çıtasını geç; amiral dükkân yardımcı olur.'], imza2: ['subeler', 'Merkez Ofis', 'Ar-Ge mutfağında imza tarifi geliştir.'], kontrat6: ['subeler', 'Merkez Ofis', 'Her hafta bir toplu sipariş al.'] };
+    const ERA_ACT = { hafta: ['shop', 'Kepengi aç', 'Her gün kârlı kapat: fiyatları ve stoku dengede tut.'], ay1: ['shop', 'Kepengi aç', 'Ay sonuna kadar kârda kal: giderleri kontrol et.'], rep40: ['shop', 'Kepengi aç', 'Memnun müşteri itibar getirir: kuyruğu kısa, tabağı sıcak tut.'], upg: ['dekor', 'Mobilya ve Dekor', 'Salonu büyütmek en çok getiren ilk yatırımdır.'], sampiyon: ['subeler', 'Merkez Ofis', 'Ay sonunda semtin memnuniyet çıtasını geç.'], sube3: ['subeler', 'Merkez Ofis', 'Yeni şube aç; ona usta ve ekip al.'], sube4: ['subeler', 'Merkez Ofis', 'Yeni şube aç; ona usta ve ekip al.'], ciro5m: ['shop', 'Kepengi aç', 'Ciro için kapasiteyi ve şubeleri büyüt.'], ciro3m: ['shop', 'Kepengi aç', 'Ciro için kapasiteyi ve şubeleri büyüt.'], rep65: ['shop', 'Kepengi aç', 'Memnuniyeti yüksek tut; hikâye ve olay kartları da itibar getirir.'], sube6: ['subeler', 'Merkez Ofis', 'Yeni şube aç.'], taclar2: ['subeler', 'Merkez Ofis', 'İki ayrı semtte ay sonu çıtasını geç; amiral dükkân yardımcı olur.'], taclar3: ['subeler', 'Merkez Ofis', 'Üç ayrı semtte ay sonu çıtasını geç; amiral dükkân yardımcı olur.'], imza2: ['subeler', 'Merkez Ofis', 'Ar-Ge mutfağında imza tarifi geliştir.'], kontrat6: ['subeler', 'Merkez Ofis', 'Her hafta bir toplu sipariş al.'] };
     if (miss) { const ea = ERA_ACT[miss.id] || [ERA_PLACE[miss.id], 'Oraya git', '']; if (KE.placeOpen(G, ea[0])) add(2, 'target', miss.label, 'Dönem hedefi|' + (ea[2] || `${es.next.name} dönemine geçmek için.`), ea[1], `data-a="go" data-s="${ea[0]}"`); }
     if (morning && (G.era || 1) >= 3 && !KE.contractTaken(G) && !G.contract) add(2, 'truck', 'Bu haftanın toplu siparişi bekliyor', 'Haftada bir alınır; iyi para getirir.', 'Merkez Ofis', 'data-a="go" data-s="subeler"');
     if (morning && (G.era || 1) >= 3 && !G.sigWork && KE.signatureCost(G) != null && G.cash > KE.signatureCost(G) * 2) add(2, 'chef', 'İmza tarifini geliştir', 'Bütün şubelerde müşteri ve fiyat primi getirir.', 'Merkez Ofis', 'data-a="go" data-s="subeler"');
@@ -146,7 +147,9 @@
     return out.slice(0, 3);
   };
   UI.adviceCard = function (compact) {
-    const list = UI.advice();
+    const lvl = UI.guideLevel ? UI.guideLevel() : 'cok';
+    if (lvl === 'kapali') return '';
+    const list = UI.advice().filter((x) => lvl === 'cok' || x.pri === 0 || (x.pri === 1 && x.ic === 'cart'));
     if (!list.length) return '';
     return `<div class="advice ${compact ? 'compact' : ''}"><span class="kicker">${IC('bolt')}Bugün ne yapmalıyım?</span>${list.map((a) => `<div class="adv p${a.pri}"><span class="adv-ic">${IC(a.ic)}</span><span class="adv-t"><b>${esc(a.title)}</b><small>${a.why.split('|').map((w) => `<span>${esc(w.replace(/^ +/, ''))}</span>`).join(' ')}</small></span><button class="btn xs ${a.pri === 0 ? 'red' : a.pri === 1 ? 'gold' : 'ghost'}" ${a.attrs}>${esc(a.btn)}</button></div>`).join('')}</div>`;
   };
@@ -162,7 +165,7 @@
   };
   A.goSheet = (d) => { if (!KE.placeOpen(KE.G, d.s)) { UI.go(d.s); return; } UI.closeModal(); UI.go(d.s); };
   /* Dönem kartı: hangi bölümdesin, sıradaki için ne lazım */
-  const ERA_PLACE = { hafta: 'office', rep40: 'kahve', upg: 'dekor', sampiyon: 'subeler', sube3: 'subeler', ciro3m: 'office', sube4: 'subeler', ciro5m: 'office', rep65: 'ajans', sube6: 'subeler', taclar2: 'subeler', imza2: 'subeler', kontrat6: 'subeler', ay1: 'office' };
+  const ERA_PLACE = { hafta: 'office', rep40: 'kahve', upg: 'dekor', sampiyon: 'subeler', sube3: 'subeler', ciro3m: 'office', sube4: 'subeler', ciro5m: 'office', rep65: 'ajans', sube6: 'subeler', taclar2: 'subeler', taclar3: 'subeler', imza2: 'subeler', kontrat6: 'subeler', ay1: 'office' };
   function eraCard() {
     const st = KE.eraStatus(KE.G);
     if (!st.next) return `<div class="cp-era last"><span class="era-n">${st.era}</span><span class="era-t"><small>${st.era}. dönem</small><b>${st.cur.name}</b><em>${KE.G.flags.empire ? 'İmparatorluk kuruldu.' : 'Son hedef Merkez Ofis\'te.'}</em></span></div>`;

@@ -159,6 +159,33 @@
         { label: 'Kibarca reddet', desc: 'Bir şey olmaz', run: () => 'Fenomen omuz silkip başka dükkâna gitti.' }
       ] }) });
 
+  /* ---------- Ustaların huyları: ekip yönetimi küçük hikâyelere döner ---------- */
+  ev.push({ id: 'ustaIzin', who: null, w: 0.6,
+    when: (G) => staffOf(G).filter(KE.isCook).length >= 2,
+    build: (G) => { const u = staffOf(G).filter(KE.isCook).sort((a, c) => a.morale - c.morale)[0];
+      return { title: `${u.name} izin istiyor`, text: `${u.name} önlüğünü katlarken lafı dolandırdı: "Patron, memlekette kızımın nişanı var. Bugün bir çıkabilsem..."`, ctx: { sid: u.id }, who: u,
+        choices: [
+          { label: 'Git, gönlün rahat olsun', desc: 'Bugün çalışmaz; morali +15', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale + 15, 0, 100); x.pos = 'mola'; x.offDay = G.day; return `${x.name} elini öptü: "Sağ ol patron, bunu unutmam."`; } },
+          { label: 'Bugün olmaz, kalabalık var', desc: 'Çalışır ama morali −8', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale - 8, 0, 100); return `${x.name} başını salladı, ama bütün gün suratı asık.`; } }
+        ] }; } });
+  ev.push({ id: 'ustaKavga', who: null, w: 0.5,
+    when: (G) => staffOf(G).some((s) => s.role === 'cirak' && s.mentorId),
+    build: (G) => { const c = staffOf(G).find((s) => s.role === 'cirak' && s.mentorId); const m = G.staff.find((x) => x.id === c.mentorId) || c;
+      return { title: 'Mutfakta gerginlik', text: `${m.name} ile çırağı ${c.name} sabah sabah atıştı. "Bana bıçak tutmayı öğretmiyor, bulaşık yaptırıyor!" diyor ${c.name.split(' ').slice(-1)[0]}.`, ctx: { sid: c.id, mid: m.id }, who: m,
+        choices: [
+          { label: 'İkisini çaya oturt', desc: 'İkisinin de morali +5', run: (G, ctx) => { [ctx.sid, ctx.mid].forEach((id) => { const x = G.staff.find((y) => y.id === id); if (x) x.morale = clamp(x.morale + 5, 0, 100); }); return 'Bir demlik çay bitti, iki taraf da biraz yumuşadı. Usta bıçağı çırağa uzattı.'; } },
+          { label: 'Ustanın arkasında dur', desc: 'Usta +6, çırak −10', run: (G, ctx) => { const a = G.staff.find((y) => y.id === ctx.mid), c = G.staff.find((y) => y.id === ctx.sid); if (a) a.morale = clamp(a.morale + 6, 0, 100); if (c) c.morale = clamp(c.morale - 10, 0, 100); return 'Usta memnun; çırak sessizce bulaşığa döndü.'; } },
+          { label: 'Çırağı başka ustaya ver', desc: 'Mentor bırakılır, çırak +6', run: (G, ctx) => { const c = G.staff.find((y) => y.id === ctx.sid); if (c) { c.mentorId = null; c.morale = clamp(c.morale + 6, 0, 100); } return 'Çırak artık mentorsuz. Usta Pazarı\'ndaki Kadrom sekmesinden yeni bir mentor seçebilirsin.'; } }
+        ] }; } });
+  ev.push({ id: 'ustaTeklif', who: null, w: 0.5,
+    when: (G) => staffOf(G).some((s) => KE.isCook(s) && s.role === 'usta' && Math.max(...Object.values(s.spec)) >= 4),
+    build: (G) => { const u = staffOf(G).filter((s) => s.role === 'usta').sort((a, c) => Math.max(...Object.values(c.spec)) - Math.max(...Object.values(a.spec)))[0];
+      return { title: `${KE.ek(u.name, 'e')} göz koyan var`, text: `Karşı sokaktaki otelin şefi ${KE.ek(u.name, 'i')} yemeğe çıkarmış. "Bana iki katını veriyorlar patron, ama ben buraya alıştım..." diyor.`, ctx: { sid: u.id }, who: u,
+        choices: [
+          { label: '%15 zam yap', desc: 'Maaş +%15, moral +12', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.wage = Math.round(x.wage * 1.15 / 100) * 100; x.morale = clamp(x.morale + 12, 0, 100); return `${x.name} gülümsedi: "Bu dükkânın ekmeğini yedim, bir yere gitmem."`; } },
+          { label: 'Gönlünü al, zam yok', desc: 'Moral −6; morali 35\'in altına inerse kaçabilir', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale - 6, 0, 100); return `${x.name} "Peki" dedi, ama aklı otelde.`; } }
+        ] }; } });
+
   ev.push({ id: 'cirakHata', who: null, w: 0.8,
     when: (G) => staffOf(G).some((s) => s.role === 'cirak'),
     build: (G) => { const c = staffOf(G).find((s) => s.role === 'cirak');

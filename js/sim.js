@@ -186,7 +186,7 @@
     const ps = MODE(G).products.filter((p) => b.menu[p.id] && !KE.isLocked(G, p) && b.prices[p.id] != null);
     return ps.length ? ps.reduce((a, p) => a + b.prices[p.id] / KE.marketPrice(G, p), 0) / ps.length : 1;
   };
-  KE.priceTolerance = (G, b) => 1.02 + Math.max(0, G.reputation - 50) / 400 + (G.signature && !G.signature.family ? G.signature.level * 0.04 : 0) + (b && b.flagship ? 0.1 : 0);
+  KE.priceTolerance = (G, b) => 1.02 + (G.stars || 0) * 0.03 + Math.max(0, G.reputation - 50) / 400 + (G.signature && !G.signature.family ? G.signature.level * 0.04 : 0) + (b && b.flagship ? 0.1 : 0);
   KE.expectedCustomers = function (G, b) {
     const d = KE.district(b);
     const mode = MODE(G);
@@ -206,7 +206,7 @@
     /* ucuz fiyat kapıdan daha çok müşteri getirir, pahalı fiyat biraz azaltır (±%12) */
     const pr = 1 + Math.max(-0.12, Math.min(0.12, (1 - KE.priceRatio(G, b)) * 0.6));
     const flag = b.flagship ? KE.FLAGSHIP.traffic : G.branches.some((x) => x.flagship) ? KE.FLAGSHIP.chain : 1;
-    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * sig * flag * pr * (emp ? 1.1 : 1) * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
+    return (1 + (G.stars || 0) * 0.03) * d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * sig * flag * pr * (emp ? 1.1 : 1) * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
   };
 
   /* ---------- Yeni oyun ---------- */
@@ -348,6 +348,17 @@
       if (KE.rand() < 0.3 + st.loyalty * 0.04) G.regularVisits.push({ rid: r.id, branchId: openB[st.visits % openB.length === 0 ? 0 : Math.floor(KE.rand() * openB.length)].id, minute: 60 + Math.floor(KE.rand() * 600) });
     });
     G.staff.forEach((s) => { s.energy = 100; s.task = null; if (!KE.POSITIONS[s.role].includes(s.pos) || s.pos === 'mola') s.pos = KE.POSITIONS[s.role][0]; });
+    /* ekip bu hafta hangi bahşiş kuralını istiyor */
+    if (!G.tipWish || G.tipWish.until < G.day) {
+      const st = G.staff, cir = st.filter((s) => s.role === 'cirak' && s.mentorId).length, usta = st.filter((s) => s.role === 'usta').length;
+      const opts = ['esit', 'esit', 'performans'].concat(cir ? ['usta', 'usta'] : []).concat(usta >= 3 ? ['usta'] : []);
+      G.tipWish = { rule: opts[Math.floor(KE.rand() * opts.length)], until: G.day + 6 };
+    }
+    /* rehber müfettişi: tepedeki zincire habersiz gelir */
+    G.inspect = null;
+    if ((G.era || 1) >= 3 && G.reputation >= 88 && (G.stars || 0) < 3 && G.day - (G.lastInspect || 0) > 45 && openB.length && KE.rand() < 0.06) {
+      G.inspect = { bid: openB[Math.floor(KE.rand() * openB.length)].id }; G.lastInspect = G.day;
+    }
     G.phase = 'morning';
   };
   KE.buyExtra = function (G, b, k, qty) {
@@ -402,8 +413,73 @@
     });
   };
 
+  /* ---------- Gün ortası kararları ----------
+     Servisin ortasında küçük bir olay: oyuncu seçer ya da süre dolunca güvenli seçenek uygulanır.
+     Seçim eylem günlüğüne yazılır, sunucu aynı dakikada aynı seçimi yeniden oynatır. */
+  KE.MID_WAIT = 40;
+  const frontOf = (G, b) => KE.branchStaff(G, b).filter((s) => ['kasiyer', 'garson'].includes(s.role));
+  KE.MIDS = [
+    { id: 'otobus', def: 1, ic: 'users', title: 'Turist otobüsü kapıda',
+      text: (G, b) => `Bir rehber, ${b.name} önünde durdu: "Kırk kişilik grubum aç, alabilir misiniz?"`,
+      choices: () => [{ label: 'Buyursunlar', desc: 'Yarım saat kapı hiç durmaz (müşteri ×2,2). Yetişemezsen kaçanlar itibar götürür.' }, { label: 'Kibarca geri çevir', desc: 'Gün normal akışında sürer.' }] },
+    { id: 'ariza', def: 1, ic: 'fire', title: 'Ocaklardan biri söndü', cond: (G, b) => KE.stations(G, b) >= 2,
+      text: () => 'Tüp bağlantısı kaçırıyor; ocak kendiliğinden söndü. Usta ellerini sildi, sana bakıyor.',
+      choices: (G) => [{ label: 'Tamirci çağır · ' + KE.tl(KE.midCost(G, 'ariza')), desc: 'On dakikada gelir, ocak çalışmaya devam eder.' }, { label: 'İdare edelim', desc: 'Kapanışa kadar bir ocak eksik pişirilir.' }] },
+    { id: 'fenalik', def: 0, ic: 'heart', title: 'Bir çalışan fenalaştı', cond: (G, b) => frontOf(G, b).length >= 2,
+      text: (G, b, M) => { const s = G.staff.find((x) => x.id === M.sid); return `${s ? s.name : 'Kasiyer'} bembeyaz oldu, tezgâha tutundu: "Bir şeyim yok patron, geçer."`; },
+      choices: () => [{ label: 'Eve gönder', desc: 'Bugün çalışmaz; ekip bunu görür, herkesin morali +4.' }, { label: 'Biraz dayansın', desc: 'Çalışmaya devam eder ama morali −10, enerjisi −30.' }] },
+    { id: 'yagmur', def: 1, ic: 'clock', title: 'Sağanak bastırdı',
+      text: (G, b) => `${b.name} önünde sokak bir anda boşaldı; yoldan geçenler saçak altına kaçıyor.`,
+      choices: (G) => [{ label: 'Tente aç, çay ikram et · ' + KE.tl(KE.midCost(G, 'yagmur')), desc: 'İki saat boyunca müşteri yalnızca %15 azalır.' }, { label: 'Bekleyelim', desc: 'İki saat boyunca müşteri %40 azalır.' }] }
+  ];
+  KE.midCost = (G, id) => Math.round((id === 'ariza' ? 4500 : 2500) * G.priceIndex / 100) * 100;
+  KE.pickMid = function (G) {
+    KE.RNG.seed(G, 'mid');
+    G.mid = null;
+    const open = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
+    if (G.day <= 3 || !open.length || KE.rand() >= 0.35) return;
+    const b = open[Math.floor(KE.rand() * open.length)];
+    const opts = KE.MIDS.filter((m) => !m.cond || m.cond(G, b));
+    const m = opts[Math.floor(KE.rand() * opts.length)];
+    const fr = frontOf(G, b);
+    G.mid = { id: m.id, bid: b.id, minute: 150 + Math.floor(KE.rand() * 420), sid: m.id === 'fenalik' ? fr[Math.floor(KE.rand() * fr.length)].id : null, choice: null };
+  };
+  KE.midPending = (G) => { const M = G.mid; const L = M && G.live && G.live[M.bid]; return !!(M && M.choice == null && L && !L.done && L.minute >= M.minute); };
+  KE.resolveMid = function (G, i) {
+    const M = G.mid; const L = M && G.live && G.live[M.bid];
+    if (!M || M.choice != null || !L) return null;
+    M.choice = i; M.at = L.minute;
+    const b = G.branches.find((x) => x.id === M.bid);
+    const pay = (c) => { G.cash -= c; KE.addExtra(G, 'other', c); };
+    if (M.id === 'otobus' && i === 0) L.boost = { until: L.minute + 30, mult: 2.2 };
+    if (M.id === 'ariza') { if (i === 0) pay(KE.midCost(G, 'ariza')); else L.stationDown = 1; }
+    if (M.id === 'fenalik') {
+      const s = G.staff.find((x) => x.id === M.sid);
+      if (s && i === 0) { s.home = true; s.task = null; s.pos = 'mola'; KE.branchStaff(G, b).forEach((x) => { if (x !== s) x.morale = clamp(x.morale + 4, 0, 100); }); }
+      if (s && i === 1) { s.morale = clamp(s.morale - 10, 0, 100); s.energy = Math.max(0, s.energy - 30); }
+    }
+    if (M.id === 'yagmur') { if (i === 0) pay(KE.midCost(G, 'yagmur')); L.rain = { until: L.minute + 120, mult: i === 0 ? 0.85 : 0.6 }; }
+    return M;
+  };
+  /* Acil kurye: gün ortasında biten malzemeyi 1,5 katı fiyatına getirir (günde bir kez) */
+  KE.courierNeed = function (G, b) {
+    let cost = 0; const items = {};
+    Object.keys(b.usage).forEach((k) => { const q = b.usage[k] * 0.4 - (b.stock[k] || 0); if (q > 0.01) { items[k] = q; cost += q * KE.ingPrice(G, b, k) * 1.5; } });
+    return { cost, items };
+  };
+  KE.courier = function (G, b) {
+    const L = b && G.live && G.live[b.id];
+    if (!L || L.courier || L.done) return 0;
+    const n = KE.courierNeed(G, b);
+    if (!n.cost) return 0;
+    Object.entries(n.items).forEach(([k, q]) => { b.stock[k] = (b.stock[k] || 0) + q; });
+    G.cash -= n.cost; G.today[b.id].purchases += n.cost; L.courier = true;
+    return n.cost;
+  };
+
   /* ---------- Servis ---------- */
   KE.startService = function (G) {
+    KE.pickMid(G);
     KE.RNG.seed(G, 'svc');
     G.dayLog = [];
     G.phase = 'service';
@@ -414,7 +490,7 @@
     });
   };
   KE.newLive = function (G, b) {
-    KE.branchStaff(G, b).forEach((s) => { s.servedToday = 0; s.tipsToday = 0; s.tasksToday = 0; s.minEnergy = 100; s.task = null; });
+    KE.branchStaff(G, b).forEach((s) => { s.servedToday = 0; s.tipsToday = 0; s.tasksToday = 0; s.minEnergy = 100; s.task = null; s.home = s.offDay === G.day; if (s.home) s.pos = 'mola'; });
     const expected = KE.expectedCustomers(G, b);
     const curveSum = Object.values(KE.HOUR_CURVE).reduce((a, v) => a + v, 0);
     const tables = [];
@@ -478,7 +554,8 @@
   function spawn(G, b, L) {
     const hour = KE.OPEN_HOUR + Math.floor(L.minute / 60);
     const spH = L.special && L.special.hours[hour] ? L.special.hours[hour] : 1;
-    const rate = L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH / L.curveSum / 60;
+    const burst = (L.boost && L.minute < L.boost.until ? L.boost.mult : 1) * (L.rain && L.minute < L.rain.until ? L.rain.mult : 1);
+    const rate = L.expected * (KE.HOUR_CURVE[hour] || 0.3) * spH * burst / L.curveSum / 60;
     (G.regularVisits || []).filter((v) => v.branchId === b.id && v.minute === L.minute).forEach((v) => spawnRegular(G, b, L, v.rid));
     L.spawnAcc += rate * rnd(0.6, 1.4);
     while (L.spawnAcc >= 1) {
@@ -549,7 +626,8 @@
     return r;
   };
   KE.cookingStaff = function (G, b) {
-    const stations = KE.stations(G, b);
+    const L = G.live && G.live[b.id];
+    const stations = Math.max(1, KE.stations(G, b) - ((L && L.stationDown) || 0));
     return KE.branchStaff(G, b).filter((s) => KE.isCook(s) && s.pos === 'ocak').slice(0, stations);
   };
 
@@ -656,7 +734,7 @@
       }
       const drinks = KE.rand() < MODE(G).drinkRate ? c.count : 0;
       if (drinks) Object.entries(MODE(G).drink.ing).forEach(([k, q]) => { b.stock[k] = Math.max(0, (b.stock[k] || 0) - q * drinks); });
-      const pay = c.price * c.count + drinks * b.prices[MODE(G).drink.id];
+      const pay = (c.price * c.count + drinks * b.prices[MODE(G).drink.id]) * KE.modVal(G, 'spend');
       c.paid = pay; c.orderedAt = L.minute; c.orderBy = s.id; c.state = c.takeaway ? 'pickup' : 'seat'; c.wait = 0;
       S.revenue += pay;
       if (KE.rand() < 0.66) S.card += pay; else S.cash += pay;
@@ -785,11 +863,11 @@
     /* aynı işi yapan başka biri çalışıyorsa molaya gönder (müdürsüz şubede de bir görev hiç boş kalmaz) */
     const sameJob = (s, x) => (KE.isCook(s) ? KE.isCook(x) : x.role === s.role);
     st.forEach((s) => { if (s.energy < (mgr ? 22 : 12) && s.pos !== 'mola') { const same = st.filter((x) => sameJob(s, x) && x !== s && x.pos !== 'mola'); if (same.length || (mgr && !peak)) KE.setPos(G, s, 'mola'); } });
-    st.forEach((s) => { if (s.pos === 'mola' && s.energy >= (mgr ? 85 : 80)) KE.setPos(G, s, KE.POSITIONS[s.role][0]); });
+    st.forEach((s) => { if (s.pos === 'mola' && !s.home && s.energy >= (mgr ? 85 : 80)) KE.setPos(G, s, KE.POSITIONS[s.role][0]); });
     if (!mgr) return;
     const stations = KE.stations(G, b);
     const working = cooks.filter((s) => s.pos === 'ocak');
-    if (pending >= 2 || peak) cooks.filter((s) => s.pos === 'mola' && s.energy > 40).slice(0, Math.max(0, stations - working.length)).forEach((s) => KE.setPos(G, s, 'ocak'));
+    if (pending >= 2 || peak) cooks.filter((s) => s.pos === 'mola' && !s.home && s.energy > 40).slice(0, Math.max(0, stations - working.length)).forEach((s) => KE.setPos(G, s, 'ocak'));
     else if (working.length > 1 && pending === 0) { const tired = working.filter((s) => !s.task).sort((a, c) => a.energy - c.energy)[0]; if (tired && tired.energy < 70) KE.setPos(G, tired, 'mola'); }
     const front = st.filter((s) => ['kasiyer', 'garson', 'mudur'].includes(s.role) && s.pos !== 'mola' && s.role !== 'mudur');
     const queue = L.queue.length, ready = L.tickets.filter((t) => t.state === 'ready' && !t.paket).length, dirty = L.tables.filter((t) => t.dirty).length;
@@ -848,7 +926,11 @@
     }
     if (L.done) st.forEach((s) => { s.task = null; });
   };
-  KE.tickAll = function (G) { G.branches.forEach((b) => { const L = G.live[b.id]; if (L) KE.tick(G, b, L); }); };
+  KE.tickAll = function (G) {
+    const M = G.mid;
+    if (M && M.choice == null) { const L = G.live[M.bid]; if (L && L.minute >= M.minute + KE.MID_WAIT) KE.resolveMid(G, KE.MIDS.find((x) => x.id === M.id).def); }
+    G.branches.forEach((b) => { const L = G.live[b.id]; if (L) KE.tick(G, b, L); });
+  };
   KE.allDone = (G) => G.branches.every((b) => !G.live[b.id] || G.live[b.id].done);
 
   /* ---------- Oyuncu tezgâhta ---------- */
@@ -952,6 +1034,14 @@
     G.dayLog = [];
     const S0 = G.lastSummary;
     const out = { levelUps: [], quits: [], branches: {} };
+    if (G.inspect && S0.branches[G.inspect.bid]) {
+      const sm = S0.branches[G.inspect.bid], st = sm.stats, b = G.branches.find((x) => x.id === G.inspect.bid);
+      const lost = st.arrivals ? (st.lostWait + st.lostFull + st.lostFood) / st.arrivals : 1;
+      const pass = sm.sat >= 84 && lost < 0.1;
+      if (pass) { G.stars = (G.stars || 0) + 1; G.reputation = Math.min(100, G.reputation + 3); } else G.reputation = Math.max(0, G.reputation - 5);
+      out.inspect = { pass, stars: G.stars || 0, branch: b ? b.name : '', sat: Math.round(sm.sat), lost: Math.round(lost * 100) };
+      G.inspect = null;
+    }
     G.branches.forEach((b) => {
       const sum = S0.branches[b.id];
       const S = sum.stats;
@@ -974,6 +1064,7 @@
         if (rule === 'kasa') dm += Math.min(5, (S.tips / Math.max(1, st.length)) / (s.wage / 30) * 6) * 0.6 - 0.5;
         if (rule === 'usta') dm += s.role === 'usta' ? 3 : -1;
         if (rule === 'performans') dm += s === perf[0] ? 4 : s === perf[perf.length - 1] ? -2.5 : 0.5;
+        if (G.tipWish && rule === G.tipWish.rule) dm += 1.5;
         if (s.servedToday > limit * 1.6) dm -= 5; else if (s.servedToday > limit) dm -= 2;
         if (s.minEnergy < 10) dm -= 6; else if (s.minEnergy < 25) dm -= 3; else if (s.minEnergy > 55) dm += 1;
         b.decor.forEach((id) => { const d = KE.DECOR.find((x) => x.id === id); if (d && d.morale) dm += d.morale * 0.5; });
@@ -1179,13 +1270,14 @@
     rep65: (G) => G.reputation >= 65,
     sube6: (G) => G.branches.length >= 6,
     taclar2: (G) => G.branches.filter((b) => (b.champions || 0) > 0).length >= 2 || !!G.flags.legacyImza,
+    taclar3: (G) => G.branches.filter((b) => (b.champions || 0) > 0).length >= 3 || !!G.flags.legacyImza,
     imza2: (G) => !!(G.signature && !G.signature.family && G.signature.level >= 2) || !!G.flags.legacyImza,
-    kontrat6: (G) => (G.flags.contracts || 0) >= 6 || !!G.flags.legacyImza,
+    kontrat6: (G) => (G.flags.contracts || 0) >= 10 || !!G.flags.legacyImza,
     imza: (G) => !!(G.signature && !G.signature.family) || !!G.flags.legacyImza
   };
   KE.eraStatus = function (G) {
     const n = G.era || 1, cur = KE.ERAS[n - 1];
-    const req = cur.req.map((r) => Object.assign({}, r, { ok: !!ERA_TEST[r.id](G) }));
+    const req = cur.req.filter((r) => !r.mode || r.mode === G.mode).map((r) => Object.assign({}, r, { ok: !!ERA_TEST[r.id](G) }));
     return { era: n, cur, next: KE.ERAS[n] || null, req, ready: req.length > 0 && req.every((r) => r.ok) };
   };
   KE.advanceEra = function (G) {
@@ -1273,10 +1365,14 @@
     active: (G, bid) => { if (G.live && G.live[G.activeBranch] && G.live[G.activeBranch].player.active) KE.playerToggle(G, false); G.activeBranch = bid; },
     ptoggle: (G, on) => KE.playerToggle(G, !!on),
     ptake: (G) => KE.playerTake(G),
-    pstep: (G, label) => KE.playerStep(G, label)
+    pstep: (G, label) => KE.playerStep(G, label),
+    mid: (G, i) => KE.resolveMid(G, i),
+    courier: (G, bid) => KE.courier(G, G.branches.find((x) => x.id === bid))
   };
+  /* servis saati: kapalı (ustasız) şubenin dakikası 0'da kalır, açık olanlardan okunur */
+  const clockL = (G) => { const ls = G.branches.map((b) => G.live[b.id]).filter((L) => L && !L.closed); return ls[0] || G.live[G.branches[0].id]; };
   KE.act = function (G, a, ...x) {
-    const L = G.phase === 'service' && G.live ? G.live[G.branches[0].id] : null;
+    const L = G.phase === 'service' && G.live ? clockL(G) : null;
     const m = L ? L.minute : 0;
     const r = ACTS[a](G, ...x);
     if (L && (a !== 'ptake' || r)) (G.dayLog = G.dayLog || []).push({ m, a, x });
@@ -1288,7 +1384,7 @@
     const q = (log || []).slice();
     let guard = 0;
     while (!KE.allDone(G) && guard++ < 2000) {
-      const m = G.live[G.branches[0].id].minute;
+      const m = clockL(G).minute;
       while (q.length && q[0].m <= m) { const e = q.shift(); if (ACTS[e.a]) ACTS[e.a](G, ...(e.x || [])); }
       KE.tickAll(G);
     }

@@ -44,6 +44,20 @@ const fs = require('fs');
       UI.go('hal'); UI.go('map'); UI.adviceCard(); A.topUpToday({ id: b0.id }); A.stockLevel({ v: 1.15 }); A.stockLevel({ v: 1.5 });
       ['usta', 'kasiyer', 'temizlik', 'mudur'].forEach((r) => { while (KE.canHire(G, b0, r).ok) { const w = r === 'usta' ? KE.randomMaster(G) : KE.randomWorker(G, r); w.branchId = b0.id; G.staff.push(w); } G.activeBranch = b0.id; A.capFull({ r }); sweep(); });
       UI.go('lonca'); UI.go('buro'); UI.go('guide');
+      // yeni: kontrol listesi, pano, geri al, yönlendirme, ajans tahmini, gün ortası, kurye, kapanış özeti, müfettiş, hızlı hafta
+      G.mods = G.mods.filter((m) => m.key !== 'traffic');
+      UI.go('shop'); localStorage.setItem('kebab-empire-crewview', 'pano'); UI.render(); UI.crewPick = KE.branchStaff(G, b0)[0].id; UI.render(); UI.crewPick = null; localStorage.setItem('kebab-empire-crewview', 'liste');
+      UI.snapUndo('x'); G.cash -= 1; UI.undoChip(); A.undo(); KE.G = G;
+      A.guideLevel(); sweep(); A.menu(); sweep();
+      G.inspect = { bid: b0.id }; UI.go('map'); UI.adviceCard(); G.inspect = null;
+      G.pendingEvent = null; UI.go('ajans');
+      KE.MIDS.forEach((M) => { const st = KE.branchStaff(G, b0).filter((x) => ['kasiyer', 'garson'].includes(x.role)); G.phase = 'service'; G.live = {}; G.branches.forEach((x) => { G.live[x.id] = KE.newLive(G, x); }); G.mid = { id: M.id, bid: b0.id, minute: 0, sid: st[0] && st[0].id, choice: null }; H.showMid(); sweep(); KE.resolveMid(G, 0); });
+      UI.go('shop'); UI.courierHtml(); Object.keys(b0.stock).forEach((k) => { b0.stock[k] = 0; }); UI.courierHtml(); G.live[b0.id].courier = true; UI.courierHtml();
+      KE.finishService(G); H.showClosing(); sweep();
+      const fo = KE.finalizeDay(G); fo.inspect = { pass: true, stars: 1, branch: b0.name, sat: 90, lost: 5 }; H.afterDay(fo); sweep(); fo.inspect.pass = false; H.afterDay(fo); sweep();
+      while (G.branches.length < KE.DISTRICTS.length) { const d = KE.DISTRICTS.find((x) => !G.branches.some((y) => y.district === x.id)); KE.openBranch(G, d.id); }
+      UI.go('shop'); UI.go('map');
+      ['ustaIzin', 'ustaKavga', 'ustaTeklif'].forEach((id) => { const e = KE.EVENTS.find((x) => x.id === id); try { const c = e.build(G); KE.I18N.t(c.title); KE.I18N.t(c.text); c.choices.forEach((ch) => { KE.I18N.t(ch.label); KE.I18N.t(ch.desc); KE.I18N.t(ch.run(G, c.ctx)); }); } catch (x) { console.log('ev', id, x.message); } });
       // rakip hamleleri ve hikâyeler
       KE.EVENTS.filter((e) => e.arc || e.story || e.id === 'rakipSemt').forEach((e) => { try { const c = e.build(G); KE.I18N.t(c.title); KE.I18N.t(c.text); c.choices.forEach((ch) => { KE.I18N.t(ch.label); KE.I18N.t(ch.desc); }); } catch (x) { /* yok */ } });
       KE.G.pendingEvent = { id: 'rk_fiyat', who: 'rakip', title: 'x', text: 'y', rival: 2, choices: [] }; H.showEvent(); sweep();

@@ -138,16 +138,23 @@
     ] },
     { id: 'gun', ic: 'clock', t: 'Bir günün akışı', lead: 'Her gün üç evreden oluşur: sabah hazırlığı, servis ve kapanış.', items: [
       '<b>Sabah:</b> Haritada yerleri gez (hal, usta pazarı, eleman bürosu…), fiyatları ve görevleri ayarla. Olay kartı gelirse kararını ver.',
+      '<b>Açılış kontrolü:</b> Dükkân ekranının başındaki dört madde (ekip, stok, fiyat, bekleyen karar) yeşilse kepengi açmaya hazırsın; eksik olanın yanındaki düğme tek dokunuşla düzeltir.',
+      '<b>Geri al:</b> Sabah, kepengi açmadan yaptığın son işlemi (işe alım, fiyat, satın alma, görev değişikliği) ekranın altındaki "Geri al" düğmesiyle geri alabilirsin.',
       '<b>Servis (10:00–23:00):</b> Dükkânda müşteriler gelir, sipariş verir, yer ve gider. Hızı 1×, 2× ya da 4× yapabilir, istediğin an "Günü hızlı bitir" ile günü sonlandırabilirsin.',
       '<b>Kapanış:</b> Günün raporunu görürsün, bahşişin nasıl dağıtılacağını seçersin ve günlüğünü okursun.',
       '<b>Hızlı gün:</b> Servisi izlemek istemediğin günlerde sabah ekranındaki "Hızlı gün" düğmesi servisi atlayıp doğrudan sonuca geçer.',
+      '<b>Haftayı hızlı geç:</b> Yedi semtin hepsinde şube açtıktan sonra açılır. Haftanın kalanını tek tuşla geçer; biri istifa ederse, ay kapanırsa, yeni döneme geçersen, müfettiş gelirse ya da bir karar beklerse durur.',
+      '<b>Yönlendirme düzeyi:</b> Menüden "Bugün ne yapmalıyım?" kartının ne kadar konuşacağını seçebilirsin: Çok, Az (yalnızca acil uyarılar) ya da Kapalı.',
       'Oyun her gün sonunda tarayıcıya kaydedilir. Menüden dosyaya yedek alabilir, başka cihazda yükleyebilirsin.'
     ] },
     { id: 'servis', ic: 'store', t: 'Servis ve tezgâh', lead: 'Müşteri kapıdan girer, kasada sipariş verir, usta pişirir, komi/garson yemeği masaya götürür, müşteri yer ve bahşiş bırakır.', items: [
       'Kuyruk uzarsa müşteriler beklemekten sıkılıp gider; yemek gecikirse masada kalkarlar; yer yoksa kapıdan döner.',
       'Sahnedeki yoğunluk göstergesi kırmızıya dönen yeri gösterir: kuyruk uzarsa kasaya, tabak beklerse servise bir kişi daha ver.',
       '<b>Tezgâh:</b> İstersen tezgâha geçip siparişleri kendin hazırlarsın. Adımları doğru sırayla seç; hızlı ve hatasız olursan kalite artar. Her gün tezgâhta 6 sipariş hazırlamak bonus hedeftir (iki kat ödül).',
-      'Bir müşterinin en sevdiği ürünü o ürünün uzmanı pişirirse "Ellerine sağlık!" der; memnuniyet ve bahşiş artar.'
+      'Bir müşterinin en sevdiği ürünü o ürünün uzmanı pişirirse "Ellerine sağlık!" der; memnuniyet ve bahşiş artar.',
+      '<b>Gün ortası kararları:</b> Bazı günler servis sırasında küçük bir olay çıkar: turist otobüsü, sönen ocak, fenalaşan bir çalışan, bastıran sağanak. Oyun durur ve seçim yaparsın; karar vermezsen 40 dakika sonra güvenli seçenek uygulanır.',
+      '<b>Acil kurye:</b> Servis sırasında malzeme bitmek üzereyse yan paneldeki "Acil kurye" düğmesi eksikleri normal fiyatın 1,5 katına hemen getirir. Günde bir kez kullanılabilir.',
+      '<b>Ekip panosu:</b> Ekip panelinde "Pano" görünümüne geçersen görevleri sütun sütun görürsün. Bir kişiye dokun, sonra gideceği sütuna dokun; masaüstünde sürükleyip bırakabilirsin.',
     ] },
     { id: 'ekip', ic: 'users', t: 'Ekip, roller ve moral', lead: 'Her rolün tek bir işi vardır; doğru kişiyi doğru göreve vermek servisin hızını belirler.', items: [
       '<b>Usta / çırak:</b> Pişirir. Yıldızları (★1–5) ürün bazındadır ve pişirdikçe artar. Çırağı bir ustanın yanına mentor olarak verirsen ondan öğrenir; 3 yıldıza ulaşınca usta yapabilirsin.',
@@ -156,7 +163,8 @@
       '<b>Kurye:</b> Paket siparişleri getirir. Mutfağa ek iş yükler; ancak mutfakta boş kapasite varsa kâr getirir.',
       '<b>Şube müdürü:</b> İkinci şubeyle birlikte görünür. Ekibi yoğunluğa göre kendisi yönetir ve sabah stok ile fiyat ayarlarını yapar.',
       '<b>Moral:</b> Bahşiş, kostüm, dinlenme odası ve molalar morali artırır; aşırı yorgunluk ve geciken maaş düşürür. Morali 18\'in altına düşen çalışan istifa edebilir.',
-      '<b>Mola:</b> Enerjisi biten çalışanı sakin saatte molaya gönder. Otomatik ekip yönetimi açıksa bunu kendisi yapar ve hiçbir görevi tamamen boş bırakmaz.'
+      '<b>Mola:</b> Enerjisi biten çalışanı sakin saatte molaya gönder. Otomatik ekip yönetimi açıksa bunu kendisi yapar ve hiçbir görevi tamamen boş bırakmaz.',
+      '<b>Ustaların huyları:</b> Ustalar zaman zaman izin ister, çıraklarıyla atışır ya da başka yerden teklif alır. Verdiğin karar moralini ve sadakatini etkiler.',
     ] },
     { id: 'kadro', ic: 'lock', t: 'Kadro sınırı ve dükkânı büyütmek', lead: 'Bir şubede çalışabilecek kişi sayısı dükkânın büyüklüğüne bağlıdır.', items: [
       '<b>Mutfak</b> (usta + çırak): ocak yeri + 1. <b>Salon</b> (kasiyer + garson): masa sayısının yarısı. <b>Paket ve temizlik:</b> salon seviyesi + 1. <b>Müdür:</b> 1.',
@@ -190,7 +198,8 @@
       '<b>Eşit paylaşım:</b> Herkese eşit; moral dengeli artar.',
       '<b>Ustaya ağırlık:</b> Ustalar iki pay alır, keyiflenir; çıraklar ustalarından %30 daha hızlı öğrenir. Diğerleri biraz bozulur.',
       '<b>Performansa göre:</b> Kim çok iş çıkardıysa o çok alır; çalışkanlar mutlu olur.',
-      '<b>Kasaya al:</b> Bahşiş işletmeye kalır, ekip ay sonu primi sözüyle idare eder. Kısa vadede nakit sağlar; uzun süre yapılırsa moral, hız ve itibar düşer.'
+      '<b>Kasaya al:</b> Bahşiş işletmeye kalır, ekip ay sonu primi sözüyle idare eder. Kısa vadede nakit sağlar; uzun süre yapılırsa moral, hız ve itibar düşer.',
+      '<b>Ekibin isteği:</b> Ekip her hafta bir kural ister (kapanış ekranında yazar). O kuralı seçtiğin her gün herkesin morali biraz daha artar; çırakları mentorlu ekipler çoğunlukla "Ustaya ağırlık" ister.',
     ] },
     { id: 'temizlik', ic: 'broom', t: 'Temizlik ve denetim', lead: 'Temizlik her müşteriyle düşer; temizlik görevlisi ve masa toplamak yükseltir.', items: [
       'Belediye denetiminde temizlik 55\'in altındaysa ceza yersin (Muhtar Kemal Bey hikâyesini tamamlarsan eşik 45\'e iner).',
@@ -200,8 +209,9 @@
     { id: 'donemler', ic: 'target', t: 'Dönemler', lead: 'Oyun dört dönemden oluşur. Her dönemin şartları tamamlanınca yeni yerler ve özellikler açılır.', items: [
       '<b>1. Mahalle dükkânı:</b> Bir haftayı ve bir ayı kârla kapat, itibarı 40\'a çıkar, bir ekipmanı yükselt.',
       '<b>2. Semtin yıldızı:</b> Reklam Ajansı ve Merkez Ofis (yeni şube açma) açılır. Geçmek için: dört şube, ayda 5 milyon ₺ ciro, itibar 65.',
-      '<b>3. Şehrin zinciri:</b> Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı, imza tarifin 2. seviyesi, altı toplu sipariş.',
+      '<b>3. Şehrin zinciri:</b> Besi çiftliği ve büyük yatırımlar açılır. Geçmek için: altı şube, iki semt tacı (dönerde üç), imza tarifin 2. seviyesi, on toplu sipariş.',
       '<b>4. İmparatorluk yolu:</b> "Lüks Kebap"ı satın alma teklifi açılır.',
+      '<b>Rehber yıldızı:</b> 3. dönemden sonra itibarın 88\'in üstündeyse rehber müfettişi habersiz bir şubeye gelir (danışman kartı o sabah haber verir). Memnuniyet %84 ve kaçan müşteri %10\'un altındaysa zincir bir yıldız kazanır (en çok 3): her yıldız müşteriyi ve fiyat toleransını kalıcı olarak %3 artırır. Başarısız ziyaret itibar götürür.',
       'Haritadaki şehir panelinde içinde bulunduğun dönem ve eksik şartlar görünür; bir şarta dokununca ilgili yere gidersin.'
     ] },
     { id: 'subeler', ic: 'store', t: 'Şubeler ve Merkez Ofis', lead: 'Yeni şubeleri Merkez Ofis\'ten açarsın. Bütün şubeler aynı anda çalışır; şube şeridinden canlı izlersin.', items: [
@@ -242,7 +252,8 @@
       'Bordro gerçekçi hesaplanır: SGK, gelir vergisi, damga vergisi ve işveren payları ayrı ayrı gösterilir. Maaşlar gecikirse SGK teşviki kaybolur.',
       '<b>Banka:</b> Nakit sıkışırsa esnaf kredisi alabilirsin (aylık %3,4 faiz). Krediyi erken kapatırsan indirim yapılır.',
       'Çalışanlar zaman zaman zam ister; bir kişiye en fazla 60 günde bir zam yapılabilir ve her rolün bir maaş tavanı vardır.',
-      'Reklam Ajansı\'nda kampanyalar müşteri getirir; ama dükkânın doluysa önce kapasiteyi büyüt.'
+      'Reklam Ajansı\'nda kampanyalar müşteri getirir; ama dükkânın doluysa önce kapasiteyi büyüt. Her kampanya kartı, dünkü rakamlarına göre tahmini kârı ya da zararı gösterir.',
+      '<b>Tadım menüsü (kebap):</b> Müşteri sayısını değil hesap ortalamasını artırır; dükkânın dolu olduğu günlerde de kazandırır.'
     ] },
     { id: 'son', ic: 'crown', t: 'İmparatorluk ve yeni nesil', lead: 'Son hedef: "Lüks Kebap" zincirini satın alıp şehrin tek kebap imparatoru olmak.', items: [
       'Şartlar: 4. dönem, yedi semtin hepsinde şube, üç semt tacı, itibar 80 ve satın alma bedeli (enflasyonla artar).',
