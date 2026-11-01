@@ -2,6 +2,7 @@
    Oyun dosyaları window.KE ad alanını sırayla doldurur; sıra önemlidir. */
 import '../css/style.css';
 import '../js/data.js';
+import '../js/calendar.js';
 import '../js/characters.js';
 import '../js/art.js';
 import '../js/sound.js';
@@ -10,11 +11,14 @@ import '../js/sim.js';
 import '../js/farm.js';
 import '../js/narrative.js';
 import '../js/save.js';
+import '../js/config.js';
 import '../js/map.js';
 import '../js/scene.js';
 import '../js/ui.js';
 import '../js/main.js';
 import { registerSW } from 'virtual:pwa-register';
+
+KE.CONFIG.load();
 
 registerSW({
   immediate: true,

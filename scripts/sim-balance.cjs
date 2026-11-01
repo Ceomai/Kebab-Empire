@@ -1,7 +1,7 @@
 const fs=require('fs'),vm=require('vm');
 const root=require('path').join(__dirname,'..','js')+'/';
 const ctx={console,Intl,Math,Date,JSON};ctx.window=ctx;vm.createContext(ctx);
-for(const f of ['data','characters','economy','sim','farm','narrative']) vm.runInContext(fs.readFileSync(root+f+'.js','utf8'),ctx,{filename:f});
+for(const f of ['data','calendar','characters','economy','sim','farm','narrative']) vm.runInContext(fs.readFileSync(root+f+'.js','utf8'),ctx,{filename:f});
 const KE=ctx.KE;
 for (const mode of ['doner','kebap']) for (const dist of ['kadiceşme','kulealti']) {
   const G=KE.newGame({mode,district:dist,master:KE.MASTER_TEMPLATES[mode][0],owner:'T',shopName:'T'});

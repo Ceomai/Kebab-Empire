@@ -40,7 +40,7 @@
 
   /* Yüklemeden sonra her zaman yapılan tutarlılık düzeltmeleri */
   S.normalize = function (g) {
-    if (g.econAsgari) KE.ECON.asgariBrut = g.econAsgari;
+    KE.CAL.applyYear(KE.dateOf(g.day).getUTCFullYear());
     if (g.phase === 'service') g.phase = 'morning';
     if (g.phase === 'closing' && !g.lastSummary) g.phase = 'morning';
     g.live = null;
@@ -50,7 +50,7 @@
   S.valid = (g) => !!(g && typeof g === 'object' && Array.isArray(g.branches) && g.branches.length && Array.isArray(g.staff) && typeof g.day === 'number' && g.mode && KE.MODES[g.mode]);
 
   S.envelope = function (G) {
-    const game = Object.assign({}, G, { live: null, econAsgari: KE.ECON.asgariBrut });
+    const game = Object.assign({}, G, { live: null });
     const body = JSON.stringify(game);
     return { v: S.VERSION, app: S.APP, savedAt: new Date().toISOString(), day: G.day, sum: S.hash(body), game };
   };

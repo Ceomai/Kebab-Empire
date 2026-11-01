@@ -19,12 +19,10 @@
   KE.isWeekEnd = (day) => KE.dateOf(day).getUTCDay() === 0;
   KE.monthKey = (day) => { const d = KE.dateOf(day); return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0'); };
   KE.monthName = (key) => { const [y, m] = key.split('-'); return AYLAR[+m - 1] + ' ' + y; };
-  /* 2026 bayramları: Ramazan Bayramı 20–22 Mart, Kurban Bayramı 27–30 Mayıs */
-  KE.HOLIDAYS = { '2026-03-20': 'Ramazan Bayramı', '2026-03-21': 'Ramazan Bayramı', '2026-03-22': 'Ramazan Bayramı',
-    '2026-05-27': 'Kurban Bayramı', '2026-05-28': 'Kurban Bayramı', '2026-05-29': 'Kurban Bayramı', '2026-05-30': 'Kurban Bayramı',
-    '2027-03-09': 'Ramazan Bayramı', '2027-03-10': 'Ramazan Bayramı', '2027-05-16': 'Kurban Bayramı', '2027-05-17': 'Kurban Bayramı' };
-  KE.holidayOf = (day) => KE.HOLIDAYS[KE.dateOf(day).toISOString().slice(0, 10)] || null;
-  KE.bonusMonths = { '2026-03': 'Ramazan Bayramı', '2026-05': 'Kurban Bayramı', '2027-03': 'Ramazan Bayramı', '2027-05': 'Kurban Bayramı' };
+  /* Bayramlar ve resmî tatiller calendar.js'te hesaplanır */
+  KE.holidayOf = (day) => KE.CAL.holidayOn(KE.dateOf(day).getTime());
+  KE.religiousHolidayOf = (day) => KE.CAL.religiousOn(KE.dateOf(day).getTime());
+  KE.bonusMonths = new Proxy({}, { get: (_, key) => (typeof key === 'string' && /^\d{4}-\d{2}$/.test(key) ? KE.CAL.bonusMonth(key) : undefined) });
 
   /* ---------- Fiyatlar ---------- */
   KE.TIERS = [
@@ -127,7 +125,7 @@
     G.ledger.months.push(report);
     G.monthExtras = { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 };
     G.priceIndex *= 1 + E().aylikEnflasyon;
-    if (monthNo === 12) KE.ECON.asgariBrut = Math.round(KE.ECON.asgariBrut * 1.27);
+    if (monthNo === 12) KE.CAL.applyYear(KE.dateOf(day + 1).getUTCFullYear());
     return report;
   };
 
