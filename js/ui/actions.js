@@ -111,8 +111,25 @@
   };
   A.pricesToMarket = () => { const b = B(); const M = MODE(); M.products.concat([M.drink]).forEach((p) => { if (b.prices[p.id] != null) b.prices[p.id] = KE.marketPrice(KE.G, p); }); UI.toast('Fiyatlar piyasa fiyatına çekildi.', 'good'); UI.render(); };
   A.tier = (d) => { B().tier = +d.i; UI.render(); UI.toast('Tedarik kalitesi: ' + KE.TIERS[+d.i].name, 'good'); };
-  A.stockLevel = (d) => { B().stockLevel = +d.v; UI.render(); };
+  /* sabah verilen sipariş o güne hemen yansır */
+  A.stockLevel = (d) => {
+    B().stockLevel = +d.v;
+    const c = KE.topUpToday(KE.G, B());
+    if (c > 0) UI.toast(`Rıza bugün için ${KE.tl(c)} ek malzeme getirdi.`);
+    UI.render();
+  };
+  A.topUpToday = (d) => {
+    const b = d && d.id ? KE.G.branches.find((x) => x.id === d.id) : B();
+    const c = KE.topUpToday(KE.G, b);
+    UI.toast(c > 0 ? `${b.name}: bugünün ihtiyacı tamamlandı (${KE.tl(c)}).` : 'Stok bugüne zaten yetiyor.');
+    UI.render();
+  };
   A.buy = (d) => { const c = KE.buyExtra(KE.G, B(), d.k, +d.q); UI.toast(`${KE.tl(c)} malzeme alındı.`); UI.render(); };
+  A.capFull = (d) => {
+    const ch = KE.canHire(KE.G, B(), d.r);
+    UI.modal(`<h2>${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu (${ch.used}/${ch.cap})</h2><p>${ch.hint}</p><div class="row end"><button class="btn ghost" data-a="closeModal">Tamam</button>${KE.STAFF_GROUPS[ch.group].up ? '<button class="btn gold" data-a="goSheet" data-s="dekor">Mobilya ve Dekor</button>' : ''}<button class="btn red" data-a="goKadro" data-g="${ch.group}">Kadroya git</button></div>`);
+  };
+  A.goKadro = (d) => { UI.closeModal(); if (d.g === 'mutfak') UI.go('lonca', { tab: 'kadro' }); else { UI.go('buro'); setTimeout(() => { const e = document.getElementById('kadro'); if (e) e.scrollIntoView({ behavior: 'smooth' }); }, 60); } };
   A.hireMaster = (d) => {
     const s = KE.G.market.find((x) => x.id === d.id);
     if (!s) return;

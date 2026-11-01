@@ -4,15 +4,29 @@
   const { esc, clamp, IC, MODE, B, pn, roleName, bar, CL, head, morningOnly, lineChart } = H;
 
   /* ---------- Hal ---------- */
+  /* Bugünün kalabalık tahmini ve stok yeterliliği; yarın özel günse önceden haber */
+  function forecast(b) {
+    const G = KE.G;
+    const exp = KE.forecastCustomers(G, b), f = KE.demandFactor(G, b), sp = KE.specialDay(G.day), sp2 = KE.specialDay(G.day + 1);
+    const sh = KE.shortfall(G, b), morning = G.phase === 'morning';
+    const tone = f >= 1.15 ? 'busy' : f <= 0.92 ? 'calm' : 'norm';
+    const lbl = tone === 'busy' ? `Kalabalık gün: normalin %${Math.round((f - 1) * 100)} üstü` : tone === 'calm' ? 'Sakin gün: normalden az müşteri' : 'Olağan bir gün';
+    return `<section class="panel forecast f-${tone}"><div class="sechead"><h2>${IC(tone === 'busy' ? 'users' : 'clock')}Bugünün tahmini</h2><span class="chip ${tone === 'busy' ? 'or' : tone === 'calm' ? '' : 'gr'}">~${Math.round(exp)} müşteri</span></div>
+      <p><b>${lbl}.</b> ${sp ? esc(sp.name) + '. ' : KE.isWeekend(G.day) ? 'Hafta sonu. ' : ''}${sh.items.length ? `Stok bugünkü talebe yetmiyor: ${sh.items.length} malzeme eksik.` : 'Sabah siparişi bu tahmine göre tamam.'}</p>
+      ${tone === 'busy' ? '<p class="small muted">Kalabalık günde kasaya ve servise yeterli kişi koy, ustaları molaya göndermeden aç. Kuyruk uzarsa müşteri kaçar.</p>' : ''}
+      ${sp2 ? `<p class="small">${IC('star')}<b>Yarın ${esc(sp2.name)}.</b> Rıza siparişi kendisi artırır; sen ekibi ve fiyatları hazırla.</p>` : ''}
+      ${morning && sh.items.length ? `<button class="btn gold" data-a="topUpToday">${IC('cart')}Bugünün ihtiyacına tamamla · ${KE.tl(sh.cost)}</button>` : ''}</section>`;
+  }
   SCREENS.hal = () => {
     const b = B(); const M = MODE();
     const mods = KE.G.mods.filter((m) => m.key.startsWith('ing'));
     return `<main class="screen">${head('Hal ve Kasap', esc(b.name) + ' için tedarik', null, 'riza')}
       <section class="panel"><div class="sechead"><h2>Tedarik kalitesi</h2></div><div class="grid g3">${KE.TIERS.map((t, i) => `<button class="optcard ${b.tier === i ? 'sel' : ''}" data-a="tier" data-i="${i}">${IC(i === 2 ? 'star' : i === 1 ? 'check' : 'coin')}<b>${t.name}</b><small>${t.desc}</small><span class="chips"><span class="chip">Fiyat ×${t.mul}</span><span class="chip ${t.quality > 0 ? 'gr' : t.quality < 0 ? 'rd' : ''}">Kalite ${t.quality >= 0 ? '+' : ''}${t.quality}</span></span></button>`).join('')}</div></section>
+      ${forecast(b)}
       <section class="panel"><div class="sechead"><h2>Otomatik sabah siparişi</h2><div class="seg">${/** @type {Array<[number, string]>} */ ([[1.15, 'Normal'], [1.5, 'Bol']]).map(([v, l]) => `<button class="${Math.abs(b.stockLevel - v) < 0.01 ? 'on' : ''}" data-a="stockLevel" data-v="${v}"><span>${l}</span></button>`).join('')}</div></div>
-        <p class="small muted">Rıza her sabah stoğu son günlerin kullanımına göre tamamlar. "Normal" her gün için yeterli; "Bol" yalnızca maç, bayram ve kampanya günlerinde işe yarar, diğer günler fazlası fire olur. Çiftliğin varsa et önce çiftlik deposundan gelir.</p>
+        <p class="small muted">Rıza her sabah stoğu son günlerin kullanımına ve <b>bugünün beklenen kalabalığına</b> göre tamamlar: hafta sonu, maç ya da kampanya günü daha çok getirir, sakin günde daha az. "Normal" çoğu dükkâna yeter; dün ürün bittiyse "Bol"a geç. Sabah, kepenk açılmadan yaptığın değişiklik bugüne hemen yansır. Çiftliğin varsa et önce çiftlik deposundan gelir.</p>
         ${mods.length ? `<div class="chips">${mods.map((m) => `<span class="chip rd">${m.label} ×${m.mult} · ${m.days} gün</span>`).join('')}</div>` : ''}
-        <div class="inggrid">${Object.entries(M.ingredients).map(([k, ing]) => { const u = b.usage[k] || 0; const step = ing.unit === 'kg' ? Math.max(1, Math.round(u * 0.25)) : Math.max(10, Math.round(u * 0.25 / 10) * 10); const days = u ? (b.stock[k] || 0) / u : 9; return `<div class="ing"><div class="ing-t"><b>${ing.name}</b><small>${KE.tl(KE.ingPrice(KE.G, b, k))}/${ing.unit}</small></div>${bar(clamp(days / 1.5 * 100, 0, 100), days < 0.9 ? 'crit' : days < 1.05 ? 'warn' : 'ok')}<div class="row between"><small class="muted">${KE.num(b.stock[k] || 0, ing.unit === 'kg' ? 1 : 0)} / günlük ${KE.num(u, ing.unit === 'kg' ? 1 : 0)} ${ing.unit}</small><button class="btn xs ghost" data-a="buy" data-k="${k}" data-q="${step}">+${step} ${ing.unit}</button></div></div>`; }).join('')}</div></section>
+        <div class="inggrid">${Object.entries(M.ingredients).map(([k, ing]) => { const u = b.usage[k] || 0; const need = KE.stockNeed(KE.G, b, k) || u; const step = ing.unit === 'kg' ? Math.max(1, Math.round(u * 0.25)) : Math.max(10, Math.round(u * 0.25 / 10) * 10); const cov = need ? (b.stock[k] || 0) / need : 9; const dg = ing.unit === 'kg' ? 1 : 0; return `<div class="ing"><div class="ing-t"><b>${ing.name}</b><small>${KE.tl(KE.ingPrice(KE.G, b, k))}/${ing.unit}</small></div>${bar(clamp(cov * 100, 0, 100), cov < 0.85 ? 'crit' : cov < 0.99 ? 'warn' : 'ok')}<div class="row between"><small class="muted">${KE.num(b.stock[k] || 0, dg)} / bugün gereken ${KE.num(need, dg)} ${ing.unit}</small><button class="btn xs ghost" data-a="buy" data-k="${k}" data-q="${step}">+${step} ${ing.unit}</button></div></div>`; }).join('')}</div></section>
 
     </main>`;
   };
@@ -25,11 +39,11 @@
       const used = KE.branchStaff(KE.G, b).filter((s) => KE.staffGroup(s.role) === g).length;
       const full = used >= caps[g];
       return `<span class="cap ${full ? 'full' : ''}"><small>${KE.STAFF_GROUPS[g].name}</small><b>${used}/${caps[g]}</b></span>`;
-    }).join('')}<span class="cap-h">Dükkânın ocağı ve salonu büyüdükçe kadro genişler.</span></div>`;
+    }).join('')}<span class="cap-h">${groups.some((g) => KE.branchStaff(KE.G, b).filter((s) => KE.staffGroup(s.role) === g).length >= caps[g]) ? '<b>Kadro dolu:</b> yeni kişi almak için Mobilya ve Dekor\'dan yer aç ya da Kadrom sekmesinden birini çıkar.' : 'Dükkânın ocağı ve salonu büyüdükçe kadro genişler.'}</span></div>`;
   }
   const hireBtn = (b, s, label, extraDisabled) => {
     const ch = KE.canHire(KE.G, b, s.role || 'usta');
-    if (!ch.ok) return `<button class="btn ghost" disabled title="${esc(ch.hint)}">${IC('lock')}${KE.STAFF_GROUPS[ch.group].name} dolu</button>`;
+    if (!ch.ok) return `<button class="btn ghost locked" data-a="capFull" data-r="${s.role || 'usta'}" title="${esc(ch.hint)}">${IC('lock')}${KE.STAFF_GROUPS[ch.group].name} dolu</button>`;
     return `<button class="btn green" data-a="${s.role === 'usta' || s.role === 'cirak' ? 'hireMaster' : 'hireWorker'}" data-id="${s.id}" ${extraDisabled ? 'disabled' : ''}>${label}</button>`;
   };
   SCREENS.lonca = () => {
@@ -79,7 +93,7 @@
     return `<main class="screen">${head('Eleman Bürosu', 'Kasa, servis, temizlik, paket ve yönetim ekibi', null, 'buro')}
       <section class="panel"><div class="sechead"><h2>Adaylar</h2><span class="small muted">İşe aldığın kişi <b>${esc(b.name)}</b> şubesinde başlar. Liste her pazar yenilenir.</span></div>
         ${capBar(b, multi ? ['salon', 'destek', 'yonetim'] : ['salon', 'destek'])}<div class="rolekey">${['kasiyer', 'garson', 'temizlik', 'kurye'].concat(multi ? ['mudur'] : []).map((r) => `<span><b>${r === 'garson' ? (KE.G.mode === 'doner' ? 'Komi' : 'Garson') : KE.ROLES[r].name}</b>${KE.ROLES[r].desc}</span>`).join('')}</div><div class="grid g3">${KE.G.workers.filter((s) => multi || s.role !== 'mudur').map((s) => workerCard(s, false, b)).join('')}</div></section>
-      <section class="panel"><div class="sechead"><h2>Kadro (ustalar hariç)</h2></div>${morningOnly()}<div class="grid g3">${mine.map((s) => workerCard(s, true)).join('') || '<p class="muted">Henüz kimse yok.</p>'}</div></section></main>`;
+      <section class="panel" id="kadro"><div class="sechead"><h2>Kadro (ustalar hariç)</h2></div>${morningOnly()}<div class="grid g3">${mine.map((s) => workerCard(s, true)).join('') || '<p class="muted">Henüz kimse yok.</p>'}</div></section></main>`;
   };
 
   /* ---------- Terzi ---------- */

@@ -161,6 +161,7 @@
     { id: 'kadro', ic: 'lock', t: 'Kadro sınırı ve dükkânı büyütmek', lead: 'Bir şubede çalışabilecek kişi sayısı dükkânın büyüklüğüne bağlıdır.', items: [
       '<b>Mutfak</b> (usta + çırak): ocak yeri + 1. <b>Salon</b> (kasiyer + garson): masa sayısının yarısı. <b>Paket ve temizlik:</b> salon seviyesi + 1. <b>Müdür:</b> 1.',
       'Sınırı Mobilya ve Dekor\'daki ocak ve salon yükseltmeleri açar. Ekipman kartları, yükseltmenin kaç kişilik yer açacağını yazar.',
+      '<b>Kadro doluysa işe alım yapılamaz.</b> Yeni birini almak için önce yer aç ya da sabah Kadrom sekmesinden birini çıkar. Birden çok şuben varsa birini boş yeri olan şubeye de atayabilirsin.',
       'Ocak yükseltmesi ancak o ocağı kullanacak pişirmecin varsa müşteri getirir; boş ocak yeri işe yaramaz.',
       'Hazırlık ekipmanı pişirmeyi hızlandırır, soğutma fireyi azaltır; ikisi de mutfak darboğaz olduğunda fark yaratır.'
     ] },
@@ -171,8 +172,10 @@
       'Piyasanın altındaki fiyat kapıya biraz daha fazla müşteri getirir ve memnuniyeti artırır; ama dükkânın zaten doluysa gelenler kapıdan döner.',
       'Bazı ürünler itibar arttıkça açılır; bazıları ise yalnızca o ürünü bilen bir usta varsa menüye girebilir.'
     ] },
-    { id: 'tedarik', ic: 'cart', t: 'Hal, stok ve tedarik', lead: 'Kasap Rıza her sabah stoğu son günlerin kullanımına göre tamamlar.', items: [
-      '<b>Sabah siparişi:</b> "Normal" her gün için yeterlidir. "Bol" yalnızca maç, bayram ve kampanya günlerinde işe yarar; diğer günler fazlası fire olur.',
+    { id: 'tedarik', ic: 'cart', t: 'Hal, stok ve tedarik', lead: 'Kasap Rıza her sabah stoğu son günlerin kullanımına ve bugünün beklenen kalabalığına göre tamamlar.', items: [
+      '<b>Bugünün tahmini:</b> Hal ekranının başında bugün kaç müşteri beklendiği yazar. Hafta sonu, maç akşamı, bayram ya da reklam kampanyası günü "kalabalık gün" olarak işaretlenir; Rıza siparişi kendiliğinden büyütür, sakin günde küçültür.',
+      '<b>Sabah verilen sipariş bugüne yansır:</b> Kepengi açmadan önce sipariş ayarını değiştirir ya da kampanya başlatırsan, "Bugünün ihtiyacına tamamla" düğmesi eksikleri hemen getirir. Danışman kartı da eksik olduğunda uyarır.',
+      '<b>Sabah siparişi:</b> "Normal" çoğu gün yeterlidir. Dün ürünler akşam olmadan bittiyse "Bol"a geç; fire biraz artar ama kaçan satış azalır.',
       'Gün içinde bir ürünün malzemesi biterse o ürün satılamaz; günlükte hangi saatte bittiği yazar.',
       '<b>Tedarik kalitesi:</b> Ucuz malzeme kâr payını artırır ama memnuniyeti ve itibarı düşürür. Premium malzeme pahalıdır ama memnuniyeti belirgin artırır.',
       'Hal ekranından gün içinde ek alım da yapabilirsin.'

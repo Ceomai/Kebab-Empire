@@ -81,8 +81,8 @@
     if (used >= cap && g.up) {
       const eq = KE.MODES[G.mode].equipment[g.up];
       const next = eq.levels[b.equipment[g.up] + 1];
-      hint = next ? (g.up === 'cook' ? 'Mobilya ve Dekor\'dan ocağı büyütürsen yer açılır.' : 'Mobilya ve Dekor\'dan salonu büyütürsen yer açılır.') : 'Bu şube en büyük hâlinde; başka şubeye yerleştir.';
-    } else if (used >= cap) hint = 'Her şubede bir müdür olabilir.';
+      hint = next ? (g.up === 'cook' ? 'Yer açmak için Mobilya ve Dekor\'dan ocağı büyüt ya da kadrodan birini çıkar.' : 'Yer açmak için Mobilya ve Dekor\'dan salonu büyüt ya da kadrodan birini çıkar.') : 'Bu şube en büyük hâlinde: kadrodan birini çıkar ya da başka şubeye ata.';
+    } else if (used >= cap) hint = 'Her şubede bir müdür olabilir. Yenisini almak için mevcut müdürü çıkar.';
     return { ok: used < cap, group, used, cap, hint };
   };
   KE.roleName = (G, s) => s.role === 'usta' ? KE.MODES[G.mode].cookRole : s.role === 'garson' ? (G.mode === 'doner' ? 'Komi' : 'Garson') : KE.ROLES[s.role].name;
@@ -285,24 +285,58 @@
     }
     b.managedNote = notes;
   }
+  /* Bugünün talebi / son günlerin ortalaması. Sabah siparişi buna göre büyür ya da küçülür. */
+  /* özel günün saatlik çarpanları (cuma öğlesi, maç akşamı) dahil günlük müşteri tahmini */
+  KE.forecastCustomers = function (G, b) {
+    const sp = KE.specialDay(G.day), C = KE.HOUR_CURVE;
+    const sum = Object.values(C).reduce((a, v) => a + v, 0);
+    const h = sp && sp.hours ? Object.keys(C).reduce((a, k) => a + C[k] * (sp.hours[k] || 1), 0) / sum : 1;
+    return KE.expectedCustomers(G, b) * h;
+  };
+  KE.demandFactor = function (G, b) {
+    const h = (b.expHist || []).slice(0, -1);
+    if (h.length < 2) return 1;
+    const avg = h.reduce((a, x) => a + x, 0) / h.length;
+    return avg > 0 ? Math.round(Math.max(0.85, Math.min(1.6, KE.forecastCustomers(G, b) / avg)) * 100) / 100 : 1;
+  };
+  KE.stockNeed = (G, b, k, f) => (b.usage[k] || 0) * b.stockLevel * (f == null ? KE.demandFactor(G, b) : f);
+  function fillStock(G, b, f) {
+    let cost = 0, farm = 0;
+    Object.keys(b.usage).forEach((k) => {
+      let need = Math.max(0, KE.stockNeed(G, b, k, f) - (b.stock[k] || 0));
+      if (need > 0 && G.farm && G.farm.store[k] > 0) {
+        const take = Math.min(need, G.farm.store[k]);
+        G.farm.store[k] -= take; b.stock[k] = (b.stock[k] || 0) + take; need -= take; farm += take; G.farm.bonus = G.farm.bonus || {}; G.farm.bonus[k] = true; G.farm.shipped += take;
+      }
+      if (need > 0) { cost += need * KE.ingPrice(G, b, k); b.stock[k] = (b.stock[k] || 0) + need; }
+    });
+    G.cash -= cost;
+    return { cost, farm };
+  }
+  /* Sabah, kepenk açılmadan: bugünün ihtiyacına göre eksikleri tamamla (kampanya, stok ayarı sonrası) */
+  KE.shortfall = function (G, b) {
+    const f = KE.demandFactor(G, b);
+    let cost = 0; const items = [];
+    Object.keys(b.usage).forEach((k) => { const q = KE.stockNeed(G, b, k, f) - (b.stock[k] || 0); if (q > 0.01) { items.push(k); cost += q * KE.ingPrice(G, b, k); } });
+    return { cost, items, factor: f };
+  };
+  KE.topUpToday = function (G, b) {
+    if (G.phase !== 'morning') return 0;
+    const r = fillStock(G, b, KE.demandFactor(G, b));
+    G.today[b.id].purchases += r.cost; G.today[b.id].farmKg = (G.today[b.id].farmKg || 0) + r.farm;
+    return r.cost;
+  };
   KE.morning = function (G) {
     KE.RNG.seed(G, 'morning');
     G.today = {};
     if (G.farm) G.farm.bonus = {};
     G.branches.forEach((b) => { if (KE.isManaged(G, b)) manage(G, b); else b.managedNote = null; });
     G.branches.forEach((b) => {
-      let cost = 0, farm = 0;
-      Object.keys(b.usage).forEach((k) => {
-        const target = b.usage[k] * b.stockLevel;
-        let need = Math.max(0, target - (b.stock[k] || 0));
-        if (need > 0 && G.farm && G.farm.store[k] > 0) {
-          const take = Math.min(need, G.farm.store[k]);
-          G.farm.store[k] -= take; b.stock[k] = (b.stock[k] || 0) + take; need -= take; farm += take; G.farm.bonus[k] = true; G.farm.shipped += take;
-        }
-        if (need > 0) { cost += need * KE.ingPrice(G, b, k); b.stock[k] = (b.stock[k] || 0) + need; }
-      });
-      G.cash -= cost;
-      G.today[b.id] = { purchases: cost, farmKg: farm };
+      /* talep tahmini: bugünün beklenen müşterisi son günlerin ortalamasına göre (özel gün, hafta sonu, kampanya) */
+      const e = KE.forecastCustomers(G, b);
+      b.expHist = (b.expHist || []).concat([Math.round(e * 10) / 10]).slice(-8);
+      const r = fillStock(G, b, KE.demandFactor(G, b));
+      G.today[b.id] = { purchases: r.cost, farmKg: r.farm };
     });
     KE.makeDaily(G);
     if (!G.weekly) KE.makeWeekly(G);

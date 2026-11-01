@@ -36,6 +36,14 @@ const fs = require('fs');
       UI.ng = { mode, legacy: UI.heir, owner: '', shopName: '' }; UI.go('newMode'); UI.ng.district = 'kadiceşme'; UI.go('newMaster');
       UI.hallAdd(G); UI.go('title');
       KE.G = G; UI.go('map');
+      // stok tahmini, kalabalık gün, dolu kadro
+      const b0 = G.branches[0]; G.phase = 'morning';
+      G.mods.push({ key: 'traffic', mult: 1.5, days: 2, label: 'Kampanya' });
+      Object.keys(b0.stock).forEach((k) => { b0.stock[k] = 0; });
+      G.lastSummary = G.lastSummary || { day: G.day - 1, branches: {} };
+      UI.go('hal'); UI.go('map'); UI.adviceCard(); A.topUpToday({ id: b0.id }); A.stockLevel({ v: 1.15 }); A.stockLevel({ v: 1.5 });
+      ['usta', 'kasiyer', 'temizlik', 'mudur'].forEach((r) => { while (KE.canHire(G, b0, r).ok) { const w = r === 'usta' ? KE.randomMaster(G) : KE.randomWorker(G, r); w.branchId = b0.id; G.staff.push(w); } G.activeBranch = b0.id; A.capFull({ r }); sweep(); });
+      UI.go('lonca'); UI.go('buro'); UI.go('guide');
       // rakip hamleleri ve hikâyeler
       KE.EVENTS.filter((e) => e.arc || e.story || e.id === 'rakipSemt').forEach((e) => { try { const c = e.build(G); KE.I18N.t(c.title); KE.I18N.t(c.text); c.choices.forEach((ch) => { KE.I18N.t(ch.label); KE.I18N.t(ch.desc); }); } catch (x) { /* yok */ } });
       KE.G.pendingEvent = { id: 'rk_fiyat', who: 'rakip', title: 'x', text: 'y', rival: 2, choices: [] }; H.showEvent(); sweep();

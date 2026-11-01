@@ -100,8 +100,15 @@
       if (morning && !st.some((s) => s.pos === 'kasa')) add(0, 'cash', nm + 'kasada kimse yok', 'Sipariş alınamaz. Bir kasiyer ya da garsonu kasaya ver.', 'Ekibi düzenle', `data-a="viewBranch" data-id="${b.id}"`);
       if (morning && !st.some((s) => s.pos === 'servis') && st.filter((s) => !KE.isCook(s)).length > 1) add(0, 'tray', nm + 'serviste kimse yok', 'Hazır yemekler tezgâhta soğur.', 'Ekibi düzenle', `data-a="viewBranch" data-id="${b.id}"`);
       if (morning) {
-        const low = Object.keys(b.usage).filter((k) => b.usage[k] > 0 && (b.stock[k] || 0) / b.usage[k] < 0.9);
-        if (low.length) add(1, 'cart', nm + 'stok bir güne yetmiyor', 'Hal\'den ek alım yap; yoksa ürünler gün ortasında biter.', 'Hal\'e git', 'data-a="go" data-s="hal"');
+        /* sabah siparişi o güne yansır: kalabalık gün ya da kampanya sonrası eksik varsa tek dokunuşla tamamla */
+        const sh = KE.shortfall(G, b);
+        if (sh.items.length) add(1, 'cart', nm + 'stok bugüne yetmeyecek', (sh.items.length > 2 ? `${sh.items.length} malzeme` : sh.items.map((k) => KE.MODES[G.mode].ingredients[k].name).join(', ')) + ' beklenen kalabalığa yetmez.|Sabah eksiği tamamlarsan ürünler gün ortasında bitmez.', `Tamamla · ${KE.tl(sh.cost)}`, `data-a="topUpToday" data-id="${b.id}"`);
+        const yso = G.lastSummary && G.lastSummary.branches[b.id] && Object.entries(G.lastSummary.branches[b.id].stats.stockouts || {}).filter(([, m]) => m < 600);
+        if (!sh.items.length && yso && yso.length >= 2 && b.stockLevel < 1.5 && !KE.isManaged(G, b)) add(1, 'cart', nm + 'dün ürün bitti', `${yso.length} ürün akşam saatlerinden önce tükendi. Sabah siparişini "Bol"a çevir; fark bugüne hemen yansır.`, 'Bol sipariş', `data-a="advBol" data-id="${b.id}"`);
+        if (sh.factor >= 1.15) {
+          const front = st.filter((s) => s.pos === 'kasa' || s.pos === 'servis').length;
+          add(sh.items.length ? 2 : 1, 'users', nm + `bugün kalabalık (+%${Math.round((sh.factor - 1) * 100)})`, (front < 2 ? 'Kasada ve serviste tek kişi var; kuyruk uzar.|' : '') + 'Kimseyi molaya gönderme; stok ve ekip hazır olsun.', 'Hal tahmini', 'data-a="go" data-s="hal"');
+        }
       }
       const ys = G.lastSummary && G.lastSummary.branches[b.id] && G.lastSummary.branches[b.id].stats;
       if (ys && ys.arrivals > 20) {
@@ -122,6 +129,9 @@
       const sad = st.filter((s) => s.morale < 35);
       if (sad.length) add(1, 'heart', nm + `${sad[0].name.split(' ')[0]} çok mutsuz`, 'Moral 18\'in altına inerse istifa eder. Zam, mola ya da kostüm moral yükseltir.', KE.isCook(sad[0]) ? 'Usta Pazarı' : 'Eleman Bürosu', `data-a="go" data-s="${KE.isCook(sad[0]) ? 'lonca' : 'buro'}"`);
     });
+    const sp2 = morning && KE.specialDay(G.day + 1);
+    /* her hafta gelen cuma bilinir; yalnızca maç ve bayram önceden haber verilir */
+    if (sp2 && sp2.id !== 'cuma') add(2, 'star', `Yarın ${sp2.name}`, 'Kalabalık bekleniyor. Rıza siparişi kendisi artırır; ekibi tam kadro hazırla.', 'Hal tahmini', 'data-a="go" data-s="hal"');
     if (G.cash < 0) add(0, 'coin', 'Kasa eksiye düştü', 'Maaşlar gecikirse SGK teşviki kaybolur. Kısa vadeli bir kredi çek.', 'Banka', 'data-a="go" data-s="banka"');
     const es = KE.eraStatus(G), miss = es.next && es.req.find((r) => !r.ok);
     /* dönem hedefi: şarta göre yapılacak somut iş */
@@ -140,6 +150,7 @@
     if (!list.length) return '';
     return `<div class="advice ${compact ? 'compact' : ''}"><span class="kicker">${IC('bolt')}Bugün ne yapmalıyım?</span>${list.map((a) => `<div class="adv p${a.pri}"><span class="adv-ic">${IC(a.ic)}</span><span class="adv-t"><b>${esc(a.title)}</b><small>${a.why.split('|').map((w) => `<span>${esc(w.replace(/^ +/, ''))}</span>`).join(' ')}</small></span><button class="btn xs ${a.pri === 0 ? 'red' : a.pri === 1 ? 'gold' : 'ghost'}" ${a.attrs}>${esc(a.btn)}</button></div>`).join('')}</div>`;
   };
+  A.advBol = (d) => { KE.G.activeBranch = d.id; A.stockLevel({ v: 1.5 }); };
   A.advPrices = (d) => { KE.G.activeBranch = d.id; A.pricesToMarket(); };
   UI.cityTasks = () => (KE.G ? cityTasks() : []);
   /* Telefon: bütün yerler, adları ve bekleyen işleriyle tek bir alt pencerede */
