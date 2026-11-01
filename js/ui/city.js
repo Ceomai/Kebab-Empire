@@ -8,6 +8,9 @@
     const out = [];
     const b = B();
     const add = (id, title, sub, when, urgent) => { if (!out.some((t) => t.id === id)) out.push({ id, title, sub, when, urgent }); };
+    const es = KE.eraStatus(KE.G);
+    const miss = es.next && es.req.find((r) => !r.ok);
+    if (miss && KE.placeOpen(KE.G, ERA_PLACE[miss.id])) add(ERA_PLACE[miss.id], miss.label, 'Dönem hedefi: sıradaki döneme geçmek için', 'pm');
     const emp = KE.empireStatus(KE.G);
     if (emp.ready && !emp.done) add('subeler', '"Lüks Kebap" satılık!', 'Bütün şartlar tamam: Merkez Ofis\'ten teklifini ver', 'now', true);
     if (KE.G.cash < 0) add('banka', 'Kasa eksiye düştü', 'Kredi teklifine bak, maaşlar gecikmesin', 'now', true);
@@ -46,7 +49,7 @@
     return { fill: true, par: phone ? 'xMidYMid meet' : window.innerWidth > 1000 && fw / fh < 1400 / 860 ? 'xMidYMin meet' : 'xMidYMid slice', tasks: tasks.map((t) => ({ id: t.id, n: t.n, color: t.color, label: t.time || TL[t.when].replace('Öğleden sonra', 'Öğleden s.') })), route: UI.mapRoute || (tasks[0] && tasks[0].id) };
   }
   function goalRing() {
-    const prog = KE.dailyProgress(KE.G, false);
+    const prog = KE.dailyProgress(KE.G, false).filter((g) => !g.bonus);
     const live = KE.G.phase !== 'morning';
     const served = KE.G.live ? KE.G.branches.reduce((a, b) => a + (KE.G.live[b.id] ? KE.G.live[b.id].stats.served : 0), 0) : 0;
     const tips = KE.G.live ? KE.G.branches.reduce((a, b) => a + (KE.G.live[b.id] ? KE.G.live[b.id].stats.tips : 0), 0) : 0;
@@ -75,10 +78,12 @@
     return `<aside class="citypanel"><div class="cp-in">
       <div class="cp-head"><span class="kicker">${KE.weekday(KE.G.day)} · ${clockNow}</span><h2>${esc(B().name)}</h2></div>
       ${goalRing()}
+      ${eraCard()}${weeklyCard()}
       <div class="cp-sec">Yapılacaklar</div><div class="cp-tasks">${taskHtml}</div>
       <div class="cp-sec">Yerler</div>
-      <div class="cp-places">${KE.MAP.PLACES.map((p) => { const t = tasks.find((x) => x.id === p.id); return `<button class="cp-pl" data-a="go" data-s="${p.id}" data-route="${p.id}" style="--c:${p.color}" title="${esc(p.name)}" aria-label="${esc(p.name)}">${IC(p.icon)}${t ? `<b>${t.n}</b>` : ''}<small class="cp-pn">${esc(p.name)}</small></button>`; }).join('')}</div>
+      <div class="cp-places">${KE.MAP.PLACES.map((p) => { const t = tasks.find((x) => x.id === p.id); const lk = !KE.placeOpen(KE.G, p.id); return `<button class="cp-pl ${lk ? 'lk' : ''}" data-a="go" data-s="${p.id}" data-route="${p.id}" style="--c:${lk ? '#a99a88' : p.color}" title="${esc(p.name)}${lk ? ' · ' + KE.PLACE_ERA[p.id] + '. dönem' : ''}" aria-label="${esc(p.name)}">${IC(lk ? 'lock' : p.icon)}${t ? `<b>${t.n}</b>` : ''}<small class="cp-pn">${esc(p.name)}</small></button>`; }).join('')}</div>
       <button class="btn big green block" data-a="go" data-s="shop">${IC(act[0])}${act[1]}</button>
+      ${KE.G.phase === 'morning' ? `<button class="btn ghost block quickday" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün: servisi atla, sonuca geç</button>` : ''}
     </div></aside>`;
   }
   UI.cityTasks = () => (KE.G ? cityTasks() : []);
@@ -87,9 +92,23 @@
     const tasks = cityTasks();
     const groups = [...new Set(KE.MAP.PLACES.map((p) => p.group))];
     UI.modal(`<div class="sheet-h"><h2>Yerler</h2><button class="sheet-x" data-a="closeModal" aria-label="Kapat">${IC('x')}</button></div>
-      ${groups.map((g) => `<div class="sheet-g">${g}</div><div class="sheet-grid">${KE.MAP.PLACES.filter((p) => p.group === g).map((p) => { const t = tasks.find((x) => x.id === p.id); return `<button class="sheet-pl ${UI.screen === p.id ? 'on' : ''} ${t && t.urgent ? 'urg' : ''}" data-a="goSheet" data-s="${p.id}" style="--c:${p.color}"><span class="sp-ic">${IC(p.icon)}${t ? `<b>${t.n}</b>` : ''}</span><span class="sp-t"><b>${esc(p.name)}</b>${t ? `<small>${esc(t.title)}</small>` : ''}</span></button>`; }).join('')}</div>`).join('')}`, { cls: 'sheet' });
+      ${groups.map((g) => `<div class="sheet-g">${g}</div><div class="sheet-grid">${KE.MAP.PLACES.filter((p) => p.group === g).map((p) => { const t = tasks.find((x) => x.id === p.id); const lk = !KE.placeOpen(KE.G, p.id); return `<button class="sheet-pl ${UI.screen === p.id ? 'on' : ''} ${t && t.urgent ? 'urg' : ''} ${lk ? 'lk' : ''}" data-a="goSheet" data-s="${p.id}" style="--c:${lk ? '#a99a88' : p.color}"><span class="sp-ic">${IC(lk ? 'lock' : p.icon)}${t ? `<b>${t.n}</b>` : ''}</span><span class="sp-t"><b>${esc(p.name)}</b>${lk ? `<small>${KE.PLACE_ERA[p.id]}. dönemde açılır</small>` : t ? `<small>${esc(t.title)}</small>` : ''}</span></button>`; }).join('')}</div>`).join('')}`, { cls: 'sheet' });
   };
-  A.goSheet = (d) => { UI.closeModal(); UI.go(d.s); };
+  A.goSheet = (d) => { if (!KE.placeOpen(KE.G, d.s)) { UI.go(d.s); return; } UI.closeModal(); UI.go(d.s); };
+  /* Dönem kartı: hangi bölümdesin, sıradaki için ne lazım */
+  const ERA_PLACE = { hafta: 'office', rep40: 'kahve', upg: 'dekor', sampiyon: 'subeler', sube2: 'subeler', ciro1m: 'office', sube4: 'subeler', rep65: 'ajans', imza: 'subeler' };
+  function eraCard() {
+    const st = KE.eraStatus(KE.G);
+    if (!st.next) return `<div class="cp-era last"><span class="era-n">${st.era}</span><span class="era-t"><small>${st.era}. dönem</small><b>${st.cur.name}</b><em>${KE.G.flags.empire ? 'İmparatorluk kuruldu.' : 'Son hedef Merkez Ofis\'te.'}</em></span></div>`;
+    return `<div class="cp-era"><span class="era-n">${st.era}</span><span class="era-t"><small>${st.era}. dönem · sıradaki: <i>${st.next.name}</i></small><b>${st.cur.name}</b></span>
+      <div class="era-req">${st.req.map((r) => `<button class="${r.ok ? 'ok' : ''}" data-a="go" data-s="${ERA_PLACE[r.id] || 'map'}">${IC(r.ok ? 'check' : 'target')}<span>${esc(r.label)}</span></button>`).join('')}</div></div>`;
+  }
+  function weeklyCard() {
+    const W = KE.G.weekly;
+    if (!W) return '';
+    const p = Math.max(0, Math.min(1, (W.value || 0) / W.target));
+    return `<div class="cp-week ${W.done ? 'done' : ''}"><span class="kicker">${IC('target')}Haftalık meydan okuma · ödül ${KE.tl(W.reward)}</span><b>${esc(W.text)}</b><span class="gauge ${W.done ? 'ok' : 'or'}"><i style="width:${Math.round(p * 100)}%"></i></span><small>${W.done ? 'Tamamlandı!' : W.kind === 'sat' ? 'Şu an %' + Math.round(W.value || 0) : (W.kind === 'tips' ? KE.tl(W.value || 0) : Math.round(W.value || 0)) + ' / ' + (W.kind === 'tips' ? KE.tl(W.target) : W.target)}</small></div>`;
+  }
   SCREENS.map = () => {
     const tasks = cityTasks();
     return `<main class="mapscreen2"><div class="mapframe big" id="cityframe"></div>${cityPanel(tasks)}</main>`;

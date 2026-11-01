@@ -46,6 +46,12 @@
     const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + ((KE.GOALS.find((g) => g.id === k) || {}).reward || 0), 0);
     if (Cu.cash > maxCash + newLoans + goalCash + 1) return bad('kasa açıklanamayan biçimde arttı');
     if (Cu.reputation > maxRep + 0.6) return bad('itibar artmış');
+    if (Cu.contract && JSON.stringify(Cu.contract) !== JSON.stringify(P.contract)) {
+      const o = KE.contractOffers(P).find((x) => x.id === Cu.contract.id);
+      if (!o || o.pay !== Cu.contract.pay || o.cost !== Cu.contract.cost || o.qty !== Cu.contract.qty || Cu.contract.day !== Cu.day || KE.contractTaken(P)) return bad('toplu sipariş uydurulmuş');
+    }
+    if ((Cu.era || 1) !== (P.era || 1)) return bad('dönem değişmiş');
+    if (Cu.weekly && P.weekly && JSON.stringify(Cu.weekly) !== JSON.stringify(P.weekly)) return bad('haftalık hedef değişmiş');
     if (Cu.ledger.days.length !== P.ledger.days.length || JSON.stringify(Cu.ledger.days.slice(-1)) !== JSON.stringify(P.ledger.days.slice(-1))) return bad('geçmiş değişmiş');
     for (const s of Cu.staff) {
       const o = P.staff.find((x) => x.id === s.id);

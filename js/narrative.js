@@ -78,7 +78,16 @@
       { title: '"Lüks Kebap" yeni şube peşinde', body: 'Cüneyt Bey zincirini büyütmek için semt semt dolaşıyor.' },
       { title: 'Rakipten indirim kampanyası', body: '"Lüks Kebap" bu hafta öğrencilere %20 indirim yaptı.' }
     ];
-    h.push(pick(rivalLines));
+    const stg = (G.rival && G.rival.stage) || 0;
+    const arcNews = [null,
+      { title: '"Lüks Kebap" yeni semtte', body: `Cüneyt Bey: "Bu şehirde iki kebapçıya yer yok." Esnaf ${G.shopName || b.name} ile rakibin kapışmasını merakla izliyor.` },
+      { title: 'Fiyat savaşı kızışıyor', body: '"Lüks Kebap" indirimlerini sürdürüyor. Ekonomistler: "Küçük esnaf için zor günler."' },
+      { title: 'Usta transferleri gündemde', body: 'Cüneyt Bey şehrin en iyi ustalarını toplamaya çalışıyor. Loncada konuşulan tek konu bu.' },
+      { title: 'Semtlerde taç savaşı', body: 'Rakip zincir mermer salonlarıyla şampiyonluk peşinde. Mahalleli taraf tutmaya başladı.' },
+      { title: 'Sosyal medyada iftira dalgası', body: 'Sahte hesaplardan esnafa yönelik paylaşımlar savcılığa taşındı.' },
+      { title: 'Cüneyt Bey\'in teklifi geri çevrildi', body: `${G.owner || 'Patron'} zarfı açmadan iade etti. Şehrin konuştuğu soru: kim kimi satın alacak?` }];
+    if (!G.flags.empire && arcNews[stg] && G.day - ((G.rival && G.rival.last) || 0) < 10) h.splice(1, 0, arcNews[stg]);
+    else h.push(pick(rivalLines));
     return { day: G.day, date: KE.dateStr(G.day), issue: Math.ceil(G.day / 7), headlines: h };
   };
 
@@ -193,8 +202,8 @@
     when: (G) => !G.flags.empire && G.rival.district !== branch(G).district && G.day > 10,
     build: (G) => ({ title: '"Lüks Kebap" semtine geliyor', text: 'Cüneyt Bey sokağın karşısındaki dükkânı kiralamış. Altın harfli tabelası şimdiden asıldı. "Bu semtte yer var mı bakalım" diyor sırıtarak.', ctx: {},
       choices: [
-        { label: 'Reklama yüklen', desc: `${KE.tl(25000)}, 7 gün müşteri +%15`, run: (G) => { G.rival.district = branch(G).district; G.cash -= 25000; KE.addExtra(G, 'ads', 25000); G.mods.push({ key: 'traffic', mult: 1.15, days: 7, label: 'Karşı kampanya' }); return 'Mahalleyi el ilanıyla donattık. "Asıl lezzet burada!"'; } },
-        { label: 'Kalitemize güveniyoruz', desc: 'Rakip semtte, müşteri biraz azalır', run: (G) => { G.rival.district = branch(G).district; return 'Müdavimler sözünü verdi: "Biz seni bırakmayız."'; } }
+        { label: 'Reklama yüklen', desc: `${KE.tl(25000)}, 7 gün müşteri +%15`, run: (G) => { G.rival.district = branch(G).district; G.rival.wins = (G.rival.wins || 0) + 1; G.cash -= 25000; KE.addExtra(G, 'ads', 25000); G.mods.push({ key: 'traffic', mult: 1.15, days: 7, label: 'Karşı kampanya' }); return 'Mahalleyi el ilanıyla donattık. "Asıl lezzet burada!"'; } },
+        { label: 'Kalitemize güveniyoruz', desc: 'Rakip semtte, müşteri biraz azalır', run: (G) => { G.rival.district = branch(G).district; G.rival.losses = (G.rival.losses || 0) + 1; return 'Müdavimler sözünü verdi: "Biz seni bırakmayız."'; } }
       ] }) });
 
   /* ---------- Ek olaylar ---------- */
@@ -341,17 +350,137 @@
         { label: 'Bu yıl izleyelim', desc: 'Bir şey olmaz', run: () => 'Yarışmayı tribünden izledin; rakiplerin tekniklerini not ettin.' }
       ] }) });
 
+
+  /* ---------- Rakip hikâyesi: "Lüks Kebap" sırayla hamle yapar ----------
+     Her hamle bir olay kartıdır; seçimin "düello" sonucunu (kazandın / kaybettin) ve rakibin gücünü değiştirir.
+     Rakip gücü semt şampiyonluğu çıtasını yükseltir; rakibin yerleştiği semtte müşteri azalır. */
+  const duel = (G, won, power) => { const R = G.rival; if (won) R.wins = (R.wins || 0) + 1; else R.losses = (R.losses || 0) + 1; R.power = Math.max(0, R.power + (power || 0)); };
+  const bestCook = (G) => G.staff.filter((s) => s.role === 'usta').sort((a, c) => Object.values(c.spec).reduce((x, y) => x + y, 0) - Object.values(a.spec).reduce((x, y) => x + y, 0))[0];
+
+  ev.push({ id: 'rk_fiyat', who: 'rakip', w: 0, arc: true,
+    build: (G) => ({ title: 'Fiyat savaşı başladı', text: 'Cüneyt Bey bütün şubelerinde fiyatları %20 indirdi. Vitrinine kocaman "Şehrin en ucuzu" yazdırmış. Müşterilerin bir kısmı şimdiden karşıya bakıyor.', ctx: {},
+      choices: [
+        { label: 'Biz de fiyat indirelim', desc: 'Bütün fiyatlar −%10, müşteri kaybı yok', run: (G) => { G.branches.forEach((b) => Object.keys(b.prices).forEach((k) => { b.prices[k] = Math.max(5, Math.round(b.prices[k] * 0.9 / 5) * 5); })); duel(G, true, 2); return 'Fiyatları indirdik. Kâr marjı inceldi ama kimse karşıya geçmedi. Cüneyt Bey bu kadar hızlı karşılık beklemiyordu.'; } },
+        { label: 'Kaliteyle cevap ver', desc: `${KE.tl(P(G, 15000))}, 10 gün sabır +%15, ustan iyiyse itibar +2`, run: (G) => { pay(G, P(G, 15000)); G.mods.push({ key: 'patience', mult: 1.15, days: 10, label: 'Kalite kampanyası' }); const b = branch(G); const best = Math.max(...KE.MODES[G.mode].products.map((p) => KE.bestStar(G, b, p.id))); if (best >= 3) { rep(G, 2); duel(G, true, 0); return '"Ucuz etin yahnisi yavan olur." Müşteriler farkı tadınca geri döndü.'; } G.mods.push({ key: 'traffic', mult: 0.92, days: 10, label: 'Fiyat savaşı' }); duel(G, false, 4); return 'Kampanya iyiydi ama tabaktaki fark yeterince belli olmadı. Bir kısım müşteri ucuza kaçtı.'; } },
+        { label: 'Görmezden gel', desc: '10 gün müşteri −%18', run: (G) => { G.mods.push({ key: 'traffic', mult: 0.82, days: 10, label: 'Fiyat savaşı' }); duel(G, false, 6); return 'Kuyruk kısaldı. Cüneyt Bey gazeteye "Esnaf dayanamıyor" diye demeç verdi.'; } }
+      ] }) });
+
+  ev.push({ id: 'rk_usta', who: 'rakip', w: 0, arc: true, when: (G) => !!bestCook(G),
+    build: (G) => { const s = bestCook(G);
+      return { title: `Cüneyt Bey ${s.name}'nın peşinde`, text: `Rakip, en iyi ustan ${s.name}'ya yalnızca maaş değil, yeni şubesinde ortaklık teklif etmiş. "Bu sefer ciddi" diyor usta, gözünü kaçırarak.`, ctx: { sid: s.id }, who: s,
+        choices: [
+          { label: 'Kâr payı primi ver', desc: `${KE.tl(P(G, 60000))}, moral +25, maaş +%10`, run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (!x) return 'Usta zaten gitmiş.'; pay(G, P(G, 60000)); raise(G, x, 1.1); x.morale = clamp(x.morale + 25, 0, 100); duel(G, true, 0); return `${x.name} primi cebine koydu: "Ortaklık dediğin böyle olur." Cüneyt Bey eli boş döndü.`; } },
+          { label: 'Vicdanına bırak', desc: 'Moral 60 ve üstüyse kalır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (!x) return 'Usta zaten gitmiş.'; if (x.morale >= 60) { x.morale = clamp(x.morale + 10, 0, 100); duel(G, true, 0); return `${x.name}: "Bu ocağı sen yaktın, ben söndürmem." Kaldı.`; } G.staff = G.staff.filter((y) => y.id !== x.id); duel(G, false, 10); return `${x.name} önlüğünü katlayıp bıraktı. Karşı dükkânın camında yüzünü gördük.`; } },
+          { label: 'Yolu açık olsun', desc: 'Usta gider, rakip güçlenir', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (x) G.staff = G.staff.filter((y) => y.id !== x.id); duel(G, false, 10); return 'Usta gitti. Usta Pazarı\'nda yeni bir isim aramak gerek.'; } }
+        ] }; } });
+
+  ev.push({ id: 'rk_tac', who: 'rakip', w: 0, arc: true,
+    build: (G) => { const b = G.branches.find((x) => x.championUntil) || branch(G); const d = KE.district(b);
+      return { title: `${d.name}'de taç savaşı`, text: `"Lüks Kebap" ${d.name}'deki şubesine yeni bir şef ve mermer salon getirdi. Hedefleri belli: bu ay semtin tacını senden almak.`, ctx: { bid: b.id },
+        choices: [
+          { label: 'Semtte lezzet festivali düzenle', desc: `${KE.tl(P(G, 40000))}, 14 gün şube müşterisi +%25, itibar +2`, run: (G, c) => { pay(G, P(G, 40000)); G.mods.push({ key: 'traffic:' + c.bid, mult: 1.25, days: 14, label: 'Lezzet festivali' }); rep(G, 2); G.rival.district = KE.district(G.branches.find((x) => x.id === c.bid)).id; duel(G, true, 6); return 'Festival üç gün sürdü; semtin bütün sofraları bizim dükkândan doldu.'; } },
+          { label: 'Müdavimlerine güven', desc: 'Sadık müdavimin çoksa taç kalır', run: (G, c) => { G.rival.district = KE.district(G.branches.find((x) => x.id === c.bid)).id; const loyal = Object.values(G.regulars || {}).filter((r) => r.loyalty >= 6).length; if (loyal >= 2) { duel(G, true, 8); return 'Ayşe Teyze kapıda nöbet tutar gibi: "Bizim dükkân burası." Müdavimler kımıldamadı.'; } duel(G, false, 14); return 'Müdavimlerin azdı; yenilik merakı ağır bastı. Çıta yükseldi.'; } }
+        ] }; } });
+
+  ev.push({ id: 'rk_karalama', who: 'rakip', w: 0, arc: true,
+    build: (G) => ({ title: 'Karalama kampanyası', text: 'Sosyal medyada sahte hesaplar "Bu dükkânda bayat et kullanılıyor" diye paylaşım yapıyor. Arkasında kimin olduğunu herkes tahmin ediyor.', ctx: {},
+      choices: [
+        { label: 'Kapını denetime aç', desc: 'Temizlik 60 ve üstüyse itibar +4', run: (G) => { const b = branch(G); if (b.cleanliness >= 60) { rep(G, 4); duel(G, true, -8); return 'Belediye ekibi canlı yayında mutfağı gezdi: "Pırıl pırıl." İftira geri tepti.'; } rep(G, -5); duel(G, false, 6); return 'Denetimde tezgâh altı kirli çıktı. Paylaşımlar haklı çıkmış gibi oldu. İtibar −5.'; } },
+        { label: 'Ajansla karşı kampanya', desc: `${KE.tl(P(G, 30000))}, itibar +1, 7 gün müşteri +%10`, run: (G) => { G.cash -= P(G, 30000); KE.addExtra(G, 'ads', P(G, 30000)); rep(G, 1); G.mods.push({ key: 'traffic', mult: 1.1, days: 7, label: 'Karşı kampanya' }); duel(G, true, 0); return 'Ustanın döner kestiği videolar karalamayı bastırdı.'; } },
+        { label: 'Sessiz kal', desc: 'İtibar −4', run: (G) => { rep(G, -4); duel(G, false, 4); return 'Söylenti bir hafta dolaştı. Bazı müşteriler sorarak girdi.'; } }
+      ] }) });
+
+  ev.push({ id: 'rk_teklif', who: 'rakip', w: 0, arc: true,
+    build: (G) => ({ title: 'Cüneyt Bey zincirini almak istiyor', text: `Cüneyt Bey bir akşam kapıda belirdi, masaya bir zarf koydu: "Bütün şubelerine ${KE.tl(G.branches.reduce((a, b) => a + KE.branchCost(G, KE.district(b)), 0) * 2)} veririm. Yorulmadın mı?"`, ctx: {},
+      choices: [
+        { label: '"Bu ocak satılık değil"', desc: 'Ekip morali +10, rakip öfkelenir', run: (G) => { G.staff.forEach((s) => { s.morale = clamp(s.morale + 10, 0, 100); }); G.flags.rivalRefused = G.day; duel(G, true, 10); return 'Zarfı açmadan geri verdin. Mutfaktan alkış koptu. Cüneyt Bey kapıdan çıkarken "Görüşeceğiz" dedi.'; } },
+        { label: '"Asıl ben seni alırım"', desc: 'Son hedefi ilan et, itibar +2', run: (G) => { G.flags.rivalRefused = G.day; rep(G, 2); duel(G, true, 12); return 'Cüneyt Bey güldü, sonra gülmeyi kesti: "O gün gelirse anahtarları kendi elimle veririm." Bütün şehir bu cümleyi konuşuyor.'; } }
+      ] }) });
+
+  /* sıradaki rakip hamlesi: [olay, en erken gün, en düşük dönem] */
+  KE.RIVAL_ARC = [['rakipSemt', 14, 1], ['rk_fiyat', 35, 1], ['rk_usta', 60, 2], ['rk_tac', 90, 2], ['rk_karalama', 120, 2], ['rk_teklif', 150, 3]];
+  KE.rivalNext = function (G) {
+    if (G.flags.empire) return null;
+    const st = (G.rival && G.rival.stage) || 0, a = KE.RIVAL_ARC[st];
+    if (!a) return null;
+    const e = ev.find((x) => x.id === a[0]);
+    const due = G.day >= a[1] && (G.era || 1) >= a[2] && G.day - ((G.rival && G.rival.last) || 0) >= 18 && (!e.when || e.when(G));
+    return { id: a[0], step: st + 1, of: KE.RIVAL_ARC.length, due, day: a[1], era: a[2] };
+  };
+
+  /* ---------- Müdavim hikâyeleri: gönül arttıkça bölüm bölüm ilerler ---------- */
+  const story = (rid, n, minLoyal, build) => ev.push({ id: `st_${rid}_${n}`, who: null, w: 2.2, story: rid, step: n,
+    when: (G) => G.regulars && G.regulars[rid] && G.regulars[rid].loyalty >= minLoyal && ((G.stories || {})[rid] || 0) === n - 1 && G.day - ((G.stories || {})[rid + '_d'] || 0) >= 8,
+    build });
+  const loyal = (G, rid, d) => { const r = G.regulars[rid]; r.loyalty = clamp(r.loyalty + d, 0, 10); };
+  const done = (G, rid, n) => { G.stories = G.stories || {}; G.stories[rid] = n; G.stories[rid + '_d'] = G.day; };
+
+  story('selin', 1, 3, (G) => ({ title: 'Avukat Selin\'in zor davası (1/3)', text: 'Avukat Selin her zamanki dürümünü yerken dosyalara gömülmüş: "Mahallenin eski fırıncısını tahliye etmek istiyorlar. Gece gündüz çalışıyorum."', ctx: {},
+    choices: [
+      { label: 'Öğle yemeği bizden', desc: 'Selin\'in gönlü +2', run: (G) => { loyal(G, 'selin', 2); done(G, 'selin', 1); return '"Bu davayı kazanırsak ilk kutlama burada." Selin dosyaları toparlayıp koştu.'; } },
+      { label: 'İyi şanslar dile', desc: 'Gönül +1', run: (G) => { loyal(G, 'selin', 1); done(G, 'selin', 1); return 'Selin gülümsedi: "Sağ ol, ihtiyacım vardı."'; } }
+    ] }));
+  story('selin', 2, 6, (G) => ({ title: 'Selin\'in davası: duruşma günü (2/3)', text: 'Selin telaşla geldi: "Yarın duruşma var, fırıncı Hüsnü Amca\'ya tanıklık edecek esnaf lazım. Sen yıllardır komşususun."', ctx: {},
+    choices: [
+      { label: 'Tanıklık et', desc: 'Yarım gün dükkândan uzak: 1 gün müşteri −%15, itibar +3', run: (G) => { G.mods.push({ key: 'traffic:' + branch(G).id, mult: 0.85, days: 1, label: 'Duruşma' }); rep(G, 3); loyal(G, 'selin', 2); done(G, 'selin', 2); return 'Mahkeme salonunda Hüsnü Amca elini sıktı. Mahalle bunu unutmayacak.'; } },
+      { label: 'Dilekçe yaz, imzala', desc: 'Gönül +1', run: (G) => { loyal(G, 'selin', 1); done(G, 'selin', 2); return 'Esnaf imzalarıyla dolu dilekçe dosyaya girdi.'; } }
+    ] }));
+  story('selin', 3, 8, (G) => ({ title: 'Selin davayı kazandı! (3/3)', text: 'Selin kapıdan "Kazandık!" diye girdi, arkasında Hüsnü Amca ve yarım mahalle. "Bundan sonra senin bütün sözleşmelerine ben bakarım, hem de bedava."', ctx: {},
+    choices: [
+      { label: 'Herkese ikram!', desc: `${KE.tl(P(G, 5000))}, itibar +4, 60 gün beyaz yaka +%15`, run: (G) => { pay(G, P(G, 5000)); rep(G, 4); G.mods.push({ key: 'type:beyaz', mult: 1.15, days: 60, label: 'Selin\'in tavsiyesi' }); G.flags.lawyer = G.day; done(G, 'selin', 3); return 'Kutlama gece yarısına kadar sürdü. Selin artık dükkânın avukatı: cezalar ve sözleşmeler dert değil.'; } }
+    ] }));
+
+  story('kemal', 1, 3, (G) => ({ title: 'Emekli Kemal Bey\'in fotoğrafları (1/3)', text: 'Kemal Bey sararmış bir zarf çıkardı: "Bu dükkânın 1974\'teki hâli. Baban o zaman çıraktı." Fotoğrafta genç bir adam döner kesiyor.', ctx: {},
+    choices: [
+      { label: 'Duvara asalım', desc: 'Ekip morali +5, Kemal Bey\'in gönlü +2', run: (G) => { moraleAll(G, 5); loyal(G, 'kemal', 2); done(G, 'kemal', 1); return 'Fotoğraf kasanın üstüne asıldı. Müşteriler önünde durup soruyor.'; } },
+      { label: 'Kemal Bey\'e geri ver', desc: 'Gönül +1', run: (G) => { loyal(G, 'kemal', 1); done(G, 'kemal', 1); return '"Sende dursun aslında..." dedi ama zarfı cebine koydu.'; } }
+    ] }));
+  story('kemal', 2, 6, (G) => ({ title: 'Kemal Bey\'in muhtarlık adaylığı (2/3)', text: 'Kemal Bey heyecanlı: "Muhtarlığa aday oluyorum. Seçim bürosu olarak dükkânın arka masasını kullanabilir miyim?"', ctx: {},
+    choices: [
+      { label: 'Arka masa senin', desc: '10 gün aile müşterisi +%20, gönül +2', run: (G) => { G.mods.push({ key: 'type:aile', mult: 1.2, days: 10, label: 'Seçim bürosu' }); loyal(G, 'kemal', 2); done(G, 'kemal', 2); return 'Arka masa çay ve seçim broşürleriyle doldu; mahalleli her gün uğruyor.'; } },
+      { label: 'Esnaf tarafsız kalmalı', desc: 'Gönül −1', run: (G) => { loyal(G, 'kemal', -1); done(G, 'kemal', 2); return 'Kemal Bey anlayışla başını salladı ama biraz bozuldu.'; } }
+    ] }));
+  story('kemal', 3, 8, (G) => ({ title: 'Muhtar Kemal Bey (3/3)', text: 'Seçim sonuçları açıklandı: Kemal Bey muhtar! İlk işi dükkânın önüne bank ve çiçeklik koydurmak oldu. "Mahallenin kalbi burası" dedi.', ctx: {},
+    choices: [
+      { label: 'Kutlama lokması dağıt', desc: `${KE.tl(P(G, 4000))}, itibar +4, şube temizliği +15`, run: (G) => { pay(G, P(G, 4000)); rep(G, 4); G.branches.forEach((b) => { b.cleanliness = clamp(b.cleanliness + 15, 0, 100); }); G.flags.muhtar = G.day; done(G, 'kemal', 3); return 'Muhtarlık artık denetimlerde bizim yanımızda; sokak her sabah süpürülüyor.'; } }
+    ] }));
+
+  story('elif', 1, 3, (G) => ({ title: 'Öğrenci Elif\'in bursu (1/3)', text: 'Elif masada ders çalışıyor, gözleri yorgun: "Burs sınavı yaklaşıyor ama akşamları kafede çalışmak zorundayım."', ctx: {},
+    choices: [
+      { label: 'Akşamları yemeği bizden', desc: `${KE.tl(P(G, 3000))}, Elif\'in gönlü +3`, run: (G) => { pay(G, P(G, 3000)); loyal(G, 'elif', 3); done(G, 'elif', 1); return 'Elif gözleri dolarak teşekkür etti: "Bunu unutmayacağım."'; } },
+      { label: 'Yarı zamanlı iş teklif et', desc: '15 gün servis sabrı +%10, gönül +2', run: (G) => { G.mods.push({ key: 'patience', mult: 1.1, days: 15, label: 'Elif kasada' }); loyal(G, 'elif', 2); done(G, 'elif', 1); return 'Elif hafta sonları kasada; müşteriler güler yüzüne bayıldı.'; } }
+    ] }));
+  story('elif', 2, 6, (G) => ({ title: 'Elif\'in sosyal medya fikri (2/3)', text: 'Elif telefonunu uzattı: "Kampüste herkes yemek videosu çekiyor. Ustanın döner kesişini çeksem, patlar bence!"', ctx: {},
+    choices: [
+      { label: 'Çek bakalım!', desc: '10 gün öğrenci +%35, gönül +2', run: (G) => { G.mods.push({ key: 'type:ogrenci', mult: 1.35, days: 10, label: 'Elif\'in videosu' }); loyal(G, 'elif', 2); done(G, 'elif', 2); return 'Video kampüste elden ele dolaştı; akşamları masa bulmak zorlaştı.'; } },
+      { label: 'Usta kameradan çekinir', desc: 'Gönül +1', run: (G) => { loyal(G, 'elif', 1); done(G, 'elif', 2); return 'Elif omuz silkti: "Peki, ama fikrim aklında olsun."'; } }
+    ] }));
+  story('elif', 3, 8, (G) => ({ title: 'Elif mezun oldu! (3/3)', text: 'Elif diplomasıyla geldi: "Bursu kazandım, bitirdim de! İlk maaşımla ilk yemeği burada yiyeceğim demiştim." Şimdi büyük bir ajansta çalışıyor.', ctx: {},
+    choices: [
+      { label: 'Mezuniyet sofrası kur', desc: `${KE.tl(P(G, 4000))}, itibar +3, 60 gün öğrenci +%15`, run: (G) => { pay(G, P(G, 4000)); rep(G, 3); G.mods.push({ key: 'type:ogrenci', mult: 1.15, days: 60, label: 'Elif\'in hikâyesi' }); G.flags.elif = G.day; done(G, 'elif', 3); return 'Elif\'in hikâyesi kampüs gazetesine çıktı: "Bir döner dükkânı bir hayatı değiştirdi."'; } }
+    ] }));
+
   KE.EVENTS = ev;
+  const ARC_IDS = () => KE.RIVAL_ARC.map((a) => a[0]);
   KE.rollEvent = function (G) {
-    if (G.day < 3 || KE.rand() > 0.42) return null;
-    const pool = ev.filter((e) => (!e.mode || e.mode === G.mode) && (!e.when || e.when(G)) && G.eventLog.slice(-4).indexOf(e.id) === -1);
+    if (G.day < 3) return null;
+    const nx = KE.rivalNext(G);
+    if (nx && nx.due && KE.rand() < 0.6) {
+      const e = ev.find((x) => x.id === nx.id);
+      const card = e.build(G);
+      G.eventLog.push(e.id); G.rival.stage = nx.step; G.rival.last = G.day;
+      return { id: e.id, who: e.who, title: card.title, text: card.text, ctx: card.ctx, whoStaff: card.who ? card.who.id : null, rival: nx.step, choices: card.choices.map((c) => ({ label: c.label, desc: c.desc })) };
+    }
+    if (KE.rand() > 0.42) return null;
+    const arc = ARC_IDS();
+    const pool = ev.filter((e) => !e.arc && arc.indexOf(e.id) === -1 && (!e.mode || e.mode === G.mode) && (!e.when || e.when(G)) && G.eventLog.slice(-4).indexOf(e.id) === -1);
     if (!pool.length) return null;
     let tot = pool.reduce((a, e) => a + e.w, 0), r = KE.rand() * tot;
     let e = pool[0];
     for (const x of pool) { if ((r -= x.w) <= 0) { e = x; break; } }
     const card = e.build(G);
     G.eventLog.push(e.id);
-    return { id: e.id, who: e.who, title: card.title, text: card.text, ctx: card.ctx, whoStaff: card.who ? card.who.id : null, choices: card.choices.map((c) => ({ label: c.label, desc: c.desc })) };
+    return { id: e.id, who: e.who, title: card.title, text: card.text, ctx: card.ctx, whoStaff: card.who ? card.who.id : null, story: e.story ? { rid: e.story, step: e.step } : null, choices: card.choices.map((c) => ({ label: c.label, desc: c.desc })) };
   };
   KE.resolveEvent = function (G, idx) {
     KE.RNG.seed(G, 'event' + idx);

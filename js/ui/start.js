@@ -43,6 +43,7 @@
       <div class="t-front">
         <div class="t-logo"><span class="t-mark">${KE.ART.logo()}</span><h1><span>Kebab</span><em>Empire</em></h1><span class="t-ribbon">Döner ve kebap işletme oyunu</span></div>
         <div class="t-cta">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button><button class="btn big ghost round langbtn" data-a="lang" aria-label="Dil / Language" title="Dil / Language">${(KE.I18N ? KE.I18N.lang : 'tr').toUpperCase()}</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div>
+        ${(() => { const h = UI.hall ? UI.hall() : []; return h.length ? `<div class="t-hall"><span class="kicker">${IC('crown')}Şeref kürsüsü</span>${h.slice(0, 3).map((x) => `<span><b>${esc(x.shop)}</b> · ${x.gen}. kuşak · ${x.days} günde imparator</span>`).join('')}</div>` : ''; })()}
       </div>
     </main>`;
   };
@@ -63,10 +64,12 @@
         <div class="mc-body"><h3>${M.name}</h3><p>${M.tagline}</p><ul>${facts.map(([ic, t]) => `<li>${IC(ic)}${t}</li>`).join('')}</ul><div class="mc-dishes">${dishes}</div></div>
         ${ng.mode === m ? `<span class="mc-check">${IC('check')}</span>` : ''}</button>`;
     };
-    const saved = UI.hasSave() ? KE.SAVE.read() : null;
-    return `<main class="screen narrow">${steps(1)}<div class="row between"><h1 class="stitle">Ne olacaksın?</h1><button class="btn sm ghost" data-a="backToTitle">${IC('arrow')}Ana menü</button></div>
+    const saved = UI.hasSave() && !ng.legacy ? KE.SAVE.read() : null;
+    const lg = ng.legacy;
+    return `<main class="screen narrow">${steps(1)}
+      ${lg ? `<div class="note heirnote">${IC('users')}<span><b>${lg.gen}. kuşak.</b> ${esc(lg.from)} imparatorluğunun torunu olarak yeni bir mahallede başlıyorsun. ${lg.heirName ? esc(lg.heirName) + "'nın ustalığı ilk ustana geçecek." : ''} Rakip bu sefer daha güçlü.</span></div>` : ''}<div class="row between"><h1 class="stitle">Ne olacaksın?</h1><button class="btn sm ghost" data-a="backToTitle">${IC('arrow')}Ana menü</button></div>
       ${saved ? `<div class="note savednote">${IC('store')}<span><b>${esc(saved.game.shopName || 'Kayıtlı oyun')}</b> · ${KE.dateStr(saved.game.day)} kayıtlı duruyor. Yeni oyunu başlatana kadar silinmez; istersen geri dönüp devam edebilirsin.</span><button class="btn sm green" data-a="continue">${IC('play')}Kayıtlı oyuna dön</button></div>` : ''}
-      <div class="modecards">${card('doner')}${card('kebap')}</div>
+      <div class="modecards">${lg ? card(lg.mode) : card('doner') + card('kebap')}</div>
       <div class="panel formrow">
         <label class="field">Adın<input id="ng-owner" value="${esc(ng.owner || '')}" placeholder="Örn. Deniz" maxlength="24" autocomplete="off"></label>
         <label class="field grow">Dükkânının adı<input id="ng-shop" value="${esc(ng.shopName || '')}" placeholder="${ng.mode === 'kebap' ? 'Örn. Köz Ocakbaşı' : 'Örn. Yaprak Döner'}" maxlength="26" autocomplete="off"></label>
@@ -113,8 +116,11 @@
       const t = KE.MASTER_TEMPLATES[ng.mode].filter((x) => x.role !== 'cirak').slice().sort(() => Math.random() - 0.5).slice(0, 3);
       const fakeG = { nextId: 900, day: 1, mode: ng.mode };
       ng.masters = t.map((x) => Object.assign(KE.makeStaff(fakeG, Object.assign({}, x, { role: 'usta' })), { tmpl: x }));
+      /* yeni nesil: ustalar ailenin ocak bilgisini devralır */
+      if (ng.legacy && ng.legacy.spec) ng.masters.forEach((m) => { m.spec = Object.assign({}, ng.legacy.spec); m.wage = KE.wageFor(m.spec, 'usta'); });
     }
     return `<main class="screen">${steps(3)}<div class="row between"><h1 class="stitle">Ocağın başına kim geçecek?</h1><button class="btn sm ghost" data-a="ngStep" data-to="newDistrict">${IC('arrow')}Geri</button></div>
+      ${ng.legacy && ng.legacy.spec ? `<p class="note heirnote">${IC('star')}<span>Hangi ustayı seçersen seç, ${esc(ng.legacy.heirName || 'aile ustası')}'nın uzmanlıkları ona geçer.</span></p>` : ''}
       <p class="lead light">Usta yalnızca pişirir; uzman olduğu ürünü seven müşteriyi dükkâna çeker. Yanına bir çırak, bir kasiyer ve bir ${ng.mode === 'kebap' ? 'garson' : 'komi'} veriliyor.</p>
       <div class="grid g3">${ng.masters.map((s, i) => masterCard(s, { sel: ng.master === i, actions: `<button class="btn ${ng.master === i ? 'green' : ''}" data-a="pickMaster" data-i="${i}">${ng.master === i ? IC('check') + 'Seçildi' : 'Bu usta'}</button>` })).join('')}</div>
       <div class="row end"><button class="btn big green" data-a="startGame" ${ng.master == null ? 'disabled' : ''}>Kepengi kaldır ${IC('play')}</button></div></main>`;

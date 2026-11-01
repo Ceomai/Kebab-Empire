@@ -36,6 +36,7 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
   await page.waitForTimeout(400);
   await shot('06-map');
   for (let i = 0; i < 4; i++) { await click('[data-a="tutNext"]'); await page.waitForTimeout(250); }
+  await page.evaluate(() => { KE.G.era = 4; });
   for (const s of ['hal', 'lonca', 'buro', 'terzi', 'dekor', 'banka', 'belediye', 'ajans', 'kahve', 'subeler', 'ciftlik', 'office']) {
     await page.evaluate((s) => KE.UI.go(s), s); await page.waitForTimeout(120);
     await shot('07-' + s, true);

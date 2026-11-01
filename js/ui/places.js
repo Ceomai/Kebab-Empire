@@ -160,6 +160,36 @@
 
   /* ---------- Şubeler (Merkez Ofis) ---------- */
   /* Oyun sonu: imparatorluk yolu */
+  /* Rakip: düello karnesi ve sıradaki hamle */
+  function rivalPanel() {
+    const G = KE.G, R = G.rival || {};
+    if (G.flags.empire) return '';
+    const nx = KE.rivalNext(G);
+    const steps = KE.RIVAL_ARC.map((a, i) => `<i class="${i < (R.stage || 0) ? 'on' : ''}"></i>`).join('');
+    return `<section class="panel rivalp"><span class="avatar lg">${KE.portrait(KE.CAST.rakip.look, { mood: 'neutral', label: KE.CAST.rakip.name })}</span>
+      <div><span class="kicker">Rakip · ${esc(KE.CAST.rakip.name)}</span><h2>"Lüks Kebap" ile hesaplaşma</h2>
+        <p class="small muted">${nx ? (nx.due ? 'Cüneyt Bey yeni bir hamle hazırlıyor; her sabah kapıda olabilir.' : `Sıradaki hamle ${nx.era > (G.era || 1) ? nx.era + '. dönemde' : 'yakında'}.`) : 'Cüneyt Bey bütün kozlarını oynadı. Son söz senin.'} Rakip güçlendikçe semt şampiyonluğu çıtası yükselir.</p>
+        <div class="rv-row"><span class="lvl">${steps}</span><span class="chip gr">${IC('check')}Kazandığın: ${R.wins || 0}</span><span class="chip rd">${IC('bolt')}Kaybettiğin: ${R.losses || 0}</span><span class="chip">Rakip gücü ${Math.round(R.power || 0)}</span></div></div></section>`;
+  }
+  /* 3. dönem: imza tarif, amiral dükkân, toplu siparişler */
+  function investPanel() {
+    const G = KE.G;
+    if ((G.era || 1) < 3) return `<section class="panel invest locked"><div class="sechead"><h2>${IC('lock')}Büyük yatırımlar</h2><span class="muted small">3. dönemde (Şehrin zinciri) açılır: imza tarif, amiral dükkân, toplu siparişler.</span></div></section>`;
+    const sig = G.signature && !G.signature.family ? G.signature : null, cost = KE.signatureCost(G), pn2 = (pid) => (KE.MODES[G.mode].products.find((p) => p.id === pid) || {}).name;
+    const sigBox = `<article class="card inv"><span class="kicker">${IC('chef')}Ar-Ge mutfağı</span><h3>İmza tarif</h3>
+      <p class="small">${sig ? `<b>${esc(pn2(sig.pid))}</b> · ${KE.SIGNATURE.names[sig.level - 1]} (seviye ${sig.level}/3). Her şubede müşteri +%${sig.level * 5}.` : G.signature && G.signature.family ? `Aile tarifi <b>${esc(pn2(G.signature.pid))}</b> menüde. Kendi imza tarifini geliştir.` : 'Bir ürünü zincirin imzası yap: her şubede müşteri artar, o ürün daha çok satılır.'}</p>
+      ${G.sigWork ? `<span class="chip or">${IC('clock')}Hazırlanıyor: ${Math.max(0, G.sigWork.ready - G.day)} gün kaldı</span>` : cost == null ? `<span class="chip gr">${IC('check')}Efsane seviyede</span>` : `<div class="pc-foot"><b>${KE.tl(cost)}</b><button class="btn sm green" data-a="signature" ${G.cash < cost ? 'disabled' : ''}>${sig ? 'Geliştir' : 'Tarif seç'}</button></div>`}</article>`;
+    const fl = G.branches.find((b) => b.flagship);
+    const flBox = `<article class="card inv"><span class="kicker">${IC('star')}Amiral dükkân</span><h3>${fl ? esc(fl.name) : 'Zincirin vitrini'}</h3>
+      <p class="small">${fl ? 'Amiral dükkân: müşteri +%20, şampiyonluk çıtası 3 puan aşağıda.' : 'Bir şubeni şehrin simgesine dönüştür: müşteri +%20, semt tacını korumak kolaylaşır.'}</p>
+      ${fl ? `<span class="chip gr">${IC('check')}Açıldı</span>` : `<div class="pc-foot"><b>${KE.tl(KE.flagshipCost(G))}</b><button class="btn sm green" data-a="flagship" ${G.cash < KE.flagshipCost(G) || G.phase !== 'morning' ? 'disabled' : ''}>Şube seç</button></div>`}</article>`;
+    const taken = KE.contractTaken(G);
+    const offers = KE.contractOffers(G);
+    const ctBox = `<article class="card inv wide"><span class="kicker">${IC('truck')}Toplu siparişler · haftada bir</span><h3>Bu haftanın teklifleri</h3>
+      ${G.contract ? `<p class="small"><b>${esc(G.contract.name)}</b> bugün akşam teslim edilecek (${G.contract.qty} porsiyon).</p>` : taken ? '<p class="small muted">Bu haftanın siparişi teslim edildi. Yeni teklifler pazartesi.</p>' : ''}
+      <div class="offers">${offers.map((o) => `<div class="offer"><span><b>${esc(o.name)}</b><small>${esc(o.who)} · ${o.qty} × ${esc(pn2(o.pid))}</small></span><span class="o-pay"><b>+${KE.tl(o.pay - o.cost)}</b><small>ekip morali −${o.morale}</small></span><button class="btn xs green" data-a="contract" data-id="${o.id}" ${taken || G.contract || G.phase !== 'morning' ? 'disabled' : ''}>Kabul et</button></div>`).join('')}</div></article>`;
+    return `<section class="panel invest"><div class="sechead"><h2>${IC('coin')}Büyük yatırımlar</h2><span class="muted small">Kasadaki parayı büyümeye çevir.</span></div><div class="grid g3">${sigBox}${flBox}${ctBox}</div></section>`;
+  }
   function empirePanel() {
     const G = KE.G, st = KE.empireStatus(G);
     if (st.done) return `<section class="panel empire done"><span class="emp-crown">${IC('crown')}</span><div><span class="kicker">${KE.dateStr(G.flags.empire)}</span><h2>Şehrin Kebap İmparatoru</h2><p class="muted">"Lüks Kebap" artık zincirinin bir parçası. Rakip yok, şehir senin. Oyun sürüyor: yeni rekorların peşinden git.</p></div><button class="btn sm gold" data-a="empireEnding">${IC('star')}Hikâyeyi yeniden gör</button></section>`;
@@ -176,7 +206,8 @@
         const st = KE.branchStaff(KE.G, b);
         const mgr = st.find((s) => s.role === 'mudur');
         return `<article class="card branch ${b.id === KE.G.activeBranch ? 'sel' : ''}"><div class="br-art">${KE.ART.storefront(b.name, '#d7263d', true)}</div><span class="kicker">${d.name}</span><h3>${esc(b.name)}</h3>
-          <div class="chips"><span class="chip">${st.length} kişi</span><span class="chip ${mgr ? 'gr' : 'rd'}">${mgr ? 'Müdür: ' + esc(mgr.name) : 'Müdür yok'}</span><span class="chip">Temizlik ${Math.round(b.cleanliness)}</span></div>
+          <div class="chips"><span class="chip">${st.length} kişi</span><span class="chip ${mgr ? 'gr' : 'rd'}">${mgr ? 'Müdür: ' + esc(mgr.name) : 'Müdür yok'}</span><span class="chip">Temizlik ${Math.round(b.cleanliness)}</span>${b.flagship ? `<span class="chip gd">${IC('star')}Amiral</span>` : ''}</div>
+          ${mgr ? `<label class="managed"><input type="checkbox" data-a="toggleManaged" data-id="${b.id}" ${b.managed !== false ? 'checked' : ''}><span><b>Müdür yönetsin</b><small>Sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar.${b.managedNote && b.managedNote.length ? ' Bugün: ' + b.managedNote.map((n) => ({ stok: 'stok artırıldı', fire: 'fire için stok azaltıldı', fiyat: 'fiyatlar güncellendi' })[n]).join(', ') + '.' : ''}</small></span></label>` : '<p class="tiny muted">Müdür alırsan şubenin sabah ayarlarını o yapar.</p>'}
           ${h.length > 1 ? lineChart([{ name: 'Son 7 gün ciro', color: '#f28c28', values: h.map((x) => x.revenue), area: true }], h.map((x) => String(KE.dateOf(x.day).getUTCDate())), { h: 120, label: 'Şube cirosu' }) : '<p class="small muted">Henüz yeterli veri yok.</p>'}
           <div class="pc-foot">${b.id !== KE.G.activeBranch ? `<button class="btn sm green" data-a="viewBranch" data-id="${b.id}">${IC('eye')}Bu şubeye geç</button>` : `<button class="btn sm" data-a="go" data-s="shop">${IC('store')}Dükkâna git</button>`}</div></article>`;
       }
@@ -188,7 +219,9 @@
     }).join('');
     return `<main class="screen">${head('Merkez Ofis', 'Şubeler aynı anda çalışır; şube şeridinden canlı izleyebilirsin')}
       ${morningOnly()}
-      ${empirePanel()}
+      ${(KE.G.era || 1) >= 3 || KE.G.flags.empire ? empirePanel() : ''}
+      ${rivalPanel()}
+      ${investPanel()}
       <div class="note">${IC('users')}<span>Yeni şubeye Usta Pazarı'ndan bir usta, Eleman Bürosu'ndan kasiyer ve komi/garson al. Müdür, ekibi yoğunluğa göre kendisi yönetir. Ustasız şube kepenk açamaz.</span></div>
       ${KE.G.branches.length >= 3 ? `<section class="panel row between"><div><h2>Merkezi mutfak</h2><p class="small muted">Döner ve kıyma merkezde hazırlanıp şubelere dağıtılır. Malzeme maliyeti %12 düşer.</p></div>${KE.G.centralKitchen ? `<span class="chip gr">${IC('check')}Kuruldu</span>` : `<button class="btn green" data-a="central" ${KE.G.cash < 450000 * KE.G.priceIndex ? 'disabled' : ''}>${KE.tl(450000 * KE.G.priceIndex)}</button>`}</section>` : ''}
       <div class="grid g3">${cards}</div>

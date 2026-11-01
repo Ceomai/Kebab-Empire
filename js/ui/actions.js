@@ -15,7 +15,7 @@
   A.startGame = () => {
     const ng = UI.ng;
     const m = ng.masters[ng.master];
-    KE.G = KE.newGame({ tut: true, mode: ng.mode, district: ng.district, master: Object.assign({}, m.tmpl, { look: m.look, gender: m.gender, age: m.age }), owner: ng.owner || 'Patron', shopName: ng.shopName || null });
+    KE.G = KE.newGame({ tut: !ng.legacy, mode: ng.mode, district: ng.district, master: Object.assign({}, m.tmpl, { look: m.look, gender: m.gender, age: m.age }), owner: ng.owner || 'Patron', shopName: ng.shopName || null, legacy: ng.legacy || null });
    
     track('game_start', { mode: KE.G.mode, district: KE.G.branches[0].district });
     UI.go('map');
@@ -48,7 +48,7 @@
     if (['map', 'subeler', 'title'].includes(UI.screen)) UI.go('shop'); else UI.render();
   };
   A.openShop = () => {
-    UI.dailyDone = null;
+    UI.dailyDone = null; UI.quickDayRun = false;
     if (!KE.G.branches.some((b) => KE.branchStaff(KE.G, b).some(KE.isCook))) { UI.toast('Hiçbir şubede usta yok. Usta Pazarı\'ndan birini işe al.', 'bad'); return; }
     UI.morningEnv = CL() && KE.CLOUD.ready ? JSON.parse(JSON.stringify(KE.SAVE.envelope(KE.G))) : null;
     KE.startService(KE.G);
@@ -85,7 +85,7 @@
     const S0 = KE.G.lastSummary, morning = UI.morningEnv; UI.morningEnv = null;
     const out = KE.finalizeDay(KE.G, UI.todayRule);
     const tot = { served: 0, revenue: 0 }; Object.values(S0.branches).forEach((x) => { tot.served += x.stats.served; tot.revenue += x.stats.revenue; });
-    track('day_end', { day: S0.day, served: tot.served, revenue: Math.round(tot.revenue), branches: KE.G.branches.length, rep: Math.round(KE.G.reputation) });
+    track('day_end', { day: S0.day, served: tot.served, revenue: Math.round(tot.revenue), branches: KE.G.branches.length, rep: Math.round(KE.G.reputation), era: KE.G.era || 1, gen: KE.G.gen || 1, rival: (KE.G.rival && KE.G.rival.stage) || 0, quick: !!UI.quickDayRun });
     if (morning && KE.CLOUD.ready) {
       const lg = (KE.G.actionLog || []).slice(-1)[0];
       KE.CLOUD.submitDay({ saveId: KE.G.saveId, day: S0.day, month: KE.monthKey(S0.day), mode: KE.G.mode, district: KE.G.branches[0].district, served: tot.served, revenue: tot.revenue, reputation: KE.G.reputation, morning, todayRule: UI.todayRule || KE.G.tipRule, log: lg && lg.day === S0.day ? lg.log : [] });
@@ -233,19 +233,86 @@
     const r = KE.buyRival(KE.G);
     UI.closeModal();
     if (!r.ok) { UI.toast(r.msg, 'bad'); return; }
-    track('empire', { day: KE.G.day, branches: KE.G.branches.length });
+    track('empire', { day: KE.G.day, branches: KE.G.branches.length, gen: KE.G.gen || 1 });
+    UI.hallAdd(KE.G);
     UI.save(); UI.render();
     UI.empireEnding(r.life);
   };
   A.empireEnding = () => UI.empireEnding(KE.lifetime(KE.G));
+
+  /* ---------- Şeref kürsüsü ve yeni nesil ---------- */
+  const HALL_KEY = 'kebab-empire-hall';
+  UI.hall = () => { try { return JSON.parse(localStorage.getItem(HALL_KEY) || '[]'); } catch (e) { return []; } };
+  UI.hallAdd = function (G) {
+    const h = UI.hall();
+    if (h.some((x) => x.saveId === G.saveId)) return;
+    h.unshift({ saveId: G.saveId, shop: G.shopName || G.branches[0].name, owner: G.owner, mode: G.mode, gen: G.gen || 1, days: G.day - 1, date: new Date().toISOString().slice(0, 10), duels: (G.rival && G.rival.wins) || 0 });
+    try { localStorage.setItem(HALL_KEY, JSON.stringify(h.slice(0, 20))); } catch (e) { /* yok */ }
+  };
+  A.newGeneration = () => {
+    const G = KE.G;
+    const heir = G.staff.filter((s) => s.role === 'usta').sort((a, c) => Object.values(c.spec).reduce((x, y) => x + y, 0) - Object.values(a.spec).reduce((x, y) => x + y, 0))[0];
+    const sig = G.signature && !G.signature.family ? G.signature : null;
+    UI.closeModal();
+    UI.modal(`<div class="mhead"><span class="kicker">${IC('users')} ${(G.gen || 1) + 1}. kuşak</span><h2>Yeni nesil</h2><p>İmparatorluk ${esc(G.shopName || G.branches[0].name)} adıyla şeref kürsüsüne yazılır. Torunun yeni bir mahallede, küçük bir dükkânla sıfırdan başlar.</p></div>
+      <ul class="chk"><li>${IC('chef')}<span><b>Mirasın:</b> ${heir ? `${esc(heir.name)}'nın bütün uzmanlıkları ilk ustana geçer` : 'ailenin ocak bilgisi'}${sig ? `, aile tarifi ${esc(KE.MODES[G.mode].products.find((p) => p.id === sig.pid).name)} ilk günden menüde öne çıkar` : ''}.</span></li>
+      <li>${IC('fire')}<span><b>Zorluk:</b> "Lüks Kebap" Cüneyt Bey'in oğluna geçti; rakip bu sefer daha güçlü başlar.</span></li>
+      <li>${IC('lock')}<span>Kayıtlı oyunun silinmez; ana menüden yedeğini alabilirsin. Yeni nesli başlattığında kayıt yuvası yeni oyuna geçer.</span></li></ul>
+      <div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn gold" data-a="newGenYes">${IC('play')}Yeni nesli başlat</button></div>`);
+    UI.heir = { gen: (G.gen || 1) + 1, from: G.shopName || G.branches[0].name, owner: G.owner, spec: heir ? Object.assign({}, heir.spec) : null, heirName: heir ? heir.name : null, sigPid: sig ? sig.pid : null, mode: G.mode };
+  };
+  A.newGenYes = () => {
+    const lg = UI.heir; if (!lg) return;
+    UI.hallAdd(KE.G); UI.save();
+    track('new_gen', { gen: lg.gen });
+    KE.G = null; UI.closeModal();
+    UI.ng = { mode: lg.mode, legacy: lg, owner: '', shopName: '' };
+    UI.go('newMode');
+  };
+
+  /* ---------- Otomasyon ve büyük yatırımlar ---------- */
+  A.quickDay = () => {
+    const G = KE.G;
+    if (G.phase !== 'morning') return;
+    if (!G.branches.some((b) => KE.branchStaff(G, b).some(KE.isCook))) { UI.toast('Hiçbir şubede usta yok. Usta Pazarı\'ndan birini işe al.', 'bad'); return; }
+    if (G.pendingEvent) { H.showEvent(); return; }
+    UI.dailyDone = null;
+    UI.morningEnv = H.CL() && KE.CLOUD.ready ? JSON.parse(JSON.stringify(KE.SAVE.envelope(G))) : null;
+    KE.startService(G);
+    KE.finishService(G);
+    UI.quickDayRun = true;
+    track('quick_day', { day: G.day });
+    UI.go('shop');
+    H.showClosing();
+  };
+  A.toggleManaged = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); if (!b) return; b.managed = b.managed === false; UI.toast(b.managed ? `${b.name}: müdür sabah stok ve fiyatı kendisi ayarlayacak.` : `${b.name}: sabah ayarları artık sende.`); UI.render(); };
+  A.signature = () => {
+    const G = KE.G;
+    const cur = G.signature && !G.signature.family ? G.signature : null;
+    const go = (pid) => { const r = KE.startSignature(G, pid); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('signature', { pid, level: G.sigWork.level }); UI.toast(`Ar-Ge mutfağı çalışıyor: ${KE.SIGNATURE.days} gün sonra hazır.`, 'good'); UI.render(); };
+    if (cur) { go(cur.pid); return; }
+    UI.picker('Hangi ürün imza tarifin olsun?', 'İmza tarif her şubede müşteriyi artırır ve o ürünü daha çok sattırır. Bir kez seçilir, sonra geliştirilir.', KE.MODES[G.mode].products.filter((p) => !KE.isLocked(G, p)).map((p) => ({ id: p.id, label: p.name, sub: 'Piyasa ' + KE.tl(KE.marketPrice(G, p)), art: `<span class="pick-dish">${KE.ART.dish(p.id)}</span>` })), (o) => go(o.id));
+  };
+  A.flagship = () => {
+    const G = KE.G;
+    UI.picker('Hangi şube amiral dükkân olsun?', `Amiral dükkân ${KE.tl(KE.flagshipCost(G))}: o şubede müşteri +%20, semt şampiyonluğu çıtası 3 puan düşer.`, G.branches.map((b) => ({ id: b.id, label: b.name, sub: KE.district(b).name, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>` })), (o) => { const r = KE.buildFlagship(G, o.id); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('flagship', { day: G.day }); UI.toast(`${o.label} artık zincirin amiral dükkânı!`, 'gold'); if (UI.confetti) UI.confetti(); UI.render(); });
+  };
+  A.contract = (d) => {
+    const G = KE.G;
+    const o = KE.contractOffers(G).find((x) => x.id === d.id);
+    if (!o) return;
+    const opts = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook)).map((b) => ({ id: b.id, label: b.name, sub: `${KE.branchStaff(G, b).filter(KE.isCook).length} pişirmeci · ekip morali −${o.morale}`, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>`, sel: b.id === G.activeBranch }));
+    UI.picker(`${o.name}: hangi şube hazırlasın?`, `${o.qty} porsiyon ${KE.MODES[G.mode].products.find((p) => p.id === o.pid).name} · ödeme ${KE.tl(o.pay)} · malzeme ~${KE.tl(o.cost)}. Gün sonunda teslim edilir.`, opts, (b) => { const r = KE.acceptContract(G, o.id, b.id); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('contract', { kind: o.kind, day: G.day }); UI.toast(`${o.name} anlaşması imzalandı; ${b.label} akşama teslim edecek.`, 'good'); UI.render(); });
+  };
   UI.empireEnding = function (life) {
     const G = KE.G;
     const stat = (ic, l, v) => `<div class="kpi"><i>${IC(ic)}</i><span><small>${l}</small><b>${v}</b></span></div>`;
     const best = life.bestProduct ? (KE.MODES[G.mode].products.find((p) => p.id === life.bestProduct) || {}).name : null;
     UI.modal(`<div class="ending"><div class="end-crown">${IC('crown')}</div><span class="kicker">${KE.dateStr(G.flags.empire || G.day)}</span><h2>Şehrin Kebap İmparatoru</h2>
       <p class="end-story">Cüneyt Bey anahtarları masaya bıraktı: "Ocağın hakkını verdin." Babamdan kalan küçük dükkânın paslı kepengini kaldırdığım sabahtan bu yana ${life.days} gün geçti. Şimdi şehrin her semtinde tabelamız yanıyor; ustalarım, çıraklarım, mahallelim aynı sofrada. İmparatorluk kuruldu, ama ocak hiç sönmeyecek.</p>
+      ${life.duels ? `<p class="end-duel">${IC('fire')}Cüneyt Bey'le ${life.duels + (life.duelsLost || 0)} hesaplaşmanın ${life.duels} tanesini sen kazandın.</p>` : ''}
       <div class="end-stats">${stat('chart', 'Toplam ciro', KE.tl(life.revenue))}${stat('users', 'Doyurulan müşteri', KE.num(life.served))}${stat('gift', 'Toplanan bahşiş', KE.tl(life.tips))}${stat('store', 'Şube', life.branches)}${stat('crown', 'Şampiyonluk tacı', life.crowns)}${best ? stat('star', 'En sevilen', `${esc(best)} · ${KE.num(life.bestCount)}`) : ''}</div>
-      <div class="acts"><button class="btn ghost" data-a="newgame">${IC('plus')}Yeni imparatorluk kur</button><button class="btn big gold" data-a="closeModal">${IC('play')}Oyuna devam et</button></div></div>`, { cls: 'endingmodal', wide: true });
+      <div class="acts"><button class="btn ghost" data-a="newgame">${IC('plus')}Yeni imparatorluk kur</button><button class="btn gold" data-a="newGeneration">${IC('users')}Yeni nesil: ${(G.gen || 1) + 1}. kuşak</button><button class="btn big green" data-a="closeModal">${IC('play')}Oyuna devam et</button></div></div>`, { cls: 'endingmodal', wide: true });
     if (UI.confetti) { UI.confetti(); setTimeout(UI.confetti, 900); }
     if (KE.SND) KE.SND.play('goal');
   };

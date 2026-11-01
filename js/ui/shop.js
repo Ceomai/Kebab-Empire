@@ -1,7 +1,7 @@
 /* Kebab Empire — arayüz: dükkân: sabah hazırlığı, canlı servis, tezgâh, kapanış, olay kartı. */
 (function () {
   const UI = KE.UI, H = UI.H, SCREENS = UI.SCREENS, A = UI.A, C = UI.C;
-  const { esc, IC, MODE, B, prod, pn, stars, roleName, bar, moodCls, avatar, queueModal, npc, donut } = H;
+  const { esc, IC, MODE, B, prod, pn, stars, roleName, bar, moodCls, avatar, queueModal, npc, donut, track } = H;
 
   /* ---------- Dükkân ---------- */
   SCREENS.shop = () => KE.G.phase === 'morning' ? morningView() : serviceView();
@@ -42,7 +42,7 @@
     }).join('');
     return `<main class="screen">
       <div class="pagehead"><div class="ph-t"><span class="kicker">Sabah hazırlığı · ${KE.weekday(KE.G.day)}</span><h1>${esc(b.name)}</h1><p class="ph-facts"><span>${IC('map')}${KE.district(b).name}</span><span>${IC('users')}~${Math.round(exp)} müşteri</span><span>${IC('fire')}${Math.min(stations, cooks.length)}/${stations} ocak</span><span>${IC('table')}${KE.tableCount(KE.G, b)} masa</span>${amb.concept ? `<span>${IC('star')}${amb.concept.name}</span>` : ''}</p></div>
-        <button class="btn big green" data-a="openShop">${IC('store')}${KE.G.branches.length > 1 ? 'Bütün şubelerde kepengi aç' : 'Kepengi aç'}</button></div>
+        <div class="row"><button class="btn ghost" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün</button><button class="btn big green" data-a="openShop">${IC('store')}${KE.G.branches.length > 1 ? 'Bütün şubelerde kepengi aç' : 'Kepengi aç'}</button></div></div>
       ${(() => { const sp = KE.specialDay(KE.G.day); return sp ? `<section class="special sp-${sp.theme || 'cuma'}"><span class="sp-badge">${IC(sp.id === 'mac' ? 'fire' : sp.id === 'cuma' ? 'users' : 'star')}</span><div><span class="kicker">Bugün özel gün</span><h2>${sp.name}</h2><p>${sp.desc}</p></div></section>` : ''; })()}
       ${(KE.G.daily || []).length ? `<section class="panel daypanel"><div class="sechead"><h2>Günün hedefleri</h2><span class="muted small">Tutturduğun her hedef ek para ve biraz itibar getirir.</span></div>${dailyHtml(false)}</section>` : ''}
       ${warn.length ? `<div class="alerts">${warn.map(([c, w]) => `<div class="alert ${c}">${IC(c === 'crit' ? 'bolt' : 'clock')}<span>${w}</span></div>`).join('')}</div>` : ''}
@@ -58,7 +58,7 @@
   function dailyHtml(live) {
     const list = live ? KE.dailyProgress(KE.G, false) : (KE.G.daily || []).map((g) => Object.assign({}, g, { p: 0, state: 'open' }));
     if (!list.length) return '';
-    return `<div class="daily">${list.map((g) => `<div class="dg ${g.state}"><i>${IC(g.state === 'done' || g.state === 'ok' ? 'check' : g.state === 'fail' ? 'bolt' : 'target')}</i><span><b>${g.text}</b>${live && ['served', 'tips', 'match'].includes(g.kind) ? bar(g.p * 100, g.state === 'done' ? 'ok' : 'or') : ''}</span><em>+${KE.tl(g.reward)}</em></div>`).join('')}</div>`;
+    return `<div class="daily">${list.map((g) => `<div class="dg ${g.state} ${g.bonus ? 'bonus' : ''}"><i>${IC(g.state === 'done' || g.state === 'ok' ? 'check' : g.state === 'fail' ? 'bolt' : 'target')}</i><span><b>${g.text}</b>${live && ['served', 'tips', 'match', 'player'].includes(g.kind) ? bar(g.p * 100, g.state === 'done' ? 'ok' : 'or') : ''}</span><em>+${KE.tl(g.reward)}</em></div>`).join('')}</div>`;
   }
 
   /* Ekip paneli: görev seçimi (sabah ve servis) */
@@ -263,15 +263,25 @@
     const farm = out.farm && out.farm.done.length ? `<li>${IC('truck')}<span>Çiftlikten kesimhaneye: ${out.farm.done.map((d) => `${d.heads} ${KE.FARM[d.kind].unit} ${KE.FARM[d.kind].name.toLowerCase()} → ${Object.entries(d.got).map(([k, v]) => KE.num(v, 0) + ' kg ' + KE.MODES[KE.G.mode].ingredients[k].name.toLowerCase()).join(', ')}`).join('; ')}</span></li>` : '';
     const tot = Object.values(out.branches).reduce((a, e) => a + e.net, 0);
     const staff = KE.G.staff.slice(0, 12);
+    const pn2 = (pid) => (KE.MODES[KE.G.mode].products.find((p) => p.id === pid) || {}).name;
+    const extra = [
+      out.contract ? `<li class="pos">${IC('truck')}<span><b>${esc(out.contract.name)}</b> teslim edildi: ${out.contract.qty} porsiyon · net ${KE.tl(out.contract.net)}, itibar +1.</span></li>` : '',
+      out.signature ? `<li class="pos">${IC('chef')}<span>Ar-Ge mutfağı bitirdi: <b>${esc(pn2(out.signature.pid))}</b> · <b>${KE.SIGNATURE.names[out.signature.level - 1]}</b> (seviye ${out.signature.level}/3)</span></li>` : '',
+      out.weeklyDone ? `<li class="pos">${IC('target')}<span>Haftalık meydan okuma tamam: <b>${esc(out.weeklyDone.text)}</b> · ödül ${KE.tl(out.weeklyDone.reward)}, itibar +1.</span></li>` : '',
+      out.weeklyEnd && !out.weeklyEnd.done && !out.weeklyDone ? `<li class="neg">${IC('target')}<span>Haftalık meydan okuma kaçtı: ${esc(out.weeklyEnd.text)}.</span></li>` : ''
+    ].join('');
+    /* 3+ şubede gün sonu kısa özet: hikâye ve moral satırı yerine sayılar */
+    const compact = KE.G.branches.length >= 3;
     const regs = {};
     (out.regulars || []).forEach((x) => { regs[x.id] = (regs[x.id] || 0) + x.gain; });
     const regHtml = Object.entries(regs).map(([id, g]) => { const R = KE.REGULARS.find((x) => x.id === id); const r = KE.G.regulars[id]; return `<li class="${g < 0 ? 'neg' : ''}"><span class="avatar sm">${KE.portrait(R.look || KE.CAST[R.cast].look, { mood: g < 0 ? 'sad' : 'happy' })}</span><span><b>${R.name}</b> uğradı. ${g > 0 ? 'Çok memnun kaldı' : g < 0 ? 'Kırıldı' : 'İdare etti'} · ${hearts(r.loyalty)}${r.praised === KE.G.day - 1 ? ' <b>Mahallede dükkânı övüyor!</b>' : ''}</span></li>`; }).join('');
-    const html = `<div class="mhead"><span class="kicker">${KE.dateStr(KE.G.day - 1)}</span><h2>Günlük</h2></div>
-      <div class="journal">${H.sentences(out.journal)}</div>
+    const brRows = compact ? `<div class="tablewrap"><table class="fin"><thead><tr><th>Şube</th><th class="r">Müşteri</th><th class="r">Ciro</th><th class="r">Net</th><th class="r">Memnuniyet</th></tr></thead><tbody>${KE.G.branches.map((b) => { const e = out.branches[b.id]; return e ? `<tr><td><b>${esc(b.name)}</b></td><td class="r">${e.served}</td><td class="r">${KE.tl(e.revenue)}</td><td class="r ${e.net >= 0 ? 'pos' : 'neg'}">${KE.tl(e.net)}</td><td class="r">%${Math.round(e.sat)}</td></tr>` : ''; }).join('')}</tbody></table></div>` : '';
+    const html = `<div class="mhead"><span class="kicker">${KE.dateStr(KE.G.day - 1)}</span><h2>${compact ? 'Gün özeti' : 'Günlük'}</h2></div>
+      ${compact ? brRows : `<div class="journal">${H.sentences(out.journal)}</div>`}
       <div class="kpis"><div class="kpi">${IC('chart')}<small>Günlük net (tahmini)</small><b class="${tot >= 0 ? 'pos' : 'neg'}">${KE.tl(tot)}</b></div><div class="kpi">${IC('star')}<small>İtibar</small><b>${Math.round(KE.G.reputation)}</b></div><div class="kpi">${IC('coin')}<small>Kasa</small><b>${KE.tl(KE.G.cash)}</b></div></div>
-      <h4>Ekibin morali</h4><div class="moodrow">${staff.map((s) => `<div class="mood">${avatar(KE.staffLook(s), KE.moodFromValue(s.morale), s.name)}<small>${esc(s.name.replace(' Usta', ''))}</small><b class="${(s.moraleDelta || 0) >= 0 ? 'pos' : 'neg'}">${(s.moraleDelta || 0) >= 0 ? '+' : ''}${KE.num(s.moraleDelta || 0, 1)}</b><em>${KE.tl(s.tipsToday || 0)}</em></div>`).join('')}</div>
+      ${compact ? '' : `<h4>Ekibin morali</h4>`}<div class="moodrow" ${compact ? 'hidden' : ''}>${staff.map((s) => `<div class="mood">${avatar(KE.staffLook(s), KE.moodFromValue(s.morale), s.name)}<small>${esc(s.name.replace(' Usta', ''))}</small><b class="${(s.moraleDelta || 0) >= 0 ? 'pos' : 'neg'}">${(s.moraleDelta || 0) >= 0 ? '+' : ''}${KE.num(s.moraleDelta || 0, 1)}</b><em>${KE.tl(s.tipsToday || 0)}</em></div>`).join('')}</div>
       ${(out.daily || []).length ? `<h4>Günün hedefleri</h4><div class="daily">${out.daily.map((g) => `<div class="dg ${g.state}"><i>${IC(g.state === 'done' ? 'check' : 'bolt')}</i><span><b>${g.text}</b></span><em>${g.state === 'done' ? '+' + KE.tl(g.reward) : 'Olmadı'}</em></div>`).join('')}</div>` : ''}
-      ${ups || quits || goals || farm || regHtml ? `<ul class="events">${goals}${regHtml}${farm}${ups}${quits}</ul>` : ''}
+      ${ups || quits || goals || farm || regHtml || extra ? `<ul class="events">${goals}${extra}${regHtml}${farm}${ups}${quits}</ul>` : ''}
       <div class="acts"><button class="btn big green" data-a="closeAfterDay">${IC('play')}Yeni güne başla</button></div>`;
     UI.modal(html, { wide: true });
     (out.unlocks || []).forEach((p) => queueModal(() => { UI.modal(`<div class="unlock"><span class="kicker">İtibar ${p.unlock} · Yeni tarif</span><div class="ul-dish">${KE.ART.dish(p.id)}</div><h2>${p.name} menüde!</h2><p class="lead">Bütün şubelerin menüsüne eklendi. Onu seven müşteriler kapıda.</p><div class="acts center"><button class="btn big green" data-a="closeModal">${IC('check')}Harika</button></div></div>`); UI.confetti(); KE.SND.play('goal'); }));
@@ -279,9 +289,30 @@
       <div class="champs">${out.champions.map((c) => `<div class="champ ${c.won ? 'won' : ''}"><span class="cup">${IC(c.won ? 'crown' : 'bolt')}</span><span><b>${esc(c.name)}</b><small>${c.district} · memnuniyet %${Math.round(c.sat)} / çıta %${c.bar}</small></span><em>${c.won ? 'Şampiyon!' : c.served < 250 ? 'Yetersiz müşteri' : 'Lüks Kebap kazandı'}</em></div>`).join('')}</div>
       <div class="acts"><button class="btn big green" data-a="closeModal">Tamam</button></div>`); if (out.champions.some((c) => c.won)) { UI.confetti(); KE.SND.play('goal'); } });
     if (out.month) queueModal(() => UI.modal(monthReportHtml(out.month) + `<div class="acts"><button class="btn big green" data-a="closeModal">Tamam</button></div>`, { wide: true }));
+    (out.eras || []).forEach((e) => queueModal(() => { UI.modal(eraHtml(e), { cls: 'eramodal' }); UI.confetti(); KE.SND.play('goal'); track('era', { era: e.n, day: KE.G.day - 1 }); }));
+    if (out.weeklyEnd && KE.G.branches.length >= 2) queueModal(() => UI.modal(weekReportHtml() + `<div class="acts"><button class="btn big green" data-a="closeModal">Tamam</button></div>`, { wide: true }));
     if (out.news) queueModal(() => UI.modal(newsHtml(out.news) + `<div class="acts"><button class="btn big green" data-a="closeModal">Gazeteyi katla</button></div>`, { wide: true }));
   }
 
+  function eraHtml(e) {
+    const opened = KE.placesOfEra(e.n).map((id) => KE.MAP.place(id)).filter(Boolean);
+    const extra = { 3: ['Büyük yatırımlar: imza tarif, amiral dükkân, toplu siparişler'], 4: ['"Lüks Kebap"ı satın alma teklifi (Merkez Ofis)'] }[e.n] || [];
+    return `<div class="unlock era-up"><span class="kicker">Yeni dönem · ${e.n}/${KE.ERAS.length}</span><div class="era-big">${e.n}</div><h2>${esc(e.name)}</h2><p class="lead">${esc(e.story)}</p>
+      ${opened.length || extra.length ? `<div class="era-open">${opened.map((p) => `<span class="eo" style="--c:${p.color}">${IC(p.icon)}<b>${esc(p.name)}</b> açıldı</span>`).join('')}${extra.map((x) => `<span class="eo" style="--c:#7a1f3d">${IC('star')}<b>${esc(x)}</b></span>`).join('')}</div>` : ''}
+      ${e.req.length ? `<p class="small muted">Sıradaki döneme geçmek için:</p><div class="chips center">${e.req.map((r) => `<span class="chip">${esc(r.label)}</span>`).join('')}</div>` : ''}
+      <div class="acts center"><button class="btn big green" data-a="closeModal">${IC('play')}Devam</button></div></div>`;
+  }
+  /* Haftalık rapor: son 7 günün şube şube toplamı */
+  function weekReportHtml() {
+    const G = KE.G, from = G.day - 7;
+    const rows = G.branches.map((b) => { const ds = G.ledger.days.filter((d) => d.branchId === b.id && d.day >= from); const prev = G.ledger.days.filter((d) => d.branchId === b.id && d.day >= from - 7 && d.day < from); const rev = ds.reduce((a, d) => a + d.revenue, 0), pr = prev.reduce((a, d) => a + d.revenue, 0); const served = ds.reduce((a, d) => a + d.served, 0); return { b, rev, net: ds.reduce((a, d) => a + d.net, 0), served, sat: served ? ds.reduce((a, d) => a + d.sat * d.served, 0) / served : 0, tr: pr ? rev / pr - 1 : null }; });
+    const best = rows.slice().sort((a, c) => c.net - a.net)[0], worst = rows.slice().sort((a, c) => a.net - c.net)[0];
+    return `<div class="mhead"><span class="kicker">${KE.dateStr(from)} – ${KE.dateStr(G.day - 1)}</span><h2>Haftalık rapor</h2></div>
+      <div class="kpis"><div class="kpi">${IC('coin')}<small>Haftalık ciro</small><b>${KE.tl(rows.reduce((a, r) => a + r.rev, 0))}</b></div><div class="kpi">${IC('chart')}<small>Haftalık net</small><b class="${rows.reduce((a, r) => a + r.net, 0) >= 0 ? 'pos' : 'neg'}">${KE.tl(rows.reduce((a, r) => a + r.net, 0))}</b></div><div class="kpi">${IC('star')}<small>En iyi şube</small><b>${esc(best.b.name)}</b></div></div>
+      <div class="tablewrap"><table class="fin"><thead><tr><th>Şube</th><th class="r">Müşteri</th><th class="r">Ciro</th><th class="r">Geçen haftaya göre</th><th class="r">Net</th><th class="r">Memnuniyet</th></tr></thead><tbody>
+      ${rows.map((r) => `<tr><td><b>${esc(r.b.name)}</b>${KE.isManaged(G, r.b) ? ' <small class="muted">müdürlü</small>' : ''}</td><td class="r">${r.served}</td><td class="r">${KE.tl(r.rev)}</td><td class="r ${r.tr == null ? '' : r.tr >= 0 ? 'pos' : 'neg'}">${r.tr == null ? '—' : (r.tr >= 0 ? '+' : '') + Math.round(r.tr * 100) + '%'}</td><td class="r ${r.net >= 0 ? 'pos' : 'neg'}">${KE.tl(r.net)}</td><td class="r">%${Math.round(r.sat)}</td></tr>`).join('')}</tbody></table></div>
+      ${worst.net < 0 ? `<div class="alert warn">${IC('bolt')}<span><b>${esc(worst.b.name)}</b> bu hafta zarar etti. Kapanış önerilerine ve kadrosuna bak.</span></div>` : ''}`;
+  }
   function hearts(n) { let h = '<span class="hearts" aria-label="Gönül ' + n + '/10">'; for (let i = 0; i < 5; i++) h += `<i style="--f:${Math.max(0, Math.min(1, n / 2 - i)) * 100}%">♥</i>`; return h + '</span>'; }
   function newsHtml(n) {
     return `<div class="paper"><div class="mast">Mahalle Postası</div><div class="mastline"><span>Sayı ${n.issue}</span><span>${n.date}</span><span>15 ₺</span></div>
@@ -319,7 +350,7 @@
     if (e.whoStaff) { const s = KE.G.staff.find((x) => x.id === e.whoStaff); if (s) { look = KE.staffLook(s); name = s.name; } }
     if (!look && e.who && KE.CAST[e.who]) { look = KE.CAST[e.who].look; name = KE.CAST[e.who].name; }
     if (!look) { look = KE.CAST.ayse.look; name = 'Ayşe Teyze'; }
-    UI.modal(`<div class="evcard"><div class="ev-fig">${KE.figure(look, { mood: 'neutral', label: name })}</div><div class="stack"><span class="kicker">Olay · ${esc(name)}</span><h2>${esc(e.title)}</h2><p class="lead">${esc(e.text)}</p>
+    UI.modal(`<div class="evcard"><div class="ev-fig">${KE.figure(look, { mood: 'neutral', label: name })}</div><div class="stack"><span class="kicker ${e.rival ? 'rv' : ''}">${e.rival ? `${IC('fire')}Rakip hamlesi ${e.rival}/${KE.RIVAL_ARC.length}` : e.story ? `${IC('heart')}Müdavim hikâyesi` : 'Olay'} · ${esc(name)}</span><h2>${esc(e.title)}</h2><p class="lead">${esc(e.text)}</p>
       <div class="choices">${e.choices.map((c, i) => `<button class="choice c${i}" data-a="eventChoice" data-i="${i}"><b>${esc(c.label)}</b><small>${esc(c.desc)}</small></button>`).join('')}</div></div></div>`, { cls: 'event' });
   }
 

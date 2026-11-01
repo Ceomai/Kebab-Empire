@@ -26,11 +26,19 @@ for (const mode of (process.env.MODES || 'doner,kebap').split(',')) for (const f
       const grow = (k) => { const lv = KE.MODES[mode].equipment[k].levels[b.equipment[k] + 1]; if (lv && G.cash > lv.cost * G.priceIndex * 3) { const c = lv.cost * G.priceIndex; G.cash -= c; KE.addExtra(G, 'capex', c); b.equipment[k]++; } };
       if (S.arrivals > 40 && (S.lostWait + S.lostFull + S.lostFood) / S.arrivals > 0.15 && front < 4 && G.cash > 400000) { const r = front % 2 ? 'kasiyer' : 'garson'; if (!KE.canHire(G, b, r).ok) grow('service'); if (KE.canHire(G, b, r).ok) { const w = KE.randomWorker(G, r); w.branchId = b.id; G.staff.push(w); } }
       if (S.arrivals > 40 && S.lostFood / S.arrivals > 0.06 && st.filter(KE.isCook).length < 3 && G.market.length && G.cash > 600000) { if (!KE.canHire(G, b, 'usta').ok) grow('cook'); if (KE.canHire(G, b, 'usta').ok) { const m = G.market.shift(); m.branchId = b.id; G.staff.push(m); } } });
+    // yeni sistemler: erken ekipman, 3. dönemde imza tarif, toplu sipariş ve amiral dükkân
+    G.branches.forEach((b) => ['service', 'cook'].forEach((k) => { const lv = KE.MODES[mode].equipment[k].levels[b.equipment[k] + 1]; if (lv && G.cash > lv.cost * G.priceIndex * 4 + 300000) { const c = lv.cost * G.priceIndex; G.cash -= c; KE.addExtra(G, 'capex', c); b.equipment[k]++; } }));
+    if ((G.era || 1) >= 3) {
+      const sc = KE.signatureCost(G); if (sc && !G.sigWork && G.cash > sc * 3) KE.startSignature(G, (G.signature && !G.signature.family) ? G.signature.pid : KE.MODES[mode].products[0].id);
+      const o = KE.contractOffers(G)[0]; if (o && !KE.contractTaken(G)) KE.acceptContract(G, o.id, G.branches[0].id);
+      if (!G.branches.some((b) => b.flagship) && G.cash > KE.flagshipCost(G) * 3) KE.buildFlagship(G, G.branches[0].id);
+    }
     if (G.phase === 'morning' && KE.empireStatus(G).ready && !G.flags.empire) { KE.buyRival(G); rows.push(`*** İMPARATOR: gün ${G.day} (${KE.dateStr(G.day)})`); }
     KE.startService(G); let g = 0; while (!KE.allDone(G) && g++ < 1500) KE.tickAll(G);
     KE.finishService(G);
     const out = KE.finalizeDay(G);
-    const emp = KE.empireStatus(G); if (out.month) rows.push(`${out.month.name.padEnd(13)} ciro ${String(Math.round(out.month.revenue / 1000)).padStart(6)}B net ${String(Math.round(out.month.net / 1000)).padStart(6)}B pers ${String(Math.round(out.month.personnel / 1000)).padStart(5)}B çiftlik ${String(Math.round((out.month.farm || 0) / 1000)).padStart(4)}B | kasa ${String(Math.round(G.cash / 1000)).padStart(7)}B şube ${G.branches.length} itibar ${G.reputation.toFixed(0)} pİndeks ${G.priceIndex.toFixed(2)} | taç ${emp.req[1].have} itibar ${emp.req[2].have}`);
+    (out.eras || []).forEach((e) => rows.push(`--- dönem ${e.n} (${e.name}): gün ${G.day - 1}`));
+    const emp = KE.empireStatus(G); if (out.month) rows.push(`${out.month.name.padEnd(13)} ciro ${String(Math.round(out.month.revenue / 1000)).padStart(6)}B net ${String(Math.round(out.month.net / 1000)).padStart(6)}B pers ${String(Math.round(out.month.personnel / 1000)).padStart(5)}B çiftlik ${String(Math.round((out.month.farm || 0) / 1000)).padStart(4)}B | kasa ${String(Math.round(G.cash / 1000)).padStart(7)}B şube ${G.branches.length} itibar ${G.reputation.toFixed(0)} pİndeks ${G.priceIndex.toFixed(2)} | taç ${G.branches.filter((b) => b.champions).length} düello ${(G.rival.wins || 0)}-${(G.rival.losses || 0)} güç ${Math.round(G.rival.power)}`);
   }
   console.log(`\n== ${mode} ${farm ? '+çiftlik' : ''}`); rows.forEach((r) => console.log(r));
 }

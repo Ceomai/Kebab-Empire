@@ -134,6 +134,11 @@
      pencere kapanır, sonra bir önceki ekrana dönülür; oyun sayfadan çıkmaz. */
   const histOk = (() => { try { return !!(window.history && history.pushState); } catch (e) { return false; } })();
   UI.go = function (s, p, o) {
+    if (KE.G && KE.placeOpen && !KE.placeOpen(KE.G, s)) {
+      const pl = KE.MAP.place(s);
+      UI.toast(`${pl ? pl.name : 'Bu yer'} ${KE.PLACE_ERA[s]}. dönemde açılır.`, 'bad');
+      return;
+    }
     const prev = UI.screen;
     UI.screen = s; UI.params = p || {}; UI.render(); window.scrollTo(0, 0);
     if (!histOk || (o && o.pop)) return;
@@ -199,7 +204,7 @@
     </nav>`;
   }
   function branchTabs() {
-    return KE.G.branches.map((b) => branchTab(b)).join('') + `<button class="btab add" data-a="go" data-s="subeler">${IC('plus')}<span>Şube aç</span></button>`;
+    return KE.G.branches.map((b) => branchTab(b)).join('') + (KE.placeOpen(KE.G, 'subeler') && KE.G.branches.length < KE.DISTRICTS.length ? `<button class="btab add" data-a="go" data-s="subeler">${IC('plus')}<span>Şube aç</span></button>` : '');
   }
   function branchTab(b) {
     const L = KE.G.live && KE.G.live[b.id];
@@ -207,6 +212,7 @@
     let status = 'Hazırlık', dot = 'idle';
     if (KE.G.phase === 'service' && L) { if (L.closed) { status = 'Ustası yok, kapalı'; dot = 'off'; } else if (L.done) { status = 'Kapandı'; dot = 'off'; } else { status = `${L.queue.length} sırada · ${KE.tl(L.stats.revenue)}`; dot = L.queue.length > 5 ? 'busy' : 'open'; } }
     if (KE.G.phase === 'closing') { status = 'Kepenk indi'; dot = 'off'; }
+    if (KE.isManaged(KE.G, b) && KE.G.phase === 'morning') status = 'Müdür hazırlıyor';
     return `<button class="btab ${act ? 'on' : ''}" role="tab" aria-selected="${act}" data-a="viewBranch" data-id="${b.id}"><span class="btab-art">${KE.ART.storefront('', act ? '#d7263d' : '#9a8b7a', KE.G.phase === 'service')}</span><span class="btab-t"><b>${esc(b.name)}${b.championUntil && KE.G.day <= b.championUntil ? ` <span class="crownic" title="Semt şampiyonu">${IC('crown')}</span>` : ''}</b><small><i class="dot ${dot}"></i>${status}</small></span></button>`;
   }
   function todayRevenue() { return KE.G.live ? KE.G.branches.reduce((a, b) => a + (KE.G.live[b.id] ? KE.G.live[b.id].stats.revenue : 0), 0) : 0; }

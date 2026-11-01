@@ -1231,3 +1231,53 @@ body.calm *, body.calm *::before, body.calm *::after { animation-duration: 0.001
 .cap small { font-size: 11.5px; color: var(--murekkep-2); font-weight: 700; } .cap b { font-family: var(--f-display); font-variant-numeric: tabular-nums; }
 .cap.full { border-color: var(--biber); background: #fff4f2; } .cap.full b { color: var(--biber); } .cap.full b::after { content: " ●"; font-size: .7em; }
 .cap-h { flex-basis: 100%; font-size: 12px; color: var(--murekkep-2); }
+
+/* ---------- Dönemler, haftalık meydan okuma, hızlı gün ---------- */
+.cp-era { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 4px 10px; align-items: center; background: #fff; border: 1px solid var(--kart-cizgi); border-radius: 16px; padding: 10px 12px; margin-top: 12px; }
+.era-n { grid-row: span 2; width: 44px; height: 44px; border-radius: 50%; background: var(--sumak); color: #fff; display: grid; place-items: center; font: 800 22px var(--f-display); box-shadow: 0 3px 0 #4f1227; }
+.era-t { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; } .era-t small { font-size: 11px; color: var(--murekkep-2); font-weight: 700; } .era-t b { font-family: var(--f-display); font-size: 17px; } .era-t em { font-style: normal; font-size: 12px; color: var(--murekkep-2); }
+.era-req { grid-column: 2; display: flex; flex-direction: column; gap: 3px; }
+.era-req button { display: flex; align-items: center; gap: 6px; background: none; border: 0; padding: 2px 0; font: 700 12.5px var(--f-body); color: var(--murekkep); cursor: pointer; text-align: left; }
+.era-req button .ic { width: 16px; height: 16px; color: var(--kor-deep); flex: none; }
+.era-req button.ok { color: var(--murekkep-2); text-decoration: line-through; } .era-req button.ok .ic { color: var(--nane-deep); }
+.cp-era.last .era-n { background: var(--altin); color: var(--murekkep); box-shadow: 0 3px 0 #b8901a; }
+.cp-week { display: flex; flex-direction: column; gap: 4px; background: var(--krem); border-radius: 14px; padding: 9px 12px; margin-top: 8px; }
+.cp-week .kicker { display: flex; align-items: center; gap: 5px; } .cp-week .kicker .ic { width: 14px; height: 14px; }
+.cp-week b { font-size: 13.5px; } .cp-week small { font-size: 11.5px; color: var(--murekkep-2); }
+.cp-week.done { background: #eaf8f0; }
+.quickday { margin-top: 8px; }
+.cp-pl.lk, .sheet-pl.lk { opacity: .75; } .sheet-pl.lk .sp-t small { color: var(--murekkep-2); }
+.place.eralock { opacity: .78; }
+.kicker.rv { color: var(--biber); display: inline-flex; align-items: center; gap: 5px; } .kicker.rv .ic { width: 14px; height: 14px; }
+/* Dönem geçiş penceresi */
+.era-up { text-align: center; }
+.era-big { width: 92px; height: 92px; margin: 6px auto; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #a83a60, var(--sumak)); color: #fff; display: grid; place-items: center; font: 800 52px var(--f-display); box-shadow: 0 6px 0 #4f1227, 0 0 0 10px #f6e3ea; animation: endpop .6s cubic-bezier(.3, 1.6, .5, 1) both; }
+.era-open { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 6px 0; }
+.eo { display: inline-flex; align-items: center; gap: 6px; background: #fff; border: 2px solid var(--c); border-radius: 999px; padding: 5px 12px 5px 6px; font-size: 13px; }
+.eo .ic { width: 22px; height: 22px; padding: 3px; border-radius: 50%; background: var(--c); color: #fff; }
+/* Rakip paneli */
+.rivalp { display: flex; gap: 14px; align-items: center; border-left: 6px solid #4a235a; }
+.rivalp h2 { margin: 2px 0 4px; }
+.rv-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+.rv-row .lvl { display: inline-flex; gap: 4px; margin-right: 6px; } .rv-row .lvl i { width: 18px; height: 8px; border-radius: 4px; background: var(--kart-cizgi); } .rv-row .lvl i.on { background: #4a235a; }
+@media (max-width: 600px) { .rivalp { flex-direction: column; align-items: flex-start; } }
+/* Yatırımlar */
+.invest.locked { opacity: .8; }
+.card.inv { display: flex; flex-direction: column; gap: 6px; }
+.card.inv.wide { grid-column: span 1; }
+.offers { display: flex; flex-direction: column; gap: 6px; }
+.offer { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; background: var(--krem); border-radius: 12px; padding: 7px 10px; }
+.offer span { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; } .offer small { font-size: 11.5px; color: var(--murekkep-2); }
+.o-pay { text-align: right; } .o-pay b { color: var(--nane-deep); }
+.pick-dish { width: 54px; display: block; } .pick-dish svg { width: 100%; }
+.managed { display: flex; gap: 8px; align-items: flex-start; background: var(--krem); border-radius: 12px; padding: 7px 10px; margin: 6px 0; cursor: pointer; }
+.managed input { margin-top: 3px; accent-color: var(--nane-deep); }
+.managed span { display: flex; flex-direction: column; line-height: 1.25; } .managed small { font-size: 11.5px; color: var(--murekkep-2); }
+/* Yeni nesil, şeref kürsüsü */
+.heirnote { background: #fbf2d8; border-color: #ecd48a; }
+.t-hall { display: flex; flex-direction: column; gap: 2px; background: rgba(255, 255, 255, .88); border-radius: 14px; padding: 8px 14px; margin: 0 auto 10px; max-width: 420px; font-size: 13px; text-align: center; }
+.t-hall .kicker { display: inline-flex; align-items: center; justify-content: center; gap: 5px; } .t-hall .kicker .ic { width: 14px; height: 14px; color: var(--kor-deep); }
+.end-duel { display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 800; color: #4a235a; margin: -4px 0 8px; } .end-duel .ic { width: 18px; height: 18px; color: var(--biber); }
+.dg.bonus, .daily .dg[data-bonus] { border-style: dashed; }
+.chips.center { justify-content: center; }
+.moodrow[hidden] { display: none; }

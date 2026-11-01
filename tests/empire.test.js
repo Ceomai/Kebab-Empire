@@ -3,13 +3,13 @@ import { loadGame, newGame, playDays } from './load.js';
 
 describe('oyun sonu: imparatorluk', () => {
   const files = ['data', 'calendar', 'characters', 'economy', 'sim', 'farm', 'narrative', 'save', 'verify'];
-  const ready = (KE, G) => { ['besiktepe', 'sultanpazari', 'kulealti', 'bostansahil', 'merterli', 'kampustepe'].forEach((d) => KE.openBranch(G, d)); G.branches.slice(0, KE.EMPIRE.crowns).forEach((b) => { b.champions = 1; }); G.reputation = KE.EMPIRE.reputation + 5; G.cash = 2 * KE.empirePrice(G); };
+  const ready = (KE, G) => { ['besiktepe', 'sultanpazari', 'kulealti', 'bostansahil', 'merterli', 'kampustepe'].forEach((d) => KE.openBranch(G, d)); G.branches.slice(0, KE.EMPIRE.crowns).forEach((b) => { b.champions = 1; }); G.reputation = KE.EMPIRE.reputation + 5; G.cash = 2 * KE.empirePrice(G); G.era = 4; };
   it('şartlar tamamlanmadan satın alınamaz', () => {
     const { KE } = loadGame(files);
     const G = playDays(KE, newGame(KE), 2);
     const st = KE.empireStatus(G);
     expect(st.ready).toBe(false);
-    expect(st.req.map((r) => r.id)).toEqual(['branches', 'crowns', 'rep', 'cash']);
+    expect(st.req.map((r) => r.id)).toEqual(['era', 'branches', 'crowns', 'rep', 'cash']);
     expect(KE.buyRival(G).ok).toBe(false);
   });
   it('satın alınca rakip kalkar, unvan hedefi tamamlanır, oyun sürer', () => {

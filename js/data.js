@@ -174,7 +174,7 @@ KE.MODES = {
   kebap: {
     id: 'kebap', name: 'Kebapçı', icon: '🍢',
     tagline: 'Közün başında usta işi, masaya oturan müşteri, yüksek hesap.',
-    trafficMul: 0.68, drinkRate: 0.8,
+    trafficMul: 0.74, drinkRate: 0.8,
     cookRole: 'Kebap ustası',
     ingredients: {
       kiyma:   { name: 'Zırh kıyması', unit: 'kg', price: 820 },
@@ -342,3 +342,37 @@ KE.GOALS = [
 ];
 /* Oyun sonu: "Lüks Kebap" zincirini satın almak için şartlar */
 KE.EMPIRE = { branches: 7, crowns: 3, reputation: 80, price: 60000000 };
+
+/* ---------- Dönemler: oyun dört bölüm hâlinde açılır ----------
+   Her dönemin üç şartı vardır; hepsi tamamlanınca bir sonraki döneme geçilir ve yeni yerler açılır. */
+KE.ERAS = [
+  { n: 1, name: 'Mahalle dükkânı', story: 'Babadan kalan dükkânı ayağa kaldır, mahallenin güvenini kazan.',
+    req: [{ id: 'hafta', label: 'Bir haftayı kârla kapat' }, { id: 'rep40', label: 'İtibar 40' }, { id: 'upg', label: 'Bir ekipmanı yükselt' }] },
+  { n: 2, name: 'Semtin yıldızı', story: 'Adını semtte duyur, ikinci dükkânı aç. "Lüks Kebap" seni fark etti.',
+    req: [{ id: 'sampiyon', label: 'Bir semt tacı kazan' }, { id: 'sube2', label: 'İkinci şubeyi aç' }, { id: 'ciro1m', label: 'Bir ayda 1 milyon ₺ ciro' }] },
+  { n: 3, name: 'Şehrin zinciri', story: 'Şehrin dört bir yanına yayıl. Büyük yatırımlar ve toplu siparişler artık senin işin.',
+    req: [{ id: 'sube4', label: 'Dört şubeli zincir' }, { id: 'rep65', label: 'İtibar 65' }, { id: 'imza', label: 'Bir imza tarif geliştir' }] },
+  { n: 4, name: 'İmparatorluk yolu', story: 'Son hesaplaşma: "Lüks Kebap"ı satın al, şehrin tek kebap imparatoru ol.', req: [] }
+];
+/* Hangi yer hangi dönemde açılır (listede olmayan yerler baştan açık) */
+KE.PLACE_ERA = { ajans: 2, subeler: 2, ciftlik: 3 };
+
+/* ---------- Büyük yatırımlar (3. dönem) ---------- */
+KE.SIGNATURE = { cost: [300000, 800000, 2000000], days: 10, traffic: 0.05, names: ['Usta işi', 'Şehrin tarifi', 'Efsane tarif'] };
+KE.FLAGSHIP = { cost: 4000000, traffic: 1.2 };
+KE.CONTRACT_KINDS = [
+  { id: 'stadyum', name: 'Stadyum maç günü', who: 'Kulüp yönetimi', qty: [300, 600], morale: 8 },
+  { id: 'fabrika', name: 'Fabrika yemekhanesi', who: 'Merterli Tekstil', qty: [200, 400], morale: 5 },
+  { id: 'dugun', name: 'Düğün salonu', who: 'Bostansahil Düğün Sarayı', qty: [150, 300], morale: 6 },
+  { id: 'festival', name: 'Sokak festivali standı', who: 'Belediye kültür müdürlüğü', qty: [250, 500], morale: 7 },
+  { id: 'plaza', name: 'Plaza toplantı ikramı', who: 'Kulealtı Finans', qty: [120, 250], morale: 4 },
+  { id: 'kampus', name: 'Kampüs bahar şenliği', who: 'Öğrenci birliği', qty: [300, 550], morale: 7 }
+];
+/* Haftalık meydan okuma türleri */
+KE.WEEKLY_KINDS = [
+  { kind: 'served', text: 'Bu hafta {t} müşteriye servis yap' },
+  { kind: 'match', text: 'Bu hafta {t} kez "Ellerine sağlık!" duy' },
+  { kind: 'player', text: 'Bu hafta tezgâhta kendin {t} sipariş hazırla' },
+  { kind: 'tips', text: 'Bu hafta {t} bahşiş topla' },
+  { kind: 'sat', text: 'Haftanın memnuniyet ortalaması %{t} ve üstü olsun' }
+];

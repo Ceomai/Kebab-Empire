@@ -193,7 +193,9 @@
     const mac = sp && sp.id === 'mac' && b.district === 'besiktepe' ? 1.3 : 1;
     const loyal = 1 + 0.025 * Object.values(G.regulars || {}).filter((r) => r.loyalty >= 8).length;
     const champ = b.championUntil && G.day <= b.championUntil ? 1.06 : 1;
-    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * (emp ? 1.1 : 1) * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
+    const sig = 1 + (G.signature ? G.signature.level * KE.SIGNATURE.traffic : 0);
+    const flag = b.flagship ? KE.FLAGSHIP.traffic : 1;
+    return d.traffic * mode.trafficMul * repF * ambF * wk * rival * ad * mac * loyal * champ * sig * flag * (emp ? 1.1 : 1) * (sp && sp.id === 'bayram' ? 1.15 : 1) * (hol && !sp ? 1.25 : 1);
   };
 
   /* ---------- Yeni oyun ---------- */
@@ -206,8 +208,15 @@
       priceIndex: 1, nextId: 1, staff: [], branches: [], activeBranch: null, loans: [], mods: [], tipRule: 'esit',
       ledger: { days: [], months: [] }, monthExtras: { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 }, journal: [], news: [], goals: {},
       phase: 'morning', rival: { power: 20, district: null }, market: [], workers: [], flags: {}, centralKitchen: false,
-      eventLog: [], pendingEvent: null, payLate: false, lastSummary: null, speed: 1, farm: null, tut: opts.tut ? 0 : 99
+      eventLog: [], pendingEvent: null, payLate: false, lastSummary: null, speed: 1, farm: null, tut: opts.tut ? 0 : 99,
+      era: 1, gen: 1, weekly: null, stories: {}
     };
+    const lg = opts.legacy;
+    if (lg) {
+      G.gen = lg.gen; G.legacy = { gen: lg.gen, from: lg.from, owner: lg.owner };
+      G.rival.power += 15 * (lg.gen - 1);
+      if (lg.sigPid) G.signature = { pid: lg.sigPid, level: 1, family: true };
+    }
     KE.G = G;
     G.regulars = {};
     KE.REGULARS.forEach((r) => { G.regulars[r.id] = { loyalty: 0, visits: 0 }; });
@@ -215,7 +224,9 @@
     b.name = opts.shopName || b.name;
     G.branches.push(b); G.activeBranch = b.id;
     const t = opts.master;
-    G.staff.push(KE.makeStaff(G, Object.assign({}, t, { role: t.role || 'usta', branchId: b.id })));
+    const m0 = KE.makeStaff(G, Object.assign({}, t, { role: t.role || 'usta', branchId: b.id }));
+    if (lg && lg.spec) { m0.spec = Object.assign({}, lg.spec); m0.wage = KE.wageFor(m0.spec, 'usta'); m0.heir = true; }
+    G.staff.push(m0);
     const cirak = KE.MASTER_TEMPLATES[G.mode].find((x) => x.role === 'cirak');
     G.staff.push(KE.makeStaff(G, Object.assign({}, cirak, { branchId: b.id, morale: 70 })));
     const ks = KE.randomWorker(G, 'kasiyer'); ks.branchId = b.id; G.staff.push(ks);
@@ -244,10 +255,28 @@
   };
 
   /* ---------- Sabah: çiftlikten sevkiyat ve stok tamamlama ---------- */
+  /* Müdürlü şube kendi sabah ayarını yapar: stok seviyesi dünkü bitenlere ve fireye, fiyatlar haftada bir piyasaya göre */
+  KE.isManaged = (G, b) => b.managed !== false && KE.branchStaff(G, b).some((s) => s.role === 'mudur');
+  function manage(G, b) {
+    const sum = G.lastSummary && G.lastSummary.day === G.day - 1 && G.lastSummary.branches[b.id];
+    const notes = [];
+    if (sum) {
+      const so = Object.keys(sum.stats.stockouts || {}).length;
+      if (so && b.stockLevel < 1.5) { b.stockLevel = Math.min(1.5, Math.round((b.stockLevel + 0.1) * 100) / 100); notes.push('stok'); }
+      else if (!so && sum.wasteVal > sum.stats.revenue * 0.04 && b.stockLevel > 1) { b.stockLevel = Math.max(1, Math.round((b.stockLevel - 0.05) * 100) / 100); notes.push('fire'); }
+    }
+    if (G.day % 7 === 1) {
+      let moved = false;
+      MODE(G).products.forEach((p) => { if (b.prices[p.id] == null) return; const np = Math.round((b.prices[p.id] + KE.marketPrice(G, p)) / 2 / 5) * 5; if (np !== b.prices[p.id]) { b.prices[p.id] = np; moved = true; } });
+      if (moved) notes.push('fiyat');
+    }
+    b.managedNote = notes;
+  }
   KE.morning = function (G) {
     KE.RNG.seed(G, 'morning');
     G.today = {};
     if (G.farm) G.farm.bonus = {};
+    G.branches.forEach((b) => { if (KE.isManaged(G, b)) manage(G, b); else b.managedNote = null; });
     G.branches.forEach((b) => {
       let cost = 0, farm = 0;
       Object.keys(b.usage).forEach((k) => {
@@ -263,6 +292,7 @@
       G.today[b.id] = { purchases: cost, farmKg: farm };
     });
     KE.makeDaily(G);
+    if (!G.weekly) KE.makeWeekly(G);
     if (!G.regulars) { G.regulars = {}; KE.REGULARS.forEach((r) => { G.regulars[r.id] = { loyalty: 0, visits: 0 }; }); }
     G.regularVisits = [];
     const openB = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
@@ -296,13 +326,15 @@
     ];
     const others = pool.slice(1).sort(() => KE.rand() - 0.5).slice(0, 2);
     G.daily = [pool[0]].concat(others).map((g) => ({ kind: g.kind, target: g.target, text: g.text(g.target), reward }));
+    /* bonus: tezgâha geçip kendin hazırla (isteğe bağlı) */
+    G.daily.push({ kind: 'player', target: 6, text: 'Bonus: tezgâhta kendin 6 sipariş hazırla', reward: reward * 2, bonus: true });
   };
   function dailyTotals(G) {
-    const t = { served: 0, satS: 0, satN: 0, cold: 0, lost: 0, tips: 0, match: 0 };
+    const t = { served: 0, satS: 0, satN: 0, cold: 0, lost: 0, tips: 0, match: 0, player: 0 };
     G.branches.forEach((b) => {
       const S = G.live && G.live[b.id] ? G.live[b.id].stats : (G.lastSummary && G.lastSummary.branches[b.id] ? G.lastSummary.branches[b.id].stats : null);
       if (!S) return;
-      t.served += S.served; t.satS += S.satSum; t.satN += S.satN; t.cold += S.cold; t.lost += S.lost; t.tips += S.tips; t.match += S.matches;
+      t.served += S.served; t.satS += S.satSum; t.satN += S.satN; t.cold += S.cold; t.lost += S.lost; t.tips += S.tips; t.match += S.matches; t.player += S.playerServed || 0;
     });
     return t;
   }
@@ -314,6 +346,7 @@
       if (g.kind === 'served') { v = t.served; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }
       else if (g.kind === 'tips') { v = t.tips; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }
       else if (g.kind === 'match') { v = t.match; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }
+      else if (g.kind === 'player') { v = t.player; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }
       else if (g.kind === 'sat') { v = t.satN ? t.satS / t.satN : 0; p = t.satN ? v / g.target : 0; state = !t.satN ? 'open' : v >= g.target ? (final ? 'done' : 'ok') : 'open'; }
       else if (g.kind === 'nocold') { v = t.cold; p = v ? 0 : 1; state = v > 0 ? 'fail' : final ? 'done' : 'ok'; }
       else { v = t.lost; p = Math.max(0, 1 - v / (g.target + 1)); state = v > g.target ? 'fail' : final ? 'done' : 'ok'; }
@@ -381,6 +414,7 @@
       const w = favs.map((_, i) => 3 - i); let r = KE.rand() * w.reduce((a, x) => a + x, 0);
       for (let i = 0; i < favs.length; i++) { if ((r -= w[i]) <= 0) { p = favs[i]; break; } }
     }
+    if (!p && G.signature && KE.rand() < 0.08 * G.signature.level) p = avail.find((x) => x.id === G.signature.pid) || null;
     if (!p) p = pick(avail);
     if (!KE.hasStock(b, p, count)) {
       const alt = avail.filter((x) => KE.hasStock(b, x, count));
@@ -927,13 +961,15 @@
     let dRep = clamp(totalRep, -2, 1.5);
     if (dRep > 0 && G.reputation > 55) dRep *= Math.max(0.15, 1 - (G.reputation - 55) / 55);
     G.reputation = clamp(G.reputation + dRep, 0, 100);
+    /* tepede kalmak emek ister: 70'in üstünde itibar her gün biraz aşınır */
+    if (G.reputation > 70) G.reputation = clamp(G.reputation - (G.reputation - 70) / 150, 0, 100);
     out.journal = KE.writeJournal(G, S0, out);
     G.journal.unshift({ day: G.day, date: KE.dateStr(G.day), text: out.journal });
     if (G.journal.length > 60) G.journal.length = 60;
     G.mods.forEach((m) => { m.days -= 1; }); G.mods = G.mods.filter((m) => m.days > 0);
     if (KE.farmDay) out.farm = KE.farmDay(G);
     out.daily = KE.dailyProgress(G, true);
-    out.daily.forEach((g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + 0.4, 0, 100); } });
+    out.daily.forEach((g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + (G.reputation > 70 ? 0.15 : 0.4), 0, 100); } });
     out.unlocks = [];
     KE.MODES[G.mode].products.filter((p) => p.unlock && !G.flags['tarif_' + p.id] && G.reputation >= p.unlock).forEach((p) => {
       G.flags['tarif_' + p.id] = true; out.unlocks.push(p);
@@ -941,10 +977,32 @@
     });
     out.regulars = [];
     G.branches.forEach((b) => (S0.branches[b.id].stats.regulars || []).forEach((x) => out.regulars.push(x)));
+    /* toplu sipariş teslimi, imza tarifin bitmesi, haftalık meydan okuma */
+    if (G.contract && G.contract.day === G.day) {
+      const c = G.contract, net = c.pay - c.cost;
+      G.cash += net; KE.addExtra(G, 'other', -net);
+      const cb = G.branches.find((x) => x.id === c.branchId) || G.branches[0];
+      KE.branchStaff(G, cb).forEach((s) => { s.morale = clamp(s.morale - c.morale, 0, 100); });
+      G.reputation = clamp(G.reputation + 1, 0, 100);
+      G.flags.contracts = (G.flags.contracts || 0) + 1;
+      out.contract = Object.assign({ net }, c); G.contract = null;
+    }
+    if (G.sigWork && G.day >= G.sigWork.ready) { G.signature = { pid: G.sigWork.pid, level: G.sigWork.level }; out.signature = G.signature; G.sigWork = null; }
+    if (G.weekly) {
+      const W = G.weekly, a = W.acc;
+      G.branches.forEach((b) => { const S = S0.branches[b.id].stats; a.served += S.served; a.match += S.matches; a.player += S.playerServed || 0; a.tips += S.tips; a.satS += S.satSum; a.satN += S.satN; });
+      const val = W.kind === 'sat' ? (a.satN ? a.satS / a.satN : 0) : a[W.kind];
+      W.value = val;
+      const end = KE.isWeekEnd(G.day);
+      if (!W.done && val >= W.target && (W.kind !== 'sat' || end)) { W.done = true; G.cash += W.reward; G.reputation = clamp(G.reputation + 1, 0, 100); out.weeklyDone = Object.assign({}, W); }
+      if (end) { out.weeklyEnd = Object.assign({}, W); G.weekly = null; }
+    }
+    if (G.day >= 7 && G.ledger.days.filter((d) => d.day > G.day - 7).reduce((x, d) => x + d.net, 0) > 0) G.flags.profitWeek = G.flags.profitWeek || G.day;
     if (KE.isMonthEnd(G.day)) out.champions = KE.championship(G);
     out.goals = KE.checkGoals(G);
+    out.eras = KE.advanceEra(G);
     if (KE.isMonthEnd(G.day)) out.month = KE.closeMonth(G, G.day);
-    if (KE.isWeekEnd(G.day)) { out.news = KE.writeNews(G); G.news.unshift(out.news); KE.refreshMarket(G); KE.refreshWorkers(G); G.rival.power += 3; }
+    if (KE.isWeekEnd(G.day)) { out.news = KE.writeNews(G); G.news.unshift(out.news); KE.refreshMarket(G); KE.refreshWorkers(G); if (!G.flags.empire) G.rival.power += 3; }
     G.payLate = G.cash < 0;
     G.day += 1;
     G.pendingEvent = KE.rollEvent(G);
@@ -970,7 +1028,7 @@
       const days = G.ledger.days.filter((d) => d.month === key && d.branchId === b.id);
       const served = days.reduce((a, d) => a + d.served, 0);
       const sat = served ? days.reduce((a, d) => a + d.sat * d.served, 0) / served : 0;
-      const bar = Math.round(72 + G.rival.power * 0.08 + (G.rival.district === b.district ? 4 : 0));
+      const bar = Math.round(Math.min(90, 72 + G.rival.power * 0.08) + (G.rival.district === b.district ? 4 : 0) - (b.flagship ? 3 : 0));
       const won = served >= 250 && sat >= bar;
       if (won) { b.championUntil = G.day + 30; b.champions = (b.champions || 0) + 1; G.flags.champ = true; G.reputation = clamp(G.reputation + 2, 0, 100); }
       return { id: b.id, name: b.name, district: KE.district(b).name, sat, bar, won, served };
@@ -988,6 +1046,7 @@
       { id: 'rep', label: 'İtibar', have: Math.round(G.reputation), need: E.reputation },
       { id: 'cash', label: 'Satın alma bedeli', have: Math.max(0, Math.round(G.cash)), need: price, money: true }
     ];
+    if ((G.era || 1) < 4) req.unshift({ id: 'era', label: 'İmparatorluk yolu dönemi', have: G.era || 1, need: 4 });
     req.forEach((r) => { r.ok = r.have >= r.need; r.p = Math.min(1, r.have / r.need); });
     return { req, price, ready: req.every((r) => r.ok), done: !!(G.flags && G.flags.empire) };
   };
@@ -997,7 +1056,7 @@
     const byProduct = {};
     days.forEach((d) => Object.entries(d.byProduct || {}).forEach(([k, v]) => { byProduct[k] = (byProduct[k] || 0) + v; }));
     const best = Object.entries(byProduct).sort((a, c) => c[1] - a[1])[0];
-    return { days: G.day - 1, revenue: days.reduce((a, d) => a + (d.revenue || 0), 0), served: days.reduce((a, d) => a + (d.served || 0), 0), tips: days.reduce((a, d) => a + (d.tips || 0), 0), branches: G.branches.length, staff: G.staff.length, crowns: G.branches.reduce((a, b) => a + (b.champions || 0), 0), bestProduct: best ? best[0] : null, bestCount: best ? best[1] : 0 };
+    return { days: G.day - 1, revenue: days.reduce((a, d) => a + (d.revenue || 0), 0), served: days.reduce((a, d) => a + (d.served || 0), 0), tips: days.reduce((a, d) => a + (d.tips || 0), 0), branches: G.branches.length, staff: G.staff.length, crowns: G.branches.reduce((a, b) => a + (b.champions || 0), 0), duels: (G.rival && G.rival.wins) || 0, duelsLost: (G.rival && G.rival.losses) || 0, gen: G.gen || 1, bestProduct: best ? best[0] : null, bestCount: best ? best[1] : 0 };
   };
   KE.buyRival = function (G) {
     const st = KE.empireStatus(G);
@@ -1048,6 +1107,99 @@
     return b;
   };
   KE.branchCost = (G, d) => Math.round((d.rent * 3 + 350000) * G.priceIndex / 1000) * 1000;
+  /* ---------- Dönemler ---------- */
+  const ERA_TEST = {
+    hafta: (G) => !!(G.flags.profitWeek || (G.goals && G.goals.ilkhafta)),
+    rep40: (G) => G.reputation >= 40,
+    upg: (G) => G.branches.some((b) => Object.values(b.equipment).some((v) => v > 0)),
+    sampiyon: (G) => !!G.flags.champ,
+    sube2: (G) => G.branches.length >= 2,
+    ciro1m: (G) => G.ledger.months.some((m) => m.revenue >= 1000000),
+    sube4: (G) => G.branches.length >= 4,
+    rep65: (G) => G.reputation >= 65,
+    imza: (G) => !!(G.signature && G.signature.level >= 1 && !G.signature.family) || !!(G.signature && G.signature.level >= 2)
+  };
+  KE.eraStatus = function (G) {
+    const n = G.era || 1, cur = KE.ERAS[n - 1];
+    const req = cur.req.map((r) => Object.assign({}, r, { ok: !!ERA_TEST[r.id](G) }));
+    return { era: n, cur, next: KE.ERAS[n] || null, req, ready: req.length > 0 && req.every((r) => r.ok) };
+  };
+  KE.advanceEra = function (G) {
+    const out = [];
+    while ((G.era || 1) < KE.ERAS.length && KE.eraStatus(G).ready) { G.era = (G.era || 1) + 1; out.push(KE.ERAS[G.era - 1]); }
+    return out;
+  };
+  KE.placeOpen = (G, id) => !G || (G.era || 1) >= (KE.PLACE_ERA[id] || 1);
+  KE.placesOfEra = (n) => Object.keys(KE.PLACE_ERA).filter((k) => KE.PLACE_ERA[k] === n);
+
+  /* ---------- Büyük yatırımlar (3. dönemden itibaren) ---------- */
+  KE.signatureCost = function (G) {
+    const lv = G.signature && !G.signature.family ? G.signature.level : 0;
+    return lv >= KE.SIGNATURE.cost.length ? null : Math.round(KE.SIGNATURE.cost[lv] * G.priceIndex / 1000) * 1000;
+  };
+  KE.startSignature = function (G, pid) {
+    if ((G.era || 1) < 3) return { ok: false, msg: 'İmza tarif 3. dönemde açılır.' };
+    if (G.sigWork) return { ok: false, msg: 'Ar-Ge mutfağı zaten çalışıyor.' };
+    const cost = KE.signatureCost(G);
+    if (cost == null) return { ok: false, msg: 'Tarif zaten efsane seviyesinde.' };
+    if (G.signature && !G.signature.family && G.signature.pid !== pid) return { ok: false, msg: 'İmza tarif bir kez seçilir.' };
+    if (G.cash < cost) return { ok: false, msg: 'Kasa yetmiyor.' };
+    G.cash -= cost; KE.addExtra(G, 'capex', cost);
+    const lv = G.signature && !G.signature.family ? G.signature.level : 0;
+    G.sigWork = { pid, level: lv + 1, ready: G.day + KE.SIGNATURE.days };
+    return { ok: true };
+  };
+  KE.flagshipCost = (G) => Math.round(KE.FLAGSHIP.cost * G.priceIndex / 1000) * 1000;
+  KE.buildFlagship = function (G, bid) {
+    if ((G.era || 1) < 3) return { ok: false, msg: 'Amiral dükkân 3. dönemde açılır.' };
+    if (G.branches.some((b) => b.flagship)) return { ok: false, msg: 'Zaten bir amiral dükkânın var.' };
+    const b = G.branches.find((x) => x.id === bid); const cost = KE.flagshipCost(G);
+    if (!b || G.cash < cost) return { ok: false, msg: 'Kasa yetmiyor.' };
+    G.cash -= cost; KE.addExtra(G, 'capex', cost); b.flagship = G.day;
+    return { ok: true };
+  };
+  /* Haftalık toplu sipariş teklifleri: oyunun tohumundan ve haftasından türetilir (her yerde aynı) */
+  const weekOf = (G) => Math.floor((G.day - 1) / 7);
+  KE.contractOffers = function (G) {
+    if ((G.era || 1) < 3 || !G.branches.length) return [];
+    const wk = weekOf(G), prods = MODE(G).products.filter((p) => !KE.isLocked(G, p)), b0 = G.branches[0];
+    const seen = {};
+    return [0, 1, 2, 3].map((i) => {
+      const h = mix(G.seed, wk, 'ct', i);
+      const k = KE.CONTRACT_KINDS[h % KE.CONTRACT_KINDS.length];
+      if (seen[k.id]) return null; seen[k.id] = 1;
+      const qty = Math.round((k.qty[0] + ((h >>> 8) % 1000) / 1000 * (k.qty[1] - k.qty[0])) / 10) * 10;
+      const p = prods[(h >>> 4) % prods.length];
+      const pay = Math.round(qty * KE.marketPrice(G, p) * 0.8 / 1000) * 1000;
+      const cost = Math.round(qty * KE.productCost(G, b0, p) / 1000) * 1000;
+      return { id: wk + '-' + i, kind: k.id, name: k.name, who: k.who, pid: p.id, qty, pay, cost, morale: k.morale };
+    }).filter(Boolean).slice(0, 3);
+  };
+  KE.contractTaken = (G) => G.contractWeek === weekOf(G);
+  KE.acceptContract = function (G, id, bid) {
+    if (G.phase !== 'morning') return { ok: false, msg: 'Toplu sipariş sabah kabul edilir.' };
+    if (KE.contractTaken(G)) return { ok: false, msg: 'Bu hafta zaten bir toplu sipariş aldın.' };
+    const o = KE.contractOffers(G).find((x) => x.id === id);
+    const b = G.branches.find((x) => x.id === bid) || G.branches[0];
+    if (!o) return { ok: false, msg: 'Teklif bulunamadı.' };
+    if (!KE.branchStaff(G, b).some(KE.isCook)) return { ok: false, msg: 'Bu şubede usta yok.' };
+    G.contract = Object.assign({}, o, { day: G.day, branchId: b.id }); G.contractWeek = weekOf(G);
+    return { ok: true };
+  };
+
+  /* ---------- Haftalık meydan okuma ---------- */
+  KE.makeWeekly = function (G) {
+    const open = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
+    if (!open.length) { G.weekly = null; return; }
+    let left = 1; while (left < 7 && !KE.isWeekEnd(G.day + left - 1)) left++;
+    const exp = open.reduce((a, b) => a + KE.expectedCustomers(G, b), 0) * left;
+    const kinds = KE.WEEKLY_KINDS.filter((x) => G.day > 7 || x.kind !== 'player');
+    const k = kinds[mix(G.seed, G.day, 'wk') % kinds.length];
+    const target = { served: Math.round(exp * 0.95 / 10) * 10, match: Math.max(10, Math.round(exp * 0.09)), player: Math.max(6, left * 3), tips: Math.round(exp * 18 * G.priceIndex / 500) * 500, sat: 82 }[k.kind];
+    const reward = Math.round(30000 * G.priceIndex * (1 + 0.3 * (open.length - 1)) / 1000) * 1000;
+    G.weekly = { start: G.day, kind: k.kind, target, text: k.text.replace('{t}', k.kind === 'tips' ? KE.tl(target) : String(target)), reward, value: 0, done: false, acc: { served: 0, match: 0, player: 0, tips: 0, satS: 0, satN: 0 } };
+  };
+
   /* ---------- Oyuncu hamleleri: kayıt ve yeniden oynatma ----------
      Servis sırasında sonucu etkileyen her oyuncu hamlesi { m: dakika, a: ad, x: argümanlar } olarak
      günlüğe yazılır. Sabah durumu + tohum + günlük ile gün birebir yeniden oynatılabilir. */

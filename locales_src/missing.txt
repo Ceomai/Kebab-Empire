@@ -1,9 +1,6 @@
-Kebab Empire
 Kebab
 Empire
-Dil / Language
 EN
-Load from backup file
 Sound
 XX
 Burgazada
@@ -36,7 +33,6 @@ Caddebostan
 Merter / İkitelli
 Avcılar / Beyazıt
 Beşiktaş
-Dil / Language / Sprache
 Türkçe
 English
 Deutsch
@@ -69,31 +65,16 @@ Gül
 Volkan
 Recep
 Serkan
-Back to the map
-Reputation {0}/{1}
-Turn sound on
 Menu
 Branches
-City map
-Market & Butcher
-Master Market
 Tailor
-Furniture & Decor
 Bank
-Town Hall
 Accounting
-Neighbourhood Café
-Ad Agency
-Staffing Office
-Head Office
-Livestock Farm
-Daily goal {0}/{1}
 {0} Döner
 {0} Dönerc
 {0} Dö
 {0} Dönerci
 {0} Dönercis
-{0}, {1}, {2}, {3}, {4}, {5} bugün kapalı kalır
 şubesine başlar (şube şeridinden değiştirebilirsin). {0} yeri: {1}
 {0} ve salon büyüdükçe kadro genişler.
 Levent Usta
@@ -105,16 +86,37 @@ Tuğba
 Kadir
 Turşu
 Ekmek
-Biten: {0}, {1}, {2}, {3}
 Levent
-Sokakta trafo arızası var; elektrik akşama kadar gelmeyebilir. {0} bir jeneratörcünün numarasını buldu.
-Telefonlar ve tabletler aynı anda ötüyor. {0} motoru hiç durdurmadı.
 Nazlı Usta
 Hatice Usta
 Can
 Sinan
 Kerem
 Ebru
-İç harç
-Maydanoz-limon
-Biten: {0}, {1}, {2}, {3}, {4}
+{0} dönem · sıradaki: Semtin yıldızı
+Dönem hedefi: Bir haftayı kârla kapat
+Semtin yıldızı dönemine geçmek için
+Çırak Emre
+Çırak Can
+Selin
+Aslı
+Nur
+Esra
+Sevgi Usta
+Recep Usta
+Kerem Usta
+Kemal Usta
+Hasan
+Orhan
+Fatma
+{0} {1} dönemde açılır: Semtin yıldızı.
+{0} dönem · sıradaki: İmparatorluk yolu
+Dönem hedefi: Dört şubeli zincir
+İmparatorluk yolu dönemine geçmek için
+Net
+artık usta işi (seviye {0}).
+Sıradaki döneme geçmek için: Bir semt tacı kazan · İkinci şubeyi aç · Bir ayda {0} milyon ₺ ciro
+Sıradaki döneme geçmek için: Dört şubeli zincir · İtibar {0} · Bir imza tarif geliştir
+Mahmut
+Yaprak Döner
+Language / Dil

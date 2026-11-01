@@ -1,0 +1,287 @@
+Kebab Empire	Kebab Empire	Kebab Empire
+Dil / Language	Language / Dil	Sprache / Language
+Dil / Language / Sprache	Language / Dil / Sprache	Sprache / Language / Dil
+Load from backup file	Load from backup file	Aus Sicherungsdatei laden
+Back to the map	Back to the map	Zurück zur Karte
+Turn sound on	Turn sound on	Ton einschalten
+City map	City map	Stadtplan
+Market & Butcher	Market & Butcher	Markt & Metzger
+Master Market	Master Market	Meistermarkt
+Furniture & Decor	Furniture & Decor	Möbel & Deko
+Town Hall	Town Hall	Rathaus
+Neighbourhood Café	Neighbourhood Café	Nachbarschaftscafé
+Ad Agency	Ad Agency	Werbeagentur
+Staffing Office	Staffing Office	Personalbüro
+Head Office	Head Office	Zentrale
+Livestock Farm	Livestock Farm	Viehfarm
+Reputation {0}/{1}	Reputation {0}/{1}	Ruf {0}/{1}
+Daily goal {0}/{1}	Daily goal {0}/{1}	Tagesziel {0}/{1}
+Öğleden s.	Afternoon	Nachmittag
+İç harç	Filling	Füllung
+Maydanoz-limon	Parsley & lemon	Petersilie & Zitrone
+Hamuru aç	Roll out the dough	Teig ausrollen
+{0} bitti!	{0} is done!	{0} ist fertig!
+Tamamlandı!	Completed!	Geschafft!
+Çiftlik satılık	Farm for sale	Farm zu verkaufen
+Kendi etini yetiştir, maliyet düşsün	Raise your own meat and cut costs	Zieh dein eigenes Fleisch auf und senke die Kosten
+En sevilen	Most loved	Beliebteste
+Sokakta trafo arızası var; elektrik akşama kadar gelmeyebilir. {0} bir jeneratörcünün numarasını buldu.	A transformer on the street failed; power may be out until evening. {0} found a generator rental number.	Auf der Straße ist ein Trafo ausgefallen; der Strom kommt vielleicht erst abends. {0} hat die Nummer eines Generatorverleihs gefunden.
+Telefonlar ve tabletler aynı anda ötüyor. {0} motoru hiç durdurmadı.	Phones and tablets are ringing at once. {0} never switched off the scooter.	Telefone und Tablets klingeln gleichzeitig. {0} hat den Roller gar nicht mehr abgestellt.
+{0} · {1} dönem	{0} · era {1}	{0} · Epoche {1}
+{0} dönem	Era {0}	Epoche {0}
+{0} dönemde açılır	Opens in era {0}	Öffnet in Epoche {0}
+{0} {1} dönemde açılır.	{0} opens in era {1}.	{0} öffnet in Epoche {1}.
+{0} dönem · sıradaki:	Era {0} · next:	Epoche {0} · als Nächstes:
+Mahalle dükkânı	Neighbourhood shop	Laden im Viertel
+Semtin yıldızı	Star of the district	Star des Bezirks
+Şehrin zinciri	The city's chain	Kette der Stadt
+İmparatorluk yolu	Road to empire	Weg zum Imperium
+Bir haftayı kârla kapat	Close a week in profit	Schließe eine Woche mit Gewinn ab
+İtibar {0}	Reputation {0}	Ruf {0}
+Bir ekipmanı yükselt	Upgrade a piece of equipment	Rüste ein Gerät auf
+Bir semt tacı kazan	Win a district crown	Gewinne eine Bezirkskrone
+İkinci şubeyi aç	Open a second branch	Eröffne eine zweite Filiale
+Bir ayda {0} milyon ₺ ciro	{0} million ₺ revenue in a month	{0} Mio. ₺ Umsatz in einem Monat
+Dört şubeli zincir	A four-branch chain	Eine Kette mit vier Filialen
+Bir imza tarif geliştir	Develop a signature recipe	Entwickle ein Signature-Rezept
+İmparatorluk yolu dönemi	The road-to-empire era	Die Epoche „Weg zum Imperium“
+Dönem hedefi: sıradaki döneme geçmek için	Era goal: needed for the next era	Epochenziel: nötig für die nächste Epoche
+Babadan kalan dükkânı ayağa kaldır, mahallenin güvenini kazan.	Get your father's old shop back on its feet and win the neighbourhood's trust.	Bring den Laden deines Vaters wieder in Schwung und gewinne das Vertrauen des Viertels.
+Adını semtte duyur, ikinci dükkânı aç. "Lüks Kebap" seni fark etti.	Make a name in the district and open a second shop. "Lüks Kebap" has noticed you.	Mach dir im Bezirk einen Namen und eröffne einen zweiten Laden. „Lüks Kebap“ ist auf dich aufmerksam geworden.
+Şehrin dört bir yanına yayıl. Büyük yatırımlar ve toplu siparişler artık senin işin.	Spread to every corner of the city. Big investments and bulk orders are now your business.	Breite dich in der ganzen Stadt aus. Große Investitionen und Großaufträge sind jetzt deine Sache.
+Son hesaplaşma: "Lüks Kebap"ı satın al, şehrin tek kebap imparatoru ol.	The final showdown: buy "Lüks Kebap" and become the city's one and only kebab emperor.	Der letzte Showdown: Kaufe „Lüks Kebap“ und werde der einzige Kebab-Kaiser der Stadt.
+İmparatorluk kuruldu.	The empire is built.	Das Imperium steht.
+Son hedef {0}'te.	The final goal is at the {0}.	Das letzte Ziel wartet in der {0}.
+Yeni dönem · {0}/{1}	New era · {0}/{1}	Neue Epoche · {0}/{1}
+açıldı	is open	ist geöffnet
+Sıradaki döneme geçmek için:	To reach the next era:	Für die nächste Epoche:
+Büyük yatırımlar: imza tarif, amiral dükkân, toplu siparişler	Big investments: signature recipe, flagship store, bulk orders	Große Investitionen: Signature-Rezept, Flagship-Laden, Großaufträge
+"Lüks Kebap"ı satın alma teklifi ({0})	Offer to buy "Lüks Kebap" ({0})	Kaufangebot für „Lüks Kebap“ ({0})
+Haftalık meydan okuma · ödül {0}	Weekly challenge · reward {0}	Wochen-Challenge · Belohnung {0}
+Bu hafta {0} kez "Ellerine sağlık!" duy	Hear "Bless your hands!" {0} times this week	Hör diese Woche {0}-mal „Gesegnete Hände!“
+Bu hafta {0} müşteriye servis yap	Serve {0} customers this week	Bediene diese Woche {0} Kunden
+Bu hafta tezgâhta kendin {0} sipariş hazırla	Prepare {0} orders yourself at the counter this week	Bereite diese Woche {0} Bestellungen selbst an der Theke zu
+Bu hafta {0} bahşiş topla	Collect {0} in tips this week	Sammle diese Woche {0} Trinkgeld
+Haftanın memnuniyet ortalaması {0} ve üstü olsun	Keep the week's average satisfaction at {0} or above	Halte die Wochenzufriedenheit bei {0} oder mehr
+Şu an {0}	Now {0}	Aktuell {0}
+Bonus: tezgâhta kendin {0} sipariş hazırla	Bonus: prepare {0} orders yourself at the counter	Bonus: Bereite {0} Bestellungen selbst an der Theke zu
+Servisi izlemeden günü tamamla	Finish the day without watching service	Den Tag abschließen, ohne den Service anzusehen
+Hızlı gün: servisi atla, sonuca geç	Quick day: skip service, go to results	Schneller Tag: Service überspringen, zum Ergebnis
+Hızlı gün	Quick day	Schneller Tag
+Müdür hazırlıyor	Manager preparing	Leitung bereitet vor
+Müdür alırsan şubenin sabah ayarlarını o yapar.	Hire a manager and they'll handle the branch's morning setup.	Stell eine Leitung ein, dann übernimmt sie die Morgenvorbereitung der Filiale.
+Müdür yönetsin	Let the manager run it	Leitung übernimmt
+Sabah stok seviyesini dünkü satışa, fiyatları haftada bir piyasaya göre kendisi ayarlar.	Sets the morning stock level from yesterday's sales and prices to the market once a week.	Stellt den Morgenbestand nach den gestrigen Verkäufen und die Preise einmal pro Woche nach dem Markt ein.
+Rakip · {0}	Rival · {0}	Rivale · {0}
+"Lüks Kebap" ile hesaplaşma	Showdown with "Lüks Kebap"	Showdown mit „Lüks Kebap“
+Sıradaki hamle yakında. Rakip güçlendikçe semt şampiyonluğu çıtası yükselir.	The next move is coming soon. The stronger the rival, the higher the district championship bar.	Der nächste Zug kommt bald. Je stärker der Rivale, desto höher die Hürde für die Bezirksmeisterschaft.
+Kazandığın: {0}	Won: {0}	Gewonnen: {0}
+Kaybettiğin: {0}	Lost: {0}	Verloren: {0}
+Rakip gücü {0}	Rival strength {0}	Stärke des Rivalen {0}
+Rakip hamlesi {0}/{1} · {2}	Rival move {0}/{1} · {2}	Zug des Rivalen {0}/{1} · {2}
+Büyük yatırımlar	Big investments	Große Investitionen
+Kasadaki parayı büyümeye çevir.	Turn the cash in the till into growth.	Mach aus dem Geld in der Kasse Wachstum.
+Ar-Ge mutfağı	R&D kitchen	Testküche
+İmza tarif	Signature recipe	Signature-Rezept
+Bir ürünü zincirin imzası yap: her şubede müşteri artar, o ürün daha çok satılır.	Make one dish the chain's signature: every branch gets more customers and that dish sells more.	Mach ein Gericht zur Signatur der Kette: Jede Filiale bekommt mehr Kunden und das Gericht verkauft sich besser.
+Tarif seç	Choose recipe	Rezept wählen
+Geliştir	Develop	Weiterentwickeln
+Amiral dükkân	Flagship store	Flagship-Laden
+Zincirin vitrini	The chain's showcase	Das Schaufenster der Kette
+Bir şubeni şehrin simgesine dönüştür: müşteri +{0} semt tacını korumak kolaylaşır.	Turn a branch into a city landmark: +{0} customers, and the district crown is easier to keep.	Mach eine Filiale zum Wahrzeichen der Stadt: +{0} Kunden, und die Bezirkskrone ist leichter zu halten.
+Şube seç	Choose branch	Filiale wählen
+Toplu siparişler · haftada bir	Bulk orders · once a week	Großaufträge · einmal pro Woche
+Bu haftanın teklifleri	This week's offers	Angebote dieser Woche
+ekip morali {0}	team morale {0}	Teammoral {0}
+Stadyum maç günü	Stadium match day	Spieltag im Stadion
+Kulüp yönetimi · {0} × {1}	Club management · {0} × {1}	Vereinsvorstand · {0} × {1}
+Fabrika yemekhanesi	Factory canteen	Fabrikkantine
+Merterli Tekstil · {0} × {1}	Merterli Textiles · {0} × {1}	Merterli Textil · {0} × {1}
+Düğün salonu	Wedding hall	Hochzeitssaal
+{0} Düğün Sarayı · {1} × {2}	{0} Wedding Palace · {1} × {2}	Hochzeitspalast {0} · {1} × {2}
+Sokak festivali standı	Street festival stand	Stand beim Straßenfest
+{0} kültür müdürlüğü · {1} × {2}	{0} culture department · {1} × {2}	Kulturamt {0} · {1} × {2}
+Plaza toplantı ikramı	Office tower meeting catering	Catering für ein Bürohaus-Meeting
+{0} Finans · {1} × {2}	{0} Finance · {1} × {2}	{0} Finanz · {1} × {2}
+Kampüs bahar şenliği	Campus spring festival	Frühlingsfest auf dem Campus
+{0} birliği · {1} × {2}	{0} union · {1} × {2}	{0}vereinigung · {1} × {2}
+Hangi ürün imza tarifin olsun?	Which dish should be your signature recipe?	Welches Gericht soll dein Signature-Rezept werden?
+İmza tarif her şubede müşteriyi artırır ve o ürünü daha çok sattırır. Bir kez seçilir, sonra geliştirilir.	A signature recipe brings more customers to every branch and sells more of that dish. You choose it once, then develop it.	Ein Signature-Rezept bringt jeder Filiale mehr Kunden und verkauft das Gericht besser. Du wählst es einmal und entwickelst es dann weiter.
+Hangi şube amiral dükkân olsun?	Which branch should be the flagship?	Welche Filiale soll der Flagship-Laden werden?
+Amiral dükkân {0}: o şubede müşteri +{1} semt şampiyonluğu çıtası {2} puan düşer.	Flagship store {0}: +{1} customers at that branch, and the district championship bar drops by {2} points.	Flagship-Laden {0}: +{1} Kunden in dieser Filiale, und die Hürde für die Bezirksmeisterschaft sinkt um {2} Punkte.
+{0} porsiyon {1} · ödeme {2} · malzeme ~{3}. Gün sonunda teslim edilir.	{0} portions of {1} · payment {2} · ingredients ~{3}. Delivered at the end of the day.	{0} Portionen {1} · Zahlung {2} · Zutaten ~{3}. Lieferung am Ende des Tages.
+{0} pişirmeci · ekip morali {1}	{0} cooks · team morale {1}	{0} Köche · Teammoral {1}
+Stadyum maç günü: hangi şube hazırlasın?	Stadium match day: which branch should prepare it?	Spieltag im Stadion: Welche Filiale bereitet vor?
+Düğün salonu: hangi şube hazırlasın?	Wedding hall: which branch should prepare it?	Hochzeitssaal: Welche Filiale bereitet vor?
+Fabrika yemekhanesi: hangi şube hazırlasın?	Factory canteen: which branch should prepare it?	Fabrikkantine: Welche Filiale bereitet vor?
+Sokak festivali standı: hangi şube hazırlasın?	Street festival stand: which branch should prepare it?	Stand beim Straßenfest: Welche Filiale bereitet vor?
+Plaza toplantı ikramı: hangi şube hazırlasın?	Office tower catering: which branch should prepare it?	Bürohaus-Catering: Welche Filiale bereitet vor?
+Kampüs bahar şenliği: hangi şube hazırlasın?	Campus spring festival: which branch should prepare it?	Frühlingsfest auf dem Campus: Welche Filiale bereitet vor?
+Gün özeti	Day summary	Tageszusammenfassung
+teslim edildi: {0} porsiyon · net {1}, itibar +{2}	delivered: {0} portions · net {1}, reputation +{2}	geliefert: {0} Portionen · netto {1}, Ruf +{2}
+Ar-Ge mutfağı bitirdi:	The R&D kitchen is done:	Die Testküche ist fertig:
+Usta işi	Master's touch	Meisterhand
+Şehrin tarifi	The city's recipe	Rezept der Stadt
+Efsane tarif	Legendary recipe	Legendäres Rezept
+(seviye {0}/{1})	(level {0}/{1})	(Stufe {0}/{1})
+Haftalık meydan okuma tamam:	Weekly challenge complete:	Wochen-Challenge geschafft:
+· ödül {0}, itibar +{1}	· reward {0}, reputation +{1}	· Belohnung {0}, Ruf +{1}
+Haftalık meydan okuma kaçtı:	Weekly challenge missed:	Wochen-Challenge verpasst:
+Haftalık rapor	Weekly report	Wochenbericht
+Haftalık ciro	Weekly revenue	Wochenumsatz
+Haftalık net	Weekly net	Woche netto
+En iyi şube	Best branch	Beste Filiale
+Geçen haftaya göre	vs. last week	ggü. Vorwoche
+müdürlü	managed	geleitet
+bu hafta zarar etti. Kapanış önerilerine ve kadrosuna bak.	made a loss this week. Check the closing tips and its staff.	hat diese Woche Verlust gemacht. Sieh dir die Abschlusstipps und das Personal an.
+Yeni nesil: {0} kuşak	New generation: {0}	Neue Generation: {0}
+{0} kuşak	Generation {0}	Generation {0}
+{0} kuşak.	Generation {0}.	Generation {0}.
+Yeni nesil	New generation	Neue Generation
+İmparatorluk {0} adıyla şeref kürsüsüne yazılır. Torunun yeni bir mahallede, küçük bir dükkânla sıfırdan başlar.	The empire enters the hall of fame as {0}. Your grandchild starts from scratch with a small shop in a new neighbourhood.	Das Imperium kommt als {0} in die Ruhmeshalle. Dein Enkel beginnt in einem neuen Viertel mit einem kleinen Laden von vorn.
+Mirasın:	Your legacy:	Dein Erbe:
+{0}'nın bütün uzmanlıkları ilk ustana geçer.	all of {0}'s specialties pass to your first master.	alle Spezialitäten von {0} gehen an deinen ersten Meister über.
+{0}'nın bütün uzmanlıkları ilk ustana geçer	all of {0}'s specialties pass to your first master	alle Spezialitäten von {0} gehen an deinen ersten Meister über
+Zorluk:	Difficulty:	Schwierigkeit:
+"Lüks Kebap" {0}'in oğluna geçti; rakip bu sefer daha güçlü başlar.	"Lüks Kebap" passed to {0}'s son; the rival starts stronger this time.	„Lüks Kebap“ ging an den Sohn von {0}; der Rivale startet diesmal stärker.
+Kayıtlı oyunun silinmez; ana menüden yedeğini alabilirsin. Yeni nesli başlattığında kayıt yuvası yeni oyuna geçer.	Your saved game isn't deleted; you can back it up from the main menu. Once you start the new generation, the save slot moves to the new game.	Dein Spielstand wird nicht gelöscht; du kannst ihn im Hauptmenü sichern. Sobald du die neue Generation startest, geht der Speicherplatz an das neue Spiel.
+Yeni nesli başlat	Start the new generation	Neue Generation starten
+{0} imparatorluğunun torunu olarak yeni bir mahallede başlıyorsun. {1}'nın ustalığı ilk ustana geçecek. Rakip bu sefer daha güçlü.	As the grandchild of the {0} empire you start in a new neighbourhood. {1}'s mastery passes to your first master. The rival is stronger this time.	Als Enkel des Imperiums {0} beginnst du in einem neuen Viertel. Das Können von {1} geht an deinen ersten Meister. Der Rivale ist diesmal stärker.
+Hangi ustayı seçersen seç, {0}'nın uzmanlıkları ona geçer.	Whichever master you choose, {0}'s specialties pass to them.	Egal welchen Meister du wählst, die Spezialitäten von {0} gehen an ihn über.
+Şeref kürsüsü	Hall of fame	Ruhmeshalle
+· {0} kuşak · {1} günde imparator	· generation {0} · emperor in {1} days	· Generation {0} · Kaiser in {1} Tagen
+Cüneyt Bey'le {0} hesaplaşmanın {1} tanesini sen kazandın.	You won {1} of {0} showdowns with Cüneyt Bey.	Du hast {1} von {0} Duellen mit Cüneyt Bey gewonnen.
+{0}'le {1} hesaplaşmanın {2} tanesini sen kazandın.	You won {2} of {1} showdowns with {0}.	Du hast {2} von {1} Duellen mit {0} gewonnen.
+Rakip hamlesi	Rival move	Zug des Rivalen
+Müdavim hikâyesi	A regular's story	Geschichte eines Stammgasts
+Fiyat savaşı başladı	A price war has begun	Ein Preiskrieg hat begonnen
+{0} bütün şubelerinde fiyatları {1} indirdi. Vitrinine kocaman "Şehrin en ucuzu" yazdırmış. Müşterilerin bir kısmı şimdiden karşıya bakıyor.	{0} cut prices by {1} in all his branches. "Cheapest in town" is painted across his window. Some customers are already glancing across the street.	{0} hat die Preise in allen Filialen um {1} gesenkt. „Am günstigsten in der Stadt“ steht riesig im Schaufenster. Manche Kunden schauen schon hinüber.
+Biz de fiyat indirelim	Let's cut prices too	Wir senken auch die Preise
+Bütün fiyatlar −{0} müşteri kaybı yok	All prices −{0}, no customers lost	Alle Preise −{0}, keine Kunden verloren
+Fiyatları indirdik. Kâr marjı inceldi ama kimse karşıya geçmedi. {0} bu kadar hızlı karşılık beklemiyordu.	We cut prices. Margins got thinner, but nobody crossed the street. {0} didn't expect such a quick answer.	Wir haben die Preise gesenkt. Die Marge ist dünner, aber niemand ist rübergegangen. {0} hatte keine so schnelle Antwort erwartet.
+Kaliteyle cevap ver	Answer with quality	Mit Qualität antworten
+{0}, {1} gün sabır +{2} ustan iyiyse itibar +{3}	{0}, {1} days patience +{2}, reputation +{3} if your master is good	{0}, {1} Tage Geduld +{2}, Ruf +{3}, wenn dein Meister gut ist
+"Ucuz etin yahnisi yavan olur." Müşteriler farkı tadınca geri döndü.	"Cheap meat makes a bland stew." Once customers tasted the difference, they came back.	„Billiges Fleisch gibt faden Eintopf.“ Als die Kunden den Unterschied schmeckten, kamen sie zurück.
+Kampanya iyiydi ama tabaktaki fark yeterince belli olmadı. Bir kısım müşteri ucuza kaçtı.	The campaign was good, but the difference on the plate wasn't clear enough. Some customers went for the cheap option.	Die Kampagne war gut, aber der Unterschied auf dem Teller war nicht deutlich genug. Manche Kunden gingen zum Billigen.
+Görmezden gel	Ignore it	Ignorieren
+Kuyruk kısaldı. {0} gazeteye "Esnaf dayanamıyor" diye demeç verdi.	The queue got shorter. {0} told the paper: "Small shops can't keep up."	Die Schlange wurde kürzer. {0} sagte der Zeitung: „Die kleinen Läden halten nicht mit.“
+{0} {1}'nın peşinde	{0} is after {1}	{0} ist hinter {1} her
+Rakip, en iyi ustan {0}'ya yalnızca maaş değil, yeni şubesinde ortaklık teklif etmiş. "Bu sefer ciddi" diyor usta, gözünü kaçırarak.	The rival offered your best master {0} not just a salary but a partnership in his new branch. "This time it's serious," the master says, avoiding your eyes.	Der Rivale hat deinem besten Meister {0} nicht nur Gehalt, sondern eine Partnerschaft in seiner neuen Filiale angeboten. „Diesmal ist es ernst“, sagt der Meister und weicht deinem Blick aus.
+Kâr payı primi ver	Give a profit-share bonus	Gewinnbeteiligung zahlen
+{0}, moral +{1} maaş +{2}	{0}, morale +{1}, salary +{2}	{0}, Moral +{1}, Gehalt +{2}
+{0} primi cebine koydu: "Ortaklık dediğin böyle olur." {1} eli boş döndü.	{0} pocketed the bonus: "Now that's a partnership." {1} went home empty-handed.	{0} steckte die Prämie ein: „So sieht Partnerschaft aus.“ {1} ging mit leeren Händen.
+Vicdanına bırak	Leave it to their conscience	Seinem Gewissen überlassen
+Moral {0} ve üstüyse kalır	Stays if morale is {0} or higher	Bleibt bei Moral {0} oder mehr
+{0}: "Bu ocağı sen yaktın, ben söndürmem." Kaldı.	{0}: "You lit this grill; I won't let it go out." They stayed.	{0}: „Du hast diesen Grill angezündet, ich lösche ihn nicht.“ Geblieben.
+{0} önlüğünü katlayıp bıraktı. Karşı dükkânın camında yüzünü gördük.	{0} folded the apron and left. We saw their face in the window across the street.	{0} faltete die Schürze und ging. Wir sahen das Gesicht im Fenster gegenüber.
+Yolu açık olsun	Wish them well	Alles Gute wünschen
+Usta gider, rakip güçlenir	The master leaves, the rival gets stronger	Der Meister geht, der Rivale wird stärker
+Usta gitti. {0}'nda yeni bir isim aramak gerek.	The master is gone. Time to look for a new name at the {0}.	Der Meister ist weg. Zeit, im {0} jemand Neues zu suchen.
+{0}'de taç savaşı	Crown battle in {0}	Kronenkampf in {0}
+"Lüks Kebap" {0}'deki şubesine yeni bir şef ve mermer salon getirdi. Hedefleri belli: bu ay semtin tacını senden almak.	"Lüks Kebap" brought a new chef and a marble dining room to its {0} branch. The goal is clear: take the district crown from you this month.	„Lüks Kebap“ hat seiner Filiale in {0} einen neuen Koch und einen Marmorsaal verpasst. Das Ziel ist klar: dir diesen Monat die Bezirkskrone abnehmen.
+Semtte lezzet festivali düzenle	Hold a food festival in the district	Ein Food-Festival im Bezirk veranstalten
+{0}, {1} gün şube müşterisi +{2} itibar +{3}	{0}, {1} days branch customers +{2}, reputation +{3}	{0}, {1} Tage Filialkunden +{2}, Ruf +{3}
+Festival üç gün sürdü; semtin bütün sofraları bizim dükkândan doldu.	The festival lasted three days; every table in the district was filled from our shop.	Das Festival dauerte drei Tage; jeder Tisch im Bezirk wurde aus unserem Laden gedeckt.
+Müdavimlerine güven	Trust your regulars	Auf die Stammgäste vertrauen
+Sadık müdavimin çoksa taç kalır	The crown stays if you have many loyal regulars	Die Krone bleibt, wenn du viele treue Stammgäste hast
+{0} kapıda nöbet tutar gibi: "Bizim dükkân burası." Müdavimler kımıldamadı.	{0} stands at the door like a guard: "This is our shop." The regulars didn't budge.	{0} steht an der Tür wie eine Wache: „Das ist unser Laden.“ Die Stammgäste rührten sich nicht.
+Müdavimlerin azdı; yenilik merakı ağır bastı. Çıta yükseldi.	You had too few regulars; curiosity won. The bar went up.	Du hattest zu wenige Stammgäste; die Neugier siegte. Die Hürde stieg.
+Karalama kampanyası	Smear campaign	Rufmordkampagne
+Sosyal medyada sahte hesaplar "Bu dükkânda bayat et kullanılıyor" diye paylaşım yapıyor. Arkasında kimin olduğunu herkes tahmin ediyor.	Fake accounts on social media claim "this shop uses stale meat". Everyone can guess who's behind it.	Fake-Accounts behaupten in den sozialen Medien: „Dieser Laden verwendet altes Fleisch.“ Jeder ahnt, wer dahintersteckt.
+Kapını denetime aç	Open your doors to an inspection	Die Türen für eine Kontrolle öffnen
+Temizlik {0} ve üstüyse itibar +{1}	Reputation +{1} if cleanliness is {0} or higher	Ruf +{1}, wenn die Sauberkeit {0} oder mehr ist
+Belediye ekibi canlı yayında mutfağı gezdi: "Pırıl pırıl." İftira geri tepti.	The council team toured the kitchen on a live stream: "Spotless." The slander backfired.	Das Amt besichtigte die Küche im Livestream: „Blitzblank.“ Die Verleumdung ging nach hinten los.
+Denetimde tezgâh altı kirli çıktı. Paylaşımlar haklı çıkmış gibi oldu. İtibar {0}	The inspection found dirt under the counter. The posts seemed to be right. Reputation {0}	Bei der Kontrolle war es unter der Theke schmutzig. Die Posts schienen recht zu haben. Ruf {0}
+Ajansla karşı kampanya	Counter-campaign with the agency	Gegenkampagne mit der Agentur
+{0}, itibar +{1} {2} gün müşteri +{3}	{0}, reputation +{1}, {2} days customers +{3}	{0}, Ruf +{1}, {2} Tage Kunden +{3}
+Ustanın döner kestiği videolar karalamayı bastırdı.	Videos of your master carving döner drowned out the smear.	Videos vom Meister beim Dönerschneiden übertönten die Verleumdung.
+Sessiz kal	Stay quiet	Schweigen
+Söylenti bir hafta dolaştı. Bazı müşteriler sorarak girdi.	The rumour went around for a week. Some customers asked about it as they came in.	Das Gerücht hielt sich eine Woche. Manche Kunden fragten beim Reinkommen nach.
+{0} zincirini almak istiyor	{0} wants to buy your chain	{0} will deine Kette kaufen
+{0} bir akşam kapıda belirdi, masaya bir zarf koydu: "Bütün şubelerine {1} veririm. Yorulmadın mı?"	{0} turned up one evening and put an envelope on the table: "I'll give you {1} for all your branches. Aren't you tired?"	{0} stand eines Abends in der Tür und legte einen Umschlag auf den Tisch: „Ich gebe dir {1} für alle Filialen. Bist du nicht müde?“
+"Bu ocak satılık değil"	"This grill isn't for sale"	„Dieser Grill ist nicht zu verkaufen“
+Ekip morali +{0} rakip öfkelenir	Team morale +{0}, the rival is furious	Teammoral +{0}, der Rivale ist wütend
+Zarfı açmadan geri verdin. Mutfaktan alkış koptu. {0} kapıdan çıkarken "Görüşeceğiz" dedi.	You handed the envelope back unopened. The kitchen broke into applause. On his way out {0} said: "We'll see."	Du gabst den Umschlag ungeöffnet zurück. Die Küche applaudierte. Beim Gehen sagte {0}: „Wir sehen uns.“
+"Asıl ben seni alırım"	"I'll be the one buying you"	„Ich bin es, der dich kauft“
+Son hedefi ilan et, itibar +{0}	Declare the final goal, reputation +{0}	Das letzte Ziel verkünden, Ruf +{0}
+{0} güldü, sonra gülmeyi kesti: "O gün gelirse anahtarları kendi elimle veririm." Bütün şehir bu cümleyi konuşuyor.	{0} laughed, then stopped laughing: "If that day comes, I'll hand you the keys myself." The whole city is talking about it.	{0} lachte, dann hörte er auf zu lachen: „Wenn der Tag kommt, gebe ich dir die Schlüssel selbst.“ Die ganze Stadt redet davon.
+{0}'in zor davası ({1}/{2})	{0}'s tough case ({1}/{2})	Der schwierige Fall von {0} ({1}/{2})
+{0} her zamanki dürümünü yerken dosyalara gömülmüş: "Mahallenin eski fırıncısını tahliye etmek istiyorlar. Gece gündüz çalışıyorum."	{0} is buried in files while eating the usual wrap: "They want to evict the neighbourhood's old baker. I'm working day and night."	{0} steckt beim üblichen Wrap in Akten: „Sie wollen den alten Bäcker des Viertels rauswerfen. Ich arbeite Tag und Nacht.“
+Öğle yemeği bizden	Lunch is on us	Das Mittagessen geht aufs Haus
+Selin'in gönlü +{0}	Selin's loyalty +{0}	Selins Treue +{0}
+"Bu davayı kazanırsak ilk kutlama burada." Selin dosyaları toparlayıp koştu.	"If we win this case, the first celebration is here." Selin gathered her files and ran.	„Wenn wir den Fall gewinnen, feiern wir zuerst hier.“ Selin packte ihre Akten und eilte los.
+İyi şanslar dile	Wish her luck	Viel Glück wünschen
+Gönül +{0}	Loyalty +{0}	Treue +{0}
+Gönül {0}	Loyalty {0}	Treue {0}
+Selin gülümsedi: "Sağ ol, ihtiyacım vardı."	Selin smiled: "Thanks, I needed that."	Selin lächelte: „Danke, das habe ich gebraucht.“
+Selin'in davası: duruşma günü ({0}/{1})	Selin's case: the hearing ({0}/{1})	Selins Fall: die Verhandlung ({0}/{1})
+Selin telaşla geldi: "Yarın duruşma var, fırıncı Hüsnü Amca'ya tanıklık edecek esnaf lazım. Sen yıllardır komşususun."	Selin rushed in: "The hearing is tomorrow and we need a shopkeeper to testify for Uncle Hüsnü the baker. You've been his neighbour for years."	Selin kam eilig herein: „Morgen ist die Verhandlung, wir brauchen einen Ladenbesitzer als Zeugen für Bäcker Onkel Hüsnü. Du bist seit Jahren sein Nachbar.“
+Tanıklık et	Testify	Aussagen
+Yarım gün dükkândan uzak: {0} gün müşteri −{1} itibar +{2}	Half a day away from the shop: {0} day customers −{1}, reputation +{2}	Einen halben Tag weg vom Laden: {0} Tag Kunden −{1}, Ruf +{2}
+Mahkeme salonunda Hüsnü Amca elini sıktı. Mahalle bunu unutmayacak.	In the courtroom Uncle Hüsnü shook your hand. The neighbourhood won't forget this.	Im Gerichtssaal schüttelte Onkel Hüsnü dir die Hand. Das Viertel wird es nicht vergessen.
+Dilekçe yaz, imzala	Write and sign a petition	Eine Petition schreiben und unterschreiben
+Esnaf imzalarıyla dolu dilekçe dosyaya girdi.	A petition full of shopkeepers' signatures went into the file.	Eine Petition voller Unterschriften der Ladenbesitzer kam zu den Akten.
+Selin davayı kazandı! ({0}/{1})	Selin won the case! ({0}/{1})	Selin hat gewonnen! ({0}/{1})
+Selin kapıdan "Kazandık!" diye girdi, arkasında Hüsnü Amca ve yarım mahalle. "Bundan sonra senin bütün sözleşmelerine ben bakarım, hem de bedava."	Selin burst in shouting "We won!", with Uncle Hüsnü and half the neighbourhood behind her. "From now on I'll handle all your contracts, for free."	Selin kam mit „Wir haben gewonnen!“ herein, hinter ihr Onkel Hüsnü und das halbe Viertel. „Ab jetzt kümmere ich mich um alle deine Verträge, kostenlos.“
+Herkese ikram!	A round on the house!	Eine Runde aufs Haus!
+{0}, itibar +{1} {2} gün beyaz yaka +{3}	{0}, reputation +{1}, {2} days office workers +{3}	{0}, Ruf +{1}, {2} Tage Büroangestellte +{3}
+Kutlama gece yarısına kadar sürdü. Selin artık dükkânın avukatı: cezalar ve sözleşmeler dert değil.	The party went on until midnight. Selin is now the shop's lawyer: fines and contracts are no longer a worry.	Die Feier ging bis Mitternacht. Selin ist jetzt die Anwältin des Ladens: Bußgelder und Verträge sind kein Thema mehr.
+{0}'in fotoğrafları ({1}/{2})	{0}'s photographs ({1}/{2})	Die Fotos von {0} ({1}/{2})
+Kemal Bey sararmış bir zarf çıkardı: "Bu dükkânın {0}'teki hâli. Baban o zaman çıraktı." Fotoğrafta genç bir adam döner kesiyor.	Kemal Bey took out a yellowed envelope: "This shop in {0}. Your father was an apprentice then." In the photo a young man is carving döner.	Kemal Bey holte einen vergilbten Umschlag hervor: „Dieser Laden im Jahr {0}. Dein Vater war damals Lehrling.“ Auf dem Foto schneidet ein junger Mann Döner.
+Duvara asalım	Let's hang it on the wall	Hängen wir es an die Wand
+Ekip morali +{0} Kemal Bey'in gönlü +{1}	Team morale +{0}, Kemal Bey's loyalty +{1}	Teammoral +{0}, Kemal Beys Treue +{1}
+Fotoğraf kasanın üstüne asıldı. Müşteriler önünde durup soruyor.	The photo went up above the till. Customers stop and ask about it.	Das Foto hängt über der Kasse. Kunden bleiben stehen und fragen nach.
+Kemal Bey'e geri ver	Give it back to Kemal Bey	Kemal Bey zurückgeben
+"Sende dursun aslında..." dedi ama zarfı cebine koydu.	"You should keep it, really..." he said, but put the envelope in his pocket.	„Eigentlich solltest du es behalten...“, sagte er, steckte den Umschlag aber ein.
+Kemal Bey'in muhtarlık adaylığı ({0}/{1})	Kemal Bey runs for neighbourhood head ({0}/{1})	Kemal Bey kandidiert als Ortsvorsteher ({0}/{1})
+Kemal Bey heyecanlı: "Muhtarlığa aday oluyorum. Seçim bürosu olarak dükkânın arka masasını kullanabilir miyim?"	Kemal Bey is excited: "I'm running for neighbourhood head. May I use the back table as my campaign office?"	Kemal Bey ist aufgeregt: „Ich kandidiere als Ortsvorsteher. Darf ich den hinteren Tisch als Wahlbüro nutzen?“
+Arka masa senin	The back table is yours	Der hintere Tisch gehört dir
+{0} gün aile müşterisi +{1} gönül +{2}	{0} days family customers +{1}, loyalty +{2}	{0} Tage Familienkunden +{1}, Treue +{2}
+Arka masa çay ve seçim broşürleriyle doldu; mahalleli her gün uğruyor.	The back table filled with tea and campaign leaflets; neighbours drop by every day.	Der hintere Tisch füllte sich mit Tee und Wahlprospekten; die Nachbarn kommen jeden Tag vorbei.
+Esnaf tarafsız kalmalı	Shopkeepers should stay neutral	Ladenbesitzer sollten neutral bleiben
+Kemal Bey anlayışla başını salladı ama biraz bozuldu.	Kemal Bey nodded understandingly, but he was a little hurt.	Kemal Bey nickte verständnisvoll, war aber etwas gekränkt.
+Muhtar Kemal Bey ({0}/{1})	Neighbourhood head Kemal Bey ({0}/{1})	Ortsvorsteher Kemal Bey ({0}/{1})
+Seçim sonuçları açıklandı: Kemal Bey muhtar! İlk işi dükkânın önüne bank ve çiçeklik koydurmak oldu. "Mahallenin kalbi burası" dedi.	The results are in: Kemal Bey is neighbourhood head! His first act was to put a bench and flower boxes in front of the shop. "This is the heart of the neighbourhood," he said.	Die Ergebnisse sind da: Kemal Bey ist Ortsvorsteher! Als Erstes ließ er eine Bank und Blumenkästen vor den Laden stellen. „Hier schlägt das Herz des Viertels“, sagte er.
+Kutlama lokması dağıt	Hand out celebration sweets	Festgebäck verteilen
+{0}, itibar +{1} şube temizliği +{2}	{0}, reputation +{1}, branch cleanliness +{2}	{0}, Ruf +{1}, Sauberkeit der Filialen +{2}
+Muhtarlık artık denetimlerde bizim yanımızda; sokak her sabah süpürülüyor.	The neighbourhood office now has our back at inspections; the street is swept every morning.	Das Ortsamt steht bei Kontrollen jetzt hinter uns; die Straße wird jeden Morgen gefegt.
+{0}'in bursu ({1}/{2})	{0}'s scholarship ({1}/{2})	Das Stipendium von {0} ({1}/{2})
+{0} masada ders çalışıyor, gözleri yorgun: "Burs sınavı yaklaşıyor ama akşamları kafede çalışmak zorundayım."	{0} is studying at a table, eyes tired: "The scholarship exam is coming up, but I have to work at a café in the evenings."	{0} lernt am Tisch, die Augen müde: „Die Stipendienprüfung steht bevor, aber abends muss ich im Café arbeiten.“
+Akşamları yemeği bizden	Dinner is on us in the evenings	Abendessen geht aufs Haus
+{0}, {1}'in gönlü +{2}	{0}, {1}'s loyalty +{2}	{0}, Treue von {1} +{2}
+Elif gözleri dolarak teşekkür etti: "Bunu unutmayacağım."	Elif thanked you with tears in her eyes: "I won't forget this."	Elif bedankte sich mit Tränen in den Augen: „Das vergesse ich nie.“
+Yarı zamanlı iş teklif et	Offer a part-time job	Einen Teilzeitjob anbieten
+{0} gün servis sabrı +{1} gönül +{2}	{0} days service patience +{1}, loyalty +{2}	{0} Tage Geduld im Service +{1}, Treue +{2}
+Elif hafta sonları kasada; müşteriler güler yüzüne bayıldı.	Elif works the till at weekends; customers love her smile.	Elif sitzt am Wochenende an der Kasse; die Kunden lieben ihr Lächeln.
+{0}'in sosyal medya fikri ({1}/{2})	{0}'s social media idea ({1}/{2})	Die Social-Media-Idee von {0} ({1}/{2})
+{0} telefonunu uzattı: "Kampüste herkes yemek videosu çekiyor. Ustanın döner kesişini çeksem, patlar bence!"	{0} held up her phone: "Everyone on campus films food videos. If I film your master carving döner, it'll blow up!"	{0} hielt ihr Handy hoch: „Auf dem Campus dreht jeder Food-Videos. Wenn ich deinen Meister beim Dönerschneiden filme, geht das viral!“
+Çek bakalım!	Go ahead and film!	Dann film mal!
+{0} gün öğrenci +{1} gönül +{2}	{0} days students +{1}, loyalty +{2}	{0} Tage Studierende +{1}, Treue +{2}
+Video kampüste elden ele dolaştı; akşamları masa bulmak zorlaştı.	The video went around campus; it got hard to find a table in the evenings.	Das Video ging auf dem Campus herum; abends war kaum noch ein Tisch frei.
+Usta kameradan çekinir	The master is camera-shy	Der Meister ist kamerascheu
+Elif omuz silkti: "Peki, ama fikrim aklında olsun."	Elif shrugged: "Fine, but keep my idea in mind."	Elif zuckte mit den Schultern: „Na gut, aber denk an meine Idee.“
+{0} mezun oldu! ({1}/{2})	{0} graduated! ({1}/{2})	{0} hat den Abschluss! ({1}/{2})
+{0} diplomasıyla geldi: "Bursu kazandım, bitirdim de! İlk maaşımla ilk yemeği burada yiyeceğim demiştim." Şimdi büyük bir ajansta çalışıyor.	{0} came in with her diploma: "I won the scholarship and I've graduated! I said I'd eat my first meal from my first salary here." She now works at a big agency.	{0} kam mit ihrem Diplom: „Ich habe das Stipendium bekommen und abgeschlossen! Ich hatte gesagt, mein erstes Essen vom ersten Gehalt esse ich hier.“ Jetzt arbeitet sie in einer großen Agentur.
+Mezuniyet sofrası kur	Set a graduation table	Einen Abschlusstisch decken
+{0}, itibar +{1} {2} gün öğrenci +{3}	{0}, reputation +{1}, {2} days students +{3}	{0}, Ruf +{1}, {2} Tage Studierende +{3}
+Elif'in hikâyesi kampüs gazetesine çıktı: "Bir döner dükkânı bir hayatı değiştirdi."	Elif's story made the campus paper: "A döner shop changed a life."	Elifs Geschichte stand in der Campuszeitung: „Ein Dönerladen hat ein Leben verändert.“
+Elif'in sosyal medya fikri ({0}/{1})	Elif's social media idea ({0}/{1})	Elifs Social-Media-Idee ({0}/{1})
+Elif mezun oldu! ({0}/{1})	Elif graduated! ({0}/{1})	Elif hat den Abschluss! ({0}/{1})
+Elif telefonunu uzattı: "Kampüste herkes yemek videosu çekiyor. Ustanın döner kesişini çeksem, patlar bence!"	Elif held up her phone: "Everyone on campus films food videos. If I film your master carving döner, it'll blow up!"	Elif hielt ihr Handy hoch: „Auf dem Campus dreht jeder Food-Videos. Wenn ich deinen Meister beim Dönerschneiden filme, geht das viral!“
+Elif diplomasıyla geldi: "Bursu kazandım, bitirdim de! İlk maaşımla ilk yemeği burada yiyeceğim demiştim." Şimdi büyük bir ajansta çalışıyor.	Elif came in with her diploma: "I won the scholarship and I've graduated! I said I'd eat my first meal from my first salary here." She now works at a big agency.	Elif kam mit ihrem Diplom: „Ich habe das Stipendium bekommen und abgeschlossen! Ich hatte gesagt, mein erstes Essen vom ersten Gehalt esse ich hier.“ Jetzt arbeitet sie in einer großen Agentur.
+Elif masada ders çalışıyor, gözleri yorgun: "Burs sınavı yaklaşıyor ama akşamları kafede çalışmak zorundayım."	Elif is studying at a table, eyes tired: "The scholarship exam is coming up, but I have to work at a café in the evenings."	Elif lernt am Tisch, die Augen müde: „Die Stipendienprüfung steht bevor, aber abends muss ich im Café arbeiten.“
+{0}, Elif'in gönlü +{1}	{0}, Elif's loyalty +{1}	{0}, Elifs Treue +{1}
+Biten: {0}, {1}, {2}, {3}	Sold out: {0}, {1}, {2}, {3}	Ausverkauft: {0}, {1}, {2}, {3}
+Biten: {0}, {1}, {2}, {3}, {4}	Sold out: {0}, {1}, {2}, {3}, {4}	Ausverkauft: {0}, {1}, {2}, {3}, {4}
+{0}, {1} bugün kapalı kalır	{0}, {1} stay closed today	{0}, {1} bleiben heute geschlossen
+{0}, {1}, {2}, {3}, {4}, {5} bugün kapalı kalır	{0}, {1}, {2}, {3}, {4}, {5} stay closed today	{0}, {1}, {2}, {3}, {4}, {5} bleiben heute geschlossen
+"Lüks Kebap" yeni semtte	"Lüks Kebap" in a new district	„Lüks Kebap“ in einem neuen Bezirk
+Fiyat savaşı kızışıyor	The price war heats up	Der Preiskrieg spitzt sich zu
+"Lüks Kebap" indirimlerini sürdürüyor. Ekonomistler: "Küçük esnaf için zor günler."	"Lüks Kebap" keeps up its discounts. Economists: "Hard times for small shops."	„Lüks Kebap“ setzt seine Rabatte fort. Ökonomen: „Harte Zeiten für kleine Läden.“
+Usta transferleri gündemde	Master transfers make the news	Meistertransfers in den Schlagzeilen
+Cüneyt Bey şehrin en iyi ustalarını toplamaya çalışıyor. Loncada konuşulan tek konu bu.	Cüneyt Bey is trying to collect the city's best masters. It's all the guild talks about.	Cüneyt Bey versucht, die besten Meister der Stadt zu sammeln. In der Zunft redet man über nichts anderes.
+Semtlerde taç savaşı	Crown battles across the districts	Kronenkämpfe in den Bezirken
+Rakip zincir mermer salonlarıyla şampiyonluk peşinde. Mahalleli taraf tutmaya başladı.	The rival chain is chasing championships with marble dining rooms. Neighbours are starting to take sides.	Die Konkurrenzkette jagt mit Marmorsälen den Meisterschaften nach. Die Nachbarn ergreifen Partei.
+Sosyal medyada iftira dalgası	A wave of slander on social media	Eine Welle der Verleumdung in den sozialen Medien
+Sahte hesaplardan esnafa yönelik paylaşımlar savcılığa taşındı.	Posts from fake accounts targeting shopkeepers have gone to the prosecutor.	Beiträge von Fake-Accounts gegen Ladenbesitzer liegen nun bei der Staatsanwaltschaft.
+Cüneyt Bey'in teklifi geri çevrildi	Cüneyt Bey's offer turned down	Cüneyt Beys Angebot abgelehnt

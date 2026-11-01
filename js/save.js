@@ -6,7 +6,7 @@
   const S = KE.SAVE = {};
   S.KEY = 'kebab-empire-save-v2';
   S.BACKUP = 'kebab-empire-save-backup';
-  S.VERSION = 3;
+  S.VERSION = 4;
   S.APP = 'kebab-empire';
 
   /* Basit sağlama toplamı (FNV-1a): bozulmayı ve elle oynanmış dosyayı fark etmek için */
@@ -30,6 +30,14 @@
       if (g.seed == null) g.seed = Math.floor(Math.random() * 2147483646) + 1;
       if (!g.actionLog) g.actionLog = [];
       if (!g.saveId) g.saveId = 'g' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
+      return g;
+    },
+    /* 3 → 4: dönemler, rakip hikâyesi, haftalık meydan okuma, nesil. Eski oyun ulaştığı döneme sessizce yerleşir. */
+    3: (g) => {
+      g.gen = g.gen || 1; g.stories = g.stories || {}; g.weekly = g.weekly || null; g.flags = g.flags || {};
+      g.rival = Object.assign({ power: 20, district: null }, g.rival || {});
+      if (g.rival.stage == null) g.rival.stage = g.day > 40 ? 1 : 0;
+      if (!g.era) { g.era = 1; try { KE.advanceEra(g); } catch (e) { /* eksik veri: 1. dönemde kal */ } }
       return g;
     }
   };
