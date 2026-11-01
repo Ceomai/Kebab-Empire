@@ -4,15 +4,30 @@ Döner ve kebap dünyasında geçen, renkli ve animasyonlu bir işletme simülas
 
 ## Nasıl oynanır
 
-Kurulum gerekmez. `index.html` dosyasını bir tarayıcıda açman yeterli. Oyun kayıtları tarayıcıda tutulur.
+Oyun her `main` gönderiminde otomatik derlenip **GitHub Pages**'te yayınlanır (depo ayarlarında Pages → Source: *GitHub Actions* seçili olmalı). Telefona uygulama gibi kurulabilir ve internetsiz de açılır (PWA).
 
-Yerel bir sunucuyla açmak istersen:
+Geliştirme:
 
 ```bash
-python3 -m http.server 8000
+npm install
+npm run dev          # http://localhost:5173
+npm test             # birim, denge, determinizm, kayıt, takvim, çeviri, bulut testleri
+npm run typecheck    # JSDoc / checkJs tip kontrolü
+npm run build        # dist/ (küçültülmüş, ~120 KB gzip)
+npm run e2e          # derlenmiş oyunu Chromium'da baştan sona oynar (önce: npx vite preview --port 4173)
 ```
 
-Sonra tarayıcıda `http://localhost:8000` adresine git.
+## Mimari
+
+| Katman | Dosyalar | Not |
+|---|---|---|
+| Veri | `js/data.js`, `js/calendar.js` | Ürünler, semtler, ustalar; hicri takvimden Ramazan/bayram, İstanbul iftar saati, yıllık asgari ücret ve vergi dilimleri |
+| Motor | `js/economy.js`, `js/sim.js`, `js/farm.js`, `js/narrative.js` | DOM'suz; tohumlu rastgelelik (`KE.rand`), oyuncu hamle günlüğü ve birebir yeniden oynatma (`KE.replayService`) |
+| Kayıt ve ayar | `js/save.js`, `js/config.js` | Sürümlü kayıt + göçler, günlük yedek, dosyaya dışa/içe aktarma; uzaktan denge ayarı (`public/config.json`, Supabase `remote_config`) |
+| Arayüz | `js/ui/*.js`, `js/map.js`, `js/scene.js`, `js/art.js`, `js/characters.js` | Katmanlı şehir haritası (zemin bir kez çizilir), sahne, ekranlar |
+| Çok dil | `js/i18n.js`, `public/locales/`, `locales_src/` | Türkçe asıl; İngilizce ve Almanca. Ekrana gelen metin kalıp sözlüğünden geçer |
+| Bulut | `src/cloud.js`, `supabase/` | Anonim hesap, bulut kaydı, doğrulanmış şehir sıralaması, ölçüm ve hata raporu; ayrıntılar `docs/SUPABASE.md`, gizlilik `docs/GIZLILIK.md` |
+| Sunucu doğrulaması | `js/verify.js`, `supabase/functions/verify-day` | Gün sonucu sunucuda aynı motorla yeniden oynatılır; tutmayan sonuç sıralamaya girmez |
 
 ### Oyunun akışı
 
