@@ -266,7 +266,9 @@
     if (wrap) wrap.classList.toggle('tzon', !!P.active);
     if (!P.active) { box.innerHTML = ''; return; }
     const b = B(), cap = KE.playerCap(G, b), slots = P.slots || [];
-    const need = {};
+    const need = {}, want = {};
+    /* istasyon düğmesinde kategori yerine o an gereken malzemenin adı yazar (seçili fişinki önce) */
+    const wantAdd = (sid, label, sel) => { const a = want[sid] || (want[sid] = []); if (a.includes(label)) return; if (sel) a.unshift(label); else a.push(label); };
     const cards = slots.map((sl, i) => {
       const t = L.tickets.find((x) => x.id === sl.tid);
       if (!t) return '';
@@ -279,17 +281,16 @@
         const ph = left > 0 ? 'cook' : L.minute > sl.fire + ft.grace ? 'burn' : L.minute > sl.fire + ft.grace - 2 ? 'warn' : 'done';
         const pct = left > 0 ? Math.round((1 - left / ft.cook) * 100) : 100;
         fire = `<span class="tz-fire ${ph}" style="--p:${pct}">${IC('fire')}<b>${ph === 'cook' ? 'Pişiyor' : ph === 'burn' ? 'Yanıyor!' : 'Al!'}</b></span>`;
-        if (ph !== 'cook') need.ates = need.ates || (i === P.sel ? 2 : 1);
-      } else need[st] = Math.max(need[st] || 0, i === P.sel ? 2 : 1);
+        if (ph !== 'cook') { need.ates = need.ates || (i === P.sel ? 2 : 1); wantAdd('ates', 'Al: ' + p.steps[sl.step], i === P.sel); }
+      } else { need[st] = Math.max(need[st] || 0, i === P.sel ? 2 : 1); wantAdd(st, p.steps[sl.step], i === P.sel); }
       const pat = c ? clamp(1 - c.wait / (c.patience * 2.6), 0, 1) : 1;
       return `<button class="tz-card ${i === P.sel ? 'sel' : ''} ${sl.errors ? 'err' : ''}" data-a="psel" data-i="${i}" aria-label="${esc(p.name)}">
         <span class="tz-cd">${KE.ART.dish(p.id)}${t.count > 1 ? `<b>×${t.count}</b>` : ''}</span>
         <span class="tz-cb"><b class="tz-cn">${esc(p.name)}${t.paket ? ' · paket' : ''}</b>
-          <span class="tz-rec">${p.steps.map((x, k) => { const sid = KE.stepStation(x); const S = KE.STATIONS.find((y) => y.id === sid); return `<i class="${k < sl.step ? 'done' : k === sl.step ? 'now' : ''} s-${sid}" title="${esc(x)}">${IC(S.ic)}</i>`; }).join('')}</span>
-          <span class="tz-now">${sl.step < p.steps.length ? esc(p.steps[sl.step]) : ''}</span></span>
+          <span class="tz-rec">${p.steps.map((x, k) => { const sid = KE.stepStation(x); const S = KE.STATIONS.find((y) => y.id === sid); return `<i class="${k < sl.step ? 'done' : k === sl.step ? 'now' : ''} s-${sid}">${IC(k < sl.step ? 'check' : S.ic)}<em>${esc(x)}</em></i>`; }).join('')}</span></span>
         ${fire}<span class="tz-pat"><i style="width:${Math.round(pat * 100)}%" class="${pat < 0.3 ? 'crit' : pat < 0.6 ? 'warn' : ''}"></i></span></button>`;
     }).join('') + Array.from({ length: Math.max(0, cap - slots.length) }, () => `<div class="tz-card empty">${IC('clock')}<span>${P.afk ? 'Mola verdin. Bir istasyona dokun, fiş gelsin.' : 'Sipariş bekleniyor'}</span></div>`).join('');
-    const stations = KE.STATIONS.map((S) => `<button class="tz-st s-${S.id} ${need[S.id] === 2 ? 'hot' : need[S.id] ? 'warm' : ''}" data-a="pst" data-s="${S.id}" aria-label="${S.name}">${IC(S.ic)}<b>${S.name}</b><kbd>${S.key}</kbd></button>`).join('');
+    const stations = KE.STATIONS.map((S) => { const w = want[S.id] || []; return `<button class="tz-st s-${S.id} ${need[S.id] === 2 ? 'hot' : need[S.id] ? 'warm' : ''} ${w.length ? 'has' : ''}" data-a="pst" data-s="${S.id}" aria-label="${esc(w[0] || S.name)}">${IC(S.ic)}<span class="tz-sl"><b>${esc(w[0] || S.name)}</b>${w.length > 1 ? `<small>+ ${esc(w[1])}</small>` : w.length ? `<small>${S.name}</small>` : ''}</span><kbd>${S.key}</kbd></button>`; }).join('');
     box.innerHTML = `<div class="tz2"><div class="tz-top"><span class="kicker">${IC('chef')}Tezgâh</span><span class="tz-stats"><span class="chip ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span></div>
       <div class="tz-rail">${cards}</div><div class="tz-sts" id="stepbtns">${stations}</div></div>`;
     /* sabit panelin yüksekliği: sahne kırpması ve sayfa boşluğu buna göre */

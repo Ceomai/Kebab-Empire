@@ -8802,5 +8802,9 @@
  "Mola verdin. Bir istasyona dokun, fiş gelsin.": {
   "en": "You're on a break. Tap a station to get tickets.",
   "de": "Du machst Pause. Tippe eine Station an, um Bons zu bekommen."
+ },
+ "Al: {0}": {
+  "en": "Take off: {0}",
+  "de": "Nimm: {0}"
  }
 }
