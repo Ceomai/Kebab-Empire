@@ -55,7 +55,7 @@
   };
   let GEO = LAND;
   /** Telefon dikey mi: dar ve uzun ekran */
-  S.isPortrait = () => typeof innerWidth === 'number' && innerWidth <= 820 && innerHeight > innerWidth * 1.15;
+  S.isPortrait = () => typeof innerWidth === 'number' && innerWidth <= 600 && innerHeight > innerWidth * 1.15;
   S.tablePos = (n) => GEO.tables(n);
   const stationX = (G, i, n) => GEO.stationX(G, i, n);
 

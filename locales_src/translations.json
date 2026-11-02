@@ -688,8 +688,8 @@
   "de": "Industrie-Kühlschrank"
  },
  "Servis": {
-  "en": "Serve",
-  "de": "Servieren"
+  "en": "Service",
+  "de": "Service"
  },
  "Klasik tezgâh ve {0} masa": {
   "en": "Classic counter and {0} tables",
@@ -8786,5 +8786,13 @@
  "<b>Tezgâh:</b> İstersen tezgâha geçip siparişleri kendin hazırlarsın. Aynı anda 2 fiş tutarsın (hazırlık ekipmanı 2. seviyede 3). Altı istasyon var: Hamur, Et, Ateş, Sebze, Sos, Servis. Sıradaki adımın istasyonu parlar; dokununca o adımı bekleyen fiş ilerler. Ateşe konan şiş ya da lavaş pişince \"Al!\" der; geç kalırsan yanar, çok geç kalırsan kömür olur ve sipariş ustaya döner. Hatasız ve hızlı biten siparişler kombo yapar, kombo kaliteyi artırır. Klavyede 1–6 istasyon, Tab sıradaki fiş. Her gün tezgâhta 6 sipariş hazırlamak bonus hedeftir (iki kat ödül).": {
   "en": "<b>Counter:</b> If you like, step up to the counter and prepare orders yourself. You hold 2 tickets at once (3 with level 2 prep equipment). There are six stations: Dough, Meat, Fire, Veg, Sauce, Serve. The station for the next step glows; tapping it advances the ticket waiting for that step. Skewers or flatbread on the fire say \"Take it!\" when done; too late and they burn, much too late and they turn to charcoal and the order goes back to the cooks. Fast, flawless orders build a combo, and combos raise quality. Keyboard: 1–6 for stations, Tab for the next ticket. Preparing 6 orders at the counter each day is a bonus goal (double reward).",
   "de": "<b>Theke:</b> Wenn du willst, bereitest du Bestellungen selbst zu. Du hältst 2 Bons gleichzeitig (3 mit Vorbereitungsausstattung Stufe 2). Es gibt sechs Stationen: Teig, Fleisch, Feuer, Gemüse, Soße, Servieren. Die Station des nächsten Schritts leuchtet; ein Tipp darauf bringt den Bon weiter, der auf diesen Schritt wartet. Spieße oder Fladenbrot auf dem Feuer melden \"Nimm!\", sobald sie gar sind; zu spät verbrennen sie, viel zu spät werden sie zu Kohle und die Bestellung geht zurück an die Meister. Schnelle, fehlerfreie Bestellungen geben Kombos, Kombos heben die Qualität. Tastatur: 1–6 für Stationen, Tab für den nächsten Bon. Jeden Tag 6 Bestellungen an der Theke zuzubereiten ist ein Bonusziel (doppelte Belohnung)."
+ },
+ "<b>Tezgâh:</b> İstersen tezgâha geçip siparişleri kendin hazırlarsın. Aynı anda 2 fiş tutarsın (hazırlık ekipmanı 2. seviyede 3). Altı istasyon var: Hamur, Et, Ateş, Sebze, Sos, Servis. Sıradaki adımın istasyonu parlar; dokununca o adımı bekleyen fiş ilerler. Ateşe konan şiş ya da lavaş pişince \"Al!\" der; geç kalırsan yanar, çok geç kalırsan kömür olur ve sipariş ustaya döner. Hatasız ve hızlı biten siparişler kombo yapar, kombo kaliteyi artırır. 4 dakika hiçbir istasyona dokunmazsan yeni fiş almazsın, başlamadığın fişler ustalara döner. Klavyede 1–6 istasyon, Q sıradaki fiş. Her gün tezgâhta 6 sipariş hazırlamak bonus hedeftir (iki kat ödül).": {
+  "en": "<b>Counter:</b> If you like, step up to the counter and prepare orders yourself. You hold 2 tickets at once (3 with level 2 prep equipment). There are six stations: Dough, Meat, Fire, Veg, Sauce, Serve. The station for the next step glows; tapping it advances the ticket waiting for that step. Skewers or flatbread on the fire say \"Take it!\" when done; too late and they burn, much too late and they turn to charcoal and the order goes back to the cooks. Fast, flawless orders build a combo, and combos raise quality. If you don't touch any station for 4 minutes you stop receiving tickets and the ones you haven't started go back to the cooks. Keyboard: 1–6 for stations, Q for the next ticket. Preparing 6 orders at the counter each day is a bonus goal (double reward).",
+  "de": "<b>Theke:</b> Wenn du willst, bereitest du Bestellungen selbst zu. Du hältst 2 Bons gleichzeitig (3 mit Vorbereitungsausstattung Stufe 2). Es gibt sechs Stationen: Teig, Fleisch, Feuer, Gemüse, Soße, Servieren. Die Station des nächsten Schritts leuchtet; ein Tipp darauf bringt den Bon weiter, der auf diesen Schritt wartet. Spieße oder Fladenbrot auf dem Feuer melden \"Nimm!\", sobald sie gar sind; zu spät verbrennen sie, viel zu spät werden sie zu Kohle und die Bestellung geht zurück an die Meister. Schnelle, fehlerfreie Bestellungen geben Kombos, Kombos heben die Qualität. Tippst du 4 Minuten lang keine Station an, bekommst du keine neuen Bons und nicht begonnene gehen an die Meister zurück. Tastatur: 1–6 für Stationen, Q für den nächsten Bon. Jeden Tag 6 Bestellungen an der Theke zuzubereiten ist ein Bonusziel (doppelte Belohnung)."
+ },
+ "Tezgâhta oyun 1× hızda. İstersen hızlandırabilirsin.": {
+  "en": "At the counter the game runs at 1×. You can speed it up if you like.",
+  "de": "An der Theke läuft das Spiel mit 1×. Du kannst es beschleunigen, wenn du willst."
  }
 }

@@ -14,7 +14,7 @@ function toOrders(KE, G, n) {
   KE.act(G, 'ptoggle', true);
   const L = G.live[G.activeBranch];
   let g = 0;
-  while (L.player.slots.length < n && g++ < 600) { KE.tickAll(G); while (KE.act(G, 'ptake')); }
+  while (L.player.slots.length < n && g++ < 600) { L.player.slots.forEach((s) => { s.touch = L.minute; }); KE.tickAll(G); while (KE.act(G, 'ptake')); }
   return L;
 }
 const prodOf = (KE, G, pid) => KE.MODES[G.mode].products.find((p) => p.id === pid);
@@ -124,5 +124,54 @@ describe('tezgâh: istasyonlar ve aynı anda birden çok sipariş', () => {
     for (let i = 0; i < Math.ceil(c.patience * 2.7) + 2; i++) KE.tickAll(G);
     expect(L.custs[c.id]).toBeFalsy();
     expect(L.player.slots.find((s) => s.tid === t.id)).toBeFalsy();
+  });
+});
+
+describe('tezgâh: QA bulguları', () => {
+  it('boşta duran oyuncu fiş biriktirmez, başlamadığı fişler malzemesiyle ustalara döner', () => {
+    const { KE, G } = setup();
+    const L = toOrders(KE, G, 1);
+    const b = G.branches[0];
+    const sl = L.player.slots[0];
+    const t = L.tickets.find((x) => x.id === sl.tid);
+    const p = prodOf(KE, G, t.pid);
+    const k = Object.keys(p.ing)[0];
+    const before = b.stock[k];
+    for (let i = 0; i < KE.PLAYER_IDLE + 1; i++) KE.tickAll(G);
+    expect(L.player.slots.find((s) => s.tid === t.id)).toBeFalsy();
+    /* geri verilen malzeme, fişi alan ustanın harcadığıyla dengelenir: çifte harcama yok */
+    const t2 = L.tickets.find((x) => x.id === t.id);
+    if (t2 && t2.state === 'wait') expect(b.stock[k]).toBeCloseTo(before + p.ing[k] * t.count, 5);
+    for (let i = 0; i < 30; i++) KE.tickAll(G);
+    expect(L.player.slots.length).toBe(0);
+  });
+  it('tezgâhta açıkken tekrar açmak ve aynı şubeye geçmek fişleri bozmaz', () => {
+    const { KE, G } = setup();
+    const L = toOrders(KE, G, 1);
+    const n = L.player.slots.length;
+    KE.act(G, 'ptoggle', true);
+    expect(L.player.slots.length).toBe(n);
+    KE.act(G, 'active', G.activeBranch);
+    expect(L.player.active).toBe(true);
+    expect(L.player.slots.length).toBe(n);
+  });
+  it('tezgâhtayken günü hızlı bitirmek (çıkış günlüğe yazılınca) yeniden oynatmayla aynı sonucu verir', () => {
+    const { KE, G } = setup('kebap', 3);
+    const morning = clone(Object.assign({}, G, { live: null }));
+    KE.startService(G);
+    let n = 0;
+    while (n++ < 300) {
+      const L = G.live[G.activeBranch];
+      if (L.minute === 100) KE.act(G, 'ptoggle', true);
+      if (L.minute > 100) { const sl = L.player.slots[0]; if (sl) KE.act(G, 'pst', sl.fire != null ? 'ates' : nextSt(KE, G, L, sl)); }
+      KE.tickAll(G);
+    }
+    KE.act(G, 'ptoggle', false); /* A.fastForward bunu yapar */
+    KE.finishService(G);
+    const S1 = G.lastSummary, log = G.dayLog.slice();
+    const { KE: KE2 } = loadGame();
+    const S2 = KE2.replayService(morning, log);
+    const key = (S) => Object.values(S.branches).map((b) => [b.stats.served, b.stats.lost, Math.round(b.stats.revenue)]);
+    expect(key(S2)).toEqual(key(S1));
   });
 });

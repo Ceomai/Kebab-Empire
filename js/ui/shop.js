@@ -292,6 +292,9 @@
     const stations = KE.STATIONS.map((S) => `<button class="tz-st s-${S.id} ${need[S.id] === 2 ? 'hot' : need[S.id] ? 'warm' : ''}" data-a="pst" data-s="${S.id}" aria-label="${S.name}">${IC(S.ic)}<b>${S.name}</b><kbd>${S.key}</kbd></button>`).join('');
     box.innerHTML = `<div class="tz2"><div class="tz-top"><span class="kicker">${IC('chef')}Tezgâh</span><span class="tz-stats"><span class="chip ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span></div>
       <div class="tz-rail">${cards}</div><div class="tz-sts" id="stepbtns">${stations}</div></div>`;
+    /* sabit panelin yüksekliği: sahne kırpması ve sayfa boşluğu buna göre */
+    const h = box.firstElementChild ? box.firstElementChild.getBoundingClientRect().height : 0;
+    if (h && Math.abs(h - (UI.tzh || 0)) > 2) { UI.tzh = h; document.documentElement.style.setProperty('--tzh', Math.round(h) + 'px'); }
   }
 
   /* ---------- Gün ortası kararı ---------- */

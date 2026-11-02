@@ -1608,6 +1608,36 @@ html { overflow-x: clip; }
   .tz-rec i { width: 20px; height: 20px; }
 }
 /* dikey telefonda tezgâhtayken sahnenin üst kısmı (mutfak, kasa, ilk masalar) görünür, alt kısım istasyonlara yer açar */
-.stagewrap.tzon .st-virt.on { max-height: min(88vw, 46dvh); overflow: hidden; }
 /* geniş ekranda tezgâhtayken sahnenin mutfak kısmı + istasyonlar birlikte görünsün */
 .stagewrap.tzon .st-virt:not(.on) { max-height: max(calc(100dvh - var(--tbh, 90px) - 280px), 300px); overflow: hidden; }
+
+/* telefonda tezgâh paneli ekranın altına sabit: istasyonlar her zaman görünür, sahne üstte kalan alana kırpılır */
+@media (max-width: 760px), (max-height: 520px) and (orientation: landscape) {
+  .stagewrap.tzon #tezgah .tz2 { position: fixed; left: 0; right: 0; bottom: var(--tabh, 0px); z-index: 30; border-radius: 16px 16px 0 0; box-shadow: 0 -10px 24px -10px rgba(0, 0, 0, .55); padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)); }
+  .stagewrap.tzon .tz-st, .stagewrap.tzon .tz-card { touch-action: none; }
+  main:has(.stagewrap.tzon) { padding-bottom: calc(var(--tzh, 240px) + 16px); }
+  .stagewrap.tzon .st-virt.on, .stagewrap.tzon .st-virt:not(.on) { max-height: max(140px, min(100vw, calc(100dvh - var(--tbh, 90px) - var(--tabh, 0px) - var(--tzh, 240px) - 14px))); overflow: hidden; }
+}
+@media (max-width: 760px) and (max-height: 700px) {
+  .tz2 { gap: 6px; padding: 8px 10px; }
+  .tz-top .tz-stats .chip { padding: 1px 8px; font-size: 12px; }
+  .tz-card { min-height: 60px; }
+  .tz-rec i { width: 18px; height: 18px; } .tz-rec i .ic { width: 12px; height: 12px; }
+  .tz-now { display: none; }
+  .tz-st { min-height: 46px; }
+  .tz-st .ic { width: 22px; height: 22px; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .tz2 { gap: 6px; padding: 6px 10px; }
+  .tz-top { display: none; }
+  .tz-rail { grid-template-columns: repeat(3, 1fr); }
+  .tz-card { min-height: 52px; padding: 4px 6px 8px; }
+  .tz-cd, .tz-cd .dish { width: 30px; } .tz-cd .dish { height: 30px; }
+  .tz-now { display: none; }
+  .tz-sts { grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .tz-st { min-height: 42px; flex-direction: row; gap: 4px; }
+  .tz-st kbd { display: none; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .stagewrap.tzon #tezgah .tz2 { left: calc(72px + env(safe-area-inset-left, 0px)); bottom: 0; }
+}

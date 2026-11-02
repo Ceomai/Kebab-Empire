@@ -79,7 +79,7 @@
   A.tezgah = () => {
     const L = KE.G.live[KE.G.activeBranch];
     KE.act(KE.G, 'ptoggle', !L.player.active);
-    if (L.player.active) while (KE.act(KE.G, 'ptake'));
+    if (L.player.active) { while (KE.act(KE.G, 'ptake')); if (KE.G.speed > 1) { KE.G.speed = 1; UI.render(); UI.toast('Tezgâhta oyun 1× hızda. İstersen hızlandırabilirsin.', 'good'); } }
     H.renderTezgah(); UI.sceneTick();
     /* tezgâha geçince sahne + istasyonlar ekrana gelsin */
     const w = document.querySelector('.stagewrap');
@@ -107,7 +107,12 @@
     UI.toast(c ? `Acil kurye yola çıktı: ${KE.tl(c)}. Biten malzemeler geldi.` : 'Kuryeye gerek yok.', c ? 'good' : '');
     UI.render();
   };
-  A.fastForward = () => { KE.finishService(KE.G); UI.render(); H.showClosing(); };
+  A.fastForward = () => {
+    /* tezgâhtan çıkış günlüğe yazılsın: sunucu yeniden oynatması da oyuncuyu çıkarmalı */
+    const L = KE.G.live && KE.G.live[KE.G.activeBranch];
+    if (L && L.player.active) KE.act(KE.G, 'ptoggle', false);
+    KE.finishService(KE.G); UI.render(); H.showClosing();
+  };
   A.showClosing = () => H.showClosing();
   A.closeTab = (d) => { UI.closeTab = d.id; H.showClosing(); };
   A.tipToday = (d) => { UI.todayRule = d.r; H.showClosing(); };
@@ -293,24 +298,32 @@
     KE.G = JSON.parse(u.g); UI.undo = null;
     UI.closeModal(); UI.render(); UI.toast('Son işlem geri alındı.', 'good');
   };
-  /* tezgâh: parmak değer değmez işlesin; panel her dakika yenilendiği için click kaçabilir */
+  /* tezgâh: dokunuş parmak kalkınca işlenir (panel her dakika yenilendiği için click kaçabilir);
+     parmak kayarsa (sayfa kaydırma) dokunuş sayılmaz */
+  let tzDown = null;
   document.addEventListener('pointerdown', (e) => {
+    tzDown = null;
     if (e.button !== 0) return;
     const el = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.tz2 [data-a]');
     if (!el || el.disabled || !A[el.dataset.a]) return;
-    e.preventDefault();
-    A[el.dataset.a](Object.assign({}, el.dataset), el, e);
+    tzDown = { d: Object.assign({}, el.dataset), x: e.clientX, y: e.clientY, id: e.pointerId };
+  });
+  document.addEventListener('pointercancel', () => { tzDown = null; });
+  document.addEventListener('pointerup', (e) => {
+    const t = tzDown; tzDown = null;
+    if (!t || t.id !== e.pointerId || Math.hypot(e.clientX - t.x, e.clientY - t.y) > 14) return;
+    A[t.d.a](t.d);
   });
   document.addEventListener('pointerover', (e) => { if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('#crew')) UI.crewHover = Date.now(); });
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && /** @type {any} */ (e.target).matches && /** @type {any} */ (e.target).matches('g.place[data-a]')) { e.preventDefault(); const fn = A[/** @type {any} */ (e.target).dataset.a]; if (fn) fn(Object.assign({}, /** @type {any} */ (e.target).dataset)); }
     if (e.key === 'Escape' && document.querySelector('.modal-bg .acts [data-a="closeModal"]')) UI.closeModal();
-    /* tezgâh klavyesi: 1-6 istasyon, Tab sıradaki fiş */
+    /* tezgâh klavyesi: 1-6 istasyon, Q sıradaki fiş */
     const G = KE.G, L = G && G.phase === 'service' && G.live && G.live[G.activeBranch];
     if (!L || !L.player.active || document.querySelector('.modal-bg') || /** @type {any} */ (e.target).matches('input, textarea, select')) return;
     const S = KE.STATIONS.find((x) => x.key === e.key);
     if (S) { e.preventDefault(); A.pst({ s: S.id }); }
-    else if (e.key === 'Tab' && (L.player.slots || []).length > 1) { e.preventDefault(); A.psel({ i: String(((L.player.sel || 0) + 1) % L.player.slots.length) }); }
+    else if ((e.key === 'q' || e.key === 'Q') && (L.player.slots || []).length > 1) { e.preventDefault(); A.psel({ i: String(((L.player.sel || 0) + 1) % L.player.slots.length) }); }
   });
   document.addEventListener('change', (e) => {
     if (KE.G && KE.G.phase === 'morning' && /** @type {any} */ (e.target).dataset && /** @type {any} */ (e.target).dataset.c) { const t = /** @type {any} */ (e.target); UI.undo = { g: JSON.stringify(Object.assign({}, KE.G)), label: t.dataset.c === 'priceSet' ? 'fiyat değişikliği' : 'ayar', day: KE.G.day }; }
