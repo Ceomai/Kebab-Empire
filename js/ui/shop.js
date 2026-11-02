@@ -302,8 +302,9 @@
     }).join('') + Array.from({ length: Math.max(0, cap - slots.length) }, () => `<div class="tz-card empty">${IC('clock')}<span>${P.afk ? 'Mola verdin. Bir istasyona dokun, fiş gelsin.' : 'Sipariş bekleniyor'}</span></div>`).join('');
     const stations = KE.STATIONS.map((S) => {
       const w = want[S.id] || [], f = w[0];
-      const sub = f ? (f.take ? 'Al!' : w[1] ? '+ ' + w[1].l : f.l !== S.name ? S.name : '') : '';
-      return `<button class="tz-st s-${S.id} ${need[S.id] === 2 ? 'hot' : need[S.id] ? 'warm' : ''} ${f ? 'has' : ''} ${f && f.take ? 'take' : ''}" data-a="pst" data-s="${S.id}" aria-label="${esc(f ? f.l : S.name)}">${IC(S.ic)}<span class="tz-sl"><b>${esc(f ? f.l : S.name)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span><kbd>${S.key}</kbd></button>`;
+      /* "+ ikinci" ayrı düğümde: çeviri malzeme adını tek başına bulur */
+      const sub = f ? (f.take ? esc('Al!') : w[1] ? `+ <span>${esc(w[1].l)}</span>` : f.l !== S.name ? esc(S.name) : '') : '';
+      return `<button class="tz-st s-${S.id} ${need[S.id] === 2 ? 'hot' : need[S.id] ? 'warm' : ''} ${f ? 'has' : ''} ${f && f.take ? 'take' : ''}" data-a="pst" data-s="${S.id}" aria-label="${esc(f ? f.l : S.name)}">${IC(S.ic)}<span class="tz-sl"><b>${esc(f ? f.l : S.name)}</b>${sub ? `<small>${sub}</small>` : ''}</span><kbd>${S.key}</kbd></button>`;
     }).join('');
     box.innerHTML = `<div class="tz2"><div class="tz-top"><span class="kicker">${IC('chef')}Tezgâh</span><span class="tz-stats"><span class="chip ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span></div>
       <div class="tz-rail">${cards}</div><div class="tz-sts" id="stepbtns">${stations}</div></div>`;
