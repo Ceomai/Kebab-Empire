@@ -3,10 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 const root = path.resolve(import.meta.dirname, '..', 'js');
-export function loadGame(files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save']) {
+export function loadGame(files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save'], opts = {}) {
   const store = {};
   const ctx = { console, Intl, Math, Date, JSON, setTimeout, clearTimeout,
-    localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } } };
+    localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { if (opts.quota != null && String(v).length > opts.quota) throw new Error('QuotaExceededError'); store[k] = String(v); }, removeItem: (k) => { delete store[k]; } } };
   ctx.window = ctx; vm.createContext(ctx);
   for (const f of files) vm.runInContext(fs.readFileSync(path.join(root, f + '.js'), 'utf8'), ctx, { filename: f + '.js' });
   return { KE: ctx.KE, store };

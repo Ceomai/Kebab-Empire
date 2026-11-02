@@ -16,6 +16,7 @@ Deno.serve(async (req) => {
     const { data: u } = await user.auth.getUser();
     if (!u?.user) return new Response(JSON.stringify({ error: 'oturum yok' }), { status: 401, headers: cors });
     const { id } = await req.json();
+    if (!Number.isSafeInteger(id) || id <= 0) return new Response(JSON.stringify({ error: 'geçersiz istek' }), { status: 400, headers: cors });
     const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const { data: row, error } = await admin.from('day_results').select('*').eq('id', id).eq('user_id', u.user.id).single();
     if (error || !row) return new Response(JSON.stringify({ error: 'kayıt yok' }), { status: 404, headers: cors });
@@ -23,12 +24,13 @@ Deno.serve(async (req) => {
     const morning = row.morning ?? {};
     // zincir: bu kaydın son doğrulanmış gün sonu durumu
     const { data: chain } = await admin.from('chain_state').select('day, end_envelope').eq('user_id', u.user.id).eq('save_id', row.save_id).maybeSingle();
-    const r = KE.verifyChain(chain ? chain.end_envelope : null, morning.envelope, row.action_log ?? [], morning.todayRule, { day: row.day, served: row.served, revenue: Number(row.revenue), reputation: Number(row.reputation) });
+    const r = KE.verifyChain(chain ? chain.end_envelope : null, morning.envelope, row.action_log ?? [], morning.todayRule, { day: row.day, served: row.served, revenue: Number(row.revenue), reputation: Number(row.reputation) }, row.race ?? null, new Date());
     if (r.ok && r.end) await admin.from('chain_state').upsert({ user_id: u.user.id, save_id: row.save_id, day: r.end.day, end_envelope: r.end, updated_at: new Date().toISOString() });
     await admin.from('day_results').update({ verified: r.ok, verify_note: r.note, morning: null, action_log: null }).eq('id', id);
     delete r.end;
     return new Response(JSON.stringify(r), { headers: { ...cors, 'Content-Type': 'application/json' } });
   } catch (e) {
-    return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: cors });
+    console.error(e);
+    return new Response(JSON.stringify({ error: 'doğrulama hatası' }), { status: 500, headers: cors });
   }
 });

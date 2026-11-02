@@ -1529,7 +1529,8 @@ KE.huyOf = function (s) {
       const price = b.prices[p.id];
       const ratio = price / KE.marketPrice(G, p);
       /* fiyat: piyasanın üstü, müşteri tipine göre kademeli kaçırır; itibar yüksekse tolerans artar */
-      const pLeave = Math.min(0.95, Math.max(0, (ratio - KE.priceTolerance(G, b)) * 3.5 * ct.priceSens));
+      /* piyasanın 2,5 katından pahalıya hiç kimse almaz (sınırsız fiyat açığı kapalı) */
+      const pLeave = ratio >= 2.5 ? 1 : Math.min(0.95, Math.max(0, (ratio - KE.priceTolerance(G, b)) * 3.5 * ct.priceSens));
       if (pLeave > 0 && KE.rand() < pLeave) { lose(L, c, 'lostPrice', 'Çok pahalı!'); L.fx.push({ t: 'pass', cid: id }); continue; }
       const take = (ct.takeaway || 0) * (G.mode === 'kebap' ? 0.4 : 1);
       Object.assign(c, {
@@ -1548,6 +1549,8 @@ KE.huyOf = function (s) {
     let p = KE.MODES[G.mode].products.find((x) => x.id === R.fav[G.mode]);
     if (!p || !KE.canMake(G, b, p) || !KE.hasStock(b, p, count)) { const ch = chooseProduct(G, b, R.type, count); p = ch.p; }
     if (!p) return;
+    /* müdavim de fiyata bakar: piyasanın iki katından pahalıysa o gün gelmez, gönlü biraz kırılır */
+    if (b.prices[p.id] / KE.marketPrice(G, p) > 2) { st.loyalty = Math.max(0, st.loyalty - 1); return; }
     const look = R.look || KE.CAST[R.cast].look;
     const id = L.nextId++;
     L.stats.arrivals += count;
@@ -1563,7 +1566,7 @@ KE.huyOf = function (s) {
     L.paketAcc += L.expected * 0.16 * (0.6 + G.reputation / 100) * (KE.HOUR_CURVE[hour] || 0.3) / L.curveSum / 60 * Math.min(1.6, 0.8 + kuryes * 0.4);
     while (L.paketAcc >= 1) {
       L.paketAcc -= 1;
-      const avail = availableProducts(G, b).filter((p) => KE.hasStock(b, p, 1));
+      const avail = availableProducts(G, b).filter((p) => KE.hasStock(b, p, 1) && b.prices[p.id] / KE.marketPrice(G, p) <= 1.6);
       if (!avail.length) return;
       const p = pick(avail);
       L.tickets.push({ id: L.nextId++, cid: null, pid: p.id, count: 1, state: 'wait', paket: true, created: L.minute });
@@ -2128,12 +2131,30 @@ KE.huyOf = function (s) {
     if (KE.isMonthEnd(G.day)) out.month = KE.closeMonth(G, G.day);
     if (KE.isWeekEnd(G.day)) { out.news = KE.writeNews(G); G.news.unshift(out.news); KE.refreshMarket(G); KE.refreshWorkers(G); if (!G.flags.empire) G.rival.power += 3; }
     if (G.tipWish && G.tipWish.missed) G.tipWish.missed = false;
+    KE.compactLedger(G);
     G.payLate = G.cash < 0;
     G.day += 1;
     G.pendingEvent = KE.rollEvent(G);
     G.live = null;
     KE.morning(G);
     return out;
+  };
+
+  /* Kayıt büyümesin: ayrıntılı gün satırları son 12 hafta ve içinde bulunulan ay için tutulur,
+     eskileri ömür boyu toplamlara (arşiv) katlanır; aylık özetler zaten ayrı saklanır.
+     Gün kapanışında yapılır, sunucunun yeniden oynatmasıyla birebir aynıdır. */
+  KE.LEDGER_KEEP = 84;
+  KE.compactLedger = function (G) {
+    const cut = G.day - KE.LEDGER_KEEP, cur = KE.monthKey(G.day);
+    const old = (d) => d.day <= cut && d.month !== cur;
+    if (G.ledger.days.length && old(G.ledger.days[0])) {
+      const A = G.ledger.archive = G.ledger.archive || { days: 0, revenue: 0, served: 0, tips: 0, byProduct: {} };
+      G.ledger.days.filter(old).forEach((d) => { A.days++; A.revenue += d.revenue || 0; A.served += d.served || 0; A.tips += d.tips || 0; Object.entries(d.byProduct || {}).forEach(([k, v]) => { A.byProduct[k] = (A.byProduct[k] || 0) + v; }); });
+      G.ledger.days = G.ledger.days.filter((d) => !old(d));
+    }
+    G.branches.forEach((b) => { if (b.history && b.history.length > 120) b.history = b.history.slice(-120); });
+    if (G.news && G.news.length > 26) G.news = G.news.slice(0, 26);
+    if (G.eventLog && G.eventLog.length > 400) G.eventLog = G.eventLog.slice(-400);
   };
 
   KE.gainXp = function (s, pid, amt) {
@@ -2190,7 +2211,7 @@ KE.huyOf = function (s) {
     let guard = 0;
     while (!KE.allDone(G) && guard++ < 2000) {
       const m = clockL(G).minute;
-      while (q.length && q[0].m <= m) { const e = q.shift(); if (ACTS[e.a]) ACTS[e.a](G, ...(e.x || [])); }
+      while (q.length && q[0].m <= m) { const e = q.shift(); if (Object.prototype.hasOwnProperty.call(ACTS, e.a)) ACTS[e.a](G, ...(Array.isArray(e.x) ? e.x : [])); }
       KE.tickAll(G);
     }
     KE.finishService(G);
@@ -2375,11 +2396,11 @@ KE.huyOf = function (s) {
   };
   /* Bütün oyun boyunca toplamlar (bitiş ekranı için) */
   KE.lifetime = function (G) {
-    const days = G.ledger.days;
-    const byProduct = {};
+    const days = G.ledger.days, A = G.ledger.archive || { revenue: 0, served: 0, tips: 0, byProduct: {} };
+    const byProduct = Object.assign({}, A.byProduct);
     days.forEach((d) => Object.entries(d.byProduct || {}).forEach(([k, v]) => { byProduct[k] = (byProduct[k] || 0) + v; }));
     const best = Object.entries(byProduct).sort((a, c) => c[1] - a[1])[0];
-    return { days: G.day - 1, revenue: days.reduce((a, d) => a + (d.revenue || 0), 0), served: days.reduce((a, d) => a + (d.served || 0), 0), tips: days.reduce((a, d) => a + (d.tips || 0), 0), branches: G.branches.length, staff: G.staff.length, crowns: G.branches.reduce((a, b) => a + (b.champions || 0), 0), duels: (G.rival && G.rival.wins) || 0, duelsLost: (G.rival && G.rival.losses) || 0, gen: G.gen || 1, bestProduct: best ? best[0] : null, bestCount: best ? best[1] : 0 };
+    return { days: G.day - 1, revenue: A.revenue + days.reduce((a, d) => a + (d.revenue || 0), 0), served: A.served + days.reduce((a, d) => a + (d.served || 0), 0), tips: A.tips + days.reduce((a, d) => a + (d.tips || 0), 0), branches: G.branches.length, staff: G.staff.length, crowns: G.branches.reduce((a, b) => a + (b.champions || 0), 0), duels: (G.rival && G.rival.wins) || 0, duelsLost: (G.rival && G.rival.losses) || 0, gen: G.gen || 1, bestProduct: best ? best[0] : null, bestCount: best ? best[1] : 0 };
   };
   KE.buyRival = function (G) {
     const st = KE.empireStatus(G);
@@ -3197,6 +3218,8 @@ KE.huyOf = function (s) {
   S.KEY = 'kebab-empire-save-v2';
   S.BACKUP = 'kebab-empire-save-backup';
   S.RACE_KEY = 'kebab-empire-race';
+  /* bu sekmenin kimliği: başka sekmenin yazdığı kaydı kendi yazdığımızdan ayırmak için */
+  S.TAB = 't' + Math.random().toString(36).slice(2, 9);
   S.VERSION = 4;
   S.APP = 'kebab-empire';
 
@@ -3262,7 +3285,7 @@ KE.huyOf = function (s) {
   S.envelope = function (G) {
     const game = Object.assign({}, G, { live: null });
     const body = JSON.stringify(game);
-    return { v: S.VERSION, app: S.APP, savedAt: new Date().toISOString(), day: G.day, sum: S.hash(body), game };
+    return { v: S.VERSION, app: S.APP, savedAt: new Date().toISOString(), day: G.day, tab: S.TAB, sum: S.hash(body), game };
   };
   /* Zarf ya da çıplak oyun: sürümü bul, göç ettir, doğrula */
   S.open = function (data) {
@@ -3292,7 +3315,13 @@ KE.huyOf = function (s) {
     if (G.race) { if (!store.set(S.RACE_KEY, txt)) { S.lastError = 'quota'; return false; } S.lastError = null; return true; }
     /* Gün değiştiyse eski sağlam kaydı yedeğe al */
     const prev = store.get(S.KEY);
-    if (prev) { try { const p = JSON.parse(prev); if ((p.day || (p.game && p.game.day)) !== G.day) store.set(S.BACKUP, prev); } catch (e) { /* bozuk eskiyi yedeklemeyiz */ } }
+    if (prev) {
+      let p = null; try { p = JSON.parse(prev); } catch (e) { /* bozuk eskiyi yedeklemeyiz */ }
+      /* aynı oyunun daha ileri bir gününü eski bir günle ezme (ör. başka sekmede ilerlemiş oyun) */
+      if (p && p.game && p.game.saveId === G.saveId && p.day > G.day && !S.allowRewind) { S.lastError = 'stale'; return false; }
+      if (p && (p.day || (p.game && p.game.day)) !== G.day) store.set(S.BACKUP, prev);
+    }
+    S.allowRewind = false;
     if (!store.set(S.KEY, txt)) { S.lastError = 'quota'; return false; }
     S.lastError = null;
     if (KE.CLOUD && KE.CLOUD.queueSave) KE.CLOUD.queueSave(env);
@@ -3414,7 +3443,32 @@ KE.huyOf = function (s) {
     return { ok: true };
   };
   /* Doğrulama + zincir; başarıda bir sonraki halkanın başlangıcı olacak gün sonu kaydını döndürür */
-  KE.verifyChain = function (prevEnd, morningEnv, log, todayRule, claim) {
+  /* Haftalık yarış: gün gerçekten o haftanın tohumuyla, o semtte ve o modda başlamış bir yarış oyunundan mı?
+     (yoksa oyuncu sıradan bir oyunun en iyi tohumunu yarışa sokabilirdi) */
+  KE.raceCheck = function (race, morningEnv, now) {
+    if (!race) return { ok: true };
+    const g = morningEnv && morningEnv.game;
+    if (!g || !g.race || g.race.week !== race) return { ok: false, note: 'yarış kaydı değil' };
+    const R = KE.raceSetup(race);
+    if (g.seed !== R.seed || g.mode !== R.mode || !g.branches || !g.branches[0] || g.branches[0].district !== R.district) return { ok: false, note: 'yarış tohumu uyuşmuyor' };
+    if (g.day > KE.RACE_DAYS) return { ok: false, note: 'yarış 7 günle sınırlı' };
+    if (now) { const cur = KE.raceWeek(now), prev = KE.raceWeek(new Date(now.getTime() - 7 * 864e5)); if (race !== cur && race !== prev) return { ok: false, note: 'yarış haftası geçti' }; }
+    return { ok: true };
+  };
+  /* Hamle günlüğü: biçim ve boyut sınırı (sunucuyu ağır yeniden oynatmaya zorlamasın) */
+  KE.LOG_MAX = 20000;
+  KE.logCheck = function (log) {
+    if (log == null) return { ok: true };
+    if (!Array.isArray(log)) return { ok: false, note: 'günlük dizi değil' };
+    if (log.length > KE.LOG_MAX) return { ok: false, note: 'günlük çok uzun' };
+    for (const e of log) if (!e || typeof e !== 'object' || typeof e.m !== 'number' || typeof e.a !== 'string' || (e.x != null && !Array.isArray(e.x))) return { ok: false, note: 'günlük kaydı bozuk' };
+    return { ok: true };
+  };
+  KE.verifyChain = function (prevEnd, morningEnv, log, todayRule, claim, race, now) {
+    const lc = KE.logCheck(log);
+    if (!lc.ok) return lc;
+    const rc = KE.raceCheck(race, morningEnv, now);
+    if (!rc.ok) return rc;
     const c = KE.chainCheck(prevEnd, morningEnv);
     if (!c.ok) return c;
     const G = KE.SAVE.open(clone(morningEnv));

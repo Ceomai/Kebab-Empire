@@ -27,9 +27,23 @@
 
   /* ---------- Kayıt (ayrıntılar save.js'te) ---------- */
   UI.save = function () {
-    if (!KE.G) return;
+    if (!KE.G || UI.staleTab) return;
+    if (!KE.SAVE.write(KE.G) && KE.SAVE.lastError === 'stale' && !UI.staleTab) { UI.staleTab = true; UI.modal(`<div class="mhead"><h2>Oyun başka bir sekmede ilerledi</h2><p>Bu oyunun daha ileri bir günü kayıtlı. İlerlemen kaybolmasın diye bu sekme kayıt yapmıyor.</p></div><div class="acts"><button class="btn green" data-a="reloadTab">Güncel kaydı aç</button></div>`); return; }
     if (!KE.SAVE.write(KE.G) && KE.SAVE.lastError === 'quota' && !UI.quotaWarned) { UI.quotaWarned = true; UI.toast('Tarayıcı depolaması dolu; oyun kaydedilemedi. Menüden dosyaya yedekle.', 'bad'); }
   };
+  /* Aynı oyun iki sekmede açıksa: başka sekme kaydı ilerletince bu sekme yazmayı bırakır ve uyarır
+     (yoksa geride kalan sekme ilerlemeyi ezer) */
+  window.addEventListener('storage', (e) => {
+    if (e.key !== KE.SAVE.KEY || !e.newValue || !KE.G || KE.G.race || UI.staleTab) return;
+    let env = null; try { env = JSON.parse(e.newValue); } catch (x) { return; }
+    if (!env || env.tab === KE.SAVE.TAB) return;
+    const other = env.game || {};
+    /* yalnızca aynı oyun başka sekmede daha ileri bir güne taşındıysa bu sekme geride kalmıştır */
+    if (other.saveId !== KE.G.saveId || !(other.day > KE.G.day)) return;
+    UI.staleTab = true;
+    UI.modal(`<div class="mhead"><h2>Oyun başka bir sekmede ilerledi</h2><p>Bu oyunu aynı anda başka bir sekmede ya da pencerede de oynuyorsun. İlerlemen kaybolmasın diye bu sekme artık kayıt yapmıyor.</p></div><div class="acts"><button class="btn green" data-a="reloadTab">Güncel kaydı aç</button></div>`);
+  });
+  UI.A.reloadTab = () => { try { location.reload(); } catch (x) { /* yok */ } };
   UI.load = function () {
     const r = KE.SAVE.read();
     if (!r) return null;

@@ -38,7 +38,7 @@
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
   A.exportSave = () => { if (!KE.G) return; if (KE.G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; } KE.SAVE.exportFile(KE.G); UI.toast('Yedek dosyası indirildi.', 'good'); };
   A.importSave = () => {
-    KE.SAVE.importFile().then((g) => { KE.G = g; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`${g.shopName} yüklendi · ${KE.dateStr(g.day)}`, 'good'); })
+    KE.SAVE.importFile().then((g) => { KE.G = g; KE.SAVE.allowRewind = true; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`${g.shopName} yüklendi · ${KE.dateStr(g.day)}`, 'good'); })
       .catch((e) => UI.toast(e.message, 'bad'));
   };
   A.toTitle = () => { UI.save(); UI.closeModal(); UI.go('title'); };
@@ -129,7 +129,7 @@
   A.price = (d) => {
     const b = B(); const p = prod(d.p);
     const step = Math.max(5, Math.round(KE.marketPrice(KE.G, p) * 0.05 / 5) * 5);
-    b.prices[d.p] = Math.max(5, b.prices[d.p] + step * +d.d);
+    b.prices[d.p] = priceClamp(d.p, b.prices[d.p] + step * +d.d);
     UI.render();
   };
   A.pricesToMarket = () => { const b = B(); const M = MODE(); M.products.concat([M.drink]).forEach((p) => { if (b.prices[p.id] != null) b.prices[p.id] = KE.marketPrice(KE.G, p); }); UI.toast('Fiyatlar piyasa fiyatına çekildi.', 'good'); UI.render(); };
@@ -241,7 +241,9 @@
   A.upgradePen = (d) => { KE.upgradePen(KE.G, d.k); UI.toast('Ağıl büyütüldü.', 'good'); UI.render(); };
 
   C.menuToggle = (el) => { B().menu[el.dataset.p] = el.checked; UI.render(); };
-  C.priceSet = (el) => { const v = parseInt(el.value.replace(/\D/g, ''), 10); if (v > 0) B().prices[el.dataset.p] = v; UI.render(); };
+  /* fiyat 5 ₺ ile piyasanın 3 katı arasında kalır */
+  const priceClamp = (pid, v) => { const M = MODE(); const p = M.products.concat([M.drink]).find((x) => x.id === pid); const cap = p ? Math.round(KE.marketPrice(KE.G, p) * 3 / 5) * 5 : v; return Math.max(5, Math.min(cap, v)); };
+  C.priceSet = (el) => { const v = parseInt(String(el.value).replace(/\D/g, '').slice(0, 9), 10); if (v > 0) { const c = priceClamp(el.dataset.p, v); B().prices[el.dataset.p] = c; if (c !== v) UI.toast(c < v ? 'Fiyat en fazla piyasanın 3 katı olabilir.' : 'Fiyat en az 5 ₺ olabilir.'); } UI.render(); };
   C.autoStaff = (el) => { const b = KE.G.branches.find((x) => x.id === el.dataset.b); KE.act(KE.G, 'autoStaff', b.id, el.checked); UI.toast(el.checked ? 'Otomatik ekip yönetimi açık.' : 'Ekibi artık sen yönetiyorsun.'); };
   C.farmAuto = (el) => { KE.G.farm.auto = el.checked; UI.render(); };
 
@@ -517,7 +519,7 @@
       <div class="pickgrid">${card(cg, 'bulut', 'useCloud')}${lg ? card(lg, 'bu cihaz', 'useLocal') : ''}</div>
       <div class="acts"><button class="btn ghost" data-a="closeModal">Şimdilik kapat</button></div>`);
   };
-  A.useCloud = () => { try { const g = KE.SAVE.open(UI.pendingCloud); if (KE.G && KE.G.saveId !== g.saveId) KE.SAVE.exportFile(KE.G); KE.G = g; UI.save(); UI.closeModal(); UI.go('map'); UI.toast('Buluttaki oyun yüklendi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
+  A.useCloud = () => { try { const g = KE.SAVE.open(UI.pendingCloud); if (KE.G && KE.G.saveId !== g.saveId) KE.SAVE.exportFile(KE.G); KE.G = g; KE.SAVE.allowRewind = true; UI.save(); UI.closeModal(); UI.go('map'); UI.toast('Buluttaki oyun yüklendi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
   A.useLocal = () => { const r = KE.SAVE.read(); UI.closeModal(); if (r) { KE.G = r.game; KE.CLOUD.queueSave(KE.SAVE.envelope(r.game)); KE.CLOUD.flushSave(); UI.toast('Bu cihazdaki kayıt buluta yazıldı.', 'good'); } };
   /* Hesap ve gizlilik */
   A.privacy = () => { UI.closeModal(); UI.privacyModal(false); };
@@ -529,7 +531,7 @@
   A.linkMail = async () => { const m = /** @type {HTMLInputElement} */ (document.getElementById('cs-mail')).value.trim(); if (!/^\S+@\S+\.\S+$/.test(m)) { UI.toast('Geçerli bir e-posta yaz.', 'bad'); return; } try { await KE.CLOUD.linkEmail(m); UI.toast('Onay bağlantısı e-postana gönderildi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
   A.cloudLoad = async () => {
     const r = await KE.CLOUD.loadSave(); if (!r) { UI.toast('Bulutta kayıt yok.', 'bad'); return; }
-    try { const g = KE.SAVE.open(r.save); KE.G = g; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`Buluttan yüklendi · ${KE.dateStr(g.day)}`, 'good'); } catch (e) { UI.toast(e.message, 'bad'); }
+    try { const g = KE.SAVE.open(r.save); KE.G = g; KE.SAVE.allowRewind = true; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`Buluttan yüklendi · ${KE.dateStr(g.day)}`, 'good'); } catch (e) { UI.toast(e.message, 'bad'); }
   };
   A.deleteData = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Bütün bulut verilerin silinsin mi?</h2><p>Bulut kaydın, sıralama sonuçların, istatistiklerin ve anonim hesabın kalıcı olarak silinir. Bu cihazdaki oyun kalır.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="deleteDataYes">Evet, sil</button></div>`); };
   A.deleteDataYes = async () => { try { await KE.CLOUD.deleteMyData(); UI.closeModal(); UI.toast('Bulut verilerin silindi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };

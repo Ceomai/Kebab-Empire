@@ -67,7 +67,32 @@
     return { ok: true };
   };
   /* Doğrulama + zincir; başarıda bir sonraki halkanın başlangıcı olacak gün sonu kaydını döndürür */
-  KE.verifyChain = function (prevEnd, morningEnv, log, todayRule, claim) {
+  /* Haftalık yarış: gün gerçekten o haftanın tohumuyla, o semtte ve o modda başlamış bir yarış oyunundan mı?
+     (yoksa oyuncu sıradan bir oyunun en iyi tohumunu yarışa sokabilirdi) */
+  KE.raceCheck = function (race, morningEnv, now) {
+    if (!race) return { ok: true };
+    const g = morningEnv && morningEnv.game;
+    if (!g || !g.race || g.race.week !== race) return { ok: false, note: 'yarış kaydı değil' };
+    const R = KE.raceSetup(race);
+    if (g.seed !== R.seed || g.mode !== R.mode || !g.branches || !g.branches[0] || g.branches[0].district !== R.district) return { ok: false, note: 'yarış tohumu uyuşmuyor' };
+    if (g.day > KE.RACE_DAYS) return { ok: false, note: 'yarış 7 günle sınırlı' };
+    if (now) { const cur = KE.raceWeek(now), prev = KE.raceWeek(new Date(now.getTime() - 7 * 864e5)); if (race !== cur && race !== prev) return { ok: false, note: 'yarış haftası geçti' }; }
+    return { ok: true };
+  };
+  /* Hamle günlüğü: biçim ve boyut sınırı (sunucuyu ağır yeniden oynatmaya zorlamasın) */
+  KE.LOG_MAX = 20000;
+  KE.logCheck = function (log) {
+    if (log == null) return { ok: true };
+    if (!Array.isArray(log)) return { ok: false, note: 'günlük dizi değil' };
+    if (log.length > KE.LOG_MAX) return { ok: false, note: 'günlük çok uzun' };
+    for (const e of log) if (!e || typeof e !== 'object' || typeof e.m !== 'number' || typeof e.a !== 'string' || (e.x != null && !Array.isArray(e.x))) return { ok: false, note: 'günlük kaydı bozuk' };
+    return { ok: true };
+  };
+  KE.verifyChain = function (prevEnd, morningEnv, log, todayRule, claim, race, now) {
+    const lc = KE.logCheck(log);
+    if (!lc.ok) return lc;
+    const rc = KE.raceCheck(race, morningEnv, now);
+    if (!rc.ok) return rc;
     const c = KE.chainCheck(prevEnd, morningEnv);
     if (!c.ok) return c;
     const G = KE.SAVE.open(clone(morningEnv));

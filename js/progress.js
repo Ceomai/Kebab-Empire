@@ -25,11 +25,11 @@
   };
   /* Bütün oyun boyunca toplamlar (bitiş ekranı için) */
   KE.lifetime = function (G) {
-    const days = G.ledger.days;
-    const byProduct = {};
+    const days = G.ledger.days, A = G.ledger.archive || { revenue: 0, served: 0, tips: 0, byProduct: {} };
+    const byProduct = Object.assign({}, A.byProduct);
     days.forEach((d) => Object.entries(d.byProduct || {}).forEach(([k, v]) => { byProduct[k] = (byProduct[k] || 0) + v; }));
     const best = Object.entries(byProduct).sort((a, c) => c[1] - a[1])[0];
-    return { days: G.day - 1, revenue: days.reduce((a, d) => a + (d.revenue || 0), 0), served: days.reduce((a, d) => a + (d.served || 0), 0), tips: days.reduce((a, d) => a + (d.tips || 0), 0), branches: G.branches.length, staff: G.staff.length, crowns: G.branches.reduce((a, b) => a + (b.champions || 0), 0), duels: (G.rival && G.rival.wins) || 0, duelsLost: (G.rival && G.rival.losses) || 0, gen: G.gen || 1, bestProduct: best ? best[0] : null, bestCount: best ? best[1] : 0 };
+    return { days: G.day - 1, revenue: A.revenue + days.reduce((a, d) => a + (d.revenue || 0), 0), served: A.served + days.reduce((a, d) => a + (d.served || 0), 0), tips: A.tips + days.reduce((a, d) => a + (d.tips || 0), 0), branches: G.branches.length, staff: G.staff.length, crowns: G.branches.reduce((a, b) => a + (b.champions || 0), 0), duels: (G.rival && G.rival.wins) || 0, duelsLost: (G.rival && G.rival.losses) || 0, gen: G.gen || 1, bestProduct: best ? best[0] : null, bestCount: best ? best[1] : 0 };
   };
   KE.buyRival = function (G) {
     const st = KE.empireStatus(G);

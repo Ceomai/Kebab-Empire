@@ -7,6 +7,8 @@
   S.KEY = 'kebab-empire-save-v2';
   S.BACKUP = 'kebab-empire-save-backup';
   S.RACE_KEY = 'kebab-empire-race';
+  /* bu sekmenin kimliği: başka sekmenin yazdığı kaydı kendi yazdığımızdan ayırmak için */
+  S.TAB = 't' + Math.random().toString(36).slice(2, 9);
   S.VERSION = 4;
   S.APP = 'kebab-empire';
 
@@ -72,7 +74,7 @@
   S.envelope = function (G) {
     const game = Object.assign({}, G, { live: null });
     const body = JSON.stringify(game);
-    return { v: S.VERSION, app: S.APP, savedAt: new Date().toISOString(), day: G.day, sum: S.hash(body), game };
+    return { v: S.VERSION, app: S.APP, savedAt: new Date().toISOString(), day: G.day, tab: S.TAB, sum: S.hash(body), game };
   };
   /* Zarf ya da çıplak oyun: sürümü bul, göç ettir, doğrula */
   S.open = function (data) {
@@ -102,7 +104,13 @@
     if (G.race) { if (!store.set(S.RACE_KEY, txt)) { S.lastError = 'quota'; return false; } S.lastError = null; return true; }
     /* Gün değiştiyse eski sağlam kaydı yedeğe al */
     const prev = store.get(S.KEY);
-    if (prev) { try { const p = JSON.parse(prev); if ((p.day || (p.game && p.game.day)) !== G.day) store.set(S.BACKUP, prev); } catch (e) { /* bozuk eskiyi yedeklemeyiz */ } }
+    if (prev) {
+      let p = null; try { p = JSON.parse(prev); } catch (e) { /* bozuk eskiyi yedeklemeyiz */ }
+      /* aynı oyunun daha ileri bir gününü eski bir günle ezme (ör. başka sekmede ilerlemiş oyun) */
+      if (p && p.game && p.game.saveId === G.saveId && p.day > G.day && !S.allowRewind) { S.lastError = 'stale'; return false; }
+      if (p && (p.day || (p.game && p.game.day)) !== G.day) store.set(S.BACKUP, prev);
+    }
+    S.allowRewind = false;
     if (!store.set(S.KEY, txt)) { S.lastError = 'quota'; return false; }
     S.lastError = null;
     if (KE.CLOUD && KE.CLOUD.queueSave) KE.CLOUD.queueSave(env);

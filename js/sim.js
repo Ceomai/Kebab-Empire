@@ -531,7 +531,8 @@
       const price = b.prices[p.id];
       const ratio = price / KE.marketPrice(G, p);
       /* fiyat: piyasanın üstü, müşteri tipine göre kademeli kaçırır; itibar yüksekse tolerans artar */
-      const pLeave = Math.min(0.95, Math.max(0, (ratio - KE.priceTolerance(G, b)) * 3.5 * ct.priceSens));
+      /* piyasanın 2,5 katından pahalıya hiç kimse almaz (sınırsız fiyat açığı kapalı) */
+      const pLeave = ratio >= 2.5 ? 1 : Math.min(0.95, Math.max(0, (ratio - KE.priceTolerance(G, b)) * 3.5 * ct.priceSens));
       if (pLeave > 0 && KE.rand() < pLeave) { lose(L, c, 'lostPrice', 'Çok pahalı!'); L.fx.push({ t: 'pass', cid: id }); continue; }
       const take = (ct.takeaway || 0) * (G.mode === 'kebap' ? 0.4 : 1);
       Object.assign(c, {
@@ -550,6 +551,8 @@
     let p = KE.MODES[G.mode].products.find((x) => x.id === R.fav[G.mode]);
     if (!p || !KE.canMake(G, b, p) || !KE.hasStock(b, p, count)) { const ch = chooseProduct(G, b, R.type, count); p = ch.p; }
     if (!p) return;
+    /* müdavim de fiyata bakar: piyasanın iki katından pahalıysa o gün gelmez, gönlü biraz kırılır */
+    if (b.prices[p.id] / KE.marketPrice(G, p) > 2) { st.loyalty = Math.max(0, st.loyalty - 1); return; }
     const look = R.look || KE.CAST[R.cast].look;
     const id = L.nextId++;
     L.stats.arrivals += count;
@@ -565,7 +568,7 @@
     L.paketAcc += L.expected * 0.16 * (0.6 + G.reputation / 100) * (KE.HOUR_CURVE[hour] || 0.3) / L.curveSum / 60 * Math.min(1.6, 0.8 + kuryes * 0.4);
     while (L.paketAcc >= 1) {
       L.paketAcc -= 1;
-      const avail = availableProducts(G, b).filter((p) => KE.hasStock(b, p, 1));
+      const avail = availableProducts(G, b).filter((p) => KE.hasStock(b, p, 1) && b.prices[p.id] / KE.marketPrice(G, p) <= 1.6);
       if (!avail.length) return;
       const p = pick(avail);
       L.tickets.push({ id: L.nextId++, cid: null, pid: p.id, count: 1, state: 'wait', paket: true, created: L.minute });
@@ -1130,12 +1133,30 @@
     if (KE.isMonthEnd(G.day)) out.month = KE.closeMonth(G, G.day);
     if (KE.isWeekEnd(G.day)) { out.news = KE.writeNews(G); G.news.unshift(out.news); KE.refreshMarket(G); KE.refreshWorkers(G); if (!G.flags.empire) G.rival.power += 3; }
     if (G.tipWish && G.tipWish.missed) G.tipWish.missed = false;
+    KE.compactLedger(G);
     G.payLate = G.cash < 0;
     G.day += 1;
     G.pendingEvent = KE.rollEvent(G);
     G.live = null;
     KE.morning(G);
     return out;
+  };
+
+  /* Kayıt büyümesin: ayrıntılı gün satırları son 12 hafta ve içinde bulunulan ay için tutulur,
+     eskileri ömür boyu toplamlara (arşiv) katlanır; aylık özetler zaten ayrı saklanır.
+     Gün kapanışında yapılır, sunucunun yeniden oynatmasıyla birebir aynıdır. */
+  KE.LEDGER_KEEP = 84;
+  KE.compactLedger = function (G) {
+    const cut = G.day - KE.LEDGER_KEEP, cur = KE.monthKey(G.day);
+    const old = (d) => d.day <= cut && d.month !== cur;
+    if (G.ledger.days.length && old(G.ledger.days[0])) {
+      const A = G.ledger.archive = G.ledger.archive || { days: 0, revenue: 0, served: 0, tips: 0, byProduct: {} };
+      G.ledger.days.filter(old).forEach((d) => { A.days++; A.revenue += d.revenue || 0; A.served += d.served || 0; A.tips += d.tips || 0; Object.entries(d.byProduct || {}).forEach(([k, v]) => { A.byProduct[k] = (A.byProduct[k] || 0) + v; }); });
+      G.ledger.days = G.ledger.days.filter((d) => !old(d));
+    }
+    G.branches.forEach((b) => { if (b.history && b.history.length > 120) b.history = b.history.slice(-120); });
+    if (G.news && G.news.length > 26) G.news = G.news.slice(0, 26);
+    if (G.eventLog && G.eventLog.length > 400) G.eventLog = G.eventLog.slice(-400);
   };
 
   KE.gainXp = function (s, pid, amt) {
@@ -1192,7 +1213,7 @@
     let guard = 0;
     while (!KE.allDone(G) && guard++ < 2000) {
       const m = clockL(G).minute;
-      while (q.length && q[0].m <= m) { const e = q.shift(); if (ACTS[e.a]) ACTS[e.a](G, ...(e.x || [])); }
+      while (q.length && q[0].m <= m) { const e = q.shift(); if (Object.prototype.hasOwnProperty.call(ACTS, e.a)) ACTS[e.a](G, ...(Array.isArray(e.x) ? e.x : [])); }
       KE.tickAll(G);
     }
     KE.finishService(G);
