@@ -288,7 +288,7 @@
           <span class="tz-rec">${p.steps.map((x, k) => { const sid = KE.stepStation(x); const S = KE.STATIONS.find((y) => y.id === sid); return `<i class="${k < sl.step ? 'done' : k === sl.step ? 'now' : ''} s-${sid}" title="${esc(x)}">${IC(S.ic)}</i>`; }).join('')}</span>
           <span class="tz-now">${sl.step < p.steps.length ? esc(p.steps[sl.step]) : ''}</span></span>
         ${fire}<span class="tz-pat"><i style="width:${Math.round(pat * 100)}%" class="${pat < 0.3 ? 'crit' : pat < 0.6 ? 'warn' : ''}"></i></span></button>`;
-    }).join('') + Array.from({ length: Math.max(0, cap - slots.length) }, () => `<div class="tz-card empty">${IC('clock')}<span>Sipariş bekleniyor</span></div>`).join('');
+    }).join('') + Array.from({ length: Math.max(0, cap - slots.length) }, () => `<div class="tz-card empty">${IC('clock')}<span>${P.afk ? 'Mola verdin. Bir istasyona dokun, fiş gelsin.' : 'Sipariş bekleniyor'}</span></div>`).join('');
     const stations = KE.STATIONS.map((S) => `<button class="tz-st s-${S.id} ${need[S.id] === 2 ? 'hot' : need[S.id] ? 'warm' : ''}" data-a="pst" data-s="${S.id}" aria-label="${S.name}">${IC(S.ic)}<b>${S.name}</b><kbd>${S.key}</kbd></button>`).join('');
     box.innerHTML = `<div class="tz2"><div class="tz-top"><span class="kicker">${IC('chef')}Tezgâh</span><span class="tz-stats"><span class="chip ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span></div>
       <div class="tz-rail">${cards}</div><div class="tz-sts" id="stepbtns">${stations}</div></div>`;

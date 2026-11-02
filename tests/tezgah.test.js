@@ -144,6 +144,22 @@ describe('tezgâh: QA bulguları', () => {
     if (t2 && t2.state === 'wait') expect(b.stock[k]).toBeCloseTo(before + p.ing[k] * t.count, 5);
     for (let i = 0; i < 30; i++) KE.tickAll(G);
     expect(L.player.slots.length).toBe(0);
+    expect(L.player.afk).toBe(true);
+    /* bir istasyona dokunmak kilidi açar: bekleyen fiş varsa hemen gelir */
+    let g = 0;
+    while (!L.tickets.some((x) => x.state === 'wait') && g++ < 200) KE.tickAll(G);
+    KE.act(G, 'pst', 'servis');
+    expect(L.player.afk).toBe(false);
+    if (L.tickets.some((x) => x.state === 'wait' || x.cook === 'player')) expect(L.player.slots.length).toBeGreaterThan(0);
+  });
+  it('çalışan oyuncunun bekleyen ikinci fişi elinden alınmaz', () => {
+    const { KE, G } = setup();
+    const L = toOrders(KE, G, 2);
+    const second = L.player.slots[1].tid;
+    for (let i = 0; i < KE.PLAYER_IDLE * 2; i++) { KE.act(G, 'psel', 0); KE.act(G, 'pst', 'sos'); KE.tickAll(G); }
+    expect(L.player.afk).toBeFalsy();
+    const still = L.player.slots.some((s) => s.tid === second) || !L.tickets.some((t) => t.id === second && t.state === 'wait');
+    expect(still).toBe(true);
   });
   it('tezgâhta açıkken tekrar açmak ve aynı şubeye geçmek fişleri bozmaz', () => {
     const { KE, G } = setup();

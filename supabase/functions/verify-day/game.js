@@ -1936,8 +1936,9 @@ KE.huyOf = function (s) {
      siparişler kombo yapar. Bütün süreler oyun dakikasıyla ölçülür, böylece günlük yeniden oynatılabilir. */
   const pslots = (P) => P.slots || (P.slots = []);
   KE.playerCap = (G, b) => (b.equipment.prep >= 2 ? 3 : 2);
-  /* elindeki fişe bu kadar dakika dokunulmazsa fiş ustalara döner ve oyuncu, bir istasyona dokunana dek yeni fiş almaz */
-  KE.PLAYER_IDLE = 4;
+  /* oyuncu bu kadar dakika hiçbir istasyona dokunmazsa elindeki (dokunulmamış) fişler ustalara döner ve oyuncu,
+     bir istasyona dokunana dek yeni fiş almaz. Çalışan oyuncunun bekleyen ikinci fişi geri alınmaz. */
+  KE.PLAYER_IDLE = 12;
   /* slot görünümü eski alanlara yansır (tid/step/errors): sahne, testler ve eski günlükler bunlara bakar */
   function pmirror(P) {
     const sl = pslots(P);
@@ -2007,9 +2008,12 @@ KE.huyOf = function (s) {
     const L = G.live[b.id];
     const P = L.player;
     const sl = pslots(P);
-    if (!P.active || !sl.length || !KE.STATIONS.some((x) => x.id === st)) return { ok: false, none: true };
+    if (!P.active || !KE.STATIONS.some((x) => x.id === st)) return { ok: false, none: true };
+    /* herhangi bir dokunuş oyuncunun başında olduğunu gösterir: boşta işareti kalkar, eli boşsa hemen fiş alır */
+    P.tap = L.minute;
+    if (P.afk) { P.afk = false; while (KE.playerTake(G)); }
+    if (!sl.length) { pmirror(P); return { ok: false, none: true }; }
     const order = sl.map((_, i) => (i + (P.sel || 0)) % sl.length);
-    P.tap = L.minute; P.afk = false;
     let res = null;
     /* önce ateşte pişmiş olanı al */
     if (st === 'ates') for (const i of order) {
@@ -2058,7 +2062,7 @@ KE.huyOf = function (s) {
       if (!t || t.state !== 'cook') { P.slots.splice(P.slots.indexOf(s), 1); return; }
       const p = prodOf(G, t.pid);
       /* el sürülmeyen fiş ustalara döner: başlanmamışsa 4 dakika, yarım kalmışsa 20 dakika sonra (paket de dahil) */
-      if (s.fire == null && L.minute - s.touch >= (s.step === 0 ? KE.PLAYER_IDLE : KE.PLAYER_IDLE * 5)) { prelease(G, b, L, s); P.afk = true; return; }
+      if (s.fire == null && L.minute - (P.tap || 0) >= KE.PLAYER_IDLE && L.minute - s.touch >= (s.step === 0 ? KE.PLAYER_IDLE : KE.PLAYER_IDLE * 3)) { prelease(G, b, L, s); P.afk = true; return; }
       if (s.fire != null && L.minute > s.fire + KE.fireTimes(p).grace + 4) {
         /* kömür oldu: malzeme gitti, sipariş baştan ustaya döner */
         P.slots.splice(P.slots.indexOf(s), 1);
