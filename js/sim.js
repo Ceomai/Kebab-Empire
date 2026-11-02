@@ -1052,7 +1052,7 @@
       if (s.fire != null && L.minute > s.fire + KE.fireTimes(p).grace + 4) {
         /* kömür oldu: malzeme gitti, sipariş baştan ustaya döner */
         P.slots.splice(P.slots.indexOf(s), 1);
-        t.state = 'wait'; t.cook = null; P.combo = 0; P.burned = (P.burned || 0) + 1;
+        t.state = 'wait'; t.cook = null; t.noPlayer = true; P.combo = 0; P.burned = (P.burned || 0) + 1;
         L.fx.push({ t: 'bad', sid: 'player', text: 'Yandı!' });
       }
     });

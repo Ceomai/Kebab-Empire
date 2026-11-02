@@ -68,6 +68,7 @@ describe('tezgâh: istasyonlar ve aynı anda birden çok sipariş', () => {
     for (let i = 0; i < ft.cook + ft.grace + 6; i++) KE.tickAll(G2);
     expect(L2.player.slots.find((s) => s.tid === t.id)).toBeFalsy();
     expect(L2.player.burned).toBe(1);
+    expect(L2.player.slots.some((s) => s.tid === t.id)).toBe(false);
     const t2 = L2.tickets.find((x) => x.id === t.id);
     if (t2) expect(t2.cook === 'player').toBe(false);
   });
