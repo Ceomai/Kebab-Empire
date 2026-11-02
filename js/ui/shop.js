@@ -256,6 +256,7 @@
     setTimeout(() => box.remove(), 2400);
   };
   /* Tezgâh: üstte sipariş rayı (2-3 fiş), altta 6 büyük istasyon. Sıradaki adım hangi istasyondaysa o parlar. */
+  let tzLast = {};
   function renderTezgah() {
     const box = document.getElementById('tezgah');
     const wrap = document.querySelector('.stagewrap');
@@ -306,8 +307,11 @@
       const sub = f ? (f.take ? esc('Al!') : w[1] ? `+ <span>${esc(w[1].l)}</span>` : f.l !== S.name ? esc(S.name) : '') : '';
       return `<button class="tz-st s-${S.id} ${need[S.id] === 2 ? 'hot' : need[S.id] ? 'warm' : ''} ${f ? 'has' : ''} ${f && f.take ? 'take' : ''}" data-a="pst" data-s="${S.id}" aria-label="${esc(f ? f.l : S.name)}">${IC(S.ic)}<span class="tz-sl"><b>${esc(f ? f.l : S.name)}</b>${sub ? `<small>${sub}</small>` : ''}</span><kbd>${S.key}</kbd></button>`;
     }).join('');
-    box.innerHTML = `<div class="tz2"><div class="tz-top"><span class="kicker">${IC('chef')}Tezgâh</span><span class="tz-stats"><span class="chip ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span></div>
-      <div class="tz-rail">${cards}</div><div class="tz-sts" id="stepbtns">${stations}</div></div>`;
+    const top = `<span class="kicker">${IC('chef')}Tezgâh</span><span class="tz-stats"><span class="chip ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span>`;
+    /* panel her dakika yenilenir; yalnızca değişen parça yeniden çizilir, istasyon düğmeleri gereksiz yere değişmez
+       (parmağın altındaki düğme kaybolmasın) */
+    if (!box.querySelector('.tz2')) { box.innerHTML = '<div class="tz2"><div class="tz-top"></div><div class="tz-rail"></div><div class="tz-sts" id="stepbtns"></div></div>'; tzLast = {}; }
+    [['.tz-top', top], ['.tz-rail', cards], ['.tz-sts', stations]].forEach(([sel, html]) => { if (tzLast[sel] !== html) { box.querySelector(sel).innerHTML = html; tzLast[sel] = html; } });
     /* sabit panelin yüksekliği: sahne kırpması ve sayfa boşluğu buna göre */
     const h = box.firstElementChild ? box.firstElementChild.getBoundingClientRect().height : 0;
     if (h && Math.abs(h - (UI.tzh || 0)) > 2) { UI.tzh = h; document.documentElement.style.setProperty('--tzh', Math.round(h) + 'px'); }
