@@ -14,7 +14,7 @@ function toOrders(KE, G, n) {
   KE.act(G, 'ptoggle', true);
   const L = G.live[G.activeBranch];
   let g = 0;
-  while (L.player.slots.length < n && g++ < 600) { L.player.slots.forEach((s) => { s.touch = L.minute; }); KE.tickAll(G); while (KE.act(G, 'ptake')); }
+  while (L.player.slots.length < n && g++ < 600) { L.player.tap = L.minute; L.player.slots.forEach((s) => { s.touch = L.minute; }); KE.tickAll(G); while (KE.act(G, 'ptake')); }
   return L;
 }
 const prodOf = (KE, G, pid) => KE.MODES[G.mode].products.find((p) => p.id === pid);
@@ -191,13 +191,17 @@ describe('tezgâh: QA bulguları', () => {
     const key = (S) => Object.values(S.branches).map((b) => [b.stats.served, b.stats.lost, Math.round(b.stats.revenue)]);
     expect(key(S2)).toEqual(key(S1));
   });
-  it('sabırsızlanan müşterinin başlanmamış (seçili olmayan) fişi ustalara devredilir', () => {
+  it('sabırsızlanan müşterinin başlanmamış fişi ustalara devredilir', () => {
     const { KE, G } = setup();
     const L = toOrders(KE, G, 2);
     const sl = L.player.slots[1], t = L.tickets.find((x) => x.id === sl.tid), c = L.custs[t.cid];
     if (!c) return;
     c.wait = Math.ceil(c.patience * 1.2) + 1;
     KE.act(G, 'pst', 'servis');
+    KE.tickAll(G);
+    expect(L.player.slots.some((s) => s.tid === t.id)).toBe(false);
+    /* geri alınmaz: ustalara kalır */
+    while (KE.act(G, 'ptake'));
     KE.tickAll(G);
     expect(L.player.slots.some((s) => s.tid === t.id)).toBe(false);
   });

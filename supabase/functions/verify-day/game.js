@@ -1627,7 +1627,7 @@ KE.huyOf = function (s) {
     if (s.pos === 'ocak') {
       if (!cooking.includes(s)) return null;
       /* oyuncu tezgâhtaysa ve elinde boş yer varsa yeni fiş önce ona düşer */
-      const pfree = L.player.active && !L.player.afk && (L.player.slots || []).length < KE.playerCap(G, b);
+      const pfree = L.player.active && !L.player.afk && (!(L.player.slots || []).length || L.minute - (L.player.tap || 0) <= 2) && (L.player.slots || []).length < KE.playerCap(G, b);
       const waiting = L.tickets.filter((t) => t.state === 'wait' && !(pfree && L.minute - t.created < 2));
       let best = null, score = -1e9;
       waiting.slice(0, 5).forEach((t, i) => {
@@ -1970,8 +1970,9 @@ KE.huyOf = function (s) {
     const b = G.branches.find((x) => x.id === G.activeBranch);
     const L = G.live[b.id];
     const P = L.player;
-    if (!P.active || pslots(P).length >= KE.playerCap(G, b) || P.afk) return null;
-    const t = L.tickets.find((x) => x.state === 'wait');
+    /* eli boşsa hemen fiş gelir; ikinci/üçüncü fiş yalnızca son 2 dakikada istasyona dokunan (hızlı çalışan) oyuncuya */
+    if (!P.active || pslots(P).length >= KE.playerCap(G, b) || P.afk || (pslots(P).length && L.minute - (P.tap || 0) > 2)) return null;
+    const t = L.tickets.find((x) => x.state === 'wait' && !x.noPlayer);
     if (!t) return null;
     const p = prodOf(G, t.pid);
     if (!KE.hasStock(b, p, t.count)) return null;
@@ -2064,7 +2065,7 @@ KE.huyOf = function (s) {
       /* el sürülmeyen fiş ustalara döner: başlanmamışsa 4 dakika, yarım kalmışsa 20 dakika sonra (paket de dahil) */
       /* başlanmamış fişin müşterisi sabırsızlanıyorsa ustalara devret (yavaş oyuncu müşteri kaçırmasın) */
       const cu = t.cid != null ? L.custs[t.cid] : null;
-      if (s.step === 0 && s.fire == null && P.slots.length > 1 && s !== P.slots[P.sel || 0] && cu && cu.wait > cu.patience * 1.2) { prelease(G, b, L, s); return; }
+      if (s.fire == null && cu && s.step === 0 && cu.wait > cu.patience * 1.2) { prelease(G, b, L, s); t.noPlayer = true; return; }
       if (s.fire == null && L.minute - (P.tap || 0) >= KE.PLAYER_IDLE && L.minute - s.touch >= (s.step === 0 ? KE.PLAYER_IDLE : KE.PLAYER_IDLE * 3)) { prelease(G, b, L, s); P.afk = true; return; }
       if (s.fire != null && L.minute > s.fire + KE.fireTimes(p).grace + 4) {
         /* kömür oldu: malzeme gitti, sipariş baştan ustaya döner */
