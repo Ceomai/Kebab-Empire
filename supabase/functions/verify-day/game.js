@@ -2011,7 +2011,7 @@ KE.huyOf = function (s) {
     if (!P.active || !KE.STATIONS.some((x) => x.id === st)) return { ok: false, none: true };
     /* herhangi bir dokunuş oyuncunun başında olduğunu gösterir: boşta işareti kalkar, eli boşsa hemen fiş alır */
     P.tap = L.minute;
-    if (P.afk) { P.afk = false; while (KE.playerTake(G)); }
+    if (P.afk) { P.afk = false; while (KE.playerTake(G)); pmirror(P); return { ok: true, woke: true }; }
     if (!sl.length) { pmirror(P); return { ok: false, none: true }; }
     const order = sl.map((_, i) => (i + (P.sel || 0)) % sl.length);
     let res = null;
@@ -2062,6 +2062,9 @@ KE.huyOf = function (s) {
       if (!t || t.state !== 'cook') { P.slots.splice(P.slots.indexOf(s), 1); return; }
       const p = prodOf(G, t.pid);
       /* el sürülmeyen fiş ustalara döner: başlanmamışsa 4 dakika, yarım kalmışsa 20 dakika sonra (paket de dahil) */
+      /* başlanmamış fişin müşterisi sabırsızlanıyorsa ustalara devret (yavaş oyuncu müşteri kaçırmasın) */
+      const cu = t.cid != null ? L.custs[t.cid] : null;
+      if (s.step === 0 && s.fire == null && P.slots.length > 1 && s !== P.slots[P.sel || 0] && cu && cu.wait > cu.patience * 1.2) { prelease(G, b, L, s); return; }
       if (s.fire == null && L.minute - (P.tap || 0) >= KE.PLAYER_IDLE && L.minute - s.touch >= (s.step === 0 ? KE.PLAYER_IDLE : KE.PLAYER_IDLE * 3)) { prelease(G, b, L, s); P.afk = true; return; }
       if (s.fire != null && L.minute > s.fire + KE.fireTimes(p).grace + 4) {
         /* kömür oldu: malzeme gitti, sipariş baştan ustaya döner */

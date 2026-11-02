@@ -156,6 +156,7 @@ describe('tezgâh: QA bulguları', () => {
     const { KE, G } = setup();
     const L = toOrders(KE, G, 2);
     const second = L.player.slots[1].tid;
+    Object.values(L.custs).forEach((c) => { c.patience = 999; }); /* sabırsızlanma kuralı ayrı test edilir */
     for (let i = 0; i < KE.PLAYER_IDLE * 2; i++) { KE.act(G, 'psel', 0); KE.act(G, 'pst', 'sos'); KE.tickAll(G); }
     expect(L.player.afk).toBeFalsy();
     const still = L.player.slots.some((s) => s.tid === second) || !L.tickets.some((t) => t.id === second && t.state === 'wait');
@@ -189,5 +190,25 @@ describe('tezgâh: QA bulguları', () => {
     const S2 = KE2.replayService(morning, log);
     const key = (S) => Object.values(S.branches).map((b) => [b.stats.served, b.stats.lost, Math.round(b.stats.revenue)]);
     expect(key(S2)).toEqual(key(S1));
+  });
+  it('sabırsızlanan müşterinin başlanmamış (seçili olmayan) fişi ustalara devredilir', () => {
+    const { KE, G } = setup();
+    const L = toOrders(KE, G, 2);
+    const sl = L.player.slots[1], t = L.tickets.find((x) => x.id === sl.tid), c = L.custs[t.cid];
+    if (!c) return;
+    c.wait = Math.ceil(c.patience * 1.2) + 1;
+    KE.act(G, 'pst', 'servis');
+    KE.tickAll(G);
+    expect(L.player.slots.some((s) => s.tid === t.id)).toBe(false);
+  });
+  it('moladan uyandıran dokunuş hata sayılmaz', () => {
+    const { KE, G } = setup();
+    const L = toOrders(KE, G, 1);
+    for (let i = 0; i < KE.PLAYER_IDLE * 4; i++) KE.tickAll(G);
+    expect(L.player.afk).toBe(true);
+    let g = 0;
+    while (!L.tickets.some((x) => x.state === 'wait') && g++ < 200) KE.tickAll(G);
+    expect(KE.act(G, 'pst', 'sos').woke).toBe(true);
+    L.player.slots.forEach((s) => expect(s.errors).toBe(0));
   });
 });
