@@ -108,6 +108,9 @@ const SKIP = new Set(['importSave', 'exportSave', 'linkMail', 'deleteData', 'del
           const txt = document.body.innerText || '';
           for (const bad of ['NaN', 'undefined', '[object Object]', 'Infinity', 'null ₺']) if (txt.includes(bad)) out.push('ekranda "' + bad + '": …' + txt.slice(Math.max(0, txt.indexOf(bad) - 40), txt.indexOf(bad) + 20).replace(/\s+/g, ' ') + '…');
           if (document.documentElement.scrollWidth > innerWidth + 1) out.push('yatay taşma ' + document.documentElement.scrollWidth + '>' + innerWidth);
+          /* sayfa kırpıldığı için (overflow-x: clip) öğeleri tek tek ölç; bilerek kaydırılan şeritler hariç */
+          const scr = (e) => e.closest('.guide-toc,.tb-row,.branchbar,.mapframe,.tabs,.seg.wide,table,.stagewrap,.title2,.sheet-grid');
+          for (const e of document.querySelectorAll('button, .btn, .card, .panel, h1, h2, h3, p')) { const r = e.getBoundingClientRect(); if (r.width && r.right > innerWidth + 1 && !scr(e) && getComputedStyle(e).position !== 'fixed') { out.push('ekran dışına taşan öğe: ' + (e.textContent || '').trim().slice(0, 30)); break; } }
           const G = KE.G;
           if (G) { if (!Number.isFinite(G.cash)) out.push('kasa sayı değil'); if (!Number.isFinite(G.reputation)) out.push('itibar sayı değil'); if (G.staff.some((x) => !G.branches.some((b) => b.id === x.branchId))) out.push('şubesiz personel'); }
           return { out, screen: KE.UI && KE.UI.screen, phase: G && G.phase };

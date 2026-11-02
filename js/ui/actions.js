@@ -357,13 +357,19 @@
   };
   /* Geç oyun: bütün semtlerde şube açıldıktan sonra haftayı tek tuşla geç; önemli bir şey olursa durur */
   KE.quickWeekOpen = (G) => G.branches.length >= KE.DISTRICTS.length;
-  A.quickWeek = () => {
+  /* günler arasında tarayıcıya nefes aldır: telefonda yedi şubeli hafta ekranı dondurmasın */
+  const nextFrame = () => new Promise((r) => setTimeout(r, 0));
+  A.quickWeek = async () => {
     const G = KE.G;
-    if (G.phase !== 'morning' || !KE.quickWeekOpen(G)) return;
+    if (G.phase !== 'morning' || !KE.quickWeekOpen(G) || UI.weekRunning) return;
     if (G.pendingEvent) { H.showEvent(); return; }
+    UI.weekRunning = true;
+    UI.modal(`<div class="mhead"><h2>${IC('ff')}Hafta geçiyor</h2><p class="lead" id="weekprog">1. gün</p></div>`, { cls: 'weekrun' });
     const agg = { revenue: 0, net: 0, served: 0 };
     let n = 0, out = null, why = '';
     while (n < 7) {
+      const pe = document.getElementById('weekprog'); if (pe) pe.textContent = `${n + 1}. gün · ${KE.dateStr(G.day)}`;
+      await nextFrame();
       UI.morningEnv = H.CL() && KE.CLOUD.ready ? JSON.parse(JSON.stringify(KE.SAVE.envelope(G))) : null;
       UI.todayRule = null; UI.quickDayRun = true;
       KE.startService(G); KE.finishService(G);
@@ -378,6 +384,7 @@
       if (KE.isWeekEnd(G.day - 1)) break;
     }
     track('quick_week', { day: G.day, n });
+    UI.weekRunning = false; UI.closeModal();
     UI.holdEvent = true;
     UI.go('shop');
     H.afterDay(out);

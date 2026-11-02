@@ -13,7 +13,12 @@
     "sim": "node scripts/sim-balance.cjs",
     "sim:year": "node scripts/sim-year.cjs",
     "e2e": "node scripts/e2e.cjs",
-    "build:edge": "node scripts/build-edge.mjs"
+    "build:edge": "node scripts/build-edge.mjs",
+    "audit:db": "bash tests/db/rls-test.sh",
+    "audit:personas": "node scripts/audit/personas.cjs 120 reports/screens",
+    "audit:visual": "node scripts/audit/visual.cjs reports/screens",
+    "audit:runtime": "node scripts/audit/runtime.cjs",
+    "sim:multi": "node scripts/sim-multi.cjs"
   },
   "devDependencies": {
     "@capacitor/android": "^7.6.10",

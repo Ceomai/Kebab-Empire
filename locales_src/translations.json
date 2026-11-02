@@ -8694,5 +8694,33 @@
  "Uzaklaştır": {
   "en": "Zoom out",
   "de": "Verkleinern"
+ },
+ "Hafta geçiyor": {
+  "en": "Fast-forwarding the week",
+  "de": "Woche läuft"
+ },
+ "Oyun başka bir sekmede ilerledi": {
+  "en": "The game moved on in another tab",
+  "de": "Das Spiel ist in einem anderen Tab weitergegangen"
+ },
+ "Bu oyunu aynı anda başka bir sekmede ya da pencerede de oynuyorsun. İlerlemen kaybolmasın diye bu sekme artık kayıt yapmıyor.": {
+  "en": "You are also playing this game in another tab or window. To keep your progress safe, this tab no longer saves.",
+  "de": "Du spielst dieses Spiel gleichzeitig in einem anderen Tab oder Fenster. Damit dein Fortschritt nicht verloren geht, speichert dieser Tab nicht mehr."
+ },
+ "Bu oyunun daha ileri bir günü kayıtlı. İlerlemen kaybolmasın diye bu sekme kayıt yapmıyor.": {
+  "en": "A later day of this game is already saved. To keep your progress safe, this tab does not save.",
+  "de": "Ein späterer Tag dieses Spiels ist bereits gespeichert. Damit dein Fortschritt nicht verloren geht, speichert dieser Tab nicht."
+ },
+ "Güncel kaydı aç": {
+  "en": "Open the latest save",
+  "de": "Neuesten Spielstand öffnen"
+ },
+ "Fiyat en fazla piyasanın {0} katı olabilir.": {
+  "en": "The price can be at most {0} times the market price.",
+  "de": "Der Preis darf höchstens das {0}-Fache des Marktpreises betragen."
+ },
+ "Fiyat en az {0} ₺ olabilir.": {
+  "en": "The price must be at least {0} ₺.",
+  "de": "Der Preis muss mindestens {0} ₺ betragen."
  }
 }

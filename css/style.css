@@ -1510,3 +1510,12 @@ html { overflow-x: clip; }
 .t-r2 .btn.big { font-size: 17px; padding: 10px 18px; }
 @media (max-width: 380px) { .t-r2 .btn.big { font-size: 15px; padding: 9px 12px; } .t-r2 { gap: 8px; } }
 @media (max-height: 520px) and (orientation: landscape) { .mapzoom { right: auto; left: 10px; } }
+/* dokunma hedefleri: telefonda en az 32 px (WCAG 2.2 AA 24 px üstü), çekmece tutamağı 28 px */
+@media (max-width: 760px), (max-height: 520px) and (orientation: landscape) {
+  body .btn.xs, body .btn.sm { min-height: 32px; padding-top: 6px; padding-bottom: 6px; }
+  body .btn { min-height: 40px; }
+  body .btn.xs { min-height: 32px; }
+  .sheet-handle { min-height: 28px; }
+}
+@media (max-width: 760px) and (orientation: portrait), (max-width: 760px) and (min-height: 521px) { .sheet-handle { height: 28px; } }
+.btn.xs { min-height: 28px; }
