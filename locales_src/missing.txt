@@ -17,8 +17,6 @@ Hatice
 Kemal
 Tarık
 Selim
-Pilav
-Peynir
 İsmail
 Kadıçeşme
 Sultanpazarı
@@ -46,7 +44,6 @@ Emre
 Halil
 Seda
 Ayşe
-Dilimle
 Murat Usta
 Esra Usta
 Yusuf Usta
@@ -84,8 +81,6 @@ Onur
 Elif
 Tuğba
 Kadir
-Turşu
-Ekmek
 Levent
 Nazlı Usta
 Hatice Usta
@@ -125,7 +120,6 @@ Ahmet Usta
 Gizem Usta
 Mehmet
 Emine
-Fıstık
 Barış Usta
 Büşra Usta
 Emre Usta
@@ -191,7 +185,6 @@ Başla
 Yarış
 Çırak Volkan
 Merve Usta
-Kes
 Çırak Barış
 Çırak Onur
 {0} müşteri yemeğini bekleyemedi (gelenlerin {1}'u kaçtı)
@@ -202,5 +195,4 @@ dün gelenlerin {0}'yı kapasite yetmediği için gitti. Reklamın getireceği m
 Hülya Usta
 Yeşim Usta
 {0} közle
-Yoğurtla ez
 {0} müşteri istediğini bulamadı (gelenlerin {1}'i kaçtı)

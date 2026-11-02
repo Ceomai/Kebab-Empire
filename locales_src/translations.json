@@ -8806,5 +8806,45 @@
  "Al: {0}": {
   "en": "Take off: {0}",
   "de": "Nimm: {0}"
+ },
+ "Ekmek": {
+  "en": "Bread",
+  "de": "Brot"
+ },
+ "Turşu": {
+  "en": "Pickles",
+  "de": "Essiggurken"
+ },
+ "Pilav": {
+  "en": "Rice",
+  "de": "Reis"
+ },
+ "Kes": {
+  "en": "Slice",
+  "de": "Schneiden"
+ },
+ "Peynir": {
+  "en": "Cheese",
+  "de": "Käse"
+ },
+ "Fıstık": {
+  "en": "Pistachio",
+  "de": "Pistazien"
+ },
+ "Dilimle": {
+  "en": "Slice it",
+  "de": "In Scheiben"
+ },
+ "Patlıcan közle": {
+  "en": "Roast aubergine",
+  "de": "Aubergine rösten"
+ },
+ "Yoğurtla ez": {
+  "en": "Mash with yoghurt",
+  "de": "Mit Joghurt mischen"
+ },
+ "Bulgur hamuru": {
+  "en": "Bulgur dough",
+  "de": "Bulgurteig"
  }
 }
