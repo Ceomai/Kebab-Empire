@@ -6,12 +6,9 @@
   const S = KE.SCENE = {};
   const A = () => KE.ART;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const DOOR = { x: 94, y: 74 };
-  const KASA = { x: 66, y: 50 };
-  const QUEUE0 = { x: 68, y: 76 };
-  const PASS_END = { x: 60, y: 68 };
-
-  S.tablePos = function (n) {
+  /* İki yerleşim: geniş ekran (16:9) ve dikey telefon (3:4). Dikeyde mutfak üstte tam genişlikte,
+     salon altta, kasa kuyruğu sağ kenarda; varlıklar 1,6 kat büyük (bkz. .st-virt). */
+  function landTables(n) {
     const pos = [];
     const rows = n > 5 ? 2 : 1;
     const perRow = Math.ceil(n / rows);
@@ -22,11 +19,50 @@
       pos.push({ x: 5 + span * c + span / 2 + (r % 2 ? span * 0.25 : 0), y: rows === 1 ? 86 : (r === 0 ? 78 : 94) });
     }
     return pos;
+  }
+  function portTables(n) {
+    const pos = [];
+    const cols = n <= 4 ? 2 : n <= 12 ? 3 : 4;
+    const rows = Math.ceil(n / cols);
+    const span = 72 / cols;
+    const top = rows <= 2 ? 62 : 57, bot = rows <= 2 ? 86 : 89;
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(i / cols), c = i % cols;
+      pos.push({ x: 6 + span * c + span / 2 + (r % 2 ? span * 0.12 : -span * 0.04), y: rows === 1 ? 70 : top + r * (bot - top) / (rows - 1) });
+    }
+    return pos;
+  }
+  const LAND = {
+    door: { x: 94, y: 74 }, exitDx: 6, eqDx: -7, kasa: { x: 66, y: 59 }, kasaStep: 5.5, cookY: 59,
+    pass: (i) => ({ x: 7 + i * 5.4, y: 52 }), passEnd: { x: 60, y: 68 }, idleStep: 3.5,
+    deliverPick: { x: 56, y: 64 }, deliverWalk: { x: 61, y: 68 }, pickup: (n) => ({ x: 57 - n * 3.6, y: 70 }),
+    queue: (i) => i < 6 ? { x: 68 + i * 4.6, y: 76 + (i % 2) * 1.5 } : { x: 99, y: 74 },
+    paketOut: { x: 104, y: 74 }, paketWalk: { x: 92, y: 70 }, paketIdle: { x: 86, y: 64 },
+    atTable: { dx: 5.5, dy: 1 }, seat: { dx: -1.5, dy: -4.2 }, clean: (k) => ({ x: 20 + k % 40, y: 70 }),
+    tables: landTables,
+    stationX: (G, i, n) => G.mode === 'doner' ? 12 + i * (50 / Math.max(1, n)) : 10 + i * (48 / Math.max(1, n)) + 3
   };
-  function stationX(G, i, n) { return G.mode === 'doner' ? 12 + i * (50 / Math.max(1, n)) : 10 + i * (48 / Math.max(1, n)) + 3; }
+  const PQ = [[70, 47], [84, 50], [92, 56], [84, 62], [92, 68], [84, 74], [92, 80], [84, 86]];
+  const PORT = {
+    door: { x: 93, y: 43 }, exitDx: 10, eqDx: -11.2, kasa: { x: 75, y: 36.5 }, kasaStep: 9, cookY: 36.5,
+    pass: (i) => ({ x: 5 + i * 6.2, y: 32 }), passEnd: { x: 56, y: 46 }, idleStep: 6,
+    deliverPick: { x: 50, y: 43 }, deliverWalk: { x: 52, y: 50 }, pickup: (n) => ({ x: 60 - n * 6.5, y: 44.5 }),
+    queue: (i) => i < PQ.length ? { x: PQ[i][0], y: PQ[i][1] } : { x: 96, y: 92 },
+    paketOut: { x: 106, y: 43 }, paketWalk: { x: 90, y: 46 }, paketIdle: { x: 94, y: 50 },
+    atTable: { dx: 9, dy: 0.7 }, seat: { dx: -2.4, dy: -2.8 }, clean: (k) => ({ x: 8 + k % 64, y: 52 }),
+    tables: portTables,
+    stationX: (G, i, n) => G.mode === 'doner' ? 10 + i * (58 / Math.max(1, n)) : 8 + i * (56 / Math.max(1, n)) + 4
+  };
+  let GEO = LAND;
+  /** Telefon dikey mi: dar ve uzun ekran */
+  S.isPortrait = () => typeof innerWidth === 'number' && innerWidth <= 820 && innerHeight > innerWidth * 1.15;
+  S.tablePos = (n) => GEO.tables(n);
+  const stationX = (G, i, n) => GEO.stationX(G, i, n);
 
   /* Statik iskelet */
   S.html = function (G, b) {
+    const port = S.isPortrait();
+    GEO = port ? PORT : LAND;
     const M = KE.MODES[G.mode];
     const stations = KE.stations(G, b);
     const amb = KE.ambience(G, b);
@@ -34,13 +70,13 @@
     const menuItems = M.products.filter((p) => b.menu[p.id]).slice(0, 7);
     let equipment = '';
     if (G.mode === 'doner') {
-      for (let i = 0; i < stations; i++) equipment += `<div class="eq-doner" style="left:${stationX(G, i, stations) - 7}%">${A().doner(i % 2 ? 'tavuk' : 'et')}</div>`;
+      for (let i = 0; i < stations; i++) equipment += `<div class="eq-doner" style="left:${stationX(G, i, stations) + GEO.eqDx}%">${A().doner(i % 2 ? 'tavuk' : 'et')}</div>`;
     } else equipment = `<div class="eq-mangal">${A().mangal(Math.min(4, stations + 1))}${A().smoke()}</div>`;
     const eqSum = b.equipment.cook + b.equipment.prep + b.equipment.cold + b.equipment.service;
     const tier = eqSum >= 6 ? 2 : eqSum >= 2 ? 1 : 0;
     const fridge = b.equipment.cold > 0 ? `<div class="st-fridge f${b.equipment.cold}">${'<i></i>'.repeat(b.equipment.cold * 6)}</div>` : '';
     const wallDecor = b.decor.filter((id) => !['dismasa', 'dinlenme', 'klima', 'taburet', 'kadife', 'mermer'].includes(id)).slice(0, 5);
-    return `<div class="stage mode-${G.mode} tier-${tier} ${(KE.specialDay(G.day) || {}).theme ? 'theme-' + KE.specialDay(G.day).theme : ''} floor-${b.equipment.service} ${lux ? 'lux' : ''} ${amb.concept ? 'concept-' + amb.concept.style : ''}" id="stage">
+    return `<div class="st-virt ${port ? 'on' : ''}"><div class="stage ${port ? 'portrait' : ''} mode-${G.mode} tier-${tier} ${(KE.specialDay(G.day) || {}).theme ? 'theme-' + KE.specialDay(G.day).theme : ''} floor-${b.equipment.service} ${lux ? 'lux' : ''} ${amb.concept ? 'concept-' + amb.concept.style : ''}" id="stage">
       <div class="st-wall"><div class="st-tiles"></div>
         <div class="st-sign">${KE.ART.logo()}<span>${b.name}</span>${tier ? '<em class="bulbs"></em>' : ''}${tier === 2 ? '<b class="stars3">★★★</b>' : ''}</div>${fridge}
         <div class="st-menu"><div class="st-menu-h">MENÜ</div><div class="st-menu-items">${menuItems.map((p) => `<div class="mi">${A().dish(p.id)}<b>${KE.tl(b.prices[p.id]).replace(' ₺', '')}</b></div>`).join('')}</div></div>
@@ -66,7 +102,7 @@
       <div class="st-layer" id="st-fx"></div>
       <div class="st-hud" id="st-hud"></div>
       ${G.phase === 'closing' ? '<div class="st-closed"><span>Kepenk indi</span></div>' : ''}
-    </div>`;
+    </div></div>`;
   };
 
   const ent = {};
@@ -122,6 +158,7 @@
   S.update = function (G, b, L) {
     const stage = document.getElementById('stage');
     if (!stage) return;
+    GEO = stage.classList.contains('portrait') ? PORT : LAND;
     if (stageId !== b.id) { S.reset(); stageId = b.id; }
     const M = KE.MODES[G.mode];
     const st = KE.branchStaff(G, b);
@@ -144,15 +181,15 @@
     const shown = cooking.slice();
     if (L.player.active) shown.push({ id: 'player' });
     shown.forEach((s, i) => {
-      const x = stationX(G, i, Math.max(stations, shown.length));
+      const x = stationX(G, i, GEO === PORT && G.mode !== 'doner' ? Math.max(2, shown.length) : Math.max(stations, shown.length));
       const isP = s.id === 'player';
       const look = isP ? ownerLook(G) : KE.staffLook(s);
       const task = isP ? (L.player.tid != null ? { type: 'cook', ref: L.player.tid, remain: 1, total: 2 } : null) : s.task;
       const t = task ? L.tickets.find((k) => k.id === task.ref) : null;
       const mood = isP ? 'happy' : KE.moodFromValue(s.morale);
-      const bubble = t ? `<div class="cook-bubble">${A().dish(t.pid)}<i class="ring" style="--p:${Math.round((1 - task.remain / task.total) * 100)}"></i></div>` : '';
+      const bubble = t ? `<div class="cook-bubble ${isP && (L.player.slots || []).some((x) => x.fire != null) ? 'onfire' : ''}">${A().dish(t.pid)}<i class="ring" style="--p:${Math.round((1 - task.remain / task.total) * 100)}"></i></div>` : '';
       const html = `${bubble}<div class="fig">${KE.figure(look, { mood, label: isP ? G.owner : s.name })}</div><span class="nm ${isP ? 'me' : ''}">${isP ? G.owner : s.name.replace(' Usta', '')}</span>`;
-      place('st-cooks', 'c' + s.id, html, x, 59, 'cook', 100);
+      place('st-cooks', 'c' + s.id, html, x, GEO.cookY, 'cook', 100);
     });
     sweep('c');
 
@@ -162,7 +199,8 @@
       const cold = L.minute - t.readyAt > 3;
       const taken = !!t.by;
       const html = `<div class="plate ${cold ? 'cold' : ''} ${t.paket ? 'bag' : ''}">${t.paket ? '<span class="bagic">PAKET</span>' : A().dish(t.pid)}${!cold && !t.paket ? '<span class="steam"></span>' : ''}${t.count > 1 ? `<b class="x">×${t.count}</b>` : ''}</div>`;
-      place('st-pass', 'p' + t.id, html, 7 + i * 5.4, 52, 'dish' + (taken ? ' taken' : ''), 420);
+      const pp = GEO.pass(i);
+      place('st-pass', 'p' + t.id, html, pp.x, pp.y, 'dish' + (taken ? ' taken' : ''), 420);
     });
     sweep('p');
 
@@ -173,21 +211,22 @@
       let x, y, pose = 'stand', tray = null, z = null, cls = 'staff';
       const task = s.task;
       let layer = 'st-people';
-      if (s.pos === 'kasa') { x = KASA.x - kasaN * 5.5; y = 59; kasaN++; z = 300; cls += ' behind'; layer = 'st-cooks'; }
+      const g = GEO, at = (tp) => { x = tp.x + g.atTable.dx; y = tp.y + g.atTable.dy; pose = 'walk'; };
+      if (s.pos === 'kasa') { x = g.kasa.x - kasaN * g.kasaStep; y = g.kasa.y; kasaN++; z = 300; cls += ' behind'; layer = 'st-cooks'; }
       else if (s.pos === 'paket') {
-        if (task && task.type === 'paket') { const ph = 1 - task.remain / task.total; if (ph > 0.12 && ph < 0.9) { x = 104; y = 74; } else { x = DOOR.x - 2; y = 70; pose = 'walk'; } }
-        else { x = 86; y = 64; }
+        if (task && task.type === 'paket') { const ph = 1 - task.remain / task.total; if (ph > 0.12 && ph < 0.9) ({ x, y } = g.paketOut); else { ({ x, y } = g.paketWalk); pose = 'walk'; } }
+        else ({ x, y } = g.paketIdle);
       } else if (task && task.type === 'deliver') {
         const t = L.tickets.find((k) => k.id === task.ref);
         const c = t && L.custs[t.cid];
         const ph = 1 - task.remain / task.total;
-        if (ph < 0.3) { x = PASS_END.x - 4; y = 64; }
-        else if (c && c.table != null) { const tp = tablePos[c.table]; x = tp.x + 5.5; y = tp.y + 1; pose = 'walk'; }
-        else { x = 61; y = 68; pose = 'walk'; }
+        if (ph < 0.3) ({ x, y } = g.deliverPick);
+        else if (c && c.table != null && tablePos[c.table]) at(tablePos[c.table]);
+        else { ({ x, y } = g.deliverWalk); pose = 'walk'; }
         tray = t ? t.pid : null;
-      } else if (task && task.type === 'clear') { const tp = tablePos[task.ref] || PASS_END; x = tp.x + 5.5; y = tp.y + 1; pose = 'walk'; }
-      else if (task && task.type === 'clean') { x = 20 + ((L.minute * 7 + s.id.length * 13) % 40); y = 70; pose = 'walk'; }
-      else { x = PASS_END.x + idleN * 3.5; y = PASS_END.y; idleN++; }
+      } else if (task && task.type === 'clear') at(tablePos[task.ref] || g.passEnd);
+      else if (task && task.type === 'clean') { ({ x, y } = g.clean(L.minute * 7 + s.id.length * 13)); pose = 'walk'; }
+      else { x = g.passEnd.x + idleN * g.idleStep; y = g.passEnd.y; idleN++; }
       const look = KE.staffLook(s);
       const html = `<div class="fig">${KE.figure(look, { mood: KE.moodFromValue(s.morale), pose, tray: !!tray, trayDish: tray ? A().dish(tray) : null, label: s.name })}</div>${s.energy < 25 ? '<span class="tired">Yorgun</span>' : ''}`;
       const e = place(layer, 's' + s.id, html, x, y, cls, z);
@@ -206,25 +245,25 @@
       const bubble = tag + (c.state === 'eat' ? '' : `<div class="order-bubble ${c.ordering ? 'talk' : ''}">${A().dish(c.pid)}${patRing(ratio)}${c.count > 1 ? `<b>×${c.count}</b>` : ''}</div>`);
       if (c.state === 'queue') {
         const i = qIndex[c.id] || 0;
-        if (i < 6) { x = QUEUE0.x + i * 4.6; y = QUEUE0.y + (i % 2) * 1.5; }
-        else { x = 99; y = 74; }
+        ({ x, y } = GEO.queue(i));
         html = bubble + fig(c.wait < 1 ? 'walk' : 'stand', mood);
       } else if (c.state === 'pickup') {
-        x = 57 - pickN * 3.6; y = 70; pickN++;
+        ({ x, y } = GEO.pickup(pickN)); pickN++;
         html = bubble + fig('stand', mood);
       } else {
-        const tp = S.tablePos(L.tables.length)[c.table] || { x: 30, y: 80 };
-        x = tp.x - 1.5; y = tp.y - 4.2; cls = 'cust seated';
+        const tp = tablePos[c.table] || { x: 30, y: 80 };
+        x = tp.x + GEO.seat.dx; y = tp.y + GEO.seat.dy; cls = 'cust seated';
         html = bubble + `<div class="bust">${KE.portrait(c.look, { mood, label: KE.CUSTOMER_TYPES[c.type].name })}</div>` + (c.state === 'eat' ? `<div class="eating">${A().dish(c.pid)}</div>` : '') + (c.count > 1 ? `<div class="bust b2">${KE.portrait(c.look2 || (c.look2 = KE.customerLook(c.type)), { mood })}</div>` : '');
       }
-      const e = place('st-people', 'u' + c.id, html, x, y, cls, c.state === 'eat' || c.state === 'seat' ? Math.round((S.tablePos(L.tables.length)[c.table] || { y: 80 }).y * 10) - 4 : null, DOOR);
+      place('st-people', 'u' + c.id, html, x, y, cls, c.state === 'eat' || c.state === 'seat' ? Math.round((tablePos[c.table] || { y: 80 }).y * 10) - 4 : null, GEO.door);
     });
     sweep('s');
     sweep('u', (k, e) => {
       e.el.classList.add('leaving');
-      e.el.classList.toggle('flip', DOOR.x + 6 < e.x);
+      const ex = GEO.door.x + GEO.exitDx;
+      e.el.classList.toggle('flip', ex < e.x);
       clearTimeout(e.moveT); e.el.classList.add('moving');
-      e.el.style.left = DOOR.x + 6 + '%'; e.el.style.top = DOOR.y + '%';
+      e.el.style.left = ex + '%'; e.el.style.top = GEO.door.y + '%';
       setTimeout(() => e.el.remove(), 1200);
     });
 
@@ -240,7 +279,7 @@
       else if (f.t === 'bad') KE.SND.play('bad');
       else if (f.t === 'served' && f.match) KE.SND.play('match');
       if (f.t === 'regular') KE.SND.play('match');
-      const cls = f.t === 'regular' ? 'reg' : f.t === 'bad' ? 'bad' : f.t === 'tip' ? 'tip' : f.t === 'pay' ? 'pay' : f.match ? 'match' : f.t === 'ready' ? 'ready' : '';
+      const cls = f.t === 'combo' ? 'combo' : f.t === 'regular' ? 'reg' : f.t === 'bad' ? 'bad' : f.t === 'tip' ? 'tip' : f.t === 'pay' ? 'pay' : f.match ? 'match' : f.t === 'ready' ? 'ready' : '';
       const text = f.t === 'ready' ? 'Hazır!' : f.text;
       if (!text || f.t === 'pass') return;
       const d = document.createElement('div');
@@ -291,4 +330,13 @@
     return G.ownerLook;
   }
   S.ownerLook = ownerLook;
+  /* Ekran döndürülünce sahneyi doğru yerleşimle yeniden kur */
+  let rot = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(rot);
+    rot = setTimeout(() => {
+      const st = document.getElementById('stage');
+      if (st && st.classList.contains('portrait') !== S.isPortrait() && KE.UI && KE.UI.render) KE.UI.render();
+    }, 180);
+  });
 })();

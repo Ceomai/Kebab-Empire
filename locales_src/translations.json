@@ -688,8 +688,8 @@
   "de": "Industrie-Kühlschrank"
  },
  "Servis": {
-  "en": "Service",
-  "de": "Service"
+  "en": "Serve",
+  "de": "Servieren"
  },
  "Klasik tezgâh ve {0} masa": {
   "en": "Classic counter and {0} tables",
@@ -8722,5 +8722,69 @@
  "Fiyat en az {0} ₺ olabilir.": {
   "en": "The price must be at least {0} ₺.",
   "de": "Der Preis muss mindestens {0} ₺ betragen."
+ },
+ "Tezgâh": {
+  "en": "Counter",
+  "de": "Theke"
+ },
+ "Kombo ×{0}": {
+  "en": "Combo ×{0}",
+  "de": "Kombo ×{0}"
+ },
+ "Hazır {0}": {
+  "en": "Done {0}",
+  "de": "Fertig {0}"
+ },
+ "Yanan {0}": {
+  "en": "Burnt {0}",
+  "de": "Verbrannt {0}"
+ },
+ "Sipariş bekleniyor": {
+  "en": "Waiting for an order",
+  "de": "Warte auf Bestellung"
+ },
+ "Hamur": {
+  "en": "Dough",
+  "de": "Teig"
+ },
+ "Ateş": {
+  "en": "Fire",
+  "de": "Feuer"
+ },
+ "Sebze": {
+  "en": "Veg",
+  "de": "Gemüse"
+ },
+ "Pişiyor": {
+  "en": "Cooking",
+  "de": "Gart"
+ },
+ "Yanıyor!": {
+  "en": "Burning!",
+  "de": "Brennt!"
+ },
+ "Al!": {
+  "en": "Take it!",
+  "de": "Nimm!"
+ },
+ "Yandı!": {
+  "en": "Burnt!",
+  "de": "Verbrannt!"
+ },
+ "Biraz yandı, kalite düştü.": {
+  "en": "A little burnt, quality dropped.",
+  "de": "Etwas verbrannt, die Qualität sinkt."
+ },
+ "{0} · paket": {
+  "en": "{0} · takeaway",
+  "de": "{0} · zum Mitnehmen"
+ },
+ "İstersen tezgâha geçip siparişleri kendin hazırlarsın: parlayan istasyona dokun, ateştekini pişince al. Hatasız ve hızlı olursan kombo yapar, kaliteyi artırırsın.": {
+  "en": "If you like, step up to the counter and prepare orders yourself: tap the glowing station, take things off the fire once cooked. Be fast and flawless to build a combo and raise quality.",
+  "de": "Wenn du willst, stellst du dich selbst an die Theke: Tippe auf die leuchtende Station und nimm Gegartes rechtzeitig vom Feuer. Schnell und fehlerfrei gibt Kombos und bessere Qualität."
+ },
+ "<b>Tezgâh:</b> İstersen tezgâha geçip siparişleri kendin hazırlarsın. Aynı anda 2 fiş tutarsın (hazırlık ekipmanı 2. seviyede 3). Altı istasyon var: Hamur, Et, Ateş, Sebze, Sos, Servis. Sıradaki adımın istasyonu parlar; dokununca o adımı bekleyen fiş ilerler. Ateşe konan şiş ya da lavaş pişince \"Al!\" der; geç kalırsan yanar, çok geç kalırsan kömür olur ve sipariş ustaya döner. Hatasız ve hızlı biten siparişler kombo yapar, kombo kaliteyi artırır. Klavyede 1–6 istasyon, Tab sıradaki fiş. Her gün tezgâhta 6 sipariş hazırlamak bonus hedeftir (iki kat ödül).": {
+  "en": "<b>Counter:</b> If you like, step up to the counter and prepare orders yourself. You hold 2 tickets at once (3 with level 2 prep equipment). There are six stations: Dough, Meat, Fire, Veg, Sauce, Serve. The station for the next step glows; tapping it advances the ticket waiting for that step. Skewers or flatbread on the fire say \"Take it!\" when done; too late and they burn, much too late and they turn to charcoal and the order goes back to the cooks. Fast, flawless orders build a combo, and combos raise quality. Keyboard: 1–6 for stations, Tab for the next ticket. Preparing 6 orders at the counter each day is a bonus goal (double reward).",
+  "de": "<b>Theke:</b> Wenn du willst, bereitest du Bestellungen selbst zu. Du hältst 2 Bons gleichzeitig (3 mit Vorbereitungsausstattung Stufe 2). Es gibt sechs Stationen: Teig, Fleisch, Feuer, Gemüse, Soße, Servieren. Die Station des nächsten Schritts leuchtet; ein Tipp darauf bringt den Bon weiter, der auf diesen Schritt wartet. Spieße oder Fladenbrot auf dem Feuer melden \"Nimm!\", sobald sie gar sind; zu spät verbrennen sie, viel zu spät werden sie zu Kohle und die Bestellung geht zurück an die Meister. Schnelle, fehlerfreie Bestellungen geben Kombos, Kombos heben die Qualität. Tastatur: 1–6 für Stationen, Tab für den nächsten Bon. Jeden Tag 6 Bestellungen an der Theke zuzubereiten ist ein Bonusziel (doppelte Belohnung)."
  }
 }

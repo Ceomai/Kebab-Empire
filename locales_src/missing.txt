@@ -199,3 +199,8 @@ Kes
 Uğur
 Çırak İbrahim
 dün gelenlerin {0}'yı kapasite yetmediği için gitti. Reklamın getireceği müşterilerin çoğu da kapıdan dönecek; önce ekibi ya da salonu büyüt.
+Hülya Usta
+Yeşim Usta
+{0} közle
+Yoğurtla ez
+{0} müşteri istediğini bulamadı (gelenlerin {1}'i kaçtı)

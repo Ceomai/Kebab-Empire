@@ -76,13 +76,26 @@
     const cr = document.getElementById('crew');
     if (cr && KE.G.phase !== 'morning') cr.innerHTML = H.crewPanel(b, true); else UI.render();
   };
-  A.tezgah = () => { const L = KE.G.live[KE.G.activeBranch]; KE.act(KE.G, 'ptoggle', !L.player.active); if (L.player.active) KE.act(KE.G, 'ptake'); H.renderTezgah(); UI.sceneTick(); };
-  A.step = (d) => {
-    const r = KE.act(KE.G, 'pstep', d.l);
-    if (r.ok === false) { H.renderTezgah(); const box = document.getElementById('stepbtns'); if (box) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); } return; }
-    if (r.done) KE.act(KE.G, 'ptake');
+  A.tezgah = () => {
+    const L = KE.G.live[KE.G.activeBranch];
+    KE.act(KE.G, 'ptoggle', !L.player.active);
+    if (L.player.active) while (KE.act(KE.G, 'ptake'));
     H.renderTezgah(); UI.sceneTick();
+    /* tezgâha geçince sahne + istasyonlar ekrana gelsin */
+    const w = document.querySelector('.stagewrap');
+    if (L.player.active && w) { const tb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tbh')) || 0; window.scrollTo({ top: Math.max(0, w.getBoundingClientRect().top + window.scrollY - tb - 8), behavior: 'smooth' }); }
   };
+  const shake = () => { const box = document.getElementById('stepbtns'); if (box) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); } };
+  function station(r) {
+    if (r.ok === false) { if (!r.none) { KE.SND.play('bad'); if (navigator.vibrate) try { navigator.vibrate(60); } catch (e) { /* yok */ } } H.renderTezgah(); shake(); return; }
+    KE.SND.play(r.done ? 'ready' : r.fire ? 'sizzle' : 'click');
+    if (r.burnt) UI.toast('Biraz yandı, kalite düştü.', 'bad');
+    if (r.done) while (KE.act(KE.G, 'ptake'));
+    H.renderTezgah(); UI.sceneTick();
+  }
+  A.pst = (d) => station(KE.act(KE.G, 'pst', d.s));
+  A.psel = (d) => { KE.act(KE.G, 'psel', +d.i); KE.SND.play('click'); H.renderTezgah(); };
+  A.step = (d) => station(KE.act(KE.G, 'pstep', d.l));
   A.midChoice = (d) => {
     const M = KE.act(KE.G, 'mid', +d.i);
     UI.closeModal();
@@ -250,6 +263,7 @@
   document.addEventListener('click', (e) => {
     const el = /** @type {any} */ (e.target).closest('[data-a]');
     if (!el || el.disabled) return;
+    if (e.detail > 0 && el.closest('.tz2')) return; /* tezgâh dokunuşları pointerdown'da işlendi */
     const fn = A[el.dataset.a];
     if (!fn) return;
     e.preventDefault();
@@ -279,10 +293,24 @@
     KE.G = JSON.parse(u.g); UI.undo = null;
     UI.closeModal(); UI.render(); UI.toast('Son işlem geri alındı.', 'good');
   };
+  /* tezgâh: parmak değer değmez işlesin; panel her dakika yenilendiği için click kaçabilir */
+  document.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    const el = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.tz2 [data-a]');
+    if (!el || el.disabled || !A[el.dataset.a]) return;
+    e.preventDefault();
+    A[el.dataset.a](Object.assign({}, el.dataset), el, e);
+  });
   document.addEventListener('pointerover', (e) => { if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('#crew')) UI.crewHover = Date.now(); });
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && /** @type {any} */ (e.target).matches && /** @type {any} */ (e.target).matches('g.place[data-a]')) { e.preventDefault(); const fn = A[/** @type {any} */ (e.target).dataset.a]; if (fn) fn(Object.assign({}, /** @type {any} */ (e.target).dataset)); }
     if (e.key === 'Escape' && document.querySelector('.modal-bg .acts [data-a="closeModal"]')) UI.closeModal();
+    /* tezgâh klavyesi: 1-6 istasyon, Tab sıradaki fiş */
+    const G = KE.G, L = G && G.phase === 'service' && G.live && G.live[G.activeBranch];
+    if (!L || !L.player.active || document.querySelector('.modal-bg') || /** @type {any} */ (e.target).matches('input, textarea, select')) return;
+    const S = KE.STATIONS.find((x) => x.key === e.key);
+    if (S) { e.preventDefault(); A.pst({ s: S.id }); }
+    else if (e.key === 'Tab' && (L.player.slots || []).length > 1) { e.preventDefault(); A.psel({ i: String(((L.player.sel || 0) + 1) % L.player.slots.length) }); }
   });
   document.addEventListener('change', (e) => {
     if (KE.G && KE.G.phase === 'morning' && /** @type {any} */ (e.target).dataset && /** @type {any} */ (e.target).dataset.c) { const t = /** @type {any} */ (e.target); UI.undo = { g: JSON.stringify(Object.assign({}, KE.G)), label: t.dataset.c === 'priceSet' ? 'fiyat değişikliği' : 'ayar', day: KE.G.day }; }

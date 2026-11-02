@@ -57,12 +57,16 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
   await shot('10-service-1x');
   await click('[data-a="tezgah"]');
   await page.waitForTimeout(1500);
-  for (let i = 0; i < 6; i++) {
-    const st = await page.evaluate(() => { const G = KE.G; const L = G.live[G.activeBranch]; const P = L.player; if (P.tid == null) return null; const t = L.tickets.find(x => x.id === P.tid); const p = KE.MODES[G.mode].products.find(x => x.id === t.pid); return p.steps[P.step]; });
-    if (!st) { await page.waitForTimeout(600); continue; }
+  /* tezgâh: parlayan istasyona dokun (ateşteyse pişmesini bekle); en az bir sipariş hazırlanmalı */
+  let made = 0;
+  for (let i = 0; i < 40 && made < 2; i++) {
+    const st = await page.evaluate(() => { const G = KE.G; const L = G.live[G.activeBranch]; const P = L.player; const sl = (P.slots || [])[P.sel || 0]; if (!sl) return null; if (sl.fire != null) return L.minute >= sl.fire ? 'ates' : 'wait'; const t = L.tickets.find((x) => x.id === sl.tid); const p = KE.MODES[G.mode].products.find((x) => x.id === t.pid); return KE.stepStation(p.steps[sl.step]); });
+    if (!st || st === 'wait') { await page.waitForTimeout(400); continue; }
     if (i === 2) await shot('11-tezgah');
-    await page.click(`[data-a="step"][data-l="${st}"]`); await page.waitForTimeout(100);
+    await page.click(`.tz2 [data-a="pst"][data-s="${st}"]`); await page.waitForTimeout(80);
+    made = await page.evaluate(() => KE.G.live[KE.G.activeBranch].player.done || 0);
   }
+  if (!made) throw new Error('tezgâhta sipariş hazırlanamadı');
   await click('[data-a="tezgah"]');
   await click('[data-a="setPos"][data-p="mola"]');
   await page.waitForTimeout(500);

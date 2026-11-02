@@ -65,7 +65,7 @@
     { phase: 'service', sel: '.stagewrap', text: 'Müşteri kapıdan girer, kasada öder, usta pişirir, komi masaya götürür. Yemek bitince bahşiş kavanoza düşer.' },
     { phase: 'service', sel: '.st-hud', text: 'Yoğunluk göstergesi. Kırmızıya dönen yere bir kişi daha ver: kuyruk uzarsa kasaya, tabak beklerse servise.' },
     { phase: 'service', sel: '#crew', text: 'Yorulan çalışanı sakin saatte molaya gönder, yoğun saatte geri çağır. İstersen otomatik yönetimi açık bırak.' },
-    { phase: 'service', sel: '#tezgahBtn', text: 'İstersen tezgâha geçip siparişleri kendin hazırlarsın: adımları doğru sırayla seç, hızlı ve hatasız olursa kalite artar.' },
+    { phase: 'service', sel: '#tezgahBtn', text: 'İstersen tezgâha geçip siparişleri kendin hazırlarsın: parlayan istasyona dokun, ateştekini pişince al. Hatasız ve hızlı olursan kombo yapar, kaliteyi artırırsın.' },
     { phase: 'service', sel: '.speed', text: 'Hızı buradan ayarla. Gün bitince bahşişi nasıl dağıtacağını seçip günlüğünü okuyacaksın. Kolay gelsin!' }
   ];
   UI.TUT = TUT;

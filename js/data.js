@@ -410,3 +410,23 @@ KE.ekSayi = function (str, kind) {
 };
 /* "de/da" bağlacı: önceki kelimeye uyar (Tavuk Dürüm de, Tavuk Porsiyon da) */
 KE.dA = function (word) { const vs = String(word).toLocaleLowerCase('tr').match(/[aeıioöuü]/g); const v = vs ? vs[vs.length - 1] : 'e'; return word + ('aıou'.includes(v) ? ' da' : ' de'); };
+
+/* Tezgâh istasyonları: her tarif adımı birinde yapılır. "ates" süreli istasyondur (pişir ya da ısıt, sonra al):
+   dönercide lavaş/ekmek ızgarada ısıtılır, kebapçıda şiş közde pişer. */
+KE.STATIONS = [
+  { id: 'hamur', name: 'Hamur', ic: 'bread', key: '1' },
+  { id: 'et', name: 'Et', ic: 'meat', key: '2' },
+  { id: 'ates', name: 'Ateş', ic: 'fire', key: '3' },
+  { id: 'sebze', name: 'Sebze', ic: 'leaf', key: '4' },
+  { id: 'sos', name: 'Sos', ic: 'drop', key: '5' },
+  { id: 'servis', name: 'Servis', ic: 'tray', key: '6' }
+];
+KE.STEP_STATION = {
+  'Lavaş': 'ates', 'Ekmek': 'ates', 'Pide': 'ates', 'Pilav': 'hamur', 'Lavaşa al': 'hamur', 'Hamuru aç': 'hamur', 'Bulgur hamuru': 'hamur', 'Kadayıf': 'hamur',
+  'Et': 'et', 'Tavuk': 'et', 'Kes': 'et', 'Dilimle': 'et', 'Şişe sar': 'et', 'Şişe diz': 'et', 'Kebap': 'et', 'İç harç': 'et', 'Peynir': 'et', 'Kapat': 'et',
+  'Közde çevir': 'ates', 'Közde pişir': 'ates', 'Şişi çevir': 'ates', 'Kızart': 'ates', 'Fırına ver': 'ates', 'Patlıcan közle': 'ates', 'Eti sotele': 'ates', 'Saç yağla': 'sos',
+  'Domates-marul': 'sebze', 'Soğan': 'sebze', 'Domates': 'sebze', 'Turşu': 'sebze', 'Közlenmiş biber': 'sebze', 'Salata': 'sebze', 'Maydanoz-soğan': 'sebze', 'Sumaklı soğan': 'sebze', 'Maydanoz-limon': 'sebze', 'Soğan-maydanoz': 'sebze',
+  'Sos': 'sos', 'Domates sosu': 'sos', 'Yoğurt': 'sos', 'Yoğurtla ez': 'sos', 'Tereyağı': 'sos', 'Kızgın tereyağı': 'sos', 'Şerbet': 'sos', 'Fıstık': 'sos',
+  'Sar': 'servis', 'Servis': 'servis', 'Lavaşa sar': 'servis'
+};
+KE.stepStation = (label) => KE.STEP_STATION[label] || 'servis';

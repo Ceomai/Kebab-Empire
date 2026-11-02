@@ -2,6 +2,7 @@
 (function () {
   const UI = KE.UI, H = UI.H, SCREENS = UI.SCREENS, A = UI.A, C = UI.C;
   const { esc, IC, MODE, B, prod, pn, stars, roleName, bar, moodCls, avatar, queueModal, npc, donut, track } = H;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   /* ---------- Dükkân ---------- */
   SCREENS.shop = () => KE.G.phase === 'morning' ? morningView() : serviceView();
@@ -185,7 +186,7 @@
     if (KE.midPending(KE.G)) { acc = 0; showMid(); return; }
     if (ticked) {
       const L = KE.G.live[KE.G.activeBranch];
-      if (L && L.player.active && L.player.tid == null && KE.act(KE.G, 'ptake')) renderTezgah();
+      if (L && L.player.active) { while (KE.act(KE.G, 'ptake')); renderTezgah(); }
       UI.sceneTick();
     }
     if (KE.allDone(KE.G)) {
@@ -254,19 +255,43 @@
     document.body.appendChild(box);
     setTimeout(() => box.remove(), 2400);
   };
+  /* Tezgâh: üstte sipariş rayı (2-3 fiş), altta 6 büyük istasyon. Sıradaki adım hangi istasyondaysa o parlar. */
   function renderTezgah() {
     const box = document.getElementById('tezgah');
+    const wrap = document.querySelector('.stagewrap');
     if (!box || !KE.G.live) return;
-    const L = KE.G.live[KE.G.activeBranch];
+    const G = KE.G, L = G.live[G.activeBranch];
     if (!L) return;
     const P = L.player;
+    if (wrap) wrap.classList.toggle('tzon', !!P.active);
     if (!P.active) { box.innerHTML = ''; return; }
-    const t = P.tid != null ? L.tickets.find((x) => x.id === P.tid) : null;
-    if (!t) { box.innerHTML = `<div class="tezgah idle">${IC('chef')}<b>Tezgâhtasın.</b><span class="muted">Mutfağa sipariş düşünce burada belirecek.</span></div>`; return; }
-    const p = prod(t.pid);
-    box.innerHTML = `<div class="tezgah"><div class="tz-dish">${KE.ART.dish(p.id)}</div><div class="tz-b"><div class="row between"><div><span class="kicker">${t.paket ? 'Paket sipariş' : 'Masa siparişi'}</span><h3>${p.name}${t.count > 1 ? ' ×' + t.count : ''}</h3></div><span class="chip ${P.errors ? 'rd' : 'gr'}">Hata ${P.errors}</span></div>
-      <ol class="tz-steps">${p.steps.map((s, i) => `<li class="${i < P.step ? 'done' : i === P.step ? 'now' : ''}">${i < P.step ? s : i + 1}</li>`).join('')}</ol>
-      <div class="tz-opts" id="stepbtns">${P.opts.map((o) => { const used = p.steps.indexOf(o) > -1 && p.steps.indexOf(o) < P.step; return `<button class="btn sm ${used ? 'ghost' : 'blue'}" data-a="step" data-l="${esc(o)}" ${used ? 'disabled' : ''}>${esc(o)}</button>`; }).join('')}</div></div></div>`;
+    const b = B(), cap = KE.playerCap(G, b), slots = P.slots || [];
+    const need = {};
+    const cards = slots.map((sl, i) => {
+      const t = L.tickets.find((x) => x.id === sl.tid);
+      if (!t) return '';
+      const p = prod(t.pid), c = t.cid != null ? L.custs[t.cid] : null;
+      const st = sl.fire != null ? 'ates' : KE.stepStation(p.steps[sl.step]);
+      const ft = KE.fireTimes(p);
+      let fire = '';
+      if (sl.fire != null) {
+        const left = sl.fire - L.minute;
+        const ph = left > 0 ? 'cook' : L.minute > sl.fire + ft.grace ? 'burn' : L.minute > sl.fire + ft.grace - 2 ? 'warn' : 'done';
+        const pct = left > 0 ? Math.round((1 - left / ft.cook) * 100) : 100;
+        fire = `<span class="tz-fire ${ph}" style="--p:${pct}">${IC('fire')}<b>${ph === 'cook' ? 'Pişiyor' : ph === 'burn' ? 'Yanıyor!' : 'Al!'}</b></span>`;
+        if (ph !== 'cook') need.ates = need.ates || (i === P.sel ? 2 : 1);
+      } else need[st] = Math.max(need[st] || 0, i === P.sel ? 2 : 1);
+      const pat = c ? clamp(1 - c.wait / (c.patience * 2.6), 0, 1) : 1;
+      return `<button class="tz-card ${i === P.sel ? 'sel' : ''} ${sl.errors ? 'err' : ''}" data-a="psel" data-i="${i}" aria-label="${esc(p.name)}">
+        <span class="tz-cd">${KE.ART.dish(p.id)}${t.count > 1 ? `<b>×${t.count}</b>` : ''}</span>
+        <span class="tz-cb"><b class="tz-cn">${esc(p.name)}${t.paket ? ' · paket' : ''}</b>
+          <span class="tz-rec">${p.steps.map((x, k) => { const sid = KE.stepStation(x); const S = KE.STATIONS.find((y) => y.id === sid); return `<i class="${k < sl.step ? 'done' : k === sl.step ? 'now' : ''} s-${sid}" title="${esc(x)}">${IC(S.ic)}</i>`; }).join('')}</span>
+          <span class="tz-now">${sl.step < p.steps.length ? esc(p.steps[sl.step]) : ''}</span></span>
+        ${fire}<span class="tz-pat"><i style="width:${Math.round(pat * 100)}%" class="${pat < 0.3 ? 'crit' : pat < 0.6 ? 'warn' : ''}"></i></span></button>`;
+    }).join('') + Array.from({ length: Math.max(0, cap - slots.length) }, () => `<div class="tz-card empty">${IC('clock')}<span>Sipariş bekleniyor</span></div>`).join('');
+    const stations = KE.STATIONS.map((S) => `<button class="tz-st s-${S.id} ${need[S.id] === 2 ? 'hot' : need[S.id] ? 'warm' : ''}" data-a="pst" data-s="${S.id}" aria-label="${S.name}">${IC(S.ic)}<b>${S.name}</b><kbd>${S.key}</kbd></button>`).join('');
+    box.innerHTML = `<div class="tz2"><div class="tz-top"><span class="kicker">${IC('chef')}Tezgâh</span><span class="tz-stats"><span class="chip ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span></div>
+      <div class="tz-rail">${cards}</div><div class="tz-sts" id="stepbtns">${stations}</div></div>`;
   }
 
   /* ---------- Gün ortası kararı ---------- */

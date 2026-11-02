@@ -416,6 +416,26 @@ KE.ekSayi = function (str, kind) {
 /* "de/da" bağlacı: önceki kelimeye uyar (Tavuk Dürüm de, Tavuk Porsiyon da) */
 KE.dA = function (word) { const vs = String(word).toLocaleLowerCase('tr').match(/[aeıioöuü]/g); const v = vs ? vs[vs.length - 1] : 'e'; return word + ('aıou'.includes(v) ? ' da' : ' de'); };
 
+/* Tezgâh istasyonları: her tarif adımı birinde yapılır. "ates" süreli istasyondur (pişir ya da ısıt, sonra al):
+   dönercide lavaş/ekmek ızgarada ısıtılır, kebapçıda şiş közde pişer. */
+KE.STATIONS = [
+  { id: 'hamur', name: 'Hamur', ic: 'bread', key: '1' },
+  { id: 'et', name: 'Et', ic: 'meat', key: '2' },
+  { id: 'ates', name: 'Ateş', ic: 'fire', key: '3' },
+  { id: 'sebze', name: 'Sebze', ic: 'leaf', key: '4' },
+  { id: 'sos', name: 'Sos', ic: 'drop', key: '5' },
+  { id: 'servis', name: 'Servis', ic: 'tray', key: '6' }
+];
+KE.STEP_STATION = {
+  'Lavaş': 'ates', 'Ekmek': 'ates', 'Pide': 'ates', 'Pilav': 'hamur', 'Lavaşa al': 'hamur', 'Hamuru aç': 'hamur', 'Bulgur hamuru': 'hamur', 'Kadayıf': 'hamur',
+  'Et': 'et', 'Tavuk': 'et', 'Kes': 'et', 'Dilimle': 'et', 'Şişe sar': 'et', 'Şişe diz': 'et', 'Kebap': 'et', 'İç harç': 'et', 'Peynir': 'et', 'Kapat': 'et',
+  'Közde çevir': 'ates', 'Közde pişir': 'ates', 'Şişi çevir': 'ates', 'Kızart': 'ates', 'Fırına ver': 'ates', 'Patlıcan közle': 'ates', 'Eti sotele': 'ates', 'Saç yağla': 'sos',
+  'Domates-marul': 'sebze', 'Soğan': 'sebze', 'Domates': 'sebze', 'Turşu': 'sebze', 'Közlenmiş biber': 'sebze', 'Salata': 'sebze', 'Maydanoz-soğan': 'sebze', 'Sumaklı soğan': 'sebze', 'Maydanoz-limon': 'sebze', 'Soğan-maydanoz': 'sebze',
+  'Sos': 'sos', 'Domates sosu': 'sos', 'Yoğurt': 'sos', 'Yoğurtla ez': 'sos', 'Tereyağı': 'sos', 'Kızgın tereyağı': 'sos', 'Şerbet': 'sos', 'Fıstık': 'sos',
+  'Sar': 'servis', 'Servis': 'servis', 'Lavaşa sar': 'servis'
+};
+KE.stepStation = (label) => KE.STEP_STATION[label] || 'servis';
+
 
 // ---- js/calendar.js ----
 /* Kebab Empire — takvim: dini ve resmî bayramlar, Ramazan, iftar saati, yıllık ekonomi ayarları.
@@ -1449,7 +1469,7 @@ KE.huyOf = function (s) {
       stats: { arrivals: 0, served: 0, lost: 0, lostPrice: 0, lostWait: 0, lostFull: 0, lostStock: 0, lostFood: 0, revenue: 0, card: 0, cash: 0, tips: 0,
         satSum: 0, satN: 0, matches: 0, byProduct: {}, hourly: new Array(14).fill(0), hourlyCust: new Array(14).fill(0), stockouts: {}, byType: {},
         repDelta: 0, best: null, playerServed: 0, gurmeHappy: 0, paket: 0, paketRev: 0, cold: 0 },
-      fx: [], player: { active: false, tid: null, step: 0, errors: 0, start: 0, opts: [] }, done: false,
+      fx: [], player: { active: false, tid: null, step: 0, errors: 0, start: 0, slots: [], sel: 0, combo: 0 }, done: false,
       special: KE.specialDay(G.day)
     };
   };
@@ -1606,7 +1626,9 @@ KE.huyOf = function (s) {
     const T = (type, ref, work) => ({ type, ref, remain: work, total: work });
     if (s.pos === 'ocak') {
       if (!cooking.includes(s)) return null;
-      const waiting = L.tickets.filter((t) => t.state === 'wait');
+      /* oyuncu tezgâhtaysa ve elinde boş yer varsa yeni fiş önce ona düşer */
+      const pfree = L.player.active && (L.player.slots || []).length < KE.playerCap(G, b);
+      const waiting = L.tickets.filter((t) => t.state === 'wait' && !(pfree && L.minute - t.created < 2));
       let best = null, score = -1e9;
       waiting.slice(0, 5).forEach((t, i) => {
         const p = prodOf(G, t.pid), star = s.spec[t.pid] || 0;
@@ -1848,6 +1870,7 @@ KE.huyOf = function (s) {
     const closing = L.minute >= KE.MINUTES - 20;
     if (!closing) { spawn(G, b, L); spawnPaket(G, b, L); }
     if (b.autoStaff) autoStaff(G, b, L);
+    if (L.player.active && b.id === G.activeBranch) while (KE.playerTake(G));
     const st = KE.branchStaff(G, b);
     const cooking = KE.cookingStaff(G, b);
     st.forEach((s) => {
@@ -1869,7 +1892,7 @@ KE.huyOf = function (s) {
         c.wait++;
         if (c.wait > c.patience * 1.9) {
           const t = L.tickets.find((x) => x.cid === c.id);
-          if (t && t.state === 'cook') return;
+          if (t && t.state === 'cook' && !(t.cook === 'player' && c.wait > c.patience * 2.6)) return;
           if (t) L.tickets.splice(L.tickets.indexOf(t), 1);
           st.forEach((s) => { if (s.task && s.task.type === 'deliver' && t && s.task.ref === t.id) s.task = null; });
           refund(L, c); lose(L, c, 'lostFood', 'Yemek gelmedi!'); L.stats.repDelta -= 0.08 * c.count; removeCust(L, c, false);
@@ -1879,6 +1902,7 @@ KE.huyOf = function (s) {
         if (c.eatLeft <= 0) leave(G, b, L, c);
       }
     });
+    playerTick(G, b, L);
     L.minute += 1;
     const busy = L.queue.length || Object.values(L.custs).some((c) => c.state !== 'eat') || L.tickets.some((t) => !t.paket || t.by);
     if (L.minute >= KE.MINUTES && !busy) {
@@ -1905,51 +1929,128 @@ KE.huyOf = function (s) {
   };
   KE.allDone = (G) => G.branches.every((b) => !G.live[b.id] || G.live[b.id].done);
 
-  /* ---------- Oyuncu tezgâhta ---------- */
+  /* ---------- Oyuncu tezgâhta ----------
+     Overcooked usulü: oyuncu aynı anda 2 (hazırlık ekipmanı 2+ ise 3) sipariş tutar. Her tarif adımı bir
+     istasyonda yapılır; istasyona dokunmak, o istasyonu sıradaki adım olarak bekleyen siparişi (önce seçili olanı)
+     ilerletir. Ateş istasyonu süreli: et ateşe konur, pişince alınır; geç kalınırsa yanar. Hatasız ve hızlı
+     siparişler kombo yapar. Bütün süreler oyun dakikasıyla ölçülür, böylece günlük yeniden oynatılabilir. */
+  const pslots = (P) => P.slots || (P.slots = []);
+  KE.playerCap = (G, b) => (b.equipment.prep >= 2 ? 3 : 2);
+  /* slot görünümü eski alanlara yansır (tid/step/errors): sahne, testler ve eski günlükler bunlara bakar */
+  function pmirror(P) {
+    const sl = pslots(P);
+    if (P.sel == null || P.sel >= sl.length) P.sel = 0;
+    const s = sl[P.sel];
+    P.tid = s ? s.tid : null; P.step = s ? s.step : 0; P.errors = s ? s.errors : 0; P.start = s ? s.start : 0;
+  }
   KE.playerToggle = function (G, on) {
     const L = G.live[G.activeBranch];
-    if (!on && L.player.tid != null) { const t = L.tickets.find((x) => x.id === L.player.tid); if (t) { t.state = 'wait'; t.cook = null; } }
-    Object.assign(L.player, { active: on, tid: null });
+    const P = L.player;
+    if (!on) pslots(P).forEach((sl) => { const t = L.tickets.find((x) => x.id === sl.tid); if (t && t.state === 'cook') { t.state = 'wait'; t.cook = null; } });
+    Object.assign(P, { active: on, slots: [], sel: 0, combo: on ? P.combo || 0 : 0 });
+    pmirror(P);
   };
   KE.playerTake = function (G) {
     const b = G.branches.find((x) => x.id === G.activeBranch);
     const L = G.live[b.id];
-    if (!L.player.active || L.player.tid != null) return null;
+    const P = L.player;
+    if (!P.active || pslots(P).length >= KE.playerCap(G, b)) return null;
     const t = L.tickets.find((x) => x.state === 'wait');
     if (!t) return null;
     const p = prodOf(G, t.pid);
     if (!KE.hasStock(b, p, t.count)) return null;
     Object.entries(p.ing).forEach(([k, q]) => { b.stock[k] -= q * t.count; });
     t.state = 'cook'; t.cook = 'player';
-    const decoys = MODE(G).products.filter((x) => x.id !== p.id).flatMap((x) => x.steps).filter((s) => !p.steps.includes(s));
-    const vpick = (a) => a[Math.floor(Math.random() * a.length)];
-    const opts = p.steps.concat([vpick(decoys), vpick(decoys)]).filter((v, i, a) => a.indexOf(v) === i).sort(() => Math.random() - 0.5);
-    Object.assign(L.player, { tid: t.id, step: 0, errors: 0, start: L.minute, opts });
+    P.slots.push({ tid: t.id, step: 0, errors: 0, start: L.minute, fire: null, burnt: 0 });
+    pmirror(P);
     return t;
   };
-  KE.playerStep = function (G, label) {
+  KE.playerSelect = function (G, i) {
+    const P = G.live[G.activeBranch].player;
+    if (Number.isInteger(i) && i >= 0 && i < pslots(P).length) P.sel = i;
+    pmirror(P);
+  };
+  /* Pişme süreleri (dakika): ürünün hazırlık süresinin yarısı, en az 2; pişince 5 dakika içinde alınmalı */
+  KE.fireTimes = (p) => ({ cook: Math.max(2, Math.round(p.prep * 0.5)), grace: 5 });
+  function pfinish(G, b, L, sl, p, t) {
+    const P = L.player;
+    const took = L.minute - sl.start;
+    const slow = took > p.prep * 2.6 ? 1 : took > p.prep * 1.7 ? 0.4 : 0;
+    const clean = !sl.errors && !sl.burnt && !slow;
+    const combo = clean ? Math.min(5, (P.combo || 0) + 1) : 0;
+    t.state = 'ready'; t.readyAt = L.minute; t.cookId = 'player'; t.cookName = G.owner;
+    t.q = clamp(5 - sl.errors * 0.9 - sl.burnt * 1.4 - slow + Math.min(0.6, 0.15 * combo) + KE.TIERS[b.tier].quality + (KE.equip(G, b, 'prep').quality || 0), 0, 6);
+    P.combo = combo; P.best = Math.max(P.best || 0, combo); P.done = (P.done || 0) + 1;
+    L.fx.push({ t: 'ready', sid: 'player', pid: t.pid });
+    if (combo >= 2) L.fx.push({ t: 'combo', sid: 'player', text: 'Kombo ×' + combo });
+    P.slots.splice(P.slots.indexOf(sl), 1);
+    if (P.sel >= P.slots.length) P.sel = 0;
+  }
+  /** İstasyona dokun: sonuç { ok, done?, fire?, wait?, burnt? } */
+  KE.playerStation = function (G, st) {
     const b = G.branches.find((x) => x.id === G.activeBranch);
     const L = G.live[b.id];
     const P = L.player;
-    const t = L.tickets.find((x) => x.id === P.tid);
-    if (!t) { P.tid = null; return { done: true }; }
-    const p = prodOf(G, t.pid);
-    if (p.steps[P.step] === label) {
-      P.step++;
-      if (P.step >= p.steps.length) {
-        const took = L.minute - P.start;
-        const slow = took > p.prep * 2 ? 1 : took > p.prep * 1.3 ? 0.4 : 0;
-        t.state = 'ready'; t.readyAt = L.minute; t.cookId = 'player'; t.cookName = G.owner;
-        t.q = clamp(5 - P.errors * 0.9 - slow + KE.TIERS[b.tier].quality + (KE.equip(G, b, 'prep').quality || 0), 0, 6);
-        L.fx.push({ t: 'ready', sid: 'player', pid: t.pid });
-        P.tid = null;
-        return { done: true, ok: true };
-      }
+    const sl = pslots(P);
+    if (!P.active || !sl.length || !KE.STATIONS.some((x) => x.id === st)) return { ok: false, none: true };
+    const order = sl.map((_, i) => (i + (P.sel || 0)) % sl.length);
+    let res = null;
+    /* önce ateşte pişmiş olanı al */
+    if (st === 'ates') for (const i of order) {
+      const s = sl[i];
+      if (s.fire == null) continue;
+      if (L.minute < s.fire) { res = res || { ok: true, wait: true }; continue; }
+      const t = L.tickets.find((x) => x.id === s.tid);
+      const p = t && prodOf(G, t.pid);
+      const burnt = L.minute > s.fire + KE.fireTimes(p || { prep: 4 }).grace;
+      if (burnt) s.burnt++;
+      s.fire = null; s.step++;
+      P.sel = i;
+      if (t && s.step >= p.steps.length) { pfinish(G, b, L, s, p, t); pmirror(P); return { ok: true, done: true, burnt }; }
+      pmirror(P);
+      return { ok: true, burnt };
+    }
+    for (const i of order) {
+      const s = sl[i];
+      if (s.fire != null) continue;
+      const t = L.tickets.find((x) => x.id === s.tid);
+      if (!t) continue;
+      const p = prodOf(G, t.pid);
+      if (KE.stepStation(p.steps[s.step]) !== st) continue;
+      P.sel = i;
+      if (st === 'ates') { s.fire = L.minute + KE.fireTimes(p).cook; pmirror(P); return { ok: true, fire: true }; }
+      s.step++;
+      if (s.step >= p.steps.length) { pfinish(G, b, L, s, p, t); pmirror(P); return { ok: true, done: true }; }
+      pmirror(P);
       return { ok: true };
     }
-    P.errors++;
+    if (res) return res;
+    const s = sl[P.sel || 0];
+    if (s) s.errors++;
+    P.combo = 0;
+    pmirror(P);
     return { ok: false };
   };
+  /* eski hamle: adım adı → istasyonu */
+  KE.playerStep = (G, label) => KE.playerStation(G, KE.stepStation(label));
+  /* her dakika: ateşte unutulan yanar, bekleyen müşteri giderse sipariş düşer */
+  function playerTick(G, b, L) {
+    const P = L.player;
+    if (!P.active || !P.slots || !P.slots.length) return;
+    P.slots.slice().forEach((s) => {
+      const t = L.tickets.find((x) => x.id === s.tid);
+      if (!t || t.state !== 'cook') { P.slots.splice(P.slots.indexOf(s), 1); return; }
+      const p = prodOf(G, t.pid);
+      if (s.fire != null && L.minute > s.fire + KE.fireTimes(p).grace + 4) {
+        /* kömür oldu: malzeme gitti, sipariş baştan ustaya döner */
+        P.slots.splice(P.slots.indexOf(s), 1);
+        t.state = 'wait'; t.cook = null; P.combo = 0; P.burned = (P.burned || 0) + 1;
+        L.fx.push({ t: 'bad', sid: 'player', text: 'Yandı!' });
+      }
+    });
+    pmirror(P);
+  }
+  KE.playerTick = playerTick;
 
   /* ---------- Gün kapanışı ---------- */
   KE.fastForward = function (G) {
@@ -2192,6 +2293,8 @@ KE.huyOf = function (s) {
     ptoggle: (G, on) => KE.playerToggle(G, !!on),
     ptake: (G) => KE.playerTake(G),
     pstep: (G, label) => KE.playerStep(G, label),
+    pst: (G, st) => KE.playerStation(G, st),
+    psel: (G, i) => KE.playerSelect(G, i),
     mid: (G, i) => KE.resolveMid(G, i),
     courier: (G, bid) => KE.courier(G, G.branches.find((x) => x.id === bid))
   };

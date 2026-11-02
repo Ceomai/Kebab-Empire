@@ -80,7 +80,8 @@ describe('motor fuzz: rastgele eylemlerle 60 gün', () => {
           else if (x < 0.012) KE.act(G, 'courier', G.branches[Math.floor(r() * G.branches.length)].id);
           else if (x < 0.015) KE.act(G, 'ptoggle', r() < 0.5);
           else if (x < 0.02) KE.act(G, 'ptake');
-          else if (x < 0.03) { const L = G.live[G.activeBranch]; const o = L && L.player.opts; if (o && o.length) KE.act(G, 'pstep', o[Math.floor(r() * o.length)]); }
+          else if (x < 0.06) KE.act(G, 'pst', KE.STATIONS[Math.floor(r() * KE.STATIONS.length)].id);
+          else if (x < 0.065) KE.act(G, 'psel', Math.floor(r() * 3));
           KE.tickAll(G);
         }
         KE.finishService(G);

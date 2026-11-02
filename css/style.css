@@ -571,16 +571,6 @@ table.fin tr.click:hover td { background: #fff6e6; }
 
 /* Tezgâh mini oyunu */
 #tezgah:empty { display: none; }
-.tezgah { position: absolute; left: 1.5%; right: 1.5%; bottom: 2%; z-index: 15; display: flex; gap: 14px; align-items: center; background: var(--kagit); border-radius: 16px; padding: 12px 14px; border: 3px solid var(--altin); box-shadow: 0 12px 30px -8px rgba(0, 0, 0, .5); }
-.tezgah.idle { gap: 10px; font-size: 15px; }
-.tz-dish { width: 84px; flex: none; }
-.tz-b { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.tz-b h3 { font-size: 21px; }
-.tz-steps { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
-.tz-steps li { min-width: 30px; text-align: center; padding: 3px 10px; border-radius: 99px; background: var(--kagit-2); font-weight: 800; font-size: 13px; color: var(--murekkep-3); }
-.tz-steps li.done { background: #d9f4e7; color: var(--nane-deep); }
-.tz-steps li.now { background: var(--altin); color: var(--murekkep); }
-.tz-opts { display: flex; flex-wrap: wrap; gap: 6px; }
 .shake { animation: shake .3s; }
 @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 
@@ -1519,3 +1509,105 @@ html { overflow-x: clip; }
 }
 @media (max-width: 760px) and (orientation: portrait), (max-width: 760px) and (min-height: 521px) { .sheet-handle { height: 28px; } }
 .btn.xs { min-height: 28px; }
+
+/* ---------- Dikey telefon servis sahnesi ----------
+   .st-virt sahneden 1,6 kat geniş bir kap: sahnedeki cqw ölçüleri ona göre hesaplanır, böylece figürler ve yazılar
+   dar ekranda 1,6 kat büyük çizilir. Mutfak üstte tam genişlikte, salon altta, kuyruk sağ kenarda. */
+.st-virt.on { width: 160%; container-type: inline-size; }
+.st-virt.on > .stage { width: 62.5%; aspect-ratio: 3 / 4; container-type: normal; min-width: 0 !important; }
+.portrait .st-wall { inset: 0 0 69.5% 0; }
+.portrait .st-sign { left: 2%; top: 2.5%; max-width: 43%; }
+.portrait .st-menu { left: 47%; top: 1.5%; width: 51%; }
+.portrait .st-decor, .portrait .st-window, .portrait .st-clock, .portrait .st-shelf { display: none; }
+.portrait .st-fridge { left: 85%; top: 12.5%; width: 12.5%; height: 13%; }
+.portrait .st-fridge.f2 { left: 83%; width: 14.5%; }
+.portrait .st-lamp { width: 5.4%; } .portrait .st-lamp.l1 { left: 28%; } .portrait .st-lamp.l2 { left: 72%; }
+.portrait .st-back { width: 80%; top: 26.6%; height: 4%; }
+.portrait .eq-doner { top: 9.5%; width: 13.4%; }
+.portrait .eq-mangal { left: 3%; width: 66%; top: 5%; }
+.portrait .st-floor { top: 37.5%; }
+.portrait .st-door { left: 86.5%; top: 24.5%; width: 11.2%; }
+.portrait .st-plant { left: 1%; top: 38%; width: 5.8%; }
+.portrait .st-counter { width: 80%; top: 30.5%; height: 7%; }
+.portrait .st-register { left: 63%; top: 26.4%; width: 8.6%; }
+.portrait .st-salad { left: 55.5%; top: 29%; }
+.portrait .ent.cook { width: 13.4%; }
+.portrait .ent.staff { width: 11.8%; }
+.portrait .ent.cust { width: 10.9%; }
+.portrait .ent.seated { width: 9%; }
+.portrait .ent.table { width: 14.7%; }
+.portrait .ent.dish { width: 6.4%; }
+.portrait .ent .nm { font-size: 1.5cqw; }
+.portrait .tag-dirty, .portrait .tired, .portrait .plate.cold::after, .portrait .bagic { font-size: 1.4cqw; }
+.portrait .fx { font-size: 2.3cqw; }
+.portrait .st-hud { left: 1.5%; bottom: 1.2%; gap: .8cqw; }
+.portrait .hchip { font-size: 1.6cqw; padding: .35cqw 1cqw .35cqw .5cqw; }
+.portrait .hchip .ic { width: 2.2cqw; height: 2.2cqw; }
+.portrait .hchip b { font-size: 2cqw; }
+.portrait .hchip em { display: none; }
+.portrait .st-banner { font-size: 3.4cqw; top: 46%; }
+.portrait .st-mahya { top: 20%; left: 50%; }
+
+/* ---------- Tezgâh v2: sipariş rayı + istasyonlar ---------- */
+#tezgah { position: relative; }
+.tz2 { display: flex; flex-direction: column; gap: 10px; padding: 12px; background: linear-gradient(180deg, #3a2a20, #2a1d16); color: #fff; border-top: 4px solid var(--altin); }
+.tz-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.tz-top .kicker { color: var(--altin); display: inline-flex; gap: 6px; align-items: center; }
+.tz-stats { display: flex; gap: 6px; flex-wrap: wrap; }
+.tz-stats .chip { background: rgba(255, 255, 255, .12); color: #fff; }
+.tz-stats .chip.gold { background: var(--altin); color: var(--murekkep); animation: pop .3s; }
+.tz-stats .chip.rd { background: var(--crit); color: #fff; }
+.tz-rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.tz-card { position: relative; display: flex; gap: 8px; align-items: flex-start; text-align: left; background: #fffaf2; color: var(--murekkep); border: 3px solid transparent; border-radius: 14px; padding: 8px 8px 12px; min-height: 84px; cursor: pointer; font: inherit; overflow: hidden; touch-action: manipulation; }
+.tz-card.sel { border-color: var(--altin); box-shadow: 0 0 0 3px rgba(255, 201, 60, .35); }
+.tz-card.err { background: #fff0f1; }
+.tz-card.empty { background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .55); border: 2px dashed rgba(255, 255, 255, .25); align-items: center; justify-content: center; gap: 6px; cursor: default; font-size: 13px; }
+.tz-card.empty .ic { width: 18px; height: 18px; }
+.tz-cd { position: relative; width: 44px; flex: none; }
+.tz-cd .dish { width: 44px; height: 44px; display: block; }
+.tz-cd b { position: absolute; right: -4px; bottom: -2px; background: var(--sumak); color: #fff; border-radius: 99px; font-size: 11px; padding: 0 5px; }
+.tz-cb { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1; }
+.tz-cn { font-family: var(--f-display); font-size: 15px; line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tz-rec { display: flex; gap: 3px; flex-wrap: wrap; }
+.tz-rec i { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; background: var(--kagit-2); color: var(--murekkep-3); }
+.tz-rec i .ic { width: 14px; height: 14px; }
+.tz-rec i.done { background: #d9f4e7; color: var(--nane-deep); }
+.tz-rec i.now { background: var(--altin); color: var(--murekkep); transform: scale(1.12); box-shadow: 0 2px 0 #b8860b; }
+.tz-now { font-size: 12.5px; font-weight: 800; color: var(--murekkep-2); }
+.tz-pat { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: rgba(0, 0, 0, .08); }
+.tz-pat i { display: block; height: 100%; background: var(--nane); transition: width .4s linear; }
+.tz-pat i.warn { background: #f0a500; } .tz-pat i.crit { background: var(--crit); }
+.tz-fire { position: absolute; right: 6px; top: 6px; display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; border-radius: 99px; padding: 2px 7px 2px 4px; color: #fff; background: conic-gradient(#f28c28 calc(var(--p) * 1%), #8a5a33 0); }
+.tz-fire .ic { width: 14px; height: 14px; }
+.tz-fire.done { background: var(--nane-deep); animation: tickp .6s infinite; }
+.tz-fire.warn { background: #f0a500; animation: tickp .35s infinite; }
+.tz-fire.burn { background: var(--crit); animation: tickp .25s infinite; }
+.tz-sts { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.tz-st { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 64px; border-radius: 14px; border: 0; cursor: pointer; font: inherit; color: #fff; background: #5a4434; box-shadow: 0 4px 0 #2a1d16, inset 0 1px 0 rgba(255, 255, 255, .15); touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform .06s; user-select: none; }
+.tz-st:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a1d16; }
+.tz-st .ic { width: 26px; height: 26px; }
+.tz-st b { font-size: 13px; }
+.tz-st kbd { position: absolute; right: 5px; top: 3px; font-size: 10px; opacity: .55; font-family: inherit; }
+.tz-st.s-hamur { background: #9c6b3c; } .tz-st.s-et { background: #a3392f; } .tz-st.s-ates { background: #d0531c; } .tz-st.s-sebze { background: #3f8a4a; } .tz-st.s-sos { background: #c08a17; } .tz-st.s-servis { background: #3b6ea5; }
+.tz-st.warm { outline: 3px solid rgba(255, 255, 255, .55); outline-offset: -3px; }
+.tz-st.hot { outline: 3px solid var(--altin); outline-offset: -3px; animation: tzglow 1s ease-in-out infinite alternate; }
+@keyframes tzglow { from { box-shadow: 0 4px 0 #2a1d16, 0 0 0 rgba(255, 201, 60, 0); } to { box-shadow: 0 4px 0 #2a1d16, 0 0 18px rgba(255, 201, 60, .9); } }
+.tz-rec i.s-ates.now { background: #f28c28; color: #fff; }
+.cook-bubble.onfire { box-shadow: 0 0 0 .3cqw #f28c28, 0 0 1.6cqw #f28c28; }
+.fx.combo { color: #b8860b; font-size: 2cqw; }
+.portrait .fx.combo { font-size: 3cqw; }
+@media (max-width: 520px) {
+  .tz2 { padding: 10px; gap: 8px; }
+  .tz-rail { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 6px; }
+  .tz-sts { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+  .tz-st { min-height: 58px; flex-direction: row; gap: 6px; }
+  .tz-st kbd { display: none; }
+  .tz-card { min-height: 78px; padding: 6px 6px 10px; gap: 6px; }
+  .tz-cd, .tz-cd .dish { width: 34px; } .tz-cd .dish { height: 34px; }
+  .tz-cn { font-size: 13.5px; }
+  .tz-rec i { width: 20px; height: 20px; }
+}
+/* dikey telefonda tezgâhtayken sahnenin üst kısmı (mutfak, kasa, ilk masalar) görünür, alt kısım istasyonlara yer açar */
+.stagewrap.tzon .st-virt.on { max-height: min(88vw, 46dvh); overflow: hidden; }
+/* geniş ekranda tezgâhtayken sahnenin mutfak kısmı + istasyonlar birlikte görünsün */
+.stagewrap.tzon .st-virt:not(.on) { max-height: max(calc(100dvh - var(--tbh, 90px) - 280px), 300px); overflow: hidden; }
