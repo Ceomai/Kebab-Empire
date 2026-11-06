@@ -1966,7 +1966,7 @@ KE.huyOf = function (s) {
     if (on === !!P.active) return;
     if (!on) pslots(P).slice().forEach((sl) => prelease(G, b, L, sl));
     Object.assign(P, { active: on, slots: [], sel: 0, combo: on ? P.combo || 0 : 0, tap: L.minute, afk: false });
-    if (on && !P.quest && (P.questsDone || 0) < KE.QUESTS_PER_DAY) newQuest(G, b, P);
+    if (on && !P.quest && (P.questsDone || 0) < KE.QUESTS_PER_DAY && b.id === KE.mainBranchId(G)) newQuest(G, b, P);
     pmirror(P);
   };
   KE.playerTake = function (G) {
@@ -2011,9 +2011,16 @@ KE.huyOf = function (s) {
   }
   /* Tezgâh görevi: art arda N siparişi hatasız bitir, ödül bahşiş kavanozuna */
   KE.QUESTS_PER_DAY = 3;
+  /* Görevler yalnızca ana şubede: oyuncu başına günde tek sınır. Ana şube sabah değiştirilebilir. */
+  KE.mainBranchId = (G) => (G.branches.some((x) => x.id === G.mainBranch) ? G.mainBranch : G.branches[0].id);
+  KE.setMainBranch = function (G, bid) {
+    if (G.phase !== 'morning' || !G.branches.some((x) => x.id === bid)) return false;
+    G.mainBranch = bid;
+    return true;
+  };
   function newQuest(G, b, P) {
-    /* günde en fazla 3 görev: tezgâh ödülü sınırsız büyümesin */
-    if ((P.questsDone || 0) >= KE.QUESTS_PER_DAY) { P.quest = null; return; }
+    /* günde en fazla 3 görev ve yalnızca ana şubede: tezgâh ödülü sınırsız büyümesin */
+    if ((P.questsDone || 0) >= KE.QUESTS_PER_DAY || b.id !== KE.mainBranchId(G)) { P.quest = null; return; }
     const n = (P.questN = (P.questN || 0) + 1);
     const ps = MODE(G).products.filter((x) => b.menu[x.id]);
     const avg = ps.reduce((a, x) => a + (b.prices[x.id] || x.base), 0) / Math.max(1, ps.length);

@@ -109,6 +109,7 @@
     H.renderTezgah(); UI.sceneTick();
   }
   A.pst = (d) => station(KE.act(KE.G, 'pst', d.s), d.s);
+  A.setMain = (d) => { if (KE.setMainBranch(KE.G, d.id)) { const b = KE.G.branches.find((x) => x.id === d.id); UI.toast(`${b.name} artık ana şube. Tezgâh görevleri burada çıkar.`, 'good'); UI.render(); } };
   A.psel = (d) => { KE.act(KE.G, 'psel', +d.i); KE.SND.play('click'); H.renderTezgah(); };
   A.step = (d) => station(KE.act(KE.G, 'pstep', d.l));
   A.midChoice = (d) => {
@@ -292,7 +293,7 @@
     UI.undoChip();
   });
   /* ---------- Geri al: sabah, kepenk açılmadan yapılan son işlem ---------- */
-  const UNDOABLE = new Set(['setPos', 'boardDrop', 'topUpAll', 'price', 'pricesToMarket', 'tier', 'stockLevel', 'topUpToday', 'buy', 'hireMaster', 'hireWorker', 'raise', 'promote', 'pickMentor', 'doFire', 'costume', 'upgrade', 'buyDecor', 'hygiene', 'campaign', 'openBranch', 'central', 'buyAnimal', 'upgradePen', 'toggleManaged', 'donate', 'buyRes', 'toggleRes', 'advBol', 'advPrices', 'buyFarm', 'loan', 'payoff', 'tipRule']);
+  const UNDOABLE = new Set(['setPos', 'boardDrop', 'topUpAll', 'price', 'pricesToMarket', 'tier', 'stockLevel', 'topUpToday', 'buy', 'hireMaster', 'hireWorker', 'raise', 'promote', 'pickMentor', 'doFire', 'costume', 'upgrade', 'buyDecor', 'hygiene', 'campaign', 'openBranch', 'central', 'buyAnimal', 'upgradePen', 'toggleManaged', 'donate', 'buyRes', 'toggleRes', 'advBol', 'advPrices', 'buyFarm', 'loan', 'payoff', 'tipRule', 'setMain']);
   function snap(el) {
     const who = el.dataset.a === 'boardDrop' && KE.G.staff.find((x) => x.id === UI.crewPick);
     const label = who ? who.name + ' → ' + KE.POS_NAMES[el.dataset.p] : String(el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 36);

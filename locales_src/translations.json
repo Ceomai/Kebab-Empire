@@ -8906,5 +8906,33 @@
  "Tezgâhta özel siparişler:": {
   "en": "Special orders at the counter:",
   "de": "Sonderbestellungen an der Theke:"
+ },
+ "Menü siparişinin sonunda fritözde patates kızartırsın, menü bahşişi gelir. Acele fişini süresi dolmadan bitirirsen ek bahşiş alırsın. Gurme müşterinin siparişini hatasız bitirirsen itibarın artar. Üstteki görev, art arda hatasız siparişler ister; tamamlayınca bahşiş kavanozuna ödül düşer, bir hata ilerlemeyi sıfırlar. Görevler yalnızca ana şubede çıkar, günde en fazla 3 tane; ana şubeyi sabahları Merkez Ofis'ten değiştirebilirsin.": {
+  "en": "A meal order ends with fries from the fryer and pays a meal tip. Finish a rush ticket before its timer runs out for an extra tip. Finish a gourmet's order without mistakes to gain reputation. The task at the top asks for flawless orders in a row; complete it and the reward drops into the tip jar, while one mistake resets the progress. Tasks only appear at your main branch, up to 3 a day; you can change the main branch in the morning at Head Office.",
+  "de": "Ein Menü endet mit Pommes aus der Fritteuse und bringt ein Menü-Trinkgeld. Erledige einen Eil-Bon vor Ablauf der Zeit für extra Trinkgeld. Bereite die Bestellung eines Gourmets fehlerfrei zu, um Ansehen zu gewinnen. Die Aufgabe oben verlangt fehlerfreie Bestellungen in Folge; geschafft landet die Belohnung im Trinkgeldglas, ein Fehler setzt den Fortschritt zurück. Aufgaben gibt es nur in deiner Hauptfiliale, bis zu 3 pro Tag; die Hauptfiliale kannst du morgens in der Zentrale ändern."
+ },
+ "Ana şube": {
+  "en": "Main branch",
+  "de": "Hauptfiliale"
+ },
+ "Ana şube yap": {
+  "en": "Make main branch",
+  "de": "Zur Hauptfiliale machen"
+ },
+ "Görevler ana şubede": {
+  "en": "Tasks at main branch",
+  "de": "Aufgaben in der Hauptfiliale"
+ },
+ "Tezgâh görevleri yalnızca ana şubede çıkar": {
+  "en": "Counter tasks only appear at the main branch",
+  "de": "Theken-Aufgaben gibt es nur in der Hauptfiliale"
+ },
+ "{0} artık ana şube. Tezgâh görevleri burada çıkar.": {
+  "en": "{0} is now the main branch. Counter tasks appear here.",
+  "de": "{0} ist jetzt die Hauptfiliale. Theken-Aufgaben erscheinen hier."
+ },
+ "Menü siparişinin sonunda fritözde patates kızartırsın, menü bahşişi gelir. Acele fişini süresi dolmadan bitirirsen ek bahşiş alırsın. Gurme müşterinin siparişini hatasız bitirirsen itibarın artar. Üstteki görev, art arda hatasız siparişler ister; tamamlayınca bahşiş kavanozuna ödül düşer, bir hata ilerlemeyi sıfırlar. Görevler yalnızca ana şubede çıkar, günde en fazla 3 tane; ana şubeyi sabahları Merkez Ofis’ten değiştirebilirsin.": {
+  "en": "A meal order ends with fries from the fryer and pays a meal tip. Finish a rush ticket before its timer runs out for an extra tip. Finish a gourmet's order without mistakes to gain reputation. The task at the top asks for flawless orders in a row; complete it and the reward drops into the tip jar, while one mistake resets the progress. Tasks only appear at your main branch, up to 3 a day; you can change the main branch in the morning at Head Office.",
+  "de": "Ein Menü endet mit Pommes aus der Fritteuse und bringt ein Menü-Trinkgeld. Erledige einen Eil-Bon vor Ablauf der Zeit für extra Trinkgeld. Bereite die Bestellung eines Gourmets fehlerfrei zu, um Ansehen zu gewinnen. Die Aufgabe oben verlangt fehlerfreie Bestellungen in Folge; geschafft landet die Belohnung im Trinkgeldglas, ein Fehler setzt den Fortschritt zurück. Aufgaben gibt es nur in deiner Hauptfiliale, bis zu 3 pro Tag; die Hauptfiliale kannst du morgens in der Zentrale ändern."
  }
 }

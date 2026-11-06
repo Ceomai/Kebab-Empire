@@ -1722,3 +1722,6 @@ html { overflow-x: clip; }
 /* tezgâh açıkken bildirimler dokunuşu engellemez */
 body:has(.stagewrap.tzon) .toast { pointer-events: none; }
 body:has(.stagewrap.tzon) #toasts { pointer-events: none; }
+.mainbr { display: inline-flex; align-items: center; gap: 3px; color: var(--altin-deep, #b8860b); }
+.mainbr .ic { width: 13px; height: 13px; }
+.tz-quest.off { color: rgba(255, 255, 255, .55); }

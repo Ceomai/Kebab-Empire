@@ -271,3 +271,25 @@ describe('tezgâh v3: menü, acele, gurme, görev', () => {
   });
 });
 
+
+describe('görevler ana şubede', () => {
+  it('görev yalnızca ana şubede çıkar; ana şube sabah değiştirilebilir, serviste değiştirilemez', () => {
+    const { KE } = loadGame();
+    const G = playDays(KE, KE.newGame({ mode: 'doner', district: 'kadiceşme', master: KE.MASTER_TEMPLATES.doner[0], owner: 'T', shopName: 'T', seed: 41 }), 2);
+    if (G.pendingEvent) KE.resolveEvent(G, 0);
+    G.cash = 9e7; G.era = 4;
+    KE.openBranch(G, 'besiktepe');
+    const [b1, b2] = G.branches;
+    expect(KE.mainBranchId(G)).toBe(b1.id);
+    expect(KE.setMainBranch(G, b2.id)).toBe(true);
+    expect(KE.mainBranchId(G)).toBe(b2.id);
+    KE.startService(G);
+    expect(KE.setMainBranch(G, b1.id)).toBe(false);
+    G.activeBranch = b1.id;
+    KE.act(G, 'ptoggle', true);
+    expect(G.live[b1.id].player.quest).toBeFalsy();
+    KE.act(G, 'active', b2.id);
+    KE.act(G, 'ptoggle', true);
+    expect(G.live[b2.id].player.quest).toBeTruthy();
+  });
+});
