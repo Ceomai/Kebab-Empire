@@ -50,7 +50,9 @@ KE.CONTACT = import.meta.env.VITE_CONTACT_EMAIL || '';
 KE.CLOUD.init().finally(() => { KE.CONFIG.load(); if (KE.UI.checkCloud) KE.UI.checkCloud(); });
 if (KE.I18N.preferred() !== 'tr') KE.I18N.set(KE.I18N.preferred());
 
-registerSW({
+/* servis çalışanı yalnızca web sürümünde: uygulamanın dosyaları zaten cihazda, güncellemeyi mağaza yapar */
+const native = (() => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } })();
+if (!native) registerSW({
   immediate: true,
   onNeedRefresh() { if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Yeni sürüm hazır. Sayfayı yenileyince yüklenecek.'); },
   onOfflineReady() { if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Oyun artık internetsiz de açılır.'); }

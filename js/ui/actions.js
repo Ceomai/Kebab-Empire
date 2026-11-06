@@ -35,9 +35,13 @@
   A.guideLevel = () => UI.modal(`<div class="mhead"><h2>Yönlendirme düzeyi</h2><p class="muted">"Bugün ne yapmalıyım?" kartı ve öneriler ne kadar konuşsun?</p></div>
     <div class="choices">${[['cok', 'Çok', 'Bütün öneriler ve ipuçları (yeni başlayanlar için).'], ['az', 'Az', 'Yalnızca acil uyarılar: ustasız şube, boş kasa, eksik stok, eksi kasa.'], ['kapali', 'Sessiz', 'Danışman kartı gizlenir. Sabah kontrol listesi kalır.']].map(([k, l, d]) => `<button class="choice ${UI.guideLevel() === k ? 'sel' : ''}" data-a="setGuide" data-v="${k}"><b>${l}</b><small>${d}</small></button>`).join('')}</div>`);
   A.setGuide = (d) => { try { localStorage.setItem('kebab-empire-guide', d.v); } catch (e) { /* yok */ } UI.closeModal(); UI.render(); UI.toast(({ cok: 'Yönlendirme: Çok', az: 'Yönlendirme: Az', kapali: 'Yönlendirme: Sessiz' })[d.v]); };
-  A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
+  A.saveNow = () => {
+    UI.closeModal();
+    if (KE.G && KE.G.phase === 'service') { UI.toast('Servis sürerken kayıt alınmaz; gün sonunda kendiliğinden kaydedilir. Bugünün sabahı kayıtlı.', 'good'); return; }
+    UI.save(); UI.toast('Kaydedildi.', 'good');
+  };
   /* Uygulama (Android/iOS) içinde tarayıcı indirmesi çalışmaz: yedek kopyalanabilir kod olarak verilir */
-  const isNative = () => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } };
+  const isNative = () => UI.isNative();
   const loaded = (g) => { KE.G = g; KE.SAVE.allowRewind = true; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`${g.shopName} yüklendi · ${KE.dateStr(g.day)}`, 'good'); };
   A.exportSave = () => {
     if (!KE.G) return;
@@ -59,7 +63,7 @@
     if (!isNative()) { KE.SAVE.importFile().then(loaded).catch((e) => UI.toast(e.message, 'bad')); return; }
     UI.modal(`<div class="mhead"><h2>Yedekten yükle</h2><p>Daha önce kopyaladığın yedek kodunu buraya yapıştır ya da bir yedek dosyası seç.</p></div>
       <textarea id="loadcode" class="savecode" rows="6" placeholder="Yedek kodu"></textarea>
-      <div class="acts"><button class="btn ghost" data-a="importFileNative">Dosya seç</button><button class="btn green" data-a="loadCode">Yükle</button></div>`);
+      <div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn ghost" data-a="importFileNative">Dosya seç</button><button class="btn green" data-a="loadCode">Yükle</button></div>`);
   };
   A.importFileNative = () => { KE.SAVE.importFile().then(loaded).catch((e) => UI.toast(e.message, 'bad')); };
   A.loadCode = () => {
@@ -361,7 +365,7 @@
   document.addEventListener('pointerover', (e) => { if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('#crew')) UI.crewHover = Date.now(); });
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && /** @type {any} */ (e.target).matches && /** @type {any} */ (e.target).matches('g.place[data-a]')) { e.preventDefault(); const fn = A[/** @type {any} */ (e.target).dataset.a]; if (fn) fn(Object.assign({}, /** @type {any} */ (e.target).dataset)); }
-    if (e.key === 'Escape' && document.querySelector('.modal-bg .acts [data-a="closeModal"]')) UI.closeModal();
+    if (e.key === 'Escape' && document.querySelector('.modal-bg [data-a="closeModal"]')) UI.closeModal();
     /* tezgâh klavyesi: 1-6 istasyon, Q sıradaki fiş */
     const G = KE.G, L = G && G.phase === 'service' && G.live && G.live[G.activeBranch];
     if (!L || !L.player.active || document.querySelector('.modal-bg') || /** @type {any} */ (e.target).matches('input, textarea, select')) return;

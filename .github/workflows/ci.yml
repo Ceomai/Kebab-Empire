@@ -112,10 +112,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npx cap sync ios
+      # kaynak eşlemeleri (.map) uygulama paketine girmesin
+      - run: find dist -name '*.map' -delete && npx cap sync ios
       # İmzasız simülatör derlemesi: iOS projesinin derlendiğini doğrular (mağaza yüklemesi Apple hesabıyla Xcode'dan)
       - name: iOS derle (simülatör, imzasız)
-        run: xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build | tail -n 40
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build | tail -n 40
 
   android:
     if: github.event_name != 'pull_request'
@@ -141,7 +144,7 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           VITE_TURNSTILE_SITEKEY: ${{ vars.VITE_TURNSTILE_SITEKEY }}
           VITE_CONTACT_EMAIL: ${{ vars.VITE_CONTACT_EMAIL }}
-      - run: npx cap sync android
+      - run: find dist -name '*.map' -delete && npx cap sync android
       - name: APK derle
         run: |
           sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.0.${{ github.run_number }}\"/" android/app/build.gradle
@@ -155,7 +158,11 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [ -z "$KS_B64" ]; then echo "Anahtar deposu sırrı yok: AAB atlandı (Play'e yüklemek için README'deki adımlar)"; exit 0; fi
+          if [ -z "$KS_B64" ]; then
+            echo "Anahtar deposu sırrı yok: imzasız AAB derlenerek sürüm yolu sınanıyor (imzalı paket için docs/MAGAZA.md)"
+            cd android && ./gradlew bundleRelease --no-daemon && ls -la app/build/outputs/bundle/release/
+            exit 0
+          fi
           echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
           export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/upload.jks"
           cd android && ./gradlew bundleRelease --no-daemon

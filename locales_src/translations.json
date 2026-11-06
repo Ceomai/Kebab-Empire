@@ -8990,5 +8990,9 @@
  "Oyun duraklatıldı. Devam etmek için hızı seç.": {
   "en": "Game paused. Pick a speed to continue.",
   "de": "Spiel pausiert. Wähle eine Geschwindigkeit, um weiterzumachen."
+ },
+ "Servis sürerken kayıt alınmaz; gün sonunda kendiliğinden kaydedilir. Bugünün sabahı kayıtlı.": {
+  "en": "Saving is off while the shop is open; the game saves itself at the end of the day. This morning is saved.",
+  "de": "Während der Öffnungszeit wird nicht gespeichert; das Spiel speichert am Tagesende selbst. Der heutige Morgen ist gespeichert."
  }
 }

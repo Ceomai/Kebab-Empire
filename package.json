@@ -18,7 +18,8 @@
     "audit:personas": "node scripts/audit/personas.cjs 120 reports/screens",
     "audit:visual": "node scripts/audit/visual.cjs reports/screens",
     "audit:runtime": "node scripts/audit/runtime.cjs",
-    "sim:multi": "node scripts/sim-multi.cjs"
+    "sim:multi": "node scripts/sim-multi.cjs",
+    "cap:sync": "npm run build && node -e \"require('fs').readdirSync('dist/assets').filter(f=>f.endsWith('.map')).forEach(f=>require('fs').unlinkSync('dist/assets/'+f))\" && npx cap sync"
   },
   "devDependencies": {
     "@capacitor/android": "^8.6.0",

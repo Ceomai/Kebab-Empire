@@ -13,6 +13,7 @@ Son güncelleme: 6 Kasım 2026. Bu dosya, mağaza yüklemesi için depoda hazır
 | Gizlilik politikası | https://ceomai.github.io/Kebab-Empire/privacy.html (TR/EN/DE). Oyun içinden de bağlantı var. |
 | Hesap/veri silme | Oyun içinde Menü → Hesap ve gizlilik → bulut verilerini sil (Apple'ın hesap silme kuralı ve Play'in veri silme sorusu için). |
 | Yedekleme | Uygulama içinde tarayıcı indirmesi çalışmadığı için yedek, kopyalanabilir kod olarak verilir; geri yüklemede yapıştırılır. |
+| iOS en düşük sürüm | iOS 16 (oyunun kullandığı CSS özellikleri için) |
 | Ekran görüntüleri | `store/tr/` (ve `node scripts/store-assets.cjs en` ile `store/en/`): Play telefon 1080×1920, App Store iPhone 6,9" 1320×2868, iPad 13" 2064×2752, Play öne çıkan görsel 1024×500. |
 
 ## Senin yapman gerekenler
@@ -31,14 +32,16 @@ Son güncelleme: 6 Kasım 2026. Bu dosya, mağaza yüklemesi için depoda hazır
 5. Play Console'da uygulamayı oluştur, AAB'yi yükle ve aşağıdaki formları doldur.
 
 ### App Store
-1. **Apple Developer Program** (yıllık 99 $) ve bir **Mac + Xcode** gerekiyor; iOS uygulaması yalnızca Xcode'dan imzalanıp yüklenebilir.
-2. Mac'te: `npm ci && npm run build && npx cap sync ios && npx cap open ios`.
+1. **Apple Developer Program** (yıllık 99 $) ve bir **Mac + güncel Xcode** gerekiyor; iOS uygulaması yalnızca Xcode'dan imzalanıp yüklenebilir. Apple, App Store'a yüklenen derlemelerin güncel SDK ile yapılmasını istiyor (2026 itibarıyla Xcode 26 / iOS 26 SDK); yüklemeden önce App Store Connect'teki güncel şartı kontrol et. CI'daki Xcode 16.4 yalnızca derleme denetimi içindir.
+2. Mac'te: `npm ci && npm run cap:sync && npx cap open ios` (`cap:sync` derler, kaynak eşlemelerini pakete koymaz ve iOS projesine kopyalar). Mac'te `.env` dosyasında Supabase ayarı **olmasın**; olursa uygulama bulut özelliklerini açar ve gizlilik etiketlerini buna göre değiştirmen gerekir.
 3. Xcode'da: App hedefi → Signing & Capabilities → takımını seç (Bundle ID `com.ceomai.kebabempire`). Product → Archive → Distribute App → App Store Connect.
 4. App Store Connect'te uygulamayı oluştur, ekran görüntülerini (`store/tr/appstore-*`) ve metinleri ekle, incelemeye gönder.
 
 ## Mağaza formları için cevaplar
 
 **Kategori:** Oyun → Simülasyon (Play: Simulation; App Store: Games / Simulation, ikincil Strategy).
+
+**Hedef kitle:** Play Console "hedef kitle" sorusunda 13 yaş altını seçersen Google'ın Aileler politikası devreye girer (ek kurallar). Oyun her yaşa uygun ama ekonomi ağırlıklı; önerim 13+ seçmek.
 
 **Yaş derecelendirmesi (Play IARC / Apple):** şiddet yok, kan yok, cinsellik yok, küfür yok, alkol/tütün/uyuşturucu yok, kumar ya da benzetilmiş kumar yok, kullanıcılar arası sohbet yok, satın alma yok, reklam yok. Beklenen sonuç: PEGI 3 / Everyone / Apple 4+. Bulut açıkken oyuncunun seçtiği takma ad sıralamada görünür; IARC'deki "kullanıcı etkileşimi / paylaşılan içerik" sorusunda bunu belirt.
 
@@ -86,7 +89,7 @@ Over the days your cooks learn, regulars return and a rival chain makes its move
 
 Bu ortamda emülatör ya da gerçek cihaz yok; şunları bir Android telefonda ve (Mac'te) bir iPhone simülatöründe dene:
 - Durum çubuğu ve alt gezinme çubuğu üst çubuğu ya da tezgâh panelini örtüyor mu
-- Geri tuşu: ekranlar arasında geri gidiyor, ana menüde uygulamadan çıkıyor
+- Geri tuşu: pencereleri kapatıyor, ekranlar arasında haritaya dönüyor, haritada uygulamadan çıkıyor
 - Uygulamayı arka plana alıp dönünce oyun duruyor ve kaldığı yerden devam ediyor
 - Ses ilk dokunuştan sonra başlıyor
 - Yedek kodu kopyala → yeni kurulumda yapıştır → oyun aynen geliyor

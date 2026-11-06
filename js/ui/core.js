@@ -26,10 +26,14 @@
   const avatar = (look, mood, label, size) => `<span class="avatar ${size || ''}">${KE.portrait(look, { mood, label })}</span>`;
 
   /* ---------- Kayıt (ayrıntılar save.js'te) ---------- */
+  /* Uygulama mı (Android/iOS), tarayıcı mı */
+  UI.isNative = () => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } };
   UI.save = function () {
-    if (!KE.G || UI.staleTab) return;
-    if (!KE.SAVE.write(KE.G) && KE.SAVE.lastError === 'stale' && !UI.staleTab) { UI.staleTab = true; UI.modal(`<div class="mhead"><h2>Oyun başka bir sekmede ilerledi</h2><p>Bu oyunun daha ileri bir günü kayıtlı. İlerlemen kaybolmasın diye bu sekme kayıt yapmıyor.</p></div><div class="acts"><button class="btn green" data-a="reloadTab">Güncel kaydı aç</button></div>`); return; }
-    if (!KE.SAVE.write(KE.G) && KE.SAVE.lastError === 'quota' && !UI.quotaWarned) { UI.quotaWarned = true; UI.toast('Tarayıcı depolaması dolu; oyun kaydedilemedi. Menüden dosyaya yedekle.', 'bad'); }
+    /* servis sırasında kayıt yok: kayıt sabah durumunu ve gün sonunu tutar; yarım gün kaydedilirse stok kaybolur */
+    if (!KE.G || UI.staleTab || KE.G.phase === 'service') return;
+    const ok = KE.SAVE.write(KE.G);
+    if (!ok && KE.SAVE.lastError === 'stale' && !UI.staleTab) { UI.staleTab = true; UI.modal(`<div class="mhead"><h2>Oyun başka bir sekmede ilerledi</h2><p>Bu oyunun daha ileri bir günü kayıtlı. İlerlemen kaybolmasın diye bu sekme kayıt yapmıyor.</p></div><div class="acts"><button class="btn green" data-a="reloadTab">Güncel kaydı aç</button></div>`); return; }
+    if (!ok && KE.SAVE.lastError === 'quota' && !UI.quotaWarned) { UI.quotaWarned = true; UI.toast('Tarayıcı depolaması dolu; oyun kaydedilemedi. Menüden dosyaya yedekle.', 'bad'); }
   };
   /* Aynı oyun iki sekmede açıksa: başka sekme kaydı ilerletince bu sekme yazmayı bırakır ve uyarır
      (yoksa geride kalan sekme ilerlemeyi ezer) */
@@ -163,10 +167,11 @@
     const st = e.state;
     const m = document.querySelector('.modal-bg');
     const keep = () => { try { history.pushState({ ke: UI.screen, p: UI.params }, ''); } catch (x) { /* yok */ } };
-    if (m) { if (m.querySelector('.acts [data-a="closeModal"], .sheet-x')) UI.closeModal(); keep(); return; }
+    if (m) { if (m.querySelector('[data-a="closeModal"], .sheet-x')) UI.closeModal(); keep(); return; }
     if (!KE.G || ['title', 'newMode', 'newDistrict', 'newMaster'].includes(UI.screen)) return;
     if (st && st.ke && SCREENS[st.ke]) { UI.go(st.ke, st.p, { pop: true }); return; }
-    if (UI.screen !== 'map') { UI.go('map', {}, { pop: true }); keep(); } else keep();
+    /* haritada geri: tarayıcıda sayfada kal; uygulamada geçmişi bırak ki geri tuşu uygulamadan çıksın */
+    if (UI.screen !== 'map') { UI.go('map', {}, { pop: true }); keep(); } else if (!UI.isNative()) keep();
   });
   UI.render = function () {
     const fn = SCREENS[UI.screen] || SCREENS.title;
