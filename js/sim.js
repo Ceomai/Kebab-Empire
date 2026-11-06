@@ -946,7 +946,7 @@
     if (on === !!P.active) return;
     if (!on) pslots(P).slice().forEach((sl) => prelease(G, b, L, sl));
     Object.assign(P, { active: on, slots: [], sel: 0, combo: on ? P.combo || 0 : 0, tap: L.minute, afk: false });
-    if (on && !P.quest) newQuest(G, b, P);
+    if (on && !P.quest && (P.questsDone || 0) < KE.QUESTS_PER_DAY) newQuest(G, b, P);
     pmirror(P);
   };
   KE.playerTake = function (G) {
@@ -962,6 +962,7 @@
     Object.entries(p.ing).forEach(([k, q]) => { b.stock[k] -= q * t.count; });
     t.state = 'cook'; t.cook = 'player';
     flagTicket(G, L, t);
+    if (t.firstTake == null) t.firstTake = L.minute;
     P.slots.push({ tid: t.id, step: 0, errors: 0, start: L.minute, fire: null, fst: null, burnt: 0, touch: L.minute });
     pmirror(P);
     return t;
@@ -989,12 +990,15 @@
     t.gurme = !!(c && c.type === 'gurme');
   }
   /* Tezgâh görevi: art arda N siparişi hatasız bitir, ödül bahşiş kavanozuna */
+  KE.QUESTS_PER_DAY = 3;
   function newQuest(G, b, P) {
+    /* günde en fazla 3 görev: tezgâh ödülü sınırsız büyümesin */
+    if ((P.questsDone || 0) >= KE.QUESTS_PER_DAY) { P.quest = null; return; }
     const n = (P.questN = (P.questN || 0) + 1);
     const ps = MODE(G).products.filter((x) => b.menu[x.id]);
     const avg = ps.reduce((a, x) => a + (b.prices[x.id] || x.base), 0) / Math.max(1, ps.length);
     const need = 3 + (n % 3);
-    P.quest = { need, done: 0, reward: Math.round((avg * need * 0.5) / 5) * 5 };
+    P.quest = { need, done: 0, reward: Math.round((avg * need * 0.4) / 5) * 5 };
   }
   KE.playerQuestNew = newQuest;
   function pfinish(G, b, L, sl, p, t) {
@@ -1013,7 +1017,7 @@
     const price = (b.prices[t.pid] || p.base) * t.count, S = L.stats;
     const bonus = (f, text) => { const v = Math.round((price * f) / 5) * 5; if (v > 0) { S.tips += v; S.tezgahBonus = (S.tezgahBonus || 0) + v; L.fx.push({ t: 'tip', sid: 'player', text: text + ' +' + KE.tl(v) }); } };
     if (t.menu) bonus(0.25, 'Menü');
-    if (t.rush && took <= par * 1.25 && !sl.errors) bonus(0.3, 'Acele');
+    if (t.rush && L.minute - (t.firstTake != null ? t.firstTake : sl.start) <= par * 1.25 && !sl.errors) bonus(0.3, 'Acele');
     if (t.gurme) {
       if (clean) { S.repDelta += 0.05; L.fx.push({ t: 'regular', sid: 'player', text: 'Gurme beğendi!' }); }
       else S.repDelta -= 0.02;

@@ -296,7 +296,7 @@
         if (ph !== 'cook') need[fs] = Math.max(need[fs] || 0, i === P.sel ? 2 : 1);
       } else need[st] = Math.max(need[st] || 0, i === P.sel ? 2 : 1);
       /* özel fiş etiketleri: menü (+patates), acele (süre), gurme */
-      const rushLeft = t.rush ? Math.ceil(p.prep * 1.25 - (L.minute - sl.start)) : 0;
+      const rushLeft = t.rush ? Math.ceil(p.prep * 1.25 - (L.minute - (t.firstTake != null ? t.firstTake : sl.start))) : 0;
       const tags = (t.menu ? `<span class="tz-tag menu">${IC('fries')}Menü</span>` : '') + (t.rush ? `<span class="tz-tag rush ${rushLeft <= 0 ? 'late' : ''}">${IC('bolt')}${rushLeft > 0 ? `Acele ${rushLeft} dk` : 'Acele'}</span>` : '') + (t.gurme ? `<span class="tz-tag gurme">${IC('star')}Gurme</span>` : '');
       const pat = c ? clamp(1 - c.wait / (c.patience * 2.6), 0, 1) : 1;
       return `<button class="tz-card ${i === P.sel ? 'sel' : ''} ${sl.errors ? 'err' : ''}" data-a="psel" data-i="${i}" aria-label="${esc(p.name)}">
