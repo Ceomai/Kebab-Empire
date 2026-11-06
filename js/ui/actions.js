@@ -86,14 +86,29 @@
     if (L.player.active && w) { const tb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tbh')) || 0; window.scrollTo({ top: Math.max(0, w.getBoundingClientRect().top + window.scrollY - tb - 8), behavior: 'smooth' }); }
   };
   const shake = () => { const box = document.getElementById('stepbtns'); if (box) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); } };
-  function station(r) {
+  /* dokunuş animasyonu: istasyondan seçili fişe uçan malzeme; düğme hafifçe zıplar */
+  function flyFrom(st) {
+    const btn = /** @type {HTMLElement} */ (document.querySelector(`.tz2 [data-a="pst"][data-s="${st}"]`)), card = document.querySelector('.tz-card.sel') || document.querySelector('.tz-card');
+    if (!btn) return;
+    btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop');
+    if (!card || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const a = btn.getBoundingClientRect(), b = card.getBoundingClientRect();
+    const f = document.createElement('div');
+    f.className = 'tz-fly s-' + st; f.innerHTML = btn.querySelector('svg') ? btn.querySelector('svg').outerHTML : '';
+    f.style.left = a.left + a.width / 2 + 'px'; f.style.top = a.top + a.height / 2 + 'px';
+    document.body.appendChild(f);
+    requestAnimationFrame(() => requestAnimationFrame(() => { f.style.left = b.left + b.width / 2 + 'px'; f.style.top = b.top + b.height / 2 + 'px'; f.style.transform = 'translate(-50%, -50%) scale(.5)'; f.style.opacity = '.2'; }));
+    setTimeout(() => f.remove(), 420);
+  }
+  function station(r, st) {
     if (r.ok === false) { if (!r.none) { KE.SND.play('bad'); if (navigator.vibrate) try { navigator.vibrate(60); } catch (e) { /* yok */ } } H.renderTezgah(); shake(); return; }
+    if (st && !r.woke && !r.wait) flyFrom(st);
     KE.SND.play(r.done ? 'ready' : r.fire ? 'sizzle' : 'click');
     if (r.burnt) UI.toast('Biraz yandı, kalite düştü.', 'bad');
     if (r.done) while (KE.act(KE.G, 'ptake'));
     H.renderTezgah(); UI.sceneTick();
   }
-  A.pst = (d) => station(KE.act(KE.G, 'pst', d.s));
+  A.pst = (d) => station(KE.act(KE.G, 'pst', d.s), d.s);
   A.psel = (d) => { KE.act(KE.G, 'psel', +d.i); KE.SND.play('click'); H.renderTezgah(); };
   A.step = (d) => station(KE.act(KE.G, 'pstep', d.l));
   A.midChoice = (d) => {

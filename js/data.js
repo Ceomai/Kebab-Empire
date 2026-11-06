@@ -419,7 +419,8 @@ KE.STATIONS = [
   { id: 'ates', name: 'Ateş', ic: 'fire', key: '3' },
   { id: 'sebze', name: 'Sebze', ic: 'leaf', key: '4' },
   { id: 'sos', name: 'Sos', ic: 'drop', key: '5' },
-  { id: 'servis', name: 'Servis', ic: 'tray', key: '6' }
+  { id: 'servis', name: 'Servis', ic: 'tray', key: '6' },
+  { id: 'fritoz', name: 'Fritöz', ic: 'fries', key: '7' }
 ];
 KE.STEP_STATION = {
   'Lavaş': 'ates', 'Ekmek': 'ates', 'Pide': 'ates', 'Pilav': 'hamur', 'Lavaşa al': 'hamur', 'Hamuru aç': 'hamur', 'Bulgur hamuru': 'hamur', 'Kadayıf': 'hamur',
@@ -427,6 +428,7 @@ KE.STEP_STATION = {
   'Közde çevir': 'ates', 'Közde pişir': 'ates', 'Şişi çevir': 'ates', 'Kızart': 'ates', 'Fırına ver': 'ates', 'Patlıcan közle': 'ates', 'Eti sotele': 'ates', 'Saç yağla': 'sos',
   'Domates-marul': 'sebze', 'Soğan': 'sebze', 'Domates': 'sebze', 'Turşu': 'sebze', 'Közlenmiş biber': 'sebze', 'Salata': 'sebze', 'Maydanoz-soğan': 'sebze', 'Sumaklı soğan': 'sebze', 'Maydanoz-limon': 'sebze', 'Soğan-maydanoz': 'sebze',
   'Sos': 'sos', 'Domates sosu': 'sos', 'Yoğurt': 'sos', 'Yoğurtla ez': 'sos', 'Tereyağı': 'sos', 'Kızgın tereyağı': 'sos', 'Şerbet': 'sos', 'Fıstık': 'sos',
-  'Sar': 'servis', 'Servis': 'servis', 'Lavaşa sar': 'servis'
+  'Sar': 'servis', 'Servis': 'servis', 'Lavaşa sar': 'servis',
+  'Patates': 'fritoz'
 };
 KE.stepStation = (label) => KE.STEP_STATION[label] || 'servis';

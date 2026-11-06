@@ -18,7 +18,7 @@ function toOrders(KE, G, n) {
   return L;
 }
 const prodOf = (KE, G, pid) => KE.MODES[G.mode].products.find((p) => p.id === pid);
-const nextSt = (KE, G, L, sl) => { const t = L.tickets.find((x) => x.id === sl.tid); return KE.stepStation(prodOf(KE, G, t.pid).steps[sl.step]); };
+const nextSt = (KE, G, L, sl) => { const t = L.tickets.find((x) => x.id === sl.tid); return KE.stepStation(KE.ticketSteps(G, t)[sl.step]); };
 
 describe('tezgâh: istasyonlar ve aynı anda birden çok sipariş', () => {
   it('her tarif adımının bir istasyonu var', () => {
@@ -217,3 +217,57 @@ describe('tezgâh: QA bulguları', () => {
     L.player.slots.forEach((s) => expect(s.errors).toBe(0));
   });
 });
+
+describe('tezgâh v3: menü, acele, gurme, görev', () => {
+  /* fişi elle işaretleyip hatasız bitir: süreli istasyonda pişmesini bekle */
+  function finish(KE, G, L, sl) {
+    let g = 0;
+    while (L.player.slots.includes(sl) && g++ < 60) {
+      if (sl.fire != null) { while (L.minute < sl.fire) KE.tickAll(G); KE.act(G, 'pst', sl.fst); continue; }
+      KE.act(G, 'psel', L.player.slots.indexOf(sl));
+      KE.act(G, 'pst', nextSt(KE, G, L, sl));
+    }
+  }
+  it('menü fişine Patates (fritöz) eklenir; fritöz süreli; bitince menü bahşişi', () => {
+    const { KE, G } = setup('doner', 31);
+    const L = toOrders(KE, G, 1);
+    const sl = L.player.slots[0], t = L.tickets.find((x) => x.id === sl.tid);
+    t.menu = true; t.rush = false;
+    const steps = KE.ticketSteps(G, t);
+    expect(steps[steps.length - 1]).toBe('Patates');
+    expect(KE.stepStation('Patates')).toBe('fritoz');
+    const tips0 = L.stats.tips;
+    finish(KE, G, L, sl);
+    expect(t.state).toBe('ready');
+    expect(L.stats.tips).toBeGreaterThan(tips0);
+  });
+  it('acele fişi hızlı biterse bahşiş; gurme hatasız biterse itibar', () => {
+    const { KE, G } = setup('doner', 32);
+    const L = toOrders(KE, G, 1);
+    const sl = L.player.slots[0], t = L.tickets.find((x) => x.id === sl.tid);
+    t.menu = false; t.rush = true; t.gurme = true;
+    const tips0 = L.stats.tips, rep0 = L.stats.repDelta;
+    finish(KE, G, L, sl);
+    expect(L.stats.tips).toBeGreaterThan(tips0);
+    expect(L.stats.repDelta).toBeGreaterThan(rep0);
+  });
+  it('görev: art arda hatasız siparişler ödül verir, hata ilerlemeyi sıfırlar', () => {
+    const { KE, G } = setup('doner', 33);
+    const L = toOrders(KE, G, 1);
+    const P = L.player;
+    expect(P.quest && P.quest.need).toBeGreaterThanOrEqual(3);
+    P.quest.need = 2;
+    const sl = P.slots[0];
+    KE.act(G, 'pst', KE.STATIONS.find((s) => s.id !== nextSt(KE, G, L, sl) && !KE.TIMED[s.id]).id);
+    expect(P.quest.done).toBe(0);
+    const tips0 = L.stats.tips, r = P.quest.reward;
+    let g = 0, done = 0;
+    while (done < 3 && g++ < 400) {
+      if (!P.slots.length) { KE.tickAll(G); while (KE.act(G, 'ptake')); continue; }
+      const s = P.slots[0]; const before = P.done || 0; s.errors = 0; finish(KE, G, L, s); if ((P.done || 0) > before) done++;
+    }
+    expect(P.questsDone || 0).toBeGreaterThanOrEqual(1);
+    expect(L.stats.tips - tips0).toBeGreaterThanOrEqual(r);
+  });
+});
+

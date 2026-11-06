@@ -1,0 +1,14 @@
+Fritöz	Fryer	Fritteuse
+Patates	Fries	Pommes
+Menü	Meal	Menü
+Acele	Rush	Eilig
+Acele {0} dk	Rush {0} min	Eilig {0} Min
+Gurme	Gourmet	Gourmet
+Görev	Task	Aufgabe
+Kızarıyor	Frying	Frittiert
+Gurme beğendi!	The gourmet loved it!	Der Gourmet ist begeistert!
+Görev tamam! +{0}	Task done! +{0}	Aufgabe erledigt! +{0}
+Menü +{0}	Meal +{0}	Menü +{0}
+Acele +{0}	Rush +{0}	Eilig +{0}
+Art arda hatasız siparişler	Flawless orders in a row	Fehlerfreie Bestellungen in Folge
+<b>Tezgâhta özel siparişler:</b> Menü siparişinin sonunda fritözde patates kızartırsın, menü bahşişi gelir. Acele fişini süresi dolmadan bitirirsen ek bahşiş alırsın. Gurme müşterinin siparişini hatasız bitirirsen itibarın artar. Üstteki görev, art arda hatasız siparişler ister; tamamlayınca bahşiş kavanozuna ödül düşer, bir hata ilerlemeyi sıfırlar.	<b>Special orders at the counter:</b> A meal order ends with fries from the fryer and pays a meal tip. Finish a rush ticket before its timer runs out for an extra tip. Finish a gourmet's order without mistakes to gain reputation. The task at the top asks for flawless orders in a row; complete it and the reward drops into the tip jar, while one mistake resets the progress.	<b>Sonderbestellungen an der Theke:</b> Ein Menü endet mit Pommes aus der Fritteuse und bringt ein Menü-Trinkgeld. Erledige einen Eil-Bon vor Ablauf der Zeit für extra Trinkgeld. Bereite die Bestellung eines Gourmets fehlerfrei zu, um Ansehen zu gewinnen. Die Aufgabe oben verlangt fehlerfreie Bestellungen in Folge; geschafft landet die Belohnung im Trinkgeldglas, ein Fehler setzt den Fortschritt zurück.

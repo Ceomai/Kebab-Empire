@@ -252,7 +252,7 @@
   "de": "Ton an"
  },
  "Menü": {
-  "en": "Menu",
+  "en": "Meal",
   "de": "Menü"
  },
  "Şubeler": {
@@ -2336,8 +2336,8 @@
   "de": "Familie"
  },
  "Gurme": {
-  "en": "Foodie",
-  "de": "Feinschmecker"
+  "en": "Gourmet",
+  "de": "Gourmet"
  },
  "Turist": {
   "en": "Tourist",
@@ -8846,5 +8846,53 @@
  "Bulgur hamuru": {
   "en": "Bulgur dough",
   "de": "Bulgurteig"
+ },
+ "Fritöz": {
+  "en": "Fryer",
+  "de": "Fritteuse"
+ },
+ "Patates": {
+  "en": "Fries",
+  "de": "Pommes"
+ },
+ "Acele": {
+  "en": "Rush",
+  "de": "Eilig"
+ },
+ "Acele {0} dk": {
+  "en": "Rush {0} min",
+  "de": "Eilig {0} Min"
+ },
+ "Görev": {
+  "en": "Task",
+  "de": "Aufgabe"
+ },
+ "Kızarıyor": {
+  "en": "Frying",
+  "de": "Frittiert"
+ },
+ "Gurme beğendi!": {
+  "en": "The gourmet loved it!",
+  "de": "Der Gourmet ist begeistert!"
+ },
+ "Görev tamam! +{0}": {
+  "en": "Task done! +{0}",
+  "de": "Aufgabe erledigt! +{0}"
+ },
+ "Menü +{0}": {
+  "en": "Meal +{0}",
+  "de": "Menü +{0}"
+ },
+ "Acele +{0}": {
+  "en": "Rush +{0}",
+  "de": "Eilig +{0}"
+ },
+ "Art arda hatasız siparişler": {
+  "en": "Flawless orders in a row",
+  "de": "Fehlerfreie Bestellungen in Folge"
+ },
+ "<b>Tezgâhta özel siparişler:</b> Menü siparişinin sonunda fritözde patates kızartırsın, menü bahşişi gelir. Acele fişini süresi dolmadan bitirirsen ek bahşiş alırsın. Gurme müşterinin siparişini hatasız bitirirsen itibarın artar. Üstteki görev, art arda hatasız siparişler ister; tamamlayınca bahşiş kavanozuna ödül düşer, bir hata ilerlemeyi sıfırlar.": {
+  "en": "<b>Special orders at the counter:</b> A meal order ends with fries from the fryer and pays a meal tip. Finish a rush ticket before its timer runs out for an extra tip. Finish a gourmet's order without mistakes to gain reputation. The task at the top asks for flawless orders in a row; complete it and the reward drops into the tip jar, while one mistake resets the progress.",
+  "de": "<b>Sonderbestellungen an der Theke:</b> Ein Menü endet mit Pommes aus der Fritteuse und bringt ein Menü-Trinkgeld. Erledige einen Eil-Bon vor Ablauf der Zeit für extra Trinkgeld. Bereite die Bestellung eines Gourmets fehlerfrei zu, um Ansehen zu gewinnen. Die Aufgabe oben verlangt fehlerfreie Bestellungen in Folge; geschafft landet die Belohnung im Trinkgeldglas, ein Fehler setzt den Fortschritt zurück."
  }
 }

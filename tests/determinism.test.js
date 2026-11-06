@@ -13,7 +13,7 @@ function playWithActions(KE, G) {
     if (m >= 200 && m < 320) {
       const L = G.live[G.activeBranch];
       if (L.player.tid == null) KE.act(G, 'ptake');
-      else { const t = L.tickets.find((x) => x.id === L.player.tid); const p = KE.MODES[G.mode].products.find((x) => x.id === t.pid); KE.act(G, 'pstep', p.steps[L.player.step]); }
+      else { const t = L.tickets.find((x) => x.id === L.player.tid); KE.act(G, 'pstep', KE.ticketSteps(G, t)[L.player.step]); }
     }
     if (m === 320) KE.act(G, 'ptoggle', false);
     if (m === 400) KE.act(G, 'setPos', st[0].id, 'kasa');

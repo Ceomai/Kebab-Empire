@@ -1682,3 +1682,33 @@ html { overflow-x: clip; }
 @media (max-width: 520px) { .tz-rail { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); } }
 @media (max-width: 760px) and (max-height: 700px) { .tz-card.empty { min-height: 0; padding: 6px; font-size: 12px; } .tz-cn { font-size: 13px; } }
 @media (max-width: 380px) { .tz-rec { gap: 3px; } .tz-rec i { padding: 1px 5px; } .tz-rec i:not(.now) .ic, .tz-rec i.done { display: none; } .tz-rec i em { font-size: 10px; } }
+
+/* ---------- Tezgâh v3: fritöz, özel fişler, görev, animasyon ---------- */
+.tz-sts { grid-template-columns: repeat(7, 1fr); }
+@media (max-width: 520px) { .tz-sts { grid-template-columns: repeat(4, 1fr); } }
+@media (max-height: 520px) and (orientation: landscape) { .tz-sts { grid-template-columns: repeat(7, 1fr); } }
+.tz-st.s-fritoz { background: #b8860b; }
+.tz-card { --c-fritoz: #8a6100; }
+.tz-rec i.s-fritoz { --sc: var(--c-fritoz); }
+.tz-fire.f-fritoz { background: conic-gradient(#f5c542 calc(var(--p) * 1%), #8a6100 0); }
+.tz-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.tz-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 800; border-radius: 99px; padding: 1px 7px 1px 4px; color: #fff; line-height: 1.5; }
+.tz-tag .ic { width: 12px; height: 12px; }
+.tz-tag.menu { background: #8a6100; }
+.tz-tag.rush { background: #c0392b; }
+.tz-tag.rush.late { background: #7f8c8d; }
+.tz-tag.gurme { background: #6c3483; }
+.tz-quest { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #ffe08a; margin-right: auto; margin-left: 8px; }
+.tz-quest .ic { width: 15px; height: 15px; }
+.tz-qbar { display: inline-flex; gap: 3px; }
+.tz-qbar em { width: 12px; height: 8px; border-radius: 3px; background: rgba(255, 255, 255, .2); }
+.tz-qbar em.on { background: var(--altin); box-shadow: 0 0 6px rgba(255, 201, 60, .8); }
+.tz-quest b { color: #fff; }
+.tz-st.pop { animation: tzpop .22s ease-out; }
+@keyframes tzpop { 40% { transform: scale(1.08); } }
+.tz-fly { position: fixed; z-index: 60; width: 30px; height: 30px; transform: translate(-50%, -50%); color: #fff; pointer-events: none; transition: left .38s cubic-bezier(.3, .7, .4, 1), top .38s cubic-bezier(.3, .7, .4, 1), transform .38s, opacity .38s; border-radius: 50%; display: grid; place-items: center; background: var(--altin); box-shadow: 0 4px 12px rgba(0, 0, 0, .35); }
+.tz-fly svg { width: 18px; height: 18px; color: var(--murekkep); }
+.tz2.onfire { box-shadow: 0 0 0 3px #f28c28, 0 -6px 26px rgba(242, 140, 40, .55); }
+.tz2.onfire .tz-top .kicker { color: #ffb36b; }
+@media (max-width: 760px) and (max-height: 700px) { .tz-quest span { display: none; } }
+@media (prefers-reduced-motion: reduce) { .tz-st.pop { animation: none; } }
