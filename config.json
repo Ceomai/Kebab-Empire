@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "_doc": "Uzaktan ayar. Yeni sürüm çıkmadan değiştirilebilir. Anahtarlar: econYears {yıl: {asgariBrut, gvDilim:[[limit|null, oran]]}}, econGrowth, hijriOverrides {'H1449-9': 'YYYY-AA-GG'}, ramazanRate {oruc, hazirlik, iftar, aksam, teravih, gece}, trafficMul {doner, kebap}, monthlyInflation, message.",
+  "econYears": {},
+  "hijriOverrides": {}
+}
