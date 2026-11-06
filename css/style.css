@@ -1725,3 +1725,4 @@ body:has(.stagewrap.tzon) #toasts { pointer-events: none; }
 .mainbr { display: inline-flex; align-items: center; gap: 3px; color: var(--altin-deep, #b8860b); }
 .mainbr .ic { width: 13px; height: 13px; }
 .tz-quest.off { color: rgba(255, 255, 255, .55); }
+.savecode { width: 100%; font: 12px/1.35 ui-monospace, monospace; border-radius: 12px; border: 1px solid var(--kart-cizgi); padding: 10px; background: var(--kagit-2); color: var(--murekkep); resize: vertical; word-break: break-all; }

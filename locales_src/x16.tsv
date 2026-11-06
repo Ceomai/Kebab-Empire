@@ -20,3 +20,17 @@ Ana şube yap	Make main branch	Zur Hauptfiliale machen
 Görevler ana şubede	Tasks at main branch	Aufgaben in der Hauptfiliale
 Tezgâh görevleri yalnızca ana şubede çıkar	Counter tasks only appear at the main branch	Theken-Aufgaben gibt es nur in der Hauptfiliale
 {0} artık ana şube. Tezgâh görevleri burada çıkar.	{0} is now the main branch. Counter tasks appear here.	{0} ist jetzt die Hauptfiliale. Theken-Aufgaben erscheinen hier.
+Yedek kodu	Backup code	Sicherungscode
+Bu kodu kopyalayıp bir not ya da mesaj olarak sakla. Geri yüklerken "Dosyadan yükle" ekranına yapıştırman yeterli.	Copy this code and keep it in a note or message. To restore, paste it into the "Load from file" screen.	Kopiere diesen Code und bewahre ihn als Notiz oder Nachricht auf. Zum Wiederherstellen fügst du ihn im Bildschirm "Aus Datei laden" ein.
+Kopyala	Copy	Kopieren
+Yedek kodu kopyalandı.	Backup code copied.	Sicherungscode kopiert.
+Kod seçildi; kopyala ile al.	Code selected; use copy to take it.	Code markiert; mit Kopieren übernehmen.
+Yedekten yükle	Load from backup	Aus Sicherung laden
+Daha önce kopyaladığın yedek kodunu buraya yapıştır ya da bir yedek dosyası seç.	Paste a backup code you copied earlier, or choose a backup file.	Füge einen zuvor kopierten Sicherungscode ein oder wähle eine Sicherungsdatei.
+Dosya seç	Choose file	Datei wählen
+Yükle	Load	Laden
+Önce yedek kodunu yapıştır.	Paste the backup code first.	Füge zuerst den Sicherungscode ein.
+Kod çok uzun.	The code is too long.	Der Code ist zu lang.
+Kod bozuk: tamamını kopyaladığından emin ol.	The code is damaged: make sure you copied all of it.	Der Code ist beschädigt: Prüfe, ob du ihn vollständig kopiert hast.
+Gizlilik politikasının tam metni	Full privacy policy	Vollständige Datenschutzerklärung
+Oyun duraklatıldı. Devam etmek için hızı seç.	Game paused. Pick a speed to continue.	Spiel pausiert. Wähle eine Geschwindigkeit, um weiterzumachen.

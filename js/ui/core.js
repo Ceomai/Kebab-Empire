@@ -192,6 +192,17 @@
     r.setProperty('--tabh', tabH + 'px');
   };
   window.addEventListener('resize', () => UI.layoutVars());
+  /* Uygulama arka plana alınınca: servis dışında kaydet; serviste oyunu duraklat (telefon uygulamayı kapatabilir) */
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'hidden' || !KE.G) return;
+    if (KE.G.phase !== 'service') { UI.save(); return; }
+    if (KE.G.speed) { KE.G.speed = 0; UI.pausedByHide = true; }
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible' || !UI.pausedByHide) return;
+    UI.pausedByHide = false;
+    if (KE.G && KE.G.phase === 'service') { UI.render(); UI.toast('Oyun duraklatıldı. Devam etmek için hızı seç.', 'good'); }
+  });
 
   /* ---------- Üst çubuk ve şube şeridi ---------- */
   function topbar() {

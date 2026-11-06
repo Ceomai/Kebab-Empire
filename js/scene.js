@@ -315,7 +315,9 @@
     const now = Date.now();
     if (now - lastCoin < 350) return;
     lastCoin = now;
-    const target = document.getElementById('tb-today');
+    /* telefonda "bugün" yazısı gizli: görünen kasa göstergesine uç, o da yoksa hiç uçma */
+    const cands = [document.getElementById('tb-today'), document.querySelector('.tb-money')];
+    const target = cands.find((e) => e && e.getBoundingClientRect().width > 0);
     if (!target) return;
     const sr = stage.getBoundingClientRect(), tr = target.getBoundingClientRect();
     const c = document.createElement('div');

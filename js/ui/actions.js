@@ -36,10 +36,38 @@
     <div class="choices">${[['cok', 'Çok', 'Bütün öneriler ve ipuçları (yeni başlayanlar için).'], ['az', 'Az', 'Yalnızca acil uyarılar: ustasız şube, boş kasa, eksik stok, eksi kasa.'], ['kapali', 'Sessiz', 'Danışman kartı gizlenir. Sabah kontrol listesi kalır.']].map(([k, l, d]) => `<button class="choice ${UI.guideLevel() === k ? 'sel' : ''}" data-a="setGuide" data-v="${k}"><b>${l}</b><small>${d}</small></button>`).join('')}</div>`);
   A.setGuide = (d) => { try { localStorage.setItem('kebab-empire-guide', d.v); } catch (e) { /* yok */ } UI.closeModal(); UI.render(); UI.toast(({ cok: 'Yönlendirme: Çok', az: 'Yönlendirme: Az', kapali: 'Yönlendirme: Sessiz' })[d.v]); };
   A.saveNow = () => { UI.save(); UI.closeModal(); UI.toast('Kaydedildi.', 'good'); };
-  A.exportSave = () => { if (!KE.G) return; if (KE.G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; } KE.SAVE.exportFile(KE.G); UI.toast('Yedek dosyası indirildi.', 'good'); };
+  /* Uygulama (Android/iOS) içinde tarayıcı indirmesi çalışmaz: yedek kopyalanabilir kod olarak verilir */
+  const isNative = () => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } };
+  const loaded = (g) => { KE.G = g; KE.SAVE.allowRewind = true; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`${g.shopName} yüklendi · ${KE.dateStr(g.day)}`, 'good'); };
+  A.exportSave = () => {
+    if (!KE.G) return;
+    if (KE.G.phase === 'service') { UI.toast('Servis sırasında yedek alınamaz; gün bitince dene.', 'bad'); return; }
+    if (!isNative()) { KE.SAVE.exportFile(KE.G); UI.toast('Yedek dosyası indirildi.', 'good'); return; }
+    const code = JSON.stringify(KE.SAVE.envelope(KE.G));
+    UI.modal(`<div class="mhead"><h2>Yedek kodu</h2><p>Bu kodu kopyalayıp bir not ya da mesaj olarak sakla. Geri yüklerken "Dosyadan yükle" ekranına yapıştırman yeterli.</p></div>
+      <textarea id="savecode" class="savecode" readonly rows="6">${esc(code)}</textarea>
+      <div class="acts"><button class="btn ghost" data-a="closeModal">Kapat</button><button class="btn green" data-a="copySave">${IC('check')}Kopyala</button></div>`);
+  };
+  A.copySave = () => {
+    const ta = /** @type {HTMLTextAreaElement} */ (document.getElementById('savecode'));
+    if (!ta) return;
+    const done = () => UI.toast('Yedek kodu kopyalandı.', 'good');
+    const fallback = () => { ta.focus(); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { UI.toast('Kod seçildi; kopyala ile al.', 'good'); } };
+    try { navigator.clipboard.writeText(ta.value).then(done, fallback); } catch (e) { fallback(); }
+  };
   A.importSave = () => {
-    KE.SAVE.importFile().then((g) => { KE.G = g; KE.SAVE.allowRewind = true; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`${g.shopName} yüklendi · ${KE.dateStr(g.day)}`, 'good'); })
-      .catch((e) => UI.toast(e.message, 'bad'));
+    if (!isNative()) { KE.SAVE.importFile().then(loaded).catch((e) => UI.toast(e.message, 'bad')); return; }
+    UI.modal(`<div class="mhead"><h2>Yedekten yükle</h2><p>Daha önce kopyaladığın yedek kodunu buraya yapıştır ya da bir yedek dosyası seç.</p></div>
+      <textarea id="loadcode" class="savecode" rows="6" placeholder="Yedek kodu"></textarea>
+      <div class="acts"><button class="btn ghost" data-a="importFileNative">Dosya seç</button><button class="btn green" data-a="loadCode">Yükle</button></div>`);
+  };
+  A.importFileNative = () => { KE.SAVE.importFile().then(loaded).catch((e) => UI.toast(e.message, 'bad')); };
+  A.loadCode = () => {
+    const ta = /** @type {HTMLTextAreaElement} */ (document.getElementById('loadcode'));
+    const v = ta && ta.value.trim();
+    if (!v) { UI.toast('Önce yedek kodunu yapıştır.', 'bad'); return; }
+    if (v.length > 5e6) { UI.toast('Kod çok uzun.', 'bad'); return; }
+    try { loaded(KE.SAVE.open(JSON.parse(v))); } catch (e) { UI.toast(e instanceof SyntaxError ? 'Kod bozuk: tamamını kopyaladığından emin ol.' : e.message, 'bad'); }
   };
   A.toTitle = () => { UI.save(); UI.closeModal(); UI.go('title'); };
   A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Yeni oyunun kurulumuna geçilecek. Kayıtlı oyunun, yeni oyunu başlatana kadar silinmez; kurulumdan vazgeçip devam edebilirsin.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Yeni oyun kur</button></div>`); };
@@ -560,6 +588,7 @@
       <p>Kebab Empire ücretsiz bir eğlence oyunudur. Oyundaki semtler, kişiler, dükkânlar ve rakamlar kurgudur; vergi ve bordro hesapları gerçeğe yakın tahminlerdir, mali tavsiye değildir.</p>
       <p>Şehir sıralamasında hile yapmak, başkasını taklit eden ya da hakaret içeren takma ad kullanmak yasaktır; bu durumda sonuçlar ve hesap silinebilir.</p>
       <p>İletişim: ${mail}</p>
+      <p><a href="https://ceomai.github.io/Kebab-Empire/privacy.html" target="_blank" rel="noopener">Gizlilik politikasının tam metni</a></p>
     </div><div class="acts"><button class="btn green" data-a="closeModal">Tamam</button></div>`);
   };
   /* Dil seçimi */

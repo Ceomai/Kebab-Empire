@@ -8934,5 +8934,61 @@
  "Menü siparişinin sonunda fritözde patates kızartırsın, menü bahşişi gelir. Acele fişini süresi dolmadan bitirirsen ek bahşiş alırsın. Gurme müşterinin siparişini hatasız bitirirsen itibarın artar. Üstteki görev, art arda hatasız siparişler ister; tamamlayınca bahşiş kavanozuna ödül düşer, bir hata ilerlemeyi sıfırlar. Görevler yalnızca ana şubede çıkar, günde en fazla 3 tane; ana şubeyi sabahları Merkez Ofis’ten değiştirebilirsin.": {
   "en": "A meal order ends with fries from the fryer and pays a meal tip. Finish a rush ticket before its timer runs out for an extra tip. Finish a gourmet's order without mistakes to gain reputation. The task at the top asks for flawless orders in a row; complete it and the reward drops into the tip jar, while one mistake resets the progress. Tasks only appear at your main branch, up to 3 a day; you can change the main branch in the morning at Head Office.",
   "de": "Ein Menü endet mit Pommes aus der Fritteuse und bringt ein Menü-Trinkgeld. Erledige einen Eil-Bon vor Ablauf der Zeit für extra Trinkgeld. Bereite die Bestellung eines Gourmets fehlerfrei zu, um Ansehen zu gewinnen. Die Aufgabe oben verlangt fehlerfreie Bestellungen in Folge; geschafft landet die Belohnung im Trinkgeldglas, ein Fehler setzt den Fortschritt zurück. Aufgaben gibt es nur in deiner Hauptfiliale, bis zu 3 pro Tag; die Hauptfiliale kannst du morgens in der Zentrale ändern."
+ },
+ "Yedek kodu": {
+  "en": "Backup code",
+  "de": "Sicherungscode"
+ },
+ "Bu kodu kopyalayıp bir not ya da mesaj olarak sakla. Geri yüklerken \"Dosyadan yükle\" ekranına yapıştırman yeterli.": {
+  "en": "Copy this code and keep it in a note or message. To restore, paste it into the \"Load from file\" screen.",
+  "de": "Kopiere diesen Code und bewahre ihn als Notiz oder Nachricht auf. Zum Wiederherstellen fügst du ihn im Bildschirm \"Aus Datei laden\" ein."
+ },
+ "Kopyala": {
+  "en": "Copy",
+  "de": "Kopieren"
+ },
+ "Yedek kodu kopyalandı.": {
+  "en": "Backup code copied.",
+  "de": "Sicherungscode kopiert."
+ },
+ "Kod seçildi; kopyala ile al.": {
+  "en": "Code selected; use copy to take it.",
+  "de": "Code markiert; mit Kopieren übernehmen."
+ },
+ "Yedekten yükle": {
+  "en": "Load from backup",
+  "de": "Aus Sicherung laden"
+ },
+ "Daha önce kopyaladığın yedek kodunu buraya yapıştır ya da bir yedek dosyası seç.": {
+  "en": "Paste a backup code you copied earlier, or choose a backup file.",
+  "de": "Füge einen zuvor kopierten Sicherungscode ein oder wähle eine Sicherungsdatei."
+ },
+ "Dosya seç": {
+  "en": "Choose file",
+  "de": "Datei wählen"
+ },
+ "Yükle": {
+  "en": "Load",
+  "de": "Laden"
+ },
+ "Önce yedek kodunu yapıştır.": {
+  "en": "Paste the backup code first.",
+  "de": "Füge zuerst den Sicherungscode ein."
+ },
+ "Kod çok uzun.": {
+  "en": "The code is too long.",
+  "de": "Der Code ist zu lang."
+ },
+ "Kod bozuk: tamamını kopyaladığından emin ol.": {
+  "en": "The code is damaged: make sure you copied all of it.",
+  "de": "Der Code ist beschädigt: Prüfe, ob du ihn vollständig kopiert hast."
+ },
+ "Gizlilik politikasının tam metni": {
+  "en": "Full privacy policy",
+  "de": "Vollständige Datenschutzerklärung"
+ },
+ "Oyun duraklatıldı. Devam etmek için hızı seç.": {
+  "en": "Game paused. Pick a speed to continue.",
+  "de": "Spiel pausiert. Wähle eine Geschwindigkeit, um weiterzumachen."
  }
 }

@@ -100,8 +100,25 @@ jobs:
           git commit -qm "Yayın ${GITHUB_SHA::7}"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
 
+  ios:
+    if: github.event_name != 'pull_request'
+    needs: [test]
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx cap sync ios
+      # İmzasız simülatör derlemesi: iOS projesinin derlendiğini doğrular (mağaza yüklemesi Apple hesabıyla Xcode'dan)
+      - name: iOS derle (simülatör, imzasız)
+        run: xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build | tail -n 40
+
   android:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request'
     needs: [test]
     runs-on: ubuntu-latest
     permissions:
@@ -130,8 +147,27 @@ jobs:
           sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.0.${{ github.run_number }}\"/" android/app/build.gradle
           cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
           cp app/build/outputs/apk/debug/app-debug.apk ../kebab-empire.apk
+      # Google Play için imzalı AAB: anahtar deposu sırları tanımlıysa derlenir ve iş çıktısı olarak saklanır
+      - name: Play paketi (AAB) derle
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ]; then echo "Anahtar deposu sırrı yok: AAB atlandı (Play'e yüklemek için README'deki adımlar)"; exit 0; fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          export ANDROID_KEYSTORE_PATH="$RUNNER_TEMP/upload.jks"
+          cd android && ./gradlew bundleRelease --no-daemon
+          cp app/build/outputs/bundle/release/app-release.aab ../kebab-empire.aab
+      - uses: actions/upload-artifact@v4
+        if: hashFiles('kebab-empire.aab') != ''
+        with:
+          name: kebab-empire-play-aab
+          path: kebab-empire.aab
       # Sabit indirme adresi: /releases/download/android/kebab-empire.apk
       - name: APK'yı yayınla
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

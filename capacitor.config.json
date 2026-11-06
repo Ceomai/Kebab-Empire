@@ -2,5 +2,12 @@
   "appId": "com.ceomai.kebabempire",
   "appName": "Kebab Empire",
   "webDir": "dist",
-  "android": { "backgroundColor": "#fff8ec" }
+  "android": {
+    "backgroundColor": "#fff8ec",
+    "adjustMarginsForEdgeToEdge": "auto"
+  },
+  "ios": {
+    "backgroundColor": "#fff8ec",
+    "contentInset": "never"
+  }
 }
