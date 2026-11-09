@@ -1,19 +1,32 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import fs from 'node:fs';
+import { createRequire } from 'node:module';
 
-/* Marka ayarı: BRAND=<id> ile brands/<id>.json okunur (yoksa varsayılan Kebab Empire) */
+/* Marka ayarı: BRAND=<id> ile brands/<id>.json okunur ve denetlenir (yoksa varsayılan Kebab Empire) */
+const { loadBrand } = createRequire(import.meta.url)('./scripts/brand-validate.cjs');
 const BRAND_ID = process.env.BRAND || 'default';
-const brandFile = `brands/${BRAND_ID}.json`;
-if (!fs.existsSync(brandFile)) throw new Error(`Marka dosyası bulunamadı: ${brandFile}`);
-const BRAND = JSON.parse(fs.readFileSync(brandFile, 'utf8'));
-const APP = Object.assign({ name: 'Kebab Empire', themeColor: '#d7263d', background: '#ece2cb', description: 'Döner ve kebap işletme oyunu' }, BRAND.app || {});
+const BRAND = loadBrand(BRAND_ID);
+const APP = Object.assign({ name: BRAND.gameName || 'Kebab Empire', themeColor: '#d7263d', background: '#ece2cb', description: 'Döner ve kebap işletme oyunu' }, BRAND.app || {});
+const attr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+/* markalı derlemede index.html: sekme başlığı, ana ekran adı (iOS) ve tema rengi */
+const brandHtml = {
+  name: 'brand-html',
+  transformIndexHtml(html) {
+    if (BRAND_ID === 'default') return html;
+    return html
+      .replace(/<title>[^<]*<\/title>/, `<title>${attr(BRAND.gameName)}</title>`)
+      .replace(/(<meta name="apple-mobile-web-app-title" content=")[^"]*(")/, `$1${attr(APP.name)}$2`)
+      .replace(/(<meta name="theme-color" content=")[^"]*(")/, `$1${attr(APP.themeColor)}$2`)
+      .replace(/(<meta name="description" content=")[^"]*(")/, `$1${attr(APP.description)}$2`);
+  }
+};
 
 export default defineConfig({
   base: './',
   define: { __BRAND__: JSON.stringify(BRAND) },
   build: { target: 'es2020', sourcemap: true, chunkSizeWarningLimit: 900 },
   plugins: [
+    brandHtml,
     VitePWA({
       registerType: 'prompt',
       includeAssets: ['icons/icon.svg'],

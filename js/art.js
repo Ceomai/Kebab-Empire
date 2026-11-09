@@ -214,7 +214,7 @@
 
   /* ---------------- Vitrin (şube kartları ve harita için) ---------------- */
   A.storefront = (name, color, open) => svg('0 0 120 90', `<rect x="6" y="20" width="108" height="66" rx="4" fill="#fbe9cf" ${OL}/><rect x="6" y="8" width="108" height="20" rx="4" fill="${color || '#d7263d'}" ${OL}/>
-    <text x="60" y="22" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Baloo 2, sans-serif">${(name || '').slice(0, 18)}</text>
+    <text x="60" y="22" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Baloo 2, sans-serif">${String(name || '').slice(0, 18).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))}</text>
     ${[0, 1, 2, 3, 4, 5].map((i) => `<path d="M${6 + i * 18} 28 h18 v8 q-9 6 -18 0z" fill="${i % 2 ? '#fff' : (color || '#d7263d')}" ${OL}/>`).join('')}
     <rect x="16" y="44" width="40" height="30" rx="2" fill="${open ? '#ffe9a8' : '#bcd3e6'}" ${OL}/><rect x="66" y="44" width="36" height="42" rx="2" fill="#7b4a2c" ${OL}/><rect x="72" y="50" width="24" height="16" rx="2" fill="${open ? '#ffe9a8' : '#bcd3e6'}"/><circle cx="96" cy="68" r="1.8" fill="#f1c40f"/>`, 'art-store');
 })();

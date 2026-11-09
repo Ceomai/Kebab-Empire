@@ -376,12 +376,14 @@
   function promoCard(S0) {
     const BR = KE.BRAND;
     if (!BR || !BR.promo) return '';
-    const goals = (S0 && S0.daily) || [];
+    /* kapanışta günün özeti henüz yok (finalizeDay'de dolar): hedefleri canlı sayaçlardan, gün bitmiş sayarak hesapla.
+       Bonus (tezgâh) hedefi isteğe bağlı olduğu için kupon şartına girmez. */
+    const goals = KE.dailyProgress(KE.G, true).filter((g) => !g.bonus);
     const P = BR.promoFor(KE.G, goals.filter((g) => g.state === 'done').length, goals.length);
     if (!P) return '';
-    return `<section class="promo"><div class="promo-ic">${IC('gift')}</div><div class="promo-b"><span class="kicker">${esc(P.title || 'Ödül kuponu')}</span><p>${esc(P.text || '')}</p>
-      <div class="promo-code"><b id="promocode">${esc(P.code)}</b><button class="btn sm" data-a="copyPromo">${IC('check')}Kopyala</button>${P.url ? `<a class="btn sm green" href="${esc(P.url)}" target="_blank" rel="noopener">${esc(P.urlLabel || BR.orderLabel || 'Sipariş ver')}</a>` : ''}</div>
-      ${P.terms ? `<small class="muted">${esc(P.terms)}</small>` : ''}</div></section>`;
+    return `<section class="promo"><div class="promo-ic">${IC('gift')}</div><div class="promo-b"><span class="kicker"${P.title ? ' translate="no"' : ''}>${esc(BR.text(P.title) || 'Ödül kuponu')}</span><p translate="no">${esc(BR.text(P.text))}</p>
+      <div class="promo-code"><b id="promocode" translate="no">${esc(P.code)}</b><button class="btn sm" data-a="copyPromo">${IC('check')}Kopyala</button>${P.url ? `<a class="btn sm green" href="${esc(P.url)}" target="_blank" rel="noopener"${P.urlLabel || BR.hasOrderLabel ? ' translate="no"' : ''}>${esc(BR.text(P.urlLabel) || BR.text(BR.orderLabel) || 'Sipariş ver')}</a>` : ''}</div>
+      ${P.terms ? `<small class="muted" translate="no">${esc(BR.text(P.terms))}</small>` : ''}</div></section>`;
   }
   function closeSummary(b, S, sum) {
     const lostAll = S.lostWait + S.lostFull + S.lostFood + S.lostPrice + S.lostStock;

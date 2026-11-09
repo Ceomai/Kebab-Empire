@@ -85,13 +85,15 @@
   function doEl(el) {
     ATTRS.forEach((a) => { if (el.hasAttribute && el.hasAttribute(a)) { const k = 'data-tr-' + a; const v = el.getAttribute(a); const base = el.getAttribute(k) && I.t(el.getAttribute(k)) === v ? el.getAttribute(k) : v; if (!el.hasAttribute(k)) el.setAttribute(k, base); const out = I.t(base); if (out !== v) el.setAttribute(a, out); } });
   }
+  /* translate="no" (marka adı, slogan, kupon): çevrilmez, yalnızca marka adı değişimi uygulanmaz */
+  const noTr = (el) => !!(el && el.closest && el.closest('[translate="no"]'));
   function walk(root) {
-    if (root.nodeType === 3) { if (!/^(SCRIPT|STYLE)$/.test(root.parentNode && root.parentNode.nodeName)) doText(root); return; }
+    if (root.nodeType === 3) { if (!/^(SCRIPT|STYLE)$/.test(root.parentNode && root.parentNode.nodeName) && !noTr(root.parentNode)) doText(root); return; }
     if (root.nodeType !== 1 || /^(SCRIPT|STYLE)$/.test(root.nodeName)) return;
     doEl(root);
     const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
     let n;
-    while ((n = tw.nextNode())) { if (n.nodeType === 3) { if (!/^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName)) doText(n); } else doEl(n); }
+    while ((n = tw.nextNode())) { if (n.nodeType === 3) { if (!/^(SCRIPT|STYLE)$/.test(n.parentNode.nodeName) && !noTr(n.parentNode)) doText(n); } else doEl(n); }
   }
   let obs = null;
   function observe() {
@@ -99,7 +101,7 @@
     obs = new MutationObserver((ms) => {
       if (I.lang === 'tr' && !branded()) return;
       ms.forEach((m) => {
-        if (m.type === 'characterData') doText(m.target);
+        if (m.type === 'characterData') { if (!noTr(m.target.parentNode)) doText(m.target); }
         else if (m.type === 'attributes') doEl(m.target);
         else m.addedNodes.forEach(walk);
       });

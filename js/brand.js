@@ -25,7 +25,31 @@
   B.swaps = [];
   if (B.rival && B.rival !== D.rival) B.swaps.push([D.rival, B.rival]);
   if (B.gameName && B.gameName !== D.gameName) B.swaps.push([D.gameName, B.gameName]);
-  B.swap = (s) => { if (!B.swaps.length || !s) return s; for (const [a, b] of B.swaps) if (s.indexOf(a) >= 0) s = s.split(a).join(b); return s; };
+  /* Türkçe ek uyumu: "Lüks Kebap"ı → "Altın Şiş"i, Kebab Empire'ın → Usta Dürüm Oyunu'nun.
+     Adın ardından gelen ek (tırnaktan ya da kesme işaretinden sonra) yeni ada göre yeniden kurulur. */
+  /** @type {Array<[RegExp, string]>} */
+  const EK = [[/^n?[ıiuü]n$/, 'in'], [/^[ny]?[ıiuü]$/, 'i'], [/^n?[dt][ae]n$/, 'den'], [/^n?[dt][ae]$/, 'de'], [/^[yn]?[ae]$/, 'e'], [/^y?l[ae]$/, 'le']];
+  const reEsc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  B.swaps.forEach((sw) => { sw.push(new RegExp(reEsc(sw[0]) + '(["”]?)([\'’]?)([a-zçğıöşü]{1,3})(?![a-zçğıöşüA-ZÇĞİÖŞÜ])', 'g')); });
+  const reSuffix = (b, q, ap, suf) => {
+    const k = (EK.find(([re]) => re.test(suf)) || [])[1];
+    if (!k || (!q && !ap) || !KE.ek) return b + q + ap + suf;
+    const e = KE.ek(b, k).slice(b.length + 1);
+    return q ? b + q + e : b + ap + e;
+  };
+  B.swap = (s) => {
+    if (!B.swaps.length || !s) return s;
+    for (const [a, b, re] of B.swaps) if (s.indexOf(a) >= 0) s = s.replace(re, (m, q, ap, suf) => reSuffix(b, q, ap, suf)).split(a).join(b);
+    return s;
+  };
+  /* metin alanları tek dil ("...") ya da dile göre ({ tr, en, de }) yazılabilir */
+  B.text = (v) => {
+    if (v == null) return '';
+    if (typeof v === 'string') return v;
+    const lang = (KE.I18N && KE.I18N.lang) || 'tr';
+    return v[lang] || v.tr || v.en || '';
+  };
+  B.hasOrderLabel = !!(injected && injected.orderLabel);
 
   /* şube adı: marka adı tanımlıysa "Marka Semt", değilse oyunun kendi adlandırması */
   B.branchName = (districtName, fallback) => (B.shopName ? `${B.shopName} ${districtName}` : fallback);

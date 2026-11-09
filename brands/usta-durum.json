@@ -2,24 +2,68 @@
   "id": "usta-durum",
   "_not": "ÖRNEK MARKA: hayalidir, satış görüşmelerinde markalı sürümün nasıl görüneceğini göstermek için.",
   "gameName": "Usta Dürüm Oyunu",
-  "nameParts": ["Usta", "Dürüm"],
-  "tagline": "Usta Dürüm'ün mutfağına hoş geldin",
+  "nameParts": [
+    "Usta",
+    "Dürüm"
+  ],
+  "tagline": {
+    "tr": "Usta Dürüm'ün mutfağına hoş geldin",
+    "en": "Welcome to the Usta Dürüm kitchen",
+    "de": "Willkommen in der Küche von Usta Dürüm"
+  },
   "logoUrl": "brands/usta-durum/logo.svg",
-  "colors": { "primary": "#1e6b45", "primaryDeep": "#124a2f", "accent": "#f5b62e", "accentDeep": "#c28a10", "wine": "#124a2f", "flame": "#e2702d" },
+  "colors": {
+    "primary": "#1e6b45",
+    "primaryDeep": "#124a2f",
+    "accent": "#f5b62e",
+    "accentDeep": "#c28a10",
+    "wine": "#124a2f",
+    "flame": "#e2702d"
+  },
   "rival": "Altın Şiş",
   "shopName": "Usta Dürüm",
-  "products": { "et_durum": "Usta Et Dürüm", "tavuk_durum": "Usta Tavuk Dürüm", "iskender": "Usta İskender" },
+  "products": {
+    "et_durum": "Usta Et Dürüm",
+    "tavuk_durum": "Usta Tavuk Dürüm",
+    "iskender": "Usta İskender"
+  },
   "promo": {
-    "title": "Usta Dürüm kuponu",
-    "text": "Günün bütün hedeflerini tamamladın! Bu kodla şubelerimizde dürümde %15 indirim.",
+    "title": {
+      "tr": "Usta Dürüm kuponu",
+      "en": "Usta Dürüm coupon",
+      "de": "Usta-Dürüm-Gutschein"
+    },
+    "text": {
+      "tr": "Günün bütün hedeflerini tamamladın! Bu kodla şubelerimizde dürümde %15 indirim.",
+      "en": "You completed all of today's goals! Use this code for 15% off wraps at our branches.",
+      "de": "Du hast alle Tagesziele erreicht! Mit diesem Code gibt es 15 % Rabatt auf Dürüm in unseren Filialen."
+    },
     "code": "OYUN15",
     "afterDay": 2,
     "needGoals": true,
     "url": "https://example.com/siparis",
-    "urlLabel": "Hemen sipariş ver",
-    "terms": "Örnek kampanyadır. Kod günde bir kez, kasada gösterilerek kullanılır."
+    "urlLabel": {
+      "tr": "Hemen sipariş ver",
+      "en": "Order now",
+      "de": "Jetzt bestellen"
+    },
+    "terms": {
+      "tr": "Örnek kampanyadır. Kod günde bir kez, kasada gösterilerek kullanılır.",
+      "en": "Sample campaign. The code can be used once a day by showing it at the till.",
+      "de": "Beispielaktion. Der Code gilt einmal pro Tag an der Kasse."
+    }
   },
   "orderUrl": "https://example.com/siparis",
-  "orderLabel": "Usta Dürüm'den sipariş ver",
-  "app": { "id": "com.ornek.ustadurum", "name": "Usta Dürüm Oyunu", "themeColor": "#1e6b45", "background": "#f3efe2", "description": "Usta Dürüm'ün döner işletme oyunu" }
+  "orderLabel": {
+    "tr": "Usta Dürüm'den sipariş ver",
+    "en": "Order from Usta Dürüm",
+    "de": "Bei Usta Dürüm bestellen"
+  },
+  "app": {
+    "id": "com.ornek.ustadurum",
+    "name": "Usta Dürüm Oyunu",
+    "themeColor": "#1e6b45",
+    "background": "#f3efe2",
+    "description": "Usta Dürüm'ün döner işletme oyunu"
+  }
 }
