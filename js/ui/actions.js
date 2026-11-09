@@ -28,7 +28,7 @@
   A.closeModal = () => UI.closeModal();
   A.soundMenu = () => { KE.SND.toggle(); UI.closeModal(); A.menu(); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
-  A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">Oyun her gün sonunda bu tarayıcıya kaydedilir.</p></div>
+  A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">${UI.isNative() ? 'Oyun her gün sonunda bu cihaza kaydedilir.' : 'Oyun her gün sonunda bu tarayıcıya kaydedilir.'}</p></div>
     <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="guide">${IC('book')}Oyun kılavuzu</button><button class="btn ghost" data-a="soundMenu">${IC(KE.SND.on ? 'sound' : 'mute')}${KE.SND.on ? 'Ses ve müzik açık · kapat' : 'Ses kapalı · aç'}</button><button class="btn ghost" data-a="guideLevel">${IC('bolt')}<span>Yönlendirme düzeyi:</span> <b>${({ cok: 'Çok', az: 'Az', kapali: 'Sessiz' })[UI.guideLevel()]}</b></button><button class="btn ghost" data-a="view">${IC('eye')}Görünüm ve yazı boyutu</button>${KE.BRAND && KE.BRAND.orderUrl ? `<a class="btn green" href="${esc(KE.BRAND.orderUrl)}" target="_blank" rel="noopener">${IC('store')}<span${KE.BRAND.hasOrderLabel ? ' translate="no"' : ''}>${esc(KE.BRAND.text(KE.BRAND.orderLabel) || 'Sipariş ver')}</span></a>` : ''}<button class="btn ghost" data-a="legal">${IC('lock')}Gizlilik ve koşullar</button><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
   /* Yönlendirme düzeyi: yeni oyuncu her şeyi görür, deneyimli oyuncu yalnızca acil uyarıları */
   UI.guideLevel = () => { try { return localStorage.getItem('kebab-empire-guide') || 'cok'; } catch (e) { return 'cok'; } };
@@ -103,7 +103,7 @@
     const sp = KE.specialDay(KE.G.day);
     setTimeout(() => H.banner(sp ? sp.name + ' başladı!' : 'Kepenkler açıldı!'), 300);
   };
-  A.speed = (d) => { KE.G.speed = +d.v; document.querySelectorAll('.speed button').forEach((x) => x.classList.toggle('on', +(/** @type {HTMLElement} */ (x)).dataset.v === KE.G.speed)); };
+  A.speed = (d) => { KE.G.speed = +d.v; UI.startLoop(); document.querySelectorAll('.speed button').forEach((x) => x.classList.toggle('on', +(/** @type {HTMLElement} */ (x)).dataset.v === KE.G.speed)); };
   A.setPos = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
     if (!s) return;
@@ -245,7 +245,7 @@
     KE.G.staff.push(s); KE.G.workers = KE.G.workers.filter((x) => x.id !== s.id);
     UI.toast(`${s.name} işe başladı.`, 'good'); UI.render();
   };
-  A.raise = (d) => { const s = KE.G.staff.find((x) => x.id === d.id); s.wage = Math.round(s.wage * 1.1 / 100) * 100; s.raisedDay = KE.G.day; s.morale = clamp(s.morale + 12, 0, 100); UI.toast(`${s.name}: "Sağ ol patron!" Yeni brüt: ${KE.tl(s.wage)}`, 'good'); UI.render(); };
+  A.raise = (d) => { const r = KE.raiseStaff(KE.G, KE.G.staff.find((x) => x.id === d.id)); UI.toast(r.msg, r.ok ? 'good' : 'bad'); if (r.ok) UI.render(); };
   A.promote = (d) => { KE.G.flags.promoted = true; const s = KE.G.staff.find((x) => x.id === d.id); s.role = 'usta'; s.pos = 'ocak'; s.name = s.name.replace(/^Çırak /, '') + (s.name.includes('Usta') ? '' : ' Usta'); s.wage = Math.max(s.wage, KE.wageFor(s.spec, 'usta')); s.morale = clamp(s.morale + 25, 0, 100); s.mentorId = null; KE.checkGoals(KE.G).forEach((g) => UI.toast('Hedef tamamlandı: ' + g.name, 'gold')); UI.toast(`${s.name} artık usta!`, 'gold'); UI.render(); };
   A.pickMentor = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
@@ -294,7 +294,7 @@
     UI.toast(amb.concept ? `Konsept açıldı: ${amb.concept.name}!` : `${it.name} yerleştirildi.`, amb.concept ? 'gold' : 'good');
     KE.checkGoals(KE.G); UI.render();
   };
-  A.loan = (d) => { const o = KE.loanOffer(+d.amt, +d.m, 0.034); KE.G.loans.push({ amount: o.amount, monthly: o.monthly, remaining: o.months }); KE.G.cash += o.amount; UI.toast(`${KE.tl(o.amount)} hesabına geçti.`, 'good'); UI.render(); };
+  A.loan = (d) => { const o = KE.loanOffers(KE.G).find((x) => x.amount === +d.amt && x.months === +d.m); if (!o || KE.G.loans.length >= 3) return; KE.G.loans.push({ amount: o.amount, monthly: o.monthly, remaining: o.months }); KE.G.cash += o.amount; UI.toast(`${KE.tl(o.amount)} hesabına geçti.`, 'good'); UI.render(); };
   A.payoff = (d) => { const l = KE.G.loans[+d.i]; const pay = Math.round(l.monthly * l.remaining * 0.93); KE.G.cash -= pay; KE.addExtra(KE.G, 'other', pay); KE.G.loans.splice(+d.i, 1); UI.toast('Kredi kapatıldı.', 'good'); UI.render(); };
   A.hygiene = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); const c = 12000 * KE.G.priceIndex; KE.G.cash -= c; KE.addExtra(KE.G, 'other', c); b.cleanliness = clamp(b.cleanliness + 30, 0, 100); UI.toast('Dükkân pırıl pırıl.', 'good'); UI.render(); };
   A.campaign = (d) => {
@@ -328,7 +328,13 @@
     if (!fn) return;
     e.preventDefault();
     if (KE.G && KE.G.phase === 'morning' && UNDOABLE.has(el.dataset.a)) snap(el);
-    fn(Object.assign({}, el.dataset), el, e);
+    const ret = fn(Object.assign({}, el.dataset), el, e);
+    /* bekleyen (async) işlem: düğme bitene kadar kilitli */
+    if (ret && typeof ret.then === 'function' && el.tagName === 'BUTTON') {
+      el.disabled = true; el.setAttribute('aria-busy', 'true');
+      const done = () => { el.disabled = false; el.removeAttribute('aria-busy'); };
+      ret.then(done, done);
+    }
     UI.undoChip();
   });
   /* ---------- Geri al: sabah, kepenk açılmadan yapılan son işlem ---------- */
@@ -503,13 +509,22 @@
       <p class="small muted">Yarış ayrı kaydedilir, ana oyununa dokunmaz.${H.CL() && KE.CLOUD.ready ? ' Bulut açık: günlerin sunucuda doğrulanır ve haftalık sıralamaya girer.' : ' Bulut kaydı kapalıysa puanın yalnızca bu cihazda tutulur.'}</p>
       <div id="raceboard" class="raceboard"></div>
       <div class="acts"><button class="btn ghost" data-a="closeModal">Kapat</button>${going ? `<button class="btn gold" data-a="raceContinue">${IC('play')}Devam et (${cur.day}. gün)</button>` : ''}<button class="btn green" data-a="raceStart">${IC('play')}${going ? 'Baştan başla' : 'Başla'}</button></div>`);
-    const cl = KE.CLOUD;
-    if (H.CL() && cl.ready && cl.raceBoard) {
-      const rows = await cl.raceBoard(week);
-      const el = document.getElementById('raceboard');
-      if (el && rows.length) el.innerHTML = `<h4>Sıralama</h4><ol>${rows.map((r) => `<li class="${r.is_me ? 'me' : ''}"><b>${esc(r.display_name)}</b><span>${KE.tl(r.revenue)}</span><small>${r.days}/${KE.RACE_DAYS} gün</small></li>`).join('')}</ol>`;
-    }
+    await UI.fillRaceBoard(week);
   };
+  /* Yarış sıralaması: hata ile boş liste ayrı gösterilir */
+  UI.fillRaceBoard = async function (week) {
+    const cl = KE.CLOUD;
+    if (!H.CL() || !cl.ready || !cl.raceBoard) return;
+    let rows;
+    try { rows = await cl.raceBoard(week); } catch (e) {
+      const el = document.getElementById('raceboard');
+      if (el) el.innerHTML = `<p class="small neg">Bağlanılamadı.</p><button class="btn xs ghost" data-a="raceBoardRetry" data-w="${esc(week)}">Tekrar dene</button>`;
+      return;
+    }
+    const el = document.getElementById('raceboard');
+    if (el) el.innerHTML = rows.length ? `<h4>Sıralama</h4><ol>${rows.map((r) => `<li class="${r.is_me ? 'me' : ''}"><b>${esc(r.display_name)}</b><span>${KE.tl(r.revenue)}</span><small>${r.days}/${KE.RACE_DAYS} gün</small></li>`).join('')}</ol>` : '';
+  };
+  A.raceBoardRetry = (d) => UI.fillRaceBoard(d.w);
   A.raceStart = () => {
     if (KE.G && !KE.G.race) UI.save();
     const owner = (KE.G && !KE.G.race && KE.G.owner) || (UI.hall()[0] || {}).owner || 'Patron';
@@ -528,8 +543,7 @@
     UI.modal(`<div class="mhead"><span class="kicker">${IC('target')}Haftanın yarışı · ${week}</span><h2>${KE.RACE_DAYS} gün bitti</h2><p class="lead">Toplam ciro: <b>${KE.tl(score)}</b>${score > prev ? (prev ? ` · yeni rekorun! (önceki ${KE.tl(prev)})` : ' · ilk puanın') : ` · en iyin ${KE.tl(prev)}`}</p></div>
       <div id="raceboard" class="raceboard"></div>
       <div class="acts"><button class="btn green" data-a="raceDone">${IC('arrow')}Ana menüye dön</button></div>`);
-    const cl = KE.CLOUD;
-    if (H.CL() && cl.ready && cl.raceBoard) cl.raceBoard(week).then((rows) => { const el = document.getElementById('raceboard'); if (el && rows.length) el.innerHTML = `<h4>Sıralama</h4><ol>${rows.map((r) => `<li class="${r.is_me ? 'me' : ''}"><b>${esc(r.display_name)}</b><span>${KE.tl(r.revenue)}</span><small>${r.days}/${KE.RACE_DAYS} gün</small></li>`).join('')}</ol>`; });
+    UI.fillRaceBoard(week);
     return true;
   };
   A.raceDone = () => { KE.SAVE.clearRace(); KE.G = null; UI.closeModal(); UI.go('title'); };
@@ -613,7 +627,9 @@
   UI.checkCloud = async function () {
     const cl = CL(); if (!cl || !cl.ready || UI.cloudChecked) return;
     UI.cloudChecked = true;
-    const r = await cl.loadSave(); if (!r || !r.save || !r.save.game) return;
+    const r = await cl.loadSave();
+    if (r && r.error) { UI.cloudChecked = false; return; } // bağlantı yok: sonra tekrar bakılır
+    if (!r || !r.save || !r.save.game) return;
     const local = KE.SAVE.read();
     const cg = r.save.game, lg = local && local.game;
     if (lg && lg.saveId === cg.saveId && lg.day >= cg.day) return;
@@ -624,7 +640,12 @@
       <div class="acts"><button class="btn ghost" data-a="closeModal">Şimdilik kapat</button></div>`);
   };
   A.useCloud = () => { try { const g = KE.SAVE.open(UI.pendingCloud); if (KE.G && KE.G.saveId !== g.saveId) KE.SAVE.exportFile(KE.G); KE.G = g; KE.SAVE.allowRewind = true; UI.save(); UI.closeModal(); UI.go('map'); UI.toast('Buluttaki oyun yüklendi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
-  A.useLocal = () => { const r = KE.SAVE.read(); UI.closeModal(); if (r) { KE.G = r.game; KE.CLOUD.queueSave(KE.SAVE.envelope(r.game)); KE.CLOUD.flushSave(); UI.toast('Bu cihazdaki kayıt buluta yazıldı.', 'good'); } };
+  A.useLocal = async () => {
+    const r = KE.SAVE.read(); UI.closeModal(); if (!r) return;
+    KE.G = r.game; KE.CLOUD.queueSave(KE.SAVE.envelope(r.game));
+    if (await KE.CLOUD.flushSave()) UI.toast('Bu cihazdaki kayıt buluta yazıldı.', 'good');
+    else UI.toast('Buluta yazılamadı. Bağlantı gelince yeniden denenecek.', 'bad');
+  };
   /* Hesap ve gizlilik */
   A.privacy = () => { UI.closeModal(); UI.privacyModal(false); };
   A.consentSave = async () => {
@@ -634,8 +655,21 @@
   A.consentNone = async () => { await KE.CLOUD.setConsent({ cloud: false, analytics: false }); UI.closeModal(); };
   A.linkMail = async () => { const m = /** @type {HTMLInputElement} */ (document.getElementById('cs-mail')).value.trim(); if (!/^\S+@\S+\.\S+$/.test(m)) { UI.toast('Geçerli bir e-posta yaz.', 'bad'); return; } try { await KE.CLOUD.linkEmail(m); UI.toast('Onay bağlantısı e-postana gönderildi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
   A.cloudLoad = async () => {
-    const r = await KE.CLOUD.loadSave(); if (!r) { UI.toast('Bulutta kayıt yok.', 'bad'); return; }
+    const r = await KE.CLOUD.loadSave();
+    if (r && r.error) { UI.toast('Buluta bağlanılamadı. Tekrar dene.', 'bad'); return; }
+    if (!r) { UI.toast('Bulutta kayıt yok.', 'bad'); return; }
     try { const g = KE.SAVE.open(r.save); KE.G = g; KE.SAVE.allowRewind = true; UI.save(); UI.closeModal(); UI.go('map'); UI.toast(`Buluttan yüklendi · ${KE.dateStr(g.day)}`, 'good'); } catch (e) { UI.toast(e.message, 'bad'); }
+  };
+  A.cloudRetry = async () => {
+    await KE.CLOUD.retry();
+    if (!KE.CLOUD.ready) { UI.toast('Buluta bağlanılamadı. Tekrar dene.', 'bad'); return; }
+    UI.toast('Bulut kaydı açık.', 'good'); UI.closeModal(); UI.cloudChecked = false; await UI.checkCloud();
+  };
+  /* Şehir sıralaması bağlanamadı: bulut hiç bağlanmadıysa önce bağlantıyı yeniden dene */
+  A.rankRetry = async () => {
+    const box = document.querySelector('#cityrank .rankmsg'); if (box) box.textContent = 'Yükleniyor…';
+    if (KE.CLOUD.connectionFailed && KE.CLOUD.connectionFailed()) { await KE.CLOUD.retry(); if (KE.CLOUD.ready) { UI.cloudChecked = false; UI.checkCloud(); } }
+    await UI.fillRanking();
   };
   A.deleteData = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Bütün bulut verilerin silinsin mi?</h2><p>Bulut kaydın, sıralama sonuçların, istatistiklerin ve anonim hesabın kalıcı olarak silinir. Bu cihazdaki oyun kalır.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="deleteDataYes">Evet, sil</button></div>`); };
   A.deleteDataYes = async () => { try { await KE.CLOUD.deleteMyData(); UI.closeModal(); UI.toast('Bulut verilerin silindi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };

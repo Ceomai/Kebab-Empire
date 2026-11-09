@@ -106,7 +106,9 @@
   };
 
   const ent = {};
-  let stageId = null;
+  let stageId = null, fxStage = null;
+  /* sahnede aynı anda gösterilecek en çok efekt (birikmiş efektler bir anda yüzlerce div ve ses olmasın) */
+  const FX_MAX = 24;
   S.reset = function () { Object.keys(ent).forEach((k) => delete ent[k]); stageId = null; };
 
   function place(layer, key, html, x, y, cls, z, from) {
@@ -159,7 +161,10 @@
     const stage = document.getElementById('stage');
     if (!stage) return;
     GEO = stage.classList.contains('portrait') ? PORT : LAND;
+    /* yeni çizilmiş sahne ya da şube değişti: önceki efektler bayat */
+    const freshStage = stageId !== b.id || fxStage !== stage;
     if (stageId !== b.id) { S.reset(); stageId = b.id; }
+    fxStage = stage;
     const M = KE.MODES[G.mode];
     const st = KE.branchStaff(G, b);
     const stations = KE.stations(G, b);
@@ -269,6 +274,9 @@
 
     /* efektler */
     const fxL = document.getElementById('st-fx');
+    /* efektler yalnızca sunumdur (motor okumaz): bitmiş gün, hızlı gün ya da şube değişiminde birikmişleri at */
+    if (freshStage || L.done || G.phase !== 'service') L.fx = [];
+    else if (L.fx.length > FX_MAX) L.fx = L.fx.slice(-FX_MAX);
     L.fx.forEach((f) => {
       let x = 50, y = 50;
       const e = f.cid != null ? ent['u' + f.cid] : f.sid ? ent['c' + f.sid] : null;

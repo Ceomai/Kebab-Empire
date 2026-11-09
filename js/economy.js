@@ -140,4 +140,7 @@
     const m = amount * rate / (1 - Math.pow(1 + rate, -months));
     return { amount, months, rate, monthly: Math.round(m), total: Math.round(m * months) };
   };
+  /* Bankanın bugünkü kredi teklifleri (arayüz ve sunucu doğrulaması aynı listeyi kullanır) */
+  KE.LOAN_RATE = 0.034;
+  KE.loanOffers = (G) => [[300000, 12], [750000, 24], [1500000, 36]].map(([a, m]) => KE.loanOffer(Math.round(a * G.priceIndex / 1000) * 1000, m, KE.LOAN_RATE));
 })();

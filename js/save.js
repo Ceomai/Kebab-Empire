@@ -72,8 +72,10 @@
   S.valid = (g) => !!(g && typeof g === 'object' && Array.isArray(g.branches) && g.branches.length && Array.isArray(g.staff) && typeof g.day === 'number' && g.mode && KE.MODES[g.mode]);
 
   S.envelope = function (G) {
-    const game = Object.assign({}, G, { live: null });
-    const body = JSON.stringify(game);
+    const body = JSON.stringify(Object.assign({}, G, { live: null }));
+    /* zarf oyunun anlık kopyasını taşır: bulut kaydı birkaç saniye sonra gönderilir ve bu arada
+       canlı oyun (şubeler, ekip) değişebilir; ortak nesneler sağlama toplamını bozardı */
+    const game = JSON.parse(body);
     return { v: S.VERSION, app: S.APP, savedAt: new Date().toISOString(), day: G.day, tab: S.TAB, sum: S.hash(body), game };
   };
   /* Zarf ya da çıplak oyun: sürümü bul, göç ettir, doğrula */

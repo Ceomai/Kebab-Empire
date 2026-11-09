@@ -1014,6 +1014,9 @@ KE.huyOf = function (s) {
     const m = amount * rate / (1 - Math.pow(1 + rate, -months));
     return { amount, months, rate, monthly: Math.round(m), total: Math.round(m * months) };
   };
+  /* Bankanın bugünkü kredi teklifleri (arayüz ve sunucu doğrulaması aynı listeyi kullanır) */
+  KE.LOAN_RATE = 0.034;
+  KE.loanOffers = (G) => [[300000, 12], [750000, 24], [1500000, 36]].map(([a, m]) => KE.loanOffer(Math.round(a * G.priceIndex / 1000) * 1000, m, KE.LOAN_RATE));
 })();
 
 
@@ -2950,6 +2953,21 @@ KE.huyOf = function (s) {
   const canRaise = (G, s) => G.day - (s.raisedDay || s.hiredDay || 0) >= 60 && s.wage < KE.ECON.asgariBrut * (RAISE_CAP[s.role] || 1.6) * G.priceIndex;
   const raise = (G, x, k) => { x.wage = Math.min(Math.round(x.wage * k / 100) * 100, Math.round(KE.ECON.asgariBrut * (RAISE_CAP[x.role] || 1.6) * G.priceIndex / 100) * 100); x.raisedDay = G.day; };
   KE.canRaise = canRaise;
+  /* Zam neden verilemiyor? null: verilebilir */
+  KE.raiseBlock = function (G, s) {
+    if (canRaise(G, s)) return null;
+    if (s.wage >= KE.ECON.asgariBrut * (RAISE_CAP[s.role] || 1.6) * G.priceIndex) return 'Tavan maaşta';
+    return `Zam için ${60 - (G.day - (s.raisedDay || s.hiredDay || 0))} gün daha`;
+  };
+  /* Oyuncunun verdiği %10 zam: 60 günde bir, rol tavanını aşmadan; moral +12 */
+  KE.raiseStaff = function (G, s) {
+    if (!s) return { ok: false, msg: 'Çalışan bulunamadı.' };
+    const why = KE.raiseBlock(G, s);
+    if (why) return { ok: false, msg: `${s.name}: ${why}.` };
+    raise(G, s, 1.1);
+    s.morale = clamp(s.morale + 12, 0, 100);
+    return { ok: true, msg: `${s.name}: "Sağ ol patron!" Yeni brüt: ${KE.tl(s.wage)}` };
+  };
 
   ev.push({ id: 'rakipTeklif', who: 'rakip', w: 1.2,
     when: (G) => !G.flags.empire && staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),
@@ -3472,8 +3490,10 @@ KE.huyOf = function (s) {
   S.valid = (g) => !!(g && typeof g === 'object' && Array.isArray(g.branches) && g.branches.length && Array.isArray(g.staff) && typeof g.day === 'number' && g.mode && KE.MODES[g.mode]);
 
   S.envelope = function (G) {
-    const game = Object.assign({}, G, { live: null });
-    const body = JSON.stringify(game);
+    const body = JSON.stringify(Object.assign({}, G, { live: null }));
+    /* zarf oyunun anlık kopyasını taşır: bulut kaydı birkaç saniye sonra gönderilir ve bu arada
+       canlı oyun (şubeler, ekip) değişebilir; ortak nesneler sağlama toplamını bozardı */
+    const game = JSON.parse(body);
     return { v: S.VERSION, app: S.APP, savedAt: new Date().toISOString(), day: G.day, tab: S.TAB, sum: S.hash(body), game };
   };
   /* Zarf ya da çıplak oyun: sürümü bul, göç ettir, doğrula */
@@ -3610,8 +3630,17 @@ KE.huyOf = function (s) {
     const okul = ((Cu.charity || {}).okul || 0) - ((P.charity || {}).okul || 0);
     if (Object.entries(P.charity || {}).some(([k, v]) => ((Cu.charity || {})[k] || 0) < v)) return bad('bağış geri alınmış');
     if (okul > 0) maxRep += 3 * okul;
-    const newLoans = (Cu.loans || []).slice((P.loans || []).length).reduce((a, l) => a + (l.amount || 0), 0);
     if ((Cu.loans || []).length < (P.loans || []).length) return bad('kredi silinmiş');
+    // yeni krediler (öncekilerle eşleşmeyenler) bankanın o günkü tekliflerinden biri olmalı
+    const oldLoans = (P.loans || []).slice(), offers = KE.loanOffers(P);
+    const same = (a, b) => a.amount === b.amount && a.monthly === b.monthly && a.remaining === b.remaining;
+    let newLoans = 0;
+    for (const l of Cu.loans || []) {
+      const i = oldLoans.findIndex((o) => same(o, l));
+      if (i >= 0) { oldLoans.splice(i, 1); continue; }
+      if (!offers.some((o) => o.amount === l.amount && o.monthly === l.monthly && o.months === l.remaining)) return bad('kredi teklifle uyuşmuyor');
+      newLoans += l.amount;
+    }
     const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + KE.goalReward(Cu, KE.GOALS.find((g) => g.id === k) || {}), 0);
     if (Cu.cash > maxCash + newLoans + goalCash + 1) return bad('kasa açıklanamayan biçimde arttı');
     if (Cu.reputation > maxRep + 0.6) return bad('itibar artmış');

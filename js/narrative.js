@@ -100,6 +100,21 @@
   const canRaise = (G, s) => G.day - (s.raisedDay || s.hiredDay || 0) >= 60 && s.wage < KE.ECON.asgariBrut * (RAISE_CAP[s.role] || 1.6) * G.priceIndex;
   const raise = (G, x, k) => { x.wage = Math.min(Math.round(x.wage * k / 100) * 100, Math.round(KE.ECON.asgariBrut * (RAISE_CAP[x.role] || 1.6) * G.priceIndex / 100) * 100); x.raisedDay = G.day; };
   KE.canRaise = canRaise;
+  /* Zam neden verilemiyor? null: verilebilir */
+  KE.raiseBlock = function (G, s) {
+    if (canRaise(G, s)) return null;
+    if (s.wage >= KE.ECON.asgariBrut * (RAISE_CAP[s.role] || 1.6) * G.priceIndex) return 'Tavan maaşta';
+    return `Zam için ${60 - (G.day - (s.raisedDay || s.hiredDay || 0))} gün daha`;
+  };
+  /* Oyuncunun verdiği %10 zam: 60 günde bir, rol tavanını aşmadan; moral +12 */
+  KE.raiseStaff = function (G, s) {
+    if (!s) return { ok: false, msg: 'Çalışan bulunamadı.' };
+    const why = KE.raiseBlock(G, s);
+    if (why) return { ok: false, msg: `${s.name}: ${why}.` };
+    raise(G, s, 1.1);
+    s.morale = clamp(s.morale + 12, 0, 100);
+    return { ok: true, msg: `${s.name}: "Sağ ol patron!" Yeni brüt: ${KE.tl(s.wage)}` };
+  };
 
   ev.push({ id: 'rakipTeklif', who: 'rakip', w: 1.2,
     when: (G) => !G.flags.empire && staffOf(G).some((s) => s.role === 'usta' && s.morale < 55 && canRaise(G, s)),

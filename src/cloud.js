@@ -63,20 +63,24 @@ async function upsertProfile(c) {
 
 C.init = async function () {
   if (!C.enabled) return;
-  sb = createClient(URL, KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+  if (!sb) sb = createClient(URL, KEY, { auth: { persistSession: true, autoRefreshToken: true } });
   const c = C.consent();
+  C.initFailed = false;
   if (c && c.cloud) {
-    try { await ensureUser(); await upsertProfile(c); C.ready = true; } catch (e) { C.lastError = e.message; }
+    try { await ensureUser(); await upsertProfile(c); C.ready = true; C.lastError = null; } catch (e) { C.lastError = e.message; C.initFailed = true; }
   }
 };
+/* Rıza verilmiş ama bağlantı kurulamamış: arayüz "bulut kaydını aç" yerine bağlantı hatası gösterir */
+C.connectionFailed = () => !!(C.enabled && !C.ready && C.initFailed && (C.consent() || {}).cloud);
+C.retry = async function () { await C.init(); return C.ready; };
 
 /* Rıza ekranından gelir: { cloud, analytics, name } */
 C.setConsent = async function (c) {
   const v = { cloud: !!c.cloud, analytics: !!(c.cloud && c.analytics), name: (c.name || '').trim().slice(0, 24) || null, at: new Date().toISOString() };
   localStorage.setItem(CONSENT_KEY, JSON.stringify(v));
   if (!C.enabled) return v;
-  if (v.cloud) { await ensureUser(); await upsertProfile(v); C.ready = true; }
-  else C.ready = false;
+  if (v.cloud) { await ensureUser(); await upsertProfile(v); C.ready = true; C.initFailed = false; }
+  else { C.ready = false; C.initFailed = false; }
   return v;
 };
 
@@ -88,17 +92,29 @@ C.queueSave = function (env) {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(C.flushSave, 4000);
 };
+/* true: yazıldı (ya da yazılacak bir şey yoktu), false: yazılamadı; zarf bir sonraki denemeye kalır */
 C.flushSave = async function () {
-  if (!C.ready || !pendingEnv) return;
+  if (!C.ready || !pendingEnv) return !pendingEnv;
+  clearTimeout(saveTimer);
   const env = pendingEnv; pendingEnv = null;
-  const r = await sb.from('saves').upsert({ user_id: C.user.id, save_id: env.game.saveId, version: env.v, day: env.day, save: env, updated_at: new Date().toISOString() });
-  if (r.error) C.lastError = r.error.message;
+  let err = null;
+  try {
+    const r = await sb.from('saves').upsert({ user_id: C.user.id, save_id: env.game.saveId, version: env.v, day: env.day, save: env, updated_at: new Date().toISOString() });
+    if (r && r.error) err = r.error.message || 'kayıt yazılamadı';
+  } catch (e) { err = (e && e.message) || String(e); }
+  if (!err) return true;
+  C.lastError = err;
+  if (!pendingEnv) pendingEnv = env; // bu arada daha yeni bir kayıt gelmediyse tekrar denensin
+  return false;
 };
+/* { save, day, updated_at } | null (bulutta kayıt yok) | { error } (bağlantı/sorgu hatası) */
 C.loadSave = async function () {
-  if (!C.ready) return null;
-  const r = await sb.from('saves').select('save, day, updated_at').eq('user_id', C.user.id).maybeSingle();
-  if (r.error || !r.data) return null;
-  return r.data;
+  if (!C.ready) return { error: 'bulut hazır değil' };
+  try {
+    const r = await sb.from('saves').select('save, day, updated_at').eq('user_id', C.user.id).maybeSingle();
+    if (r.error) { C.lastError = r.error.message; return { error: r.error.message }; }
+    return r.data || null;
+  } catch (e) { C.lastError = e.message; return { error: e.message || String(e) }; }
 };
 
 /* ---------- Gün sonucu ve doğrulama ---------- */
@@ -116,21 +132,28 @@ C.submitDay = async function (p) {
   return v.data || null;
 };
 
-/* ---------- Sıralama ---------- */
+/* ---------- Sıralama ----------
+   Başarıda satır dizisi döner; bağlantı/sorgu hatası ya da zaman aşımında hata fırlatır
+   (arayüz "henüz sonuç yok" ile "bağlanılamadı"yı ayırabilsin). */
+const TIMEOUT_MS = 10000;
+function rows(q) {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('zaman aşımı')), TIMEOUT_MS);
+    Promise.resolve(q).then((r) => { clearTimeout(t); if (r && r.error) reject(new Error(r.error.message || 'sorgu hatası')); else resolve((r && r.data) || []); },
+      (e) => { clearTimeout(t); reject(e); });
+  });
+}
 C.leaderboard = async function (month, mode) {
   if (!sb) return [];
-  const r = await sb.from('leaderboard_month').select('*').eq('game_month', month).eq('mode', mode).order('revenue', { ascending: false }).limit(20);
-  return r.data || [];
+  return rows(sb.from('leaderboard_month').select('*').eq('game_month', month).eq('mode', mode).order('revenue', { ascending: false }).limit(20));
 };
 C.raceBoard = async function (week) {
   if (!sb) return [];
-  const r = await sb.from('leaderboard_race').select('*').eq('race', week).order('revenue', { ascending: false }).limit(20);
-  return r.data || [];
+  return rows(sb.from('leaderboard_race').select('*').eq('race', week).order('revenue', { ascending: false }).limit(20));
 };
 C.champions = async function (month) {
   if (!sb) return [];
-  const r = await sb.from('district_champions').select('*').eq('game_month', month);
-  return r.data || [];
+  return rows(sb.from('district_champions').select('*').eq('game_month', month));
 };
 
 /* ---------- Ölçüm ---------- */

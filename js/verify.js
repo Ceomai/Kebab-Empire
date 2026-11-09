@@ -45,8 +45,17 @@
     const okul = ((Cu.charity || {}).okul || 0) - ((P.charity || {}).okul || 0);
     if (Object.entries(P.charity || {}).some(([k, v]) => ((Cu.charity || {})[k] || 0) < v)) return bad('bağış geri alınmış');
     if (okul > 0) maxRep += 3 * okul;
-    const newLoans = (Cu.loans || []).slice((P.loans || []).length).reduce((a, l) => a + (l.amount || 0), 0);
     if ((Cu.loans || []).length < (P.loans || []).length) return bad('kredi silinmiş');
+    // yeni krediler (öncekilerle eşleşmeyenler) bankanın o günkü tekliflerinden biri olmalı
+    const oldLoans = (P.loans || []).slice(), offers = KE.loanOffers(P);
+    const same = (a, b) => a.amount === b.amount && a.monthly === b.monthly && a.remaining === b.remaining;
+    let newLoans = 0;
+    for (const l of Cu.loans || []) {
+      const i = oldLoans.findIndex((o) => same(o, l));
+      if (i >= 0) { oldLoans.splice(i, 1); continue; }
+      if (!offers.some((o) => o.amount === l.amount && o.monthly === l.monthly && o.months === l.remaining)) return bad('kredi teklifle uyuşmuyor');
+      newLoans += l.amount;
+    }
     const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + KE.goalReward(Cu, KE.GOALS.find((g) => g.id === k) || {}), 0);
     if (Cu.cash > maxCash + newLoans + goalCash + 1) return bad('kasa açıklanamayan biçimde arttı');
     if (Cu.reputation > maxRep + 0.6) return bad('itibar artmış');

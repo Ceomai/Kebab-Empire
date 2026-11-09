@@ -169,20 +169,32 @@
 
   /* ---------- Canlı döngü ---------- */
   let acc = 0, lastT = 0;
+  /* 50 ms'lik döngü yalnızca servis sürerken ve sayfa görünürken çalışır */
   UI.startLoop = function () {
-    if (UI.timer) return;
+    if (UI.timer || document.visibilityState === 'hidden' || !KE.G || KE.G.phase !== 'service') return;
     lastT = performance.now();
     UI.timer = setInterval(loop, 50);
   };
+  UI.stopLoop = function () { if (UI.timer) { clearInterval(UI.timer); UI.timer = null; } };
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') UI.stopLoop(); else UI.startLoop(); });
+  /* görünmeyen şubelerin efektleri birikmesin (efekt yalnızca sunumdur; motor okumaz) */
+  const FX_KEEP = 10;
+  function trimFx() {
+    Object.keys(KE.G.live).forEach((id) => {
+      const L = KE.G.live[id];
+      if (L && L.fx && L.fx.length > FX_KEEP && (id !== KE.G.activeBranch || UI.screen !== 'shop')) L.fx.splice(0, L.fx.length - FX_KEEP);
+    });
+  }
   function loop() {
     const now = performance.now();
     const dt = Math.min(200, now - lastT); lastT = now;
-    if (!KE.G || KE.G.phase !== 'service' || !KE.G.live) return;
+    if (!KE.G || KE.G.phase !== 'service' || !KE.G.live) { UI.stopLoop(); return; }
     if (document.querySelector('.modal-bg') || document.querySelector('.tut')) return;
     if (!KE.G.speed) return;
     acc += dt * KE.G.speed;
     let ticked = false;
     while (acc >= KE.MINUTE_MS) { acc -= KE.MINUTE_MS; KE.tickAll(KE.G); ticked = true; if (KE.allDone(KE.G) || KE.midPending(KE.G)) break; }
+    if (ticked) trimFx();
     if (KE.midPending(KE.G)) { acc = 0; showMid(); return; }
     if (ticked) {
       const L = KE.G.live[KE.G.activeBranch];
@@ -191,6 +203,7 @@
     }
     if (KE.allDone(KE.G)) {
       KE.finishService(KE.G);
+      UI.stopLoop();
       UI.render();
       showClosing();
     }

@@ -41,6 +41,11 @@
       return `<span class="cap ${full ? 'full' : ''}"><small>${KE.STAFF_GROUPS[g].name}</small><b>${used}/${caps[g]}</b></span>`;
     }).join('')}<span class="cap-h">${groups.some((g) => KE.branchStaff(KE.G, b).filter((s) => KE.staffGroup(s.role) === g).length >= caps[g]) ? '<b>Kadro dolu:</b> yeni kişi almak için Mobilya ve Dekor\'dan yer aç ya da Kadrom sekmesinden birini çıkar.' : 'Dükkânın ocağı ve salonu büyüdükçe kadro genişler.'}</span></div>`;
   }
+  /* %10 zam: 60 günde bir ve rol tavanına kadar; verilemiyorsa neden verilemediği yazar */
+  const raiseBtn = (s) => {
+    const why = KE.raiseBlock(KE.G, s);
+    return `<button class="btn xs ghost" data-a="raise" data-id="${s.id}"${why ? ` disabled title="${esc(why)}" aria-label="%10 zam · ${esc(why)}"` : ''}>${IC('coin')}%10 zam</button>`;
+  };
   const hireBtn = (b, s, label, extraDisabled) => {
     const ch = KE.canHire(KE.G, b, s.role || 'usta');
     if (!ch.ok) return `<button class="btn ghost locked" data-a="capFull" data-r="${s.role || 'usta'}" title="${esc(ch.hint)}">${IC('lock')}${KE.STAFF_GROUPS[ch.group].name} dolu</button>`;
@@ -51,7 +56,7 @@
     const mine = KE.G.staff.filter(KE.isCook);
     const tab = UI.params.tab || 'pazar';
     const actions = (s) => {
-      let a = `<button class="btn xs ghost" data-a="raise" data-id="${s.id}">${IC('coin')}%10 zam</button>`;
+      let a = raiseBtn(s);
       if (s.role === 'cirak') {
         a += `<button class="btn xs ghost" data-a="pickMentor" data-id="${s.id}">${IC('chef')}${s.mentorId ? 'Mentor: ' + esc(((KE.G.staff.find((x) => x.id === s.mentorId) || {}).name || '').replace(' Usta', '')) : 'Mentor seç'}</button>`;
         if (Object.values(s.spec).some((v) => v >= 3)) a += `<button class="btn xs gold" data-a="promote" data-id="${s.id}">${IC('star')}Terfi</button>`;
@@ -74,7 +79,7 @@
     const tr = KE.TRAITS[s.trait];
     let acts;
     if (own) {
-      acts = `<button class="btn xs ghost" data-a="raise" data-id="${s.id}">${IC('coin')}%10 zam</button>`;
+      acts = raiseBtn(s);
       if (KE.G.branches.length > 1 && KE.G.phase === 'morning') acts += `<button class="btn xs ghost" data-a="pickTransfer" data-id="${s.id}">${IC('swap')}Şube</button>`;
       if (KE.G.phase === 'morning') acts += `<button class="btn xs red" data-a="fire" data-id="${s.id}">Çıkar</button>`;
     } else acts = hireBtn(b, s, 'İşe al');
@@ -142,7 +147,7 @@
 
   /* ---------- Banka ---------- */
   SCREENS.banka = () => {
-    const offers = [[300000, 12], [750000, 24], [1500000, 36]].map(([a, m]) => KE.loanOffer(Math.round(a * KE.G.priceIndex / 1000) * 1000, m, 0.034));
+    const offers = KE.loanOffers(KE.G);
     return `<main class="screen">${head('Banka', 'Esnaf kredisi · aylık %3,4 faiz, eşit taksit', null, 'banker')}
       <section class="panel"><div class="sechead"><h2>Kredi teklifleri</h2></div><div class="grid g3">${offers.map((o) => `<article class="card loan"><small class="muted">${o.months} ay vade</small><b class="big">${KE.tl(o.amount)}</b><div class="statl"><span>Taksit</span><b>${KE.tl(o.monthly)}</b></div><div class="statl"><span>Toplam</span><b>${KE.tl(o.total)}</b></div><button class="btn sm green block" data-a="loan" data-amt="${o.amount}" data-m="${o.months}" ${KE.G.loans.length >= 3 ? 'disabled' : ''}>Kullan</button></article>`).join('')}</div>${KE.G.loans.length >= 3 ? '<p class="small neg">En fazla 3 kredi kullanabilirsin.</p>' : ''}</section>
       <section class="panel"><div class="sechead"><h2>Kredilerim</h2></div><div class="grid g3">${KE.G.loans.map((l, i) => { const pay = Math.round(l.monthly * l.remaining * 0.93); return `<article class="card loan"><b class="big">${KE.tl(l.amount)}</b><div class="statl"><span>Taksit</span><b>${KE.tl(l.monthly)}</b></div><div class="statl"><span>Kalan</span><b>${l.remaining} ay</b></div><button class="btn sm ghost block" data-a="payoff" data-i="${i}" ${KE.G.cash < pay ? 'disabled' : ''}>Erken kapat · ${KE.tl(pay)}</button></article>`; }).join('') || '<p class="muted">Kredi yok.</p>'}</div></section></main>`;
@@ -291,17 +296,23 @@
       <div class="note">${IC('users')}<span>Yeni şubeye Usta Pazarı'ndan bir usta, Eleman Bürosu'ndan kasiyer ve komi/garson al. Müdür, ekibi yoğunluğa göre kendisi yönetir. Ustasız şube kepenk açamaz.</span></div>
       ${KE.G.branches.length >= 3 ? `<section class="panel row between"><div><h2>Merkezi mutfak</h2><p class="small muted">Döner ve kıyma merkezde hazırlanıp şubelere dağıtılır. Malzeme maliyeti %12 düşer.</p></div>${KE.G.centralKitchen ? `<span class="chip gr">${IC('check')}Kuruldu</span>` : `<button class="btn green" data-a="central" ${KE.G.cash < 450000 * KE.G.priceIndex ? 'disabled' : ''}>${KE.tl(450000 * KE.G.priceIndex)}</button>`}</section>` : ''}
       <div class="grid g3">${cards}</div>
-      ${CL() ? `<section class="panel" id="cityrank"><div class="sechead"><h2>Şehir sıralaması</h2><span class="muted small">Bu ay, doğrulanmış günlere göre bütün oyuncular</span></div><p class="small muted">Yükleniyor…</p></section>` : ''}</main>`;
+      ${CL() ? `<section class="panel" id="cityrank"><div class="sechead"><h2>Şehir sıralaması</h2><span class="muted small">Bu ay, doğrulanmış günlere göre bütün oyuncular</span></div><p class="small muted rankmsg">Yükleniyor…</p></section>` : ''}</main>`;
   };
   /* Şehir sıralaması (bulut açıksa, sayfa çizildikten sonra doldurulur) */
   UI.fillRanking = async function () {
     const box = document.getElementById('cityrank'); const cl = CL();
     if (!box || !cl) return;
-    if (!cl.ready) { box.querySelector('p').innerHTML = `Sıralamaya katılmak için bulut kaydını aç. <button class="btn xs" data-a="privacy">Hesap ve gizlilik</button>`; return; }
+    const msg = box.querySelector('p.rankmsg') || box.querySelector('p');
+    const fail = () => { const m = box.querySelector('p.rankmsg') || box.querySelector('p'); if (m) m.outerHTML = `<p class="small muted rankmsg"><span class="neg">Bağlanılamadı.</span> <button class="btn xs ghost" data-a="rankRetry">Tekrar dene</button></p>`; };
+    if (!cl.ready) {
+      if (cl.connectionFailed && cl.connectionFailed()) { fail(); return; }
+      msg.innerHTML = `Sıralamaya katılmak için bulut kaydını aç. <button class="btn xs" data-a="privacy">Hesap ve gizlilik</button>`; return;
+    }
     const month = KE.monthKey(KE.G.day);
-    const [rows, champs] = await Promise.all([cl.leaderboard(month, KE.G.mode), cl.champions(month)]);
+    let rows, champs;
+    try { [rows, champs] = await Promise.all([cl.leaderboard(month, KE.G.mode), cl.champions(month)]); } catch (e) { if (document.getElementById('cityrank')) fail(); return; }
     if (!document.getElementById('cityrank')) return;
-    box.querySelector('p').outerHTML = (rows.length ? `<ol class="rank">${rows.map((r, i) => `<li class="${r.is_me ? 'me' : ''}"><b>${i + 1}</b><span>${esc(r.display_name)}</span><em>${KE.tl(r.revenue)}</em><small>${r.days} gün · itibar ${r.reputation}</small></li>`).join('')}</ol>` : '<p class="small muted">Bu ay henüz doğrulanmış sonuç yok. Günü bitirdiğinde sonucun buraya gelir.</p>')
+    (box.querySelector('p.rankmsg') || box.querySelector('p')).outerHTML = (rows.length ? `<ol class="rank">${rows.map((r, i) => `<li class="${r.is_me ? 'me' : ''}"><b>${i + 1}</b><span>${esc(r.display_name)}</span><em>${KE.tl(r.revenue)}</em><small>${r.days} gün · itibar ${r.reputation}</small></li>`).join('')}</ol>` : '<p class="small muted">Bu ay henüz doğrulanmış sonuç yok. Günü bitirdiğinde sonucun buraya gelir.</p>')
       + (champs.length ? `<h3>Semt şampiyonları</h3><div class="chips">${champs.map((c) => `<span class="chip gd">${esc((KE.DISTRICTS.find((d) => d.id === c.district) || {}).name || c.district)}: ${esc(c.display_name)}</span>`).join('')}</div>` : '');
   };
   /* KVKK aydınlatma ve rıza */
@@ -310,6 +321,7 @@
     const c = cl.consent() || {};
     UI.modal(`<div class="mhead"><h2>${first ? 'Hoş geldin!' : 'Hesap ve gizlilik'}</h2><p class="muted">Oyun her zaman bu cihaza kaydedilir. Aşağıdakiler isteğe bağlıdır; istediğin zaman kapatabilirsin.</p></div>
       <div class="stack">
+        ${cl.connectionFailed && cl.connectionFailed() ? `<p class="small rankmsg"><span class="neg">Buluta bağlanılamadı.</span> <button class="btn xs ghost" data-a="cloudRetry">Tekrar dene</button></p>` : ''}
         <label class="switch lbl"><input type="checkbox" id="cs-cloud" ${c.cloud ? 'checked' : ''}><i></i><span><b>Bulut kaydı ve şehir sıralaması</b><small>Anonim bir hesap açılır. Kaydın bulutta yedeklenir, gün sonuçların takma adınla sıralamaya girer. E-posta istenmez.</small></span></label>
         <label class="field">Sıralamada görünecek takma ad<input id="cs-name" maxlength="24" value="${esc(c.name || (KE.G && KE.G.owner) || '')}" placeholder="Örn. Deniz Usta"></label>
         <label class="switch lbl"><input type="checkbox" id="cs-an" ${c.analytics ? 'checked' : ''}><i></i><span><b>Kullanım istatistikleri</b><small>Hangi ekranların kullanıldığı ve oyunun nerede zorlandığı gibi bilgiler. Kişisel veri, konum ya da reklam kimliği toplanmaz.</small></span></label>
