@@ -6,3 +6,4 @@ coverage
 dist-*
 reports/screens/
 .brand-applied.json
+.brand-backup/

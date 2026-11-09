@@ -62,8 +62,8 @@ Bilinen sınır: ek uyumu yalnızca addan hemen sonra tırnak ya da kesme işare
 - iOS: `brands/<id>/ios-icon.png` (1024×1024, saydamsız PNG).
 - Web/PWA simgeleri `public/icons/` altında; markalı yayında onları da değiştir.
 - **Açılış ekranı (splash):** Android için `brands/<id>/android-res/drawable*/splash.png` koyarsan betik onu da kopyalar. iOS açılış ekranı (`ios/App/App/Assets.xcassets/Splash.imageset/`) elle değiştirilir.
-- `android-res` içinden yalnızca `mipmap-*` ve `drawable*` klasörleri kopyalanır; başka klasörler atlanır.
-- Betik kopyaladığı dosyaları `.brand-applied.json` kaydına yazar (depoya girmez). Başka bir marka ya da `npm run brand default` çalıştırıldığında yalnızca bu dosyalar geri alınır: depodaki dosya özgün hâline döner, markanın eklediği dosya silinir. Kaydın dışındaki dosyalara (kendi notların, elle eklediğin simgeler) dokunulmaz. Elle değiştirdiğin iOS açılış ekranını ayrıca geri al.
+- `android-res` içinden yalnızca `mipmap-*` ve `drawable*` klasörlerindeki dosyalar kopyalanır; başka klasörler ve alt klasörler atlanır.
+- Betik üzerine yazdığı özgün dosyaları `.brand-backup/` altına alır ve kopyaladığı dosyaları `.brand-applied.json` kaydına yazar (ikisi de depoya girmez; git gerekmez). Başka bir marka ya da `npm run brand default` çalıştırıldığında yalnızca bu dosyalar geri alınır: özgün dosya yedekten döner, markanın eklediği dosya silinir. Bu iki dosyayı/klasörü elle silme. Kaydın dışındaki dosyalara (kendi notların, elle eklediğin simgeler) dokunulmaz. Elle değiştirdiğin iOS açılış ekranını ayrıca geri al.
 
 Markalı web derlemesinde sekme başlığı, iOS ana ekran adı (`apple-mobile-web-app-title`), açıklama ve tema rengi `index.html` içinde kendiliğinden markanınkiyle değişir.
 

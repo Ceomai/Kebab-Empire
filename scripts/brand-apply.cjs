@@ -5,7 +5,6 @@
                             brands/<id>/ios-icon.png  → iOS uygulama simgesi (1024×1024, saydamsız PNG) */
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
 const { loadBrand } = require('./brand-validate.cjs');
 
 const id = process.argv[2];
@@ -38,43 +37,53 @@ edit('android/app/build.gradle', (s) => s.replace(/applicationId "[^"]*"/, `appl
 edit('ios/App/App/Info.plist', (s) => s.replace(/(<key>CFBundleDisplayName<\/key>\s*<string>)[^<]*(<\/string>)/, (m, a, b) => a + xml(app.name) + b));
 edit('ios/App/App.xcodeproj/project.pbxproj', (s) => s.replace(/PRODUCT_BUNDLE_IDENTIFIER = [^;]*;/g, `PRODUCT_BUNDLE_IDENTIFIER = ${app.id};`));
 
-/* Simgeler: markanın kopyaladığı dosyalar .brand-applied.json kaydına yazılır. Bir sonraki çalıştırmada
-   (başka marka ya da "default") yalnızca bu dosyalar geri alınır: depoda olan dosya git'teki hâline döner,
-   depoda olmayan (markanın eklediği) dosya silinir. Kaydın dışındaki hiçbir dosyaya dokunulmaz. */
+/* Simgeler: markanın üzerine yazdığı özgün dosyalar önce .brand-backup/ altına alınır ve kopyalanan her dosya
+   .brand-applied.json kaydına yazılır. Bir sonraki çalıştırmada (başka marka ya da "default") yalnızca kayıttaki
+   dosyalar geri alınır: yedeği olan özgün hâline döner, yedeği olmayan (markanın eklediği) dosya silinir.
+   Git gerekmez; kaydın dışındaki hiçbir dosyaya dokunulmaz. */
 const LOG = '.brand-applied.json';
-const tracked = (f) => { try { execFileSync('git', ['ls-files', '--error-unmatch', '--', f], { stdio: 'ignore' }); return true; } catch (e) { return false; } };
+const BAK = '.brand-backup';
+const SAFE = /^(android\/app\/src\/main\/res\/(mipmap|drawable)[^/]*\/|ios\/App\/App\/Assets\.xcassets\/AppIcon\.appiconset\/)[^/]+$/;
 if (fs.existsSync(LOG)) {
   let prev = null;
   try { prev = JSON.parse(fs.readFileSync(LOG, 'utf8')); } catch (e) { prev = null; }
   const files = prev && Array.isArray(prev.files) ? prev.files : [];
-  let failed = 0;
-  for (const f of files) {
-    /* yalnızca simge ve açılış klasörlerindeki göreli yollar */
-    if (typeof f !== 'string' || f.includes('..') || !/^(android\/app\/src\/main\/res\/(mipmap|drawable)[^/]*\/|ios\/App\/App\/Assets\.xcassets\/AppIcon\.appiconset\/)[^/]+$/.test(f)) continue;
-    if (tracked(f)) { try { execFileSync('git', ['checkout', '--', f], { stdio: 'ignore' }); } catch (e) { failed++; } }
+  let missing = 0;
+  for (const it of files) {
+    const f = it && it.file;
+    if (typeof f !== 'string' || f.includes('..') || !SAFE.test(f)) continue;
+    const b = path.join(BAK, f);
+    if (it.backup) { if (fs.existsSync(b)) fs.copyFileSync(b, f); else missing++; }
     else if (fs.existsSync(f)) { fs.rmSync(f); const d = path.dirname(f); if (fs.existsSync(d) && !fs.readdirSync(d).length) fs.rmdirSync(d); }
   }
-  if (failed) console.warn(`Uyarı: ${failed} simge dosyası git ile geri alınamadı.`);
-  fs.rmSync(LOG);
+  if (missing) { console.error(`Hata: ${missing} özgün simgenin yedeği ${BAK}/ altında yok; kayıt ve yedek silinmedi, dosyaları elle geri yükle.`); process.exit(1); }
+  fs.rmSync(LOG); fs.rmSync(BAK, { recursive: true, force: true });
   if (files.length) changed.push(`önceki markanın ${files.length} simge dosyası geri alındı`);
 }
 const copied = [];
-const copyTree = (src, dst) => {
-  for (const e of fs.readdirSync(src, { withFileTypes: true })) {
-    const s2 = path.join(src, e.name), d2 = dst + '/' + e.name;
-    if (e.isDirectory()) { if (!/^(mipmap|drawable)/.test(e.name) && dst.endsWith('/res')) { console.warn('Atlandı (yalnızca mipmap-* ve drawable-* kopyalanır): ' + s2); continue; } fs.mkdirSync(d2, { recursive: true }); copyTree(s2, d2); }
-    else if (e.isFile() && !dst.endsWith('/res')) { fs.copyFileSync(s2, d2); copied.push(d2); }
-  }
+const place = (src, dst) => {
+  const hadOriginal = fs.existsSync(dst);
+  if (hadOriginal) { const b = path.join(BAK, dst); fs.mkdirSync(path.dirname(b), { recursive: true }); fs.copyFileSync(dst, b); }
+  fs.mkdirSync(path.dirname(dst), { recursive: true });
+  fs.copyFileSync(src, dst);
+  copied.push({ file: dst, backup: hadOriginal });
 };
+const RES = 'android/app/src/main/res';
 const ares = path.join('brands', id, 'android-res');
-if (fs.existsSync(ares) && fs.existsSync('android/app/src/main/res')) {
-  copyTree(ares, 'android/app/src/main/res');
-  changed.push('android/app/src/main/res (simgeler; geri dönmek için: npm run brand default)');
+if (fs.existsSync(ares) && fs.existsSync(RES)) {
+  for (const d of fs.readdirSync(ares, { withFileTypes: true })) {
+    if (!d.isDirectory() || !/^(mipmap|drawable)/.test(d.name)) { console.warn('Atlandı (yalnızca mipmap-* ve drawable* klasörleri kopyalanır): ' + path.join(ares, d.name)); continue; }
+    for (const f of fs.readdirSync(path.join(ares, d.name), { withFileTypes: true })) {
+      if (!f.isFile()) { console.warn('Atlandı (kaynak klasöründe alt klasör olamaz): ' + path.join(ares, d.name, f.name)); continue; }
+      place(path.join(ares, d.name, f.name), `${RES}/${d.name}/${f.name}`);
+    }
+  }
+  changed.push(RES + ' (simgeler; geri dönmek için: npm run brand default)');
 }
 const IOS_ICON = 'ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png';
 const iicon = path.join('brands', id, 'ios-icon.png');
 if (fs.existsSync(iicon) && fs.existsSync(path.dirname(IOS_ICON))) {
-  fs.copyFileSync(iicon, IOS_ICON); copied.push(IOS_ICON);
+  place(iicon, IOS_ICON);
   changed.push('iOS uygulama simgesi');
 }
 if (copied.length) fs.writeFileSync(LOG, JSON.stringify({ id, files: copied }, null, 2) + '\n');
