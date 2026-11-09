@@ -164,7 +164,7 @@
         <section class="panel crewcell"><div class="sechead"><h2>Ekip</h2></div><div id="crew">${crewPanel(b, true)}</div></section>
         <aside class="stack side">
           <div class="panel clockpanel"><div class="row between"><div><small class="muted">${esc(b.name)}</small><div class="bigclock" id="clock">${L ? KE.clock(Math.min(L.minute, KE.MINUTES)) : '23:00'}</div></div><div class="jar" title="Bahşiş kavanozu"><i id="jar"></i></div></div>
-            ${closing ? `<button class="btn big green block" data-a="showClosing">${IC('chart')}Kapanış raporu</button>` : `<div class="speed seg" role="group" aria-label="Oyun hızı">${[[0, 'stop', 'Dur'], [1, 'play', '1×'], [2, 'ff', '2×'], [4, 'ff', '4×']].map(([v, ic, l]) => `<button class="${KE.G.speed === v ? 'on' : ''}" data-a="speed" data-v="${v}">${IC(ic)}<span>${l}</span></button>`).join('')}</div>`}
+            ${closing ? `<button class="btn big green block" data-a="showClosing">${IC('chart')}Kapanış raporu</button>` : `<div class="speed seg" role="group" aria-label="Oyun hızı">${[[0, 'stop', 'Dur'], [1, 'play', '1×'], [2, 'ff', '2×'], [4, 'ff', '4×']].map(([v, ic, l]) => `<button class="${KE.G.speed === v ? 'on' : ''} ${v ? '' : 'sp-stop'}" data-a="speed" data-v="${v}" aria-pressed="${KE.G.speed === v}">${IC(ic)}<span>${l}</span></button>`).join('')}</div>`}
           </div>
           <div class="panel" id="livestats"></div>
           ${closing ? '' : `<div class="panel stack"><button class="btn gold block" id="tezgahBtn" data-a="tezgah">${IC('chef')}<span>${L && L.player.active ? 'Tezgâhtan çık' : 'Tezgâha geç'}</span></button><button class="btn sm ghost block" data-a="fastForward">${IC('ff')}Günü hızlı bitir</button><div id="courierbox">${UI.courierHtml()}</div></div>`}
@@ -312,7 +312,9 @@
         const left = sl.fire - L.minute;
         const ph = left > 0 ? 'cook' : L.minute > sl.fire + ft.grace ? 'burn' : L.minute > sl.fire + ft.grace - 2 ? 'warn' : 'done';
         const pct = left > 0 ? Math.round((1 - left / ft.cook) * 100) : 100;
-        fire = `<span class="tz-fire ${ph} f-${fs}" style="--p:${pct}">${IC(fs === 'fritoz' ? 'fries' : 'fire')}<b>${ph === 'cook' ? (fs === 'fritoz' ? 'Kızarıyor' : 'Pişiyor') : ph === 'burn' ? 'Yanıyor!' : 'Al!'}</b></span>`;
+        /* kalan süre oyun dakikası: pişerken hazır olmasına, hazırken yanmasına kalan */
+        const mins = ph === 'cook' ? left : ph === 'burn' ? 0 : sl.fire + ft.grace - L.minute;
+        fire = `<span class="tz-fire ${ph} f-${fs}" style="--p:${pct}">${IC(fs === 'fritoz' ? 'fries' : 'fire')}<b>${ph === 'cook' ? (fs === 'fritoz' ? 'Kızarıyor' : 'Pişiyor') : ph === 'burn' ? 'Yanıyor!' : 'Al!'}</b>${mins > 0 ? `<em>${mins} dk</em>` : ''}</span>`;
         if (ph !== 'cook') need[fs] = Math.max(need[fs] || 0, i === P.sel ? 2 : 1);
       } else need[st] = Math.max(need[st] || 0, i === P.sel ? 2 : 1);
       /* özel fiş etiketleri: menü (+patates), acele (süre), gurme */
@@ -321,9 +323,9 @@
       const pat = c ? clamp(1 - c.wait / (c.patience * 2.6), 0, 1) : 1;
       return `<button class="tz-card ${i === P.sel ? 'sel' : ''} ${sl.errors ? 'err' : ''}" data-a="psel" data-i="${i}" aria-label="${esc(p.name)}">
         <span class="tz-cd">${KE.ART.dish(p.id)}${t.count > 1 ? `<b>×${t.count}</b>` : ''}</span>
-        <span class="tz-cb"><b class="tz-cn">${esc(p.name)}${t.paket ? ' · paket' : ''}</b>${tags ? `<span class="tz-tags">${tags}</span>` : ''}
+        <span class="tz-cb"><b class="tz-cn">${esc(p.name)}${t.paket ? ' · paket' : ''}</b>${tags || fire ? `<span class="tz-tags">${fire}${tags}</span>` : ''}
           <span class="tz-rec">${steps.map((x, k) => { const sid = KE.stepStation(x); const S = KE.STATIONS.find((y) => y.id === sid); return `<i class="${k < sl.step ? 'done' : k === sl.step ? 'now' : ''} s-${sid}">${IC(k < sl.step ? 'check' : S.ic)}<em>${esc(x)}</em></i>`; }).join('')}</span></span>
-        ${fire}<span class="tz-pat"><i style="width:${Math.round(pat * 100)}%" class="${pat < 0.3 ? 'crit' : pat < 0.6 ? 'warn' : ''}"></i></span></button>`;
+        <span class="tz-pat"><i style="width:${Math.round(pat * 100)}%" class="${pat < 0.3 ? 'crit' : pat < 0.6 ? 'warn' : ''}"></i></span></button>`;
     }).join('') + Array.from({ length: Math.max(0, cap - slots.length) }, () => `<div class="tz-card empty">${IC('clock')}<span>${P.afk ? 'Mola verdin. Bir istasyona dokun, fiş gelsin.' : 'Sipariş bekleniyor'}</span></div>`).join('');
     const stations = KE.STATIONS.map((S) => {
       const w = want[S.id] || [], f = w[0];
@@ -334,7 +336,14 @@
     const Q = P.quest;
     const notMain = G.branches.length > 1 && b.id !== KE.mainBranchId(G);
     const quest = notMain ? `<span class="tz-quest off">${IC('target')}<span>Görevler ana şubede</span></span>` : Q ? `<span class="tz-quest" title="Art arda hatasız siparişler">${IC('target')}<span>Görev</span><i class="tz-qbar">${Array.from({ length: Q.need }, (_, k) => `<em class="${k < Q.done ? 'on' : ''}"></em>`).join('')}</i><b>+${KE.tl(Q.reward)}</b></span>` : '';
-    const top = `<span class="kicker">${IC('chef')}Tezgâh</span>${quest}<span class="tz-stats"><span class="chip ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span>`;
+    /* başlık satırı hep görünür: kombo, görev ve sağ kenarda (başparmak tarafı) duraklat / hız / günü bitir / çık */
+    const spd = G.speed || 0, nextSp = spd === 1 ? 2 : spd === 2 ? 4 : 1;
+    const ctl = `<span class="tz-ctl">
+      <button class="tz-ib tz-pause ${spd ? '' : 'on'}" data-a="speed" data-v="${spd ? 0 : 1}" aria-pressed="${!spd}" aria-label="${spd ? 'Dur' : 'Devam'}" title="${spd ? 'Dur' : 'Devam'}">${IC(spd ? 'stop' : 'play')}</button>
+      <button class="tz-ib tz-spd" data-a="speed" data-v="${nextSp}" aria-label="Oyun hızı" title="Oyun hızı"><b>${spd || 1}×</b></button>
+      <button class="tz-ib tz-ff" data-a="fastForward" aria-label="Günü hızlı bitir" title="Günü hızlı bitir">${IC('ff')}</button>
+      <button class="tz-ib tz-x" data-a="tezgah" aria-label="Tezgâhtan çık" title="Tezgâhtan çık">${IC('x')}</button></span>`;
+    const top = `<span class="kicker">${IC('chef')}Tezgâh</span>${quest}<span class="tz-stats"><span class="chip tz-combo ${P.combo >= 2 ? 'gold' : ''}">Kombo ×${P.combo || 0}</span><span class="chip tz-done">Hazır ${P.done || 0}</span>${P.burned ? `<span class="chip rd">Yanan ${P.burned}</span>` : ''}</span>${ctl}`;
     /* panel her dakika yenilenir; yalnızca değişen parça yeniden çizilir, istasyon düğmeleri gereksiz yere değişmez
        (parmağın altındaki düğme kaybolmasın) */
     if (!box.querySelector('.tz2')) { box.innerHTML = '<div class="tz2"><div class="tz-top"></div><div class="tz-rail"></div><div class="tz-sts" id="stepbtns"></div></div>'; tzLast = {}; }

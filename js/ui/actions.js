@@ -103,7 +103,12 @@
     const sp = KE.specialDay(KE.G.day);
     setTimeout(() => H.banner(sp ? sp.name + ' başladı!' : 'Kepenkler açıldı!'), 300);
   };
-  A.speed = (d) => { KE.G.speed = +d.v; UI.startLoop(); document.querySelectorAll('.speed button').forEach((x) => x.classList.toggle('on', +(/** @type {HTMLElement} */ (x)).dataset.v === KE.G.speed)); };
+  A.speed = (d) => {
+    KE.G.speed = +d.v; UI.startLoop();
+    document.querySelectorAll('.speed button').forEach((x) => { const on = +(/** @type {HTMLElement} */ (x)).dataset.v === KE.G.speed; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+    /* tezgâh başlığındaki duraklat / hız düğmeleri de güncellensin */
+    if (document.querySelector('.tz2')) H.renderTezgah();
+  };
   A.setPos = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
     if (!s) return;

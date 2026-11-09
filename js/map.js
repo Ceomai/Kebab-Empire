@@ -211,6 +211,28 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
       ${champ ? `<g transform="translate(${px + NW / 2 - 6} ${P.y - 102})"><circle r="14" fill="#ffc93c" stroke="#fff" stroke-width="3"/>${iconAt('crown', 0, 0, 18, '#7a1f3d')}</g>` : ''}</g></g></g>`;
   }
 
+  /* Görünmez dokunma alanı: pimin çevresinde kare; yakın pimlerle çakışan kısım ortadan bölünür (Voronoi),
+     böylece iki pim arasında dokunulan yer hangisinin merkezine yakınsa ona gider. Alan .lift dışında durur:
+     üzerine gelince kalkan çizim dokunma alanını oynatmaz (titreme olmaz). */
+  let hitHalf = 30;
+  function hitPoly(i) {
+    const c = M.PLACES[i], h = hitHalf;
+    let poly = [[c.x - h, c.y - h], [c.x + h, c.y - h], [c.x + h, c.y + h], [c.x - h, c.y + h]];
+    M.PLACES.forEach((q, j) => {
+      if (j === i || Math.abs(q.x - c.x) > 2 * h || Math.abs(q.y - c.y) > 2 * h) return;
+      const nx = q.x - c.x, ny = q.y - c.y, mx = (q.x + c.x) / 2, my = (q.y + c.y) / 2;
+      const side = (pt) => (pt[0] - mx) * nx + (pt[1] - my) * ny; /* <= 0: c tarafı */
+      const out = [];
+      poly.forEach((a, k) => {
+        const b = poly[(k + 1) % poly.length], sa = side(a), sb = side(b);
+        if (sa <= 0) out.push(a);
+        if ((sa < 0 && sb > 0) || (sa > 0 && sb < 0)) { const t = sa / (sa - sb); out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]); }
+      });
+      poly = out;
+    });
+    return poly.map((pt) => pt[0].toFixed(1) + ',' + pt[1].toFixed(1)).join(' ');
+  }
+
   /* opts: pick (semt seçimi), fill, tasks [{id, n, label, color}], route (yer id), focus (yer id) */
   const DLBLS = () => `<g class="dlbls" font-family="Nunito, sans-serif" font-size="14.5" font-weight="800" text-anchor="middle" paint-order="stroke" stroke="#fffaf0" stroke-width="4" stroke-linejoin="round">${LABELS.map((l) => `<text x="${l[0]}" y="${l[1]}" class="dlbl" fill="#5b4a2e">${l[2]}</text>`).join('')}</g>`;
   const svgOpen = (opts, cls) => `<svg preserveAspectRatio="${opts.par || (opts.fill ? 'xMidYMid slice' : 'xMidYMid meet')}" class="citymap ${cls || ''}" viewBox="0 0 1400 860" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Şehir haritası">`;
@@ -243,6 +265,15 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
     const night = KE.G && KE.G.phase === 'closing';
     base.classList.toggle('night', !!night); ov.classList.toggle('night', !!night);
     ov.innerHTML = M.overlay(opts);
+    /* dokunma alanı ekranda en az 48 px olsun: bir pimin ekrandaki boyundan ölçek bulunur (yakınlaştırmasız, --mz = 1),
+       viewBox birimine çevrilir; değiştiyse katman bir kez yeniden çizilir */
+    const pin = ov.querySelector('g.place.fac .lift rect');
+    const w = pin ? pin.getBoundingClientRect().width : 0;
+    if (w) {
+      const k = w / 52 / (parseFloat(frame.style.getPropertyValue('--mz')) || 1);
+      const h = Math.round(Math.max(30, Math.min(90, 24 / Math.max(0.05, k))));
+      if (Math.abs(h - hitHalf) > 2) { hitHalf = h; ov.innerHTML = M.overlay(opts); }
+    }
   };
   /* Üst katman: tesisler, dükkânlar, iş etiketleri, rota, bulutlar (ve seçim modunda semtler) */
   M.overlay = function (opts) {
@@ -272,7 +303,7 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
       if (p && from) { const d = M.routePath(from, p); s += `<path d="${d}" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".9"/><path class="march" d="${d}" fill="none" stroke="${p.color}" stroke-width="5" stroke-dasharray="2 10" stroke-linecap="round"/>`; }
     }
     /* tesis rozetleri */
-    M.PLACES.forEach((p) => {
+    M.PLACES.forEach((p, i) => {
       const eraLock = G && KE.placeOpen && !KE.placeOpen(G, p.id);
       const locked = !eraLock && p.id === 'ciftlik' && G && !G.farm;
       const lbl = p.name + (eraLock ? ` · ${KE.PLACE_ERA[p.id]}. dönem` : locked ? ' · satılık' : '');
@@ -280,6 +311,7 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
       const foc = opts.focus === p.id || opts.route === p.id;
       s += `<g class="place fac ${foc ? 'foc' : ''} ${eraLock ? 'eralock' : ''}" data-a="go" data-s="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}">
         ${foc ? `<circle cx="${p.x}" cy="${p.y}" r="34" fill="${p.color}" opacity=".45" class="pulse"/>` : ''}
+        <polygon class="hit" points="${hitPoly(i)}" fill="transparent"/>
         <g class="lift"><g filter="url(#kmDs)"><rect x="${p.x - 26}" y="${p.y - 26}" width="52" height="52" rx="14" fill="${eraLock ? '#a99a88' : p.color}" stroke="#fff" stroke-width="4"/>${iconAt(eraLock ? 'lock' : p.icon, p.x, p.y, 28)}
         <g class="plg"><rect x="${p.x - W / 2}" y="${p.y + 34}" width="${W}" height="24" rx="12" fill="#fff"/><text x="${p.x}" y="${p.y + 51}" text-anchor="middle" class="plbl">${esc(lbl)}</text></g></g>
         ${locked ? `<circle cx="${p.x + 24}" cy="${p.y - 24}" r="10" fill="#ffc93c" stroke="#fff" stroke-width="2.5"/><text x="${p.x + 24}" y="${p.y - 20}" text-anchor="middle" class="poi-tag">₺</text>` : ''}</g></g>`;

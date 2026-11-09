@@ -9966,5 +9966,13 @@
  "Acil kurye · {0}": {
   "en": "Emergency courier · {0}",
   "de": "Eilkurier · {0}"
+ },
+ "{0} dk": {
+  "en": "{0} min",
+  "de": "{0} Min"
+ },
+ "G{0}": {
+  "en": "D{0}",
+  "de": "T{0}"
  }
 }

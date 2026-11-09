@@ -247,6 +247,8 @@
     const tasks = cityTasks();
     return `<main class="mapscreen2 sheet-${UI.sheetState()}"><div class="mapframe big" id="cityframe"></div><div class="mapzoom" role="group" aria-label="Harita yakınlaştırma"><button data-a="mapZoom" data-d="1" aria-label="Yakınlaştır">${IC('plus')}</button><button data-a="mapZoom" data-d="-1" aria-label="Uzaklaştır">${IC('minus')}</button></div>${cityPanel(tasks)}</main>`;
   };
+  let mapRs = null;
+  window.addEventListener('resize', () => { clearTimeout(mapRs); mapRs = setTimeout(() => { if (UI.screen === 'map') UI.mapRefresh(); }, 250); });
   UI.mapRefresh = function () {
     const f = document.getElementById('cityframe');
     if (f) KE.MAP.update(f, mapOpts());
@@ -258,6 +260,8 @@
     KE.MAP.mount(f, mapOpts());
     if (window.innerWidth <= 760 || (window.innerHeight <= 520 && window.innerWidth > window.innerHeight)) UI.mapZoomInit(f);
     UI.mapLabels(f);
+    /* üst çubuk / alt sekme ölçüleri (layoutVars) yerleşince harita son boyunu alır: dokunma alanları ona göre yeniden */
+    requestAnimationFrame(() => { if (UI.screen === 'map') UI.mapRefresh(); });
     if (UI.a11y && UI.a11y.calm) f.querySelectorAll('svg').forEach((sv) => { if (/** @type {any} */ (sv).pauseAnimations) /** @type {any} */ (sv).pauseAnimations(); });
     if (f.scrollWidth > f.clientWidth + 4 && KE.G) {
       const P = KE.MAP.POS[B().district] || { x: 700, y: 430 };

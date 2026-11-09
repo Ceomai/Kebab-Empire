@@ -330,6 +330,10 @@
   });
 
   /* ---------- Üst çubuk ve şube şeridi ---------- */
+  /* kısa gün adı (Cmt / Sat / Sa.): telefonda saatin yanında, tarih sütunu gizliyken */
+  function shortWeekday(day) {
+    try { return KE.dateOf(day).toLocaleDateString(KE.locale(), { weekday: 'short', timeZone: 'UTC' }); } catch (e) { return String(KE.weekday(day)).slice(0, 3); }
+  }
   function topbar() {
     const hol = KE.holidayOf(KE.G.day);
     const phase = { morning: 'Sabah hazırlığı', service: 'Servis', closing: 'Kapanış' }[KE.G.phase];
@@ -344,10 +348,10 @@
         <button class="brand" data-a="go" data-s="map" aria-label="Haritaya dön">${KE.ART.logo()}<span translate="no">${(() => { const p = KE.BRAND ? KE.BRAND.nameParts : ['Kebab', 'Empire']; return esc(p[0]) + (p[1] ? `<b>${esc(p.slice(1).join(' '))}</b>` : ''); })()}</span>${KE.G.flags && KE.G.flags.empire ? `<span class="brand-crown" title="Kebap İmparatoru">${IC('crown')}</span>` : ''}</button>
         ${KE.G.race ? `<div class="tb-race" title="Haftanın yarışı">${IC('target')}<b>Yarış</b><small>${Math.min(KE.G.day, KE.RACE_DAYS)}/${KE.RACE_DAYS}. gün</small></div>` : ''}
         <div class="tb-date"><span class="tb-day">${KE.dateStr(KE.G.day)}</span><span class="tb-sub">${KE.weekday(KE.G.day)}${hol ? ' · ' + hol : ''}</span></div>
-        <div class="tb-clock ${KE.G.phase}">${IC('clock')}<b id="tb-clock">${clock}</b><span>${phase}</span></div>
+        <div class="tb-clock ${KE.G.phase}">${IC('clock')}<b id="tb-clock">${clock}</b><span>${phase}</span><small class="tb-dl"><span>${esc(shortWeekday(KE.G.day))}</span> · <span>G${KE.G.day}</span></small></div>
         <div class="tb-money ${KE.G.cash < 0 ? 'neg' : ''}">${IC('coin')}<span class="tbm"><b>${KE.tl(KE.G.cash)}</b>${KE.G.phase === 'service' ? `<small id="tb-today">Bugün +${KE.tl(todayRevenue())}</small>` : ''}</span></div>
         <div class="tb-rep" title="İtibar ${Math.round(KE.G.reputation)}/100"><span class="repstars">${st}</span><small>İtibar ${Math.round(KE.G.reputation)}</small></div>
-        <nav class="tb-nav">${nav.map(([s, ic, l]) => `<button class="navbtn ${UI.screen === s ? 'on' : ''}" data-a="go" data-s="${s}">${IC(ic)}<span>${l}</span></button>`).join('')}<button class="navbtn snd ${KE.SND.on ? 'on2' : ''}" data-a="sound" aria-label="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}" title="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}">${IC(KE.SND.on ? 'sound' : 'mute')}</button><button class="navbtn" data-a="menu" data-trc="nav" aria-label="Menü">${IC('menu')}</button></nav>
+        <nav class="tb-nav">${nav.map(([s, ic, l]) => `<button class="navbtn ${UI.screen === s ? 'on' : ''}" data-a="go" data-s="${s}" aria-label="${l}">${IC(ic)}<span>${l}</span></button>`).join('')}<button class="navbtn snd ${KE.SND.on ? 'on2' : ''}" data-a="sound" aria-label="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}" title="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}">${IC(KE.SND.on ? 'sound' : 'mute')}</button><button class="navbtn" data-a="menu" data-trc="nav" aria-label="Menü">${IC('menu')}</button></nav>
       </div>
       <div class="branchbar" role="tablist" aria-label="Şubeler">${branchTabs()}</div>
     </header>${tabbar()}`;
