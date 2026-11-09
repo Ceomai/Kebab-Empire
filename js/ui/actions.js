@@ -94,6 +94,7 @@
     if (['map', 'subeler', 'title'].includes(UI.screen)) UI.go('shop'); else UI.render();
   };
   A.openShop = () => {
+    UI.flushSave();
     UI.dailyDone = null; UI.quickDayRun = false;
     if (!KE.G.branches.some((b) => KE.branchStaff(KE.G, b).some(KE.isCook))) { UI.toast('Hiçbir şubede usta yok. Usta Pazarı\'ndan birini işe al.', 'bad'); return; }
     UI.morningEnv = CL() && KE.CLOUD.ready ? JSON.parse(JSON.stringify(KE.SAVE.envelope(KE.G))) : null;
@@ -119,7 +120,7 @@
     if (wasAuto) UI.toast('Görevleri elle ayarladın; otomatik ekip yönetimi kapatıldı.');
     UI.crewHover = 0;
     const cr = document.getElementById('crew');
-    if (cr && KE.G.phase !== 'morning') cr.innerHTML = H.crewPanel(b, true); else UI.render();
+    if (cr && KE.G.phase !== 'morning') UI.patch(cr, H.crewPanel(b, true)); else UI.render();
   };
   A.tezgah = () => {
     const L = KE.G.live[KE.G.activeBranch];
@@ -189,6 +190,7 @@
   A.tipToday = (d) => { UI.todayRule = d.r; H.showClosing(); };
   /* Günü kapat: hesap, bulut doğrulaması, ölçüm (normal kapanış ve hızlı hafta ortak) */
   function closeDayCore() {
+    UI.flushSave(); /* gün değişmeden önce bekleyen kayıt yazılsın: yedek bir önceki günü tutar */
     const S0 = KE.G.lastSummary, morning = UI.morningEnv; UI.morningEnv = null;
     const out = KE.finalizeDay(KE.G, UI.todayRule);
     const tot = { served: 0, revenue: 0 }; Object.values(S0.branches).forEach((x) => { tot.served += x.stats.served; tot.revenue += x.stats.revenue; });
@@ -349,6 +351,7 @@
     if (!fn) return;
     e.preventDefault();
     if (KE.G && KE.G.phase === 'morning' && UNDOABLE.has(el.dataset.a)) snap(el);
+    UI.mutSeq++;
     const ret = fn(Object.assign({}, el.dataset), el, e);
     /* bekleyen (async) işlem: düğme bitene kadar kilitli */
     if (ret && typeof ret.then === 'function' && el.tagName === 'BUTTON') {
@@ -360,16 +363,22 @@
   });
   /* ---------- Geri al: sabah, kepenk açılmadan yapılan son işlem ---------- */
   const UNDOABLE = new Set(['setPos', 'boardDrop', 'topUpAll', 'price', 'pricesToMarket', 'tier', 'stockLevel', 'topUpToday', 'buy', 'hireMaster', 'hireWorker', 'raise', 'promote', 'pickMentor', 'doFire', 'costume', 'upgrade', 'buyDecor', 'hygiene', 'campaign', 'openBranch', 'central', 'buyAnimal', 'upgradePen', 'toggleManaged', 'donate', 'buyRes', 'toggleRes', 'advBol', 'advPrices', 'buyFarm', 'loan', 'payoff', 'tipRule', 'setMain']);
+  /* "Değişti mi" karşılaştırması oyunu her çizimde yeniden dizgeye çevirmesin: dizge, değişiklik sayacına
+     (UI.mutSeq: eylem dağıtıcısı ve her çizim artırır) göre önbellekte. Anlık görüntü (snapNow) her zaman tazedir. */
+  UI.mutSeq = UI.mutSeq || 0;
+  let strMemo = { g: null, seq: -1, s: '' };
+  const snapNow = () => { strMemo = { g: KE.G, seq: UI.mutSeq, s: JSON.stringify(KE.G) }; return strMemo.s; };
+  const gameStr = () => (strMemo.g === KE.G && strMemo.seq === UI.mutSeq ? strMemo.s : snapNow());
   function snap(el) {
     const who = el.dataset.a === 'boardDrop' && KE.G.staff.find((x) => x.id === UI.crewPick);
     const label = who ? who.name + ' → ' + KE.POS_NAMES[el.dataset.p] : String(el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 36);
-    UI.undo = { g: JSON.stringify(KE.G), label, day: KE.G.day, cash: KE.G.cash };
+    UI.undo = { g: snapNow(), label, day: KE.G.day, cash: KE.G.cash };
   }
-  UI.snapUndo = (label) => { if (KE.G && KE.G.phase === 'morning') UI.undo = { g: JSON.stringify(KE.G), label, day: KE.G.day }; };
+  UI.snapUndo = (label) => { if (KE.G && KE.G.phase === 'morning') UI.undo = { g: snapNow(), label, day: KE.G.day }; };
   UI.undoChip = function () {
     let chip = document.getElementById('undochip');
     const u = UI.undo, G = KE.G;
-    const ok = u && G && G.phase === 'morning' && G.day === u.day && UI.screen !== 'title' && JSON.stringify(G) !== u.g;
+    const ok = u && G && G.phase === 'morning' && G.day === u.day && UI.screen !== 'title' && gameStr() !== u.g;
     if (!ok) { if (chip) chip.remove(); if (u && G && (G.phase !== 'morning' || G.day !== u.day)) UI.undo = null; return; }
     if (!chip) { chip = document.createElement('button'); chip.id = 'undochip'; chip.className = 'undochip'; chip.dataset.a = 'undo'; document.body.appendChild(chip); }
     chip.innerHTML = `${IC('arrow')}<span><b>Geri al</b>${u.label ? ' <small>· ' + esc(u.label) + '</small>' : ''}</span>`;
@@ -407,10 +416,11 @@
     else if ((e.key === 'q' || e.key === 'Q') && (L.player.slots || []).length > 1) { e.preventDefault(); A.psel({ i: String(((L.player.sel || 0) + 1) % L.player.slots.length) }); }
   });
   document.addEventListener('change', (e) => {
-    if (KE.G && KE.G.phase === 'morning' && /** @type {any} */ (e.target).dataset && /** @type {any} */ (e.target).dataset.c) { const t = /** @type {any} */ (e.target); UI.undo = { g: JSON.stringify(Object.assign({}, KE.G)), label: t.dataset.c === 'priceSet' ? 'fiyat değişikliği' : 'ayar', day: KE.G.day }; }
+    if (KE.G && KE.G.phase === 'morning' && /** @type {any} */ (e.target).dataset && /** @type {any} */ (e.target).dataset.c) { const t = /** @type {any} */ (e.target); UI.undo = { g: snapNow(), label: t.dataset.c === 'priceSet' ? 'fiyat değişikliği' : 'ayar', day: KE.G.day }; }
     const el = /** @type {any} */ (e.target).closest('[data-c]');
     if (!el) return;
     const fn = C[el.dataset.c];
+    UI.mutSeq++;
     if (fn) fn(el, e);
   });
 
@@ -468,6 +478,7 @@
     if (G.phase !== 'morning') return;
     if (!G.branches.some((b) => KE.branchStaff(G, b).some(KE.isCook))) { UI.toast('Hiçbir şubede usta yok. Usta Pazarı\'ndan birini işe al.', 'bad'); return; }
     if (G.pendingEvent) { H.showEvent(); return; }
+    UI.flushSave();
     UI.dailyDone = null;
     UI.morningEnv = H.CL() && KE.CLOUD.ready ? JSON.parse(JSON.stringify(KE.SAVE.envelope(G))) : null;
     KE.startService(G);
@@ -486,6 +497,7 @@
     if (G.phase !== 'morning' || !KE.quickWeekOpen(G) || UI.weekRunning) return;
     if (G.pendingEvent) { H.showEvent(); return; }
     UI.weekRunning = true;
+    UI.flushSave();
     UI.modal(`<div class="mhead"><h2>${IC('ff')}Hafta geçiyor</h2><p class="lead" id="weekprog">1. gün</p></div>`, { cls: 'weekrun' });
     const agg = { revenue: 0, net: 0, served: 0 };
     let n = 0, out = null, why = '';

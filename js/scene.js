@@ -124,8 +124,10 @@
   function trackSize(stage) {
     if (sizeStage === stage) return;
     sizeStage = stage;
-    SW = stage.clientWidth; SH = stage.clientHeight;
-    if (ro) { ro.disconnect(); ro.observe(stage); }
+    /* yeni sahnede boyu eşzamanlı okumak bütün sayfayı yerleştirirdi (zorunlu yerleşim): ResizeObserver varsa son bilinen
+       boy kullanılır, gözlemci aynı karede (boyamadan önce) gerçek boyu bildirir ve fark varsa varlıkları yerine koyar */
+    if (ro) { ro.disconnect(); ro.observe(stage); if (!SW) { SW = stage.clientWidth; SH = stage.clientHeight; } }
+    else { SW = stage.clientWidth; SH = stage.clientHeight; }
   }
   const xf = (x, y) => `translate(${(x * SW / 100).toFixed(1)}px, ${(y * SH / 100).toFixed(1)}px) translate(-50%, -100%)`;
   const calm = () => !!(KE.UI && KE.UI.calm && KE.UI.calm());
@@ -133,7 +135,9 @@
   const FX_MAX = 24;
   S.reset = function () { Object.keys(ent).forEach((k) => delete ent[k]); stageId = null; };
 
-  function place(layer, key, html, x, y, cls, z, from) {
+  /* p: sabır / pişme halkasının yüzdesi. Halka HTML'e yazılmaz, varlığın --p değişkeniyle güncellenir
+     (her dakika değişir; HTML'e yazılsaydı figürün SVG'si her dakika yeniden kurulurdu). */
+  function place(layer, key, html, x, y, cls, z, from, p) {
     let e = ent[key];
     const L = document.getElementById(layer);
     if (!L) return null;
@@ -151,7 +155,9 @@
       } else if (from) el.style.transform = xf(x, y);
     }
     if (e.el.parentNode !== L) L.appendChild(e.el);
-    if (html != null && e.html !== html) { e.el.innerHTML = html; e.html = html; }
+    /* değişen figür baştan kurulmaz: var olan SVG düğümlerinde yalnızca değişen öznitelikler yazılır (UI.patch) */
+    if (html != null && e.html !== html) { if (KE.UI && KE.UI.patch) KE.UI.patch(e.el, html); else e.el.innerHTML = html; e.html = html; }
+    if (p != null && e.p !== p) { e.el.style.setProperty('--p', String(p)); e.p = p; }
     if (e.x !== x || e.y !== y) {
       const dx = x - e.x, dist = Math.abs(dx) + Math.abs(y - e.y);
       if (Math.abs(dx) > 0.5) e.el.classList.toggle('flip', dx < 0);
@@ -163,8 +169,9 @@
         if (dist > 0.6) markMoving(e);
       }
     }
-    if (cls != null) e.el.className = 'ent ' + cls + (e.el.classList.contains('flip') ? ' flip' : '') + (e.moveT ? ' moving' : '');
-    e.el.style.zIndex = z != null ? z : Math.round(y * 10);
+    if (cls != null) { const cn = 'ent ' + cls + (e.el.classList.contains('flip') ? ' flip' : '') + (e.moveT ? ' moving' : ''); if (e.el.className !== cn) e.el.className = cn; }
+    const zi = z != null ? z : Math.round(y * 10);
+    if (e.z !== zi) { e.el.style.zIndex = String(zi); e.z = zi; }
     e.seen = true;
     return e;
   }
@@ -183,7 +190,7 @@
       else e.seen = false;
     });
   }
-  const patRing = (r) => `<i class="ring" style="--p:${Math.round(clamp(r, 0, 1) * 100)}"></i>`;
+  const patPct = (r) => Math.round(clamp(r, 0, 1) * 100);
 
   /* Her dakika: sahneyi simülasyonla eşitle */
   S.update = function (G, b, L) {
@@ -223,9 +230,9 @@
       const task = isP ? (L.player.tid != null ? { type: 'cook', ref: L.player.tid, remain: 1, total: 2 } : null) : s.task;
       const t = task ? L.tickets.find((k) => k.id === task.ref) : null;
       const mood = isP ? 'happy' : KE.moodFromValue(s.morale);
-      const bubble = t ? `<div class="cook-bubble ${isP && (L.player.slots || []).some((x) => x.fire != null) ? 'onfire' : ''}">${A().dish(t.pid)}<i class="ring" style="--p:${Math.round((1 - task.remain / task.total) * 100)}"></i></div>` : '';
+      const bubble = t ? `<div class="cook-bubble ${isP && (L.player.slots || []).some((x) => x.fire != null) ? 'onfire' : ''}">${A().dish(t.pid)}<i class="ring"></i></div>` : '';
       const html = `${bubble}<div class="fig">${KE.figure(look, { mood, label: isP ? G.owner : s.name })}</div><span class="nm ${isP ? 'me' : ''}">${isP ? G.owner : s.name.replace(' Usta', '')}</span>`;
-      place('st-cooks', 'c' + s.id, html, x, GEO.cookY, 'cook', 100);
+      place('st-cooks', 'c' + s.id, html, x, GEO.cookY, 'cook', 100, null, t ? Math.round((1 - task.remain / task.total) * 100) : null);
     });
     sweep('c');
 
@@ -278,7 +285,7 @@
       const ratio = c.state === 'eat' ? 1 : clamp(1 - c.wait / (c.state === 'queue' ? c.patience : c.patience * 1.9), 0, 1);
       const mood = c.state === 'eat' ? (c.sat > 80 ? 'happy' : c.sat > 55 ? 'neutral' : 'sad') : ratio < 0.3 ? 'angry' : ratio < 0.6 ? 'neutral' : 'happy';
       const tag = c.regular ? `<span class="regtag">${KE.ART.icon('heart')}${(KE.REGULARS.find((x) => x.id === c.regular) || {}).name}</span>` : '';
-      const bubble = tag + (c.state === 'eat' ? '' : `<div class="order-bubble ${c.ordering ? 'talk' : ''}">${A().dish(c.pid)}${patRing(ratio)}${c.count > 1 ? `<b>×${c.count}</b>` : ''}</div>`);
+      const bubble = tag + (c.state === 'eat' ? '' : `<div class="order-bubble ${c.ordering ? 'talk' : ''}">${A().dish(c.pid)}<i class="ring"></i>${c.count > 1 ? `<b>×${c.count}</b>` : ''}</div>`);
       if (c.state === 'queue') {
         const i = qIndex[c.id] || 0;
         ({ x, y } = GEO.queue(i));
@@ -291,7 +298,7 @@
         x = tp.x + GEO.seat.dx; y = tp.y + GEO.seat.dy; cls = 'cust seated';
         html = bubble + `<div class="bust">${KE.portrait(c.look, { mood, label: KE.CUSTOMER_TYPES[c.type].name })}</div>` + (c.state === 'eat' ? `<div class="eating">${A().dish(c.pid)}</div>` : '') + (c.count > 1 ? `<div class="bust b2">${KE.portrait(c.look2 || (c.look2 = KE.customerLook(c.type)), { mood })}</div>` : '');
       }
-      place('st-people', 'u' + c.id, html, x, y, cls, c.state === 'eat' || c.state === 'seat' ? Math.round((tablePos[c.table] || { y: 80 }).y * 10) - 4 : null, GEO.door);
+      place('st-people', 'u' + c.id, html, x, y, cls, c.state === 'eat' || c.state === 'seat' ? Math.round((tablePos[c.table] || { y: 80 }).y * 10) - 4 : null, GEO.door, c.state === 'eat' ? null : patPct(ratio));
     });
     sweep('s');
     sweep('u', (k, e) => {
@@ -343,13 +350,13 @@
     const dirty = L.tables.filter((t) => t.dirty).length, occ = L.tables.filter((t) => t.occ != null).length;
     const lvl = (v, a, c) => v >= c ? 'crit' : v >= a ? 'warn' : 'ok';
     const hud = document.getElementById('st-hud');
-    if (hud) hud.innerHTML = [
+    if (hud) KE.UI.patch(hud, [
       ['queue', 'Kuyruk', L.queue.length, lvl(L.queue.length, 3, 6)],
       ['fire', 'Mutfakta', waitT, lvl(waitT, 3, 6)],
       ['tray', 'Bekleyen tabak', readyT, lvl(readyT, 2, 4)],
       ['table', 'Masa', `${occ}/${L.tables.length}`, lvl(occ / Math.max(1, L.tables.length), 0.75, 1)],
       ['broom', 'Kirli', dirty, lvl(dirty, 2, 3)]
-    ].map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join('')
+    ].map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join(''));
   };
 
   let lastCoin = 0;

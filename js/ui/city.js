@@ -211,7 +211,8 @@
     if (cx == null) { cx = f.clientWidth / 2; cy = f.clientHeight / 2; }
     const px = (f.scrollLeft + cx) / z0, py = (f.scrollTop + cy) / z0;
     UI.mapZoom = z;
-    f.style.setProperty('--mz', String(z));
+    /* aynı değeri yeniden yazmak bütün haritanın stilini yeniden hesaplatır: yalnızca değiştiyse */
+    if (f.style.getPropertyValue('--mz') !== String(z)) f.style.setProperty('--mz', String(z));
     f.scrollLeft = Math.max(0, px * z - cx); f.scrollTop = Math.max(0, py * z - cy);
     const zb = document.querySelectorAll('.mapzoom button');
     if (zb.length === 2) { /** @type {any} */ (zb[0]).disabled = z >= ZMAX - 0.01; /** @type {any} */ (zb[1]).disabled = z <= ZMIN + 0.01; }    UI.mapLabels(f);
@@ -221,14 +222,15 @@
   UI.mapLabels = function (f) {
     f = f || document.getElementById('cityframe');
     if (!f) return;
-    f.querySelectorAll('svg.citymap').forEach((sv) => {
-      const vb = /** @type {any} */ (sv).viewBox && /** @type {any} */ (sv).viewBox.baseVal;
-      const r = sv.getBoundingClientRect();
+    /* önce bütün ölçümler, sonra yazımlar: araya giren yazım her ölçümde haritanın stilini yeniden hesaplatırdı */
+    const svs = Array.from(f.querySelectorAll('svg.citymap')).map((sv) => ({ sv, vb: /** @type {any} */ (sv).viewBox && /** @type {any} */ (sv).viewBox.baseVal, r: sv.getBoundingClientRect() }));
+    svs.forEach(({ sv, vb, r }) => {
       if (!vb || !vb.width || !r.width) return;
       const k = (/slice/.test(sv.getAttribute('preserveAspectRatio') || '') ? Math.max : Math.min)(r.width / vb.width, r.height / vb.height);
       const lk = 11.5 / (13.5 * k);
-      sv.classList.toggle('nolbl', lk > 2.2);
-      /** @type {any} */ (sv).style.setProperty('--lk', String(Math.max(1, Math.min(2.2, lk)).toFixed(2)));
+      if (sv.classList.contains('nolbl') !== lk > 2.2) sv.classList.toggle('nolbl', lk > 2.2);
+      const lv = String(Math.max(1, Math.min(2.2, lk)).toFixed(2));
+      if (/** @type {any} */ (sv).style.getPropertyValue('--lk') !== lv) /** @type {any} */ (sv).style.setProperty('--lk', lv);
     });
   };
   const saveZoom = () => { try { localStorage.setItem(ZOOM_KEY, String(Math.round(UI.mapZoom * 100) / 100)); } catch (e) { /* yok */ } };
@@ -242,7 +244,7 @@
     /* masaüstünde Ctrl + tekerlek */
     f.addEventListener('wheel', (e) => { if (!e.ctrlKey) return; e.preventDefault(); const r = f.getBoundingClientRect(); setZoom(f, UI.mapZoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), e.clientX - r.left, e.clientY - r.top); saveZoom(); }, { passive: false });
   }
-  UI.mapZoomInit = function (f) { f.style.setProperty('--mz', String(UI.mapZoom)); bindPinch(f); setZoom(f, UI.mapZoom, 0, 0); };
+  UI.mapZoomInit = function (f) { if (f.style.getPropertyValue('--mz') !== String(UI.mapZoom)) f.style.setProperty('--mz', String(UI.mapZoom)); bindPinch(f); setZoom(f, UI.mapZoom, 0, 0); };
   SCREENS.map = () => {
     const tasks = cityTasks();
     return `<main class="mapscreen2 sheet-${UI.sheetState()}"><div class="mapframe big" id="cityframe"></div><div class="mapzoom" role="group" aria-label="Harita yakınlaştırma"><button data-a="mapZoom" data-d="1" aria-label="Yakınlaştır">${IC('plus')}</button><button data-a="mapZoom" data-d="-1" aria-label="Uzaklaştır">${IC('minus')}</button></div>${cityPanel(tasks)}</main>`;
@@ -257,9 +259,12 @@
   UI.mapMount = function () {
     const f = document.getElementById('cityframe');
     if (!f) return;
+    const phoneZoom = window.innerWidth <= 760 || (window.innerHeight <= 520 && window.innerWidth > window.innerHeight);
+    /* yakınlaştırma çizimden önce: harita bir kez, son boyuyla yerleşir (sonradan değişip yeniden yerleşmez) */
+    if (phoneZoom) f.style.setProperty('--mz', String(UI.mapZoom));
     KE.MAP.mount(f, mapOpts());
-    if (window.innerWidth <= 760 || (window.innerHeight <= 520 && window.innerWidth > window.innerHeight)) UI.mapZoomInit(f);
-    UI.mapLabels(f);
+    /* setZoom etiket ölçeğini zaten ayarlar; ikinci kez ölçmek yazımdan sonra yeniden yerleşim zorlardı */
+    if (phoneZoom) UI.mapZoomInit(f); else UI.mapLabels(f);
     /* üst çubuk / alt sekme ölçüleri (layoutVars) yerleşince harita son boyunu alır: dokunma alanları ona göre yeniden */
     requestAnimationFrame(() => { if (UI.screen === 'map') UI.mapRefresh(); });
     UI.mapIdle = false; mapWake();

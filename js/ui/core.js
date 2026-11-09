@@ -25,6 +25,43 @@
   const track = (n, p) => { if (KE.CLOUD && KE.CLOUD.track) KE.CLOUD.track(n, p); };
   const avatar = (look, mood, label, size) => `<span class="avatar ${size || ''}">${KE.portrait(look, { mood, label })}</span>`;
 
+  /* ---------- Canlı panel güncelleme ----------
+     Servis sırasında saniyede birkaç kez yenilenen paneller (şube şeridi, ekip, canlı sayılar, sahne göstergesi):
+     yeni HTML öncekiyle aynıysa hiçbir şey yapılmaz; farklıysa var olan düğümler korunur, yalnızca değişen yazı ve
+     öznitelikler yazılır (vitrin / portre SVG'leri her seferinde yeniden kurulmaz, stil hesabı değişen düğümle sınırlı). */
+  const patchTpl = document.createElement('template');
+  /* çeviri katmanının eklediği data-tr-* (asıl metin) öznitelikleri korunur; çevrilmiş öznitelik/metin, asıl metni
+     değişmediyse yeniden yazılmaz */
+  const syncAttrs = (a, b) => {
+    for (let i = a.attributes.length - 1; i >= 0; i--) { const n = a.attributes[i].name; if (!b.hasAttribute(n) && n.lastIndexOf('data-tr-', 0) !== 0) a.removeAttribute(n); }
+    for (let i = 0; i < b.attributes.length; i++) { const at = b.attributes[i]; if (a.getAttribute(at.name) !== at.value && a.getAttribute('data-tr-' + at.name) !== at.value) a.setAttribute(at.name, at.value); }
+  };
+  const srcOf = (n) => (KE.I18N && KE.I18N.srcOf ? KE.I18N.srcOf(n) : null);
+  const morph = (a, b) => {
+    let an = a.firstChild, bn = b.firstChild;
+    while (bn) {
+      const bnext = bn.nextSibling;
+      if (!an) a.appendChild(bn);
+      else if (an.nodeType !== bn.nodeType || an.nodeName !== bn.nodeName) { const anext = an.nextSibling; a.replaceChild(bn, an); an = anext; }
+      else {
+        /* aynı alt ağaç (ör. değişmeyen portre SVG'si): tarayıcının kendi karşılaştırmasıyla atla */
+        if (an.nodeType === 1) { if (!an.isEqualNode(bn)) { syncAttrs(an, bn); morph(an, bn); } } else if (an.nodeValue !== bn.nodeValue && srcOf(an) !== bn.nodeValue) an.nodeValue = bn.nodeValue;
+        an = an.nextSibling;
+      }
+      bn = bnext;
+    }
+    while (an) { const nx = an.nextSibling; a.removeChild(an); an = nx; }
+  };
+  UI.patch = function (el, html) {
+    if (!el) return;
+    const E = /** @type {any} */ (el);
+    if (E._ph === html) return;
+    E._ph = html;
+    if (!el.firstChild) { el.innerHTML = html; return; }
+    patchTpl.innerHTML = html;
+    morph(el, patchTpl.content);
+  };
+
   /* ---------- Kayıt (ayrıntılar save.js'te) ---------- */
   /* Uygulama mı (Android/iOS), tarayıcı mı */
   UI.isNative = () => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } };
@@ -77,7 +114,29 @@
     try { nav.vibrate(VIB[kind] || VIB.light); } catch (e) { /* yok */ }
     return true;
   };
+  /* Ekran her çizildiğinde kayıt hemen yazılmaz (büyük oyunda tek yazış onlarca ms): UI.saveSoon kirli işaretler,
+     yazış en geç ~1 sn sonra boşta yapılır. Gün geçişi, kepenk açılışı, uygulamadan çıkış ve sayfa gizlenince
+     (visibilitychange / pagehide) bekleyen kayıt hemen yazılır: UI.flushSave. Açık çağrılar (UI.save) her zaman hemen yazar. */
+  let saveTimer = 0, saveIdle = 0;
+  const cancelSave = () => {
+    UI.saveDirty = false;
+    if (saveTimer) { clearTimeout(saveTimer); saveTimer = 0; }
+    if (saveIdle && window.cancelIdleCallback) window.cancelIdleCallback(saveIdle);
+    saveIdle = 0;
+  };
+  UI.saveSoon = function () {
+    if (!KE.G || UI.staleTab || KE.G.phase === 'service') return;
+    UI.saveDirty = true;
+    if (saveTimer || saveIdle) return;
+    saveTimer = setTimeout(() => {
+      saveTimer = 0;
+      if (window.requestIdleCallback) saveIdle = window.requestIdleCallback(() => { saveIdle = 0; UI.flushSave(); }, { timeout: 1000 });
+      else UI.flushSave();
+    }, 1000);
+  };
+  UI.flushSave = function () { if (UI.saveDirty) UI.save(); };
   UI.save = function () {
+    cancelSave();
     /* servis sırasında kayıt yok: kayıt sabah durumunu ve gün sonunu tutar; yarım gün kaydedilirse stok kaybolur */
     if (!KE.G || UI.staleTab || KE.G.phase === 'service') return;
     const ok = KE.SAVE.write(KE.G);
@@ -363,12 +422,13 @@
   UI.render = function () {
     const fn = SCREENS[UI.screen] || SCREENS.title;
     const inGame = KE.G && !['title', 'newMode', 'newDistrict', 'newMaster'].includes(UI.screen);
+    UI.mutSeq = (UI.mutSeq || 0) + 1;
     app().innerHTML = (inGame ? topbar() : '') + fn();
     if (UI.screen === 'map') UI.mapMount();
     if (UI.screen === 'subeler') UI.fillRanking();
     if (KE.G && UI.lastTracked !== UI.screen) { UI.lastTracked = UI.screen; track('screen', { s: UI.screen, day: KE.G.day }); }
     if (UI.screen === 'shop' && KE.G && KE.G.phase !== 'morning') { KE.SCENE.reset(); if (KE.G.live) UI.sceneTick(true); H.renderTezgah(); }
-    if (KE.G && KE.G.phase !== 'service') UI.save();
+    if (KE.G && KE.G.phase !== 'service') UI.saveSoon();
     if (inGame) setTimeout(UI.tutor, 60);
     if (inGame && !UI.holdEvent && KE.G.pendingEvent && KE.G.phase === 'morning' && !document.querySelector('.modal-bg')) H.showEvent();
     if (UI.undoChip) UI.undoChip();
@@ -377,20 +437,45 @@
   };
   /* Telefon düzeni: üst çubuk ve alt sekme yüksekliği CSS'e aktarılır, harita ekranı tam bu kadar yer kaplar;
      servis sahnesi ekran genişliğine sığar */
-  UI.layoutVars = function () {
+  const lv = { tbh: -1, tabh: -1 };
+  /* ölç ve yalnızca değiştiyse yaz (aynı değeri yazmak da stil hesabını yeniden tetikler); değişti mi döner */
+  const measureBars = function () {
     const r = document.documentElement.style;
     const tb = document.querySelector('.topbar'), tab = document.querySelector('.tabbar');
-    r.setProperty('--tbh', (tb ? tb.getBoundingClientRect().height : 0) + 'px');
-    const tabH = tab && getComputedStyle(tab).display !== 'none' && tab.getBoundingClientRect().width > tab.getBoundingClientRect().height ? tab.getBoundingClientRect().height : 0;
-    r.setProperty('--tabh', tabH + 'px');
+    const tbh = tb ? tb.getBoundingClientRect().height : 0;
+    let tabh = 0;
+    if (tab && getComputedStyle(tab).display !== 'none') { const tr = tab.getBoundingClientRect(); if (tr.width > tr.height) tabh = tr.height; }
+    const ch = tbh !== lv.tbh || tabh !== lv.tabh;
+    if (tbh !== lv.tbh) r.setProperty('--tbh', tbh + 'px');
+    if (tabh !== lv.tabh) r.setProperty('--tabh', tabh + 'px');
+    lv.tbh = tbh; lv.tabh = tabh;
+    return ch;
   };
-  window.addEventListener('resize', () => UI.layoutVars());
+  /* Her çizimden sonra zorunlu yerleşim ölçümü yerine ResizeObserver: üst çubuk / alt sekme yeniden oluşunca
+     yalnızca gözlenen öğe değişir; ölçüm tarayıcının kendi yerleşiminden sonra, boyamadan önce yapılır.
+     İlk çizimde (henüz değer yok) ve ResizeObserver olmayan tarayıcıda eşzamanlı ölçülür. */
+  let barRO = null, barEls = [undefined, undefined];
+  UI.layoutVars = function () {
+    const RO = /** @type {any} */ (window).ResizeObserver;
+    if (lv.tbh < 0 || !RO) { measureBars(); if (!RO) return; }
+    const tb = document.querySelector('.topbar'), tab = document.querySelector('.tabbar');
+    if (tb === barEls[0] && tab === barEls[1]) return;
+    barEls = [tb, tab];
+    if (!barRO) barRO = new RO(() => { if (measureBars() && UI.screen === 'map' && UI.mapRefresh) UI.mapRefresh(); });
+    barRO.disconnect();
+    if (tb) barRO.observe(tb);
+    if (tab) barRO.observe(tab);
+    if (!tb && !tab) measureBars();
+  };
+  window.addEventListener('resize', () => measureBars());
   /* Uygulama arka plana alınınca: servis dışında kaydet; serviste oyunu duraklat (telefon uygulamayı kapatabilir) */
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState !== 'hidden' || !KE.G) return;
     if (KE.G.phase !== 'service') { UI.save(); return; }
     if (KE.G.speed) { KE.G.speed = 0; UI.pausedByHide = true; }
   });
+  /* sayfa kapanırken / uygulama öldürülmeden önce bekleyen kayıt yazılsın */
+  window.addEventListener('pagehide', () => { if (UI.flushSave) UI.flushSave(); });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState !== 'visible' || !UI.pausedByHide) return;
     UI.pausedByHide = false;
@@ -475,12 +560,10 @@
         if (tt.animate && !UI.calm()) { if (tt._bump) tt._bump.cancel(); tt._bump = tt.animate([{ transform: 'none' }, { transform: 'scale(1.18)', color: '#fff', offset: 0.4 }, { transform: 'none' }], { duration: 350, easing: 'cubic-bezier(.2, .8, .2, 1)' }); }
       }
     }
-    const bb = document.querySelector('.branchbar');
-    if (bb) bb.innerHTML = branchTabs();
+    UI.patch(document.querySelector('.branchbar'), branchTabs());
     const m = document.querySelector('.tb-money b');
     if (m) m.textContent = KE.tl(KE.G.cash);
-    const cb = document.getElementById('courierbox');
-    if (cb) cb.innerHTML = UI.courierHtml();
+    UI.patch(document.getElementById('courierbox'), UI.courierHtml());
   };
   /* Acil kurye: servis sırasında malzeme bitmek üzereyse (günde bir kez) */
   UI.courierHtml = function () {

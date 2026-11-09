@@ -3550,23 +3550,31 @@ KE.huyOf = function (s) {
   };
   S.lastError = null;
 
+  /* Son yazdığımız kaydın metni ve künyesi: bir sonraki yazışta eski kaydı yeniden ayrıştırmamak için.
+     Yuvadaki metin bununla birebir aynı değilse (başka sekme, elle değişiklik) eskisi gibi ayrıştırılır. */
+  let last = null;
   S.write = function (G) {
-    const env = S.envelope(G);
-    const txt = JSON.stringify(env);
+    /* zarf, JSON.stringify(S.envelope(G)) ile bayt bayt aynıdır; oyun gövdesi bir kez dizgeye çevrilir */
+    const body = JSON.stringify(Object.assign({}, G, { live: null }));
+    const head = { v: S.VERSION, app: S.APP, savedAt: new Date().toISOString(), day: G.day, tab: S.TAB, sum: S.hash(body) };
+    const txt = JSON.stringify(head).slice(0, -1) + ',"game":' + body + '}';
     /* haftalık yarış ayrı yuvada durur: ana oyunun kaydına dokunmaz, buluta kayıt olarak gitmez */
     if (G.race) { if (!store.set(S.RACE_KEY, txt)) { S.lastError = 'quota'; return false; } S.lastError = null; return true; }
     /* Gün değiştiyse eski sağlam kaydı yedeğe al */
     const prev = store.get(S.KEY);
     if (prev) {
-      let p = null; try { p = JSON.parse(prev); } catch (e) { /* bozuk eskiyi yedeklemeyiz */ }
+      let p = null;
+      if (last && last.txt === prev) p = last.p;
+      else { try { const o = JSON.parse(prev); p = o && { day: o.day, game: o.game && { day: o.game.day, saveId: o.game.saveId } }; } catch (e) { /* bozuk eskiyi yedeklemeyiz */ } }
       /* aynı oyunun daha ileri bir gününü eski bir günle ezme (ör. başka sekmede ilerlemiş oyun) */
       if (p && p.game && p.game.saveId === G.saveId && p.day > G.day && !S.allowRewind) { S.lastError = 'stale'; return false; }
       if (p && (p.day || (p.game && p.game.day)) !== G.day) store.set(S.BACKUP, prev);
     }
     S.allowRewind = false;
-    if (!store.set(S.KEY, txt)) { S.lastError = 'quota'; return false; }
+    if (!store.set(S.KEY, txt)) { last = null; S.lastError = 'quota'; return false; }
+    last = { txt, p: { day: G.day, game: { day: G.day, saveId: G.saveId } } };
     S.lastError = null;
-    if (KE.CLOUD && KE.CLOUD.queueSave) KE.CLOUD.queueSave(env);
+    if (KE.CLOUD && KE.CLOUD.queueSave && KE.CLOUD.ready) KE.CLOUD.queueSave(Object.assign(head, { game: JSON.parse(body) }));
     return true;
   };
   /* { game, from: 'main'|'backup', warning } ya da null */

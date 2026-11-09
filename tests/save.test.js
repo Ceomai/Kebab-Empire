@@ -45,4 +45,20 @@ describe('kayıt sistemi', () => {
     env.v = 99;
     expect(() => KE.SAVE.open(env)).toThrow(/daha yeni/);
   });
+  it('yazılan metin JSON.stringify(zarf) ile bayt bayt aynı; yedek ve eski gün koruması önbellekle de çalışır', () => {
+    const { KE, store } = loadGame();
+    const G = playDays(KE, newGame(KE), 2);
+    KE.SAVE.write(G);
+    const env = JSON.parse(store[KE.SAVE.KEY]);
+    expect(store[KE.SAVE.KEY]).toBe(JSON.stringify(Object.assign(KE.SAVE.envelope(G), { savedAt: env.savedAt })));
+    /* aynı gün: yedek alınmaz; gün değişince bir önceki kayıt yedeğe geçer */
+    KE.SAVE.write(G);
+    expect(store[KE.SAVE.BACKUP]).toBeUndefined();
+    const day = G.day; playDays(KE, G, 1); KE.SAVE.write(G);
+    expect(JSON.parse(store[KE.SAVE.BACKUP]).day).toBe(day);
+    /* yuva başka biri tarafından (başka sekme) daha ileri bir günle yazıldıysa eski gün onu ezmez */
+    const ahead = JSON.parse(store[KE.SAVE.KEY]); ahead.day = G.day + 5; store[KE.SAVE.KEY] = JSON.stringify(ahead);
+    expect(KE.SAVE.write(G)).toBe(false);
+    expect(KE.SAVE.lastError).toBe('stale');
+  });
 });

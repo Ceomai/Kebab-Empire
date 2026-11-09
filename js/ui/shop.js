@@ -120,7 +120,7 @@
   const crewViewPref = () => { try { return localStorage.getItem('kebab-empire-crewview') || 'liste'; } catch (e) { return 'liste'; } };
   function refreshCrew(full) {
     const cr = document.getElementById('crew');
-    if (cr && KE.G.phase !== 'morning' && !full) cr.innerHTML = crewPanel(B(), true); else UI.render();
+    if (cr && KE.G.phase !== 'morning' && !full) UI.patch(cr, crewPanel(B(), true)); else UI.render();
   }
   document.addEventListener('dragstart', (e) => { const el = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.cb-chip'); if (el) { UI.crewPick = el.dataset.id; e.dataTransfer.setData('text/plain', el.dataset.id); } });
   document.addEventListener('dragover', (e) => { const col = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.cb-col'); if (col) e.preventDefault(); });
@@ -238,9 +238,9 @@
     if (ls) {
       const outs = Object.keys(S.stockouts);
       const sat = S.satN ? S.satSum / S.satN : 0;
-      ls.innerHTML = `<div class="minikpis"><div><small>Ciro</small><b>${KE.tl(S.revenue)}</b></div><div><small>Bahşiş</small><b>${KE.tl(S.tips)}</b></div><div><small>Servis</small><b>${S.served}</b></div><div><small>Kaçan</small><b class="${S.lost ? 'neg' : ''}">${S.lost}</b></div></div>
+      UI.patch(ls, `<div class="minikpis"><div><small>Ciro</small><b>${KE.tl(S.revenue)}</b></div><div><small>Bahşiş</small><b>${KE.tl(S.tips)}</b></div><div><small>Servis</small><b>${S.served}</b></div><div><small>Kaçan</small><b class="${S.lost ? 'neg' : ''}">${S.lost}</b></div></div>
         <div class="statl"><span>Memnuniyet</span>${bar(sat, sat < 60 ? 'crit' : sat < 72 ? 'warn' : 'ok')}<b>${S.satN ? Math.round(sat) : '–'}</b></div>
-        ${outs.length ? `<div class="alert crit sm">${IC('bolt')}<span>Biten: ${outs.map(pn).join(', ')}</span></div>` : ''}`;
+        ${outs.length ? `<div class="alert crit sm">${IC('bolt')}<span>Biten: ${outs.map(pn).join(', ')}</span></div>` : ''}`);
     }
     const dl = document.getElementById('dailylive');
     if (dl && (force || tickN % 3 === 0)) {
@@ -248,13 +248,13 @@
       const doneNow = (html.match(/dg done/g) || []).length;
       if (UI.dailyDone != null && doneNow > UI.dailyDone) { UI.toast('Günün hedefi tamam!', 'gold'); }
       UI.dailyDone = doneNow;
-      dl.innerHTML = html;
+      UI.patch(dl, html);
     }
     const bl = document.getElementById('branchlive');
-    if (bl) bl.innerHTML = KE.G.branches.map((x) => { const l = KE.G.live[x.id]; const s2 = l.stats; return `<button class="blrow ${x.id === b.id ? 'on' : ''}" data-a="viewBranch" data-id="${x.id}"><b>${esc(x.name)}</b><span>${l.closed ? 'Kapalı' : l.done ? 'Kapandı' : `${l.queue.length} sırada`}</span><span>${KE.tl(s2.revenue)}</span><span>${s2.satN ? '%' + Math.round(s2.satSum / s2.satN) : '–'}</span></button>`; }).join('');
+    if (bl) UI.patch(bl, KE.G.branches.map((x) => { const l = KE.G.live[x.id]; const s2 = l.stats; return `<button class="blrow ${x.id === b.id ? 'on' : ''}" data-a="viewBranch" data-id="${x.id}"><b>${esc(x.name)}</b><span>${l.closed ? 'Kapalı' : l.done ? 'Kapandı' : `${l.queue.length} sırada`}</span><span>${KE.tl(s2.revenue)}</span><span>${s2.satN ? '%' + Math.round(s2.satSum / s2.satN) : '–'}</span></button>`; }).join(''));
     if (force || tickN % 3 === 0) {
       const cr = document.getElementById('crew');
-      if (cr && !(UI.crewHover && Date.now() - UI.crewHover < 1500)) cr.innerHTML = crewPanel(b, true);
+      if (cr && !(UI.crewHover && Date.now() - UI.crewHover < 1500)) UI.patch(cr, crewPanel(b, true));
     }
     const tb = document.getElementById('tezgahBtn');
     if (tb) tb.querySelector('span').textContent = L.player.active ? 'Tezgâhtan çık' : 'Tezgâha geç';
@@ -282,6 +282,13 @@
   /* fişin rayda ilk görüldüğü an: yeni fiş 220 ms boyunca giriş hareketini sürdürür (her dakika yeniden çizilse de) */
   let tzBorn = {};
   const TZ_IN = 220;
+  /* h: ResizeObserver'ın verdiği yerleşim yüksekliği (giriş animasyonunun ölçeği karışmaz); yoksa ölçülür */
+  const tzHeight = (el, h) => {
+    if (h == null) h = el && el.isConnected ? el.getBoundingClientRect().height : 0;
+    if (h && Math.abs(h - (UI.tzh || 0)) > 2) { UI.tzh = h; document.documentElement.style.setProperty('--tzh', Math.round(h) + 'px'); }
+  };
+  let tzObserved = null;
+  const tzRO = typeof ResizeObserver === 'function' ? new ResizeObserver((list) => { const e = list[list.length - 1]; const bb = e.borderBoxSize && e.borderBoxSize[0]; tzHeight(e.target, bb ? bb.blockSize : e.target.getBoundingClientRect().height); }) : null;
   function renderTezgah() {
     const box = document.getElementById('tezgah');
     const wrap = document.querySelector('.stagewrap');
@@ -374,9 +381,11 @@
       el.innerHTML = html; tzLast[sel] = html;
       ghosts.forEach((g) => { el.appendChild(g); const rm = () => g.remove(); g.addEventListener('animationend', rm); setTimeout(rm, 400); });
     });
-    /* sabit panelin yüksekliği: sahne kırpması ve sayfa boşluğu buna göre */
-    const h = box.firstElementChild ? box.firstElementChild.getBoundingClientRect().height : 0;
-    if (h && Math.abs(h - (UI.tzh || 0)) > 2) { UI.tzh = h; document.documentElement.style.setProperty('--tzh', Math.round(h) + 'px'); }
+    /* sabit panelin yüksekliği: sahne kırpması ve sayfa boşluğu buna göre. Her dakika DOM yazımından sonra ölçmek
+       zorunlu yerleşim demekti: ResizeObserver panel boyu değişince (boyamadan önce) bildirir. */
+    const tz = box.firstElementChild;
+    if (tzRO) { if (tz && tzObserved !== tz) { tzObserved = tz; tzRO.disconnect(); tzRO.observe(tz); } }
+    else tzHeight(tz);
   }
 
   /* ---------- Gün ortası kararı ---------- */
@@ -405,17 +414,7 @@
         <div class="tabs">${KE.G.branches.map((x) => `<button class="tab ${x.id === tab ? 'on' : ''}" data-a="closeTab" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}
       ${closeSummary(b, S, sum)}
       ${promoCard(S0)}
-      <details class="closedet"><summary>${IC('chart')}Ayrıntılar: rakamlar, satılan ürünler, kim ne kadar bahşiş alır</summary>
-      <div class="kpis">
-        <div class="kpi">${IC('coin')}<small>Ciro</small><b>${KE.tl(S.revenue)}</b></div>
-        <div class="kpi">${IC('users')}<small>Müşteri</small><b>${S.served}</b></div>
-        <div class="kpi">${IC('heart')}<small>Memnuniyet</small><b>${KE.pct(Math.round(sum.sat))}</b></div>
-        <div class="kpi">${IC('gift')}<small>Bahşiş</small><b>${KE.tl(S.tips)}</b></div>
-      </div>
-      ${advice(b, S).slice(1).map((a) => `<div class="alert ${a[0]}">${IC(a[0] === 'ok' ? 'check' : 'bolt')}<span>${a[1]}</span></div>`).join('')}
-      <div><h4>Satılan ürünler</h4><div class="prodbars">${prods.map(([pid, n]) => `<div class="pbar">${KE.ART.dish(pid)}<span>${pn(pid)}</span>${bar(n / maxP * 100, 'or')}<b>${n}</b></div>`).join('') || '<p class="muted">Satış yok</p>'}</div></div>
-      <div class="shares">${preview.map(([s, v]) => `<div class="share"><span class="avatar sm">${KE.portrait(KE.staffLook(s), { mood: KE.moodFromValue(s.morale) })}</span><span><b>${esc(s.name)}</b><small>${roleName(s)} · ${Math.round(s.servedToday)} iş</small></span><b class="num">${KE.tl(v)}</b></div>`).join('')}</div>
-      </details>
+      <details class="closedet"><summary>${IC('chart')}Ayrıntılar: rakamlar, satılan ürünler, kim ne kadar bahşiş alır</summary></details>
       <section class="tipbox"><h3>${IC('gift')}Bahşiş dağıtımı <small class="muted">Bütün şubelerde uygulanır</small></h3>
         <div class="seg wide">${Object.entries(KE.TIP_RULES).map(([k, r]) => `<button class="${rule === k ? 'on' : ''}" data-a="tipToday" data-r="${k}"><span>${r.name}${k === KE.G.tipRule ? ' (varsayılan)' : ''}</span></button>`).join('')}</div>
         <p class="small">${KE.TIP_RULES[rule].desc}${rule !== KE.G.tipRule ? ` <b>Yalnızca bugün için.</b> <button class="btn xs ghost" data-a="tipRule" data-r="${rule}">Hep böyle yap</button>` : ''}</p>
@@ -423,6 +422,22 @@
       <div class="acts"><button class="btn big green" data-a="finalize">${IC('check')}Bahşişi dağıt ve günü kapat</button></div>`;
     document.querySelectorAll('.modal-bg').forEach((m) => m.remove());
     UI.modal(html, { wide: true });
+    /* iki aşamalı çizim: özet hemen, kapalı "Ayrıntılar" bölümünün içi (ürün çubukları, bahşiş payları, portreler)
+       ilk boyamadan sonra eklenir; uzun tek görev ikiye bölünür, son DOM aynıdır */
+    const det = document.querySelector('.modal .closedet');
+    const fill = () => { const d = /** @type {any} */ (det); if (d && d.isConnected && !d._filled) { d._filled = true; d.insertAdjacentHTML('beforeend', detailsHtml()); } };
+    if (det) { det.addEventListener('toggle', fill, { once: true }); requestAnimationFrame(() => setTimeout(fill, 0)); }
+    function detailsHtml() {
+      return `<div class="kpis">
+        <div class="kpi">${IC('coin')}<small>Ciro</small><b>${KE.tl(S.revenue)}</b></div>
+        <div class="kpi">${IC('users')}<small>Müşteri</small><b>${S.served}</b></div>
+        <div class="kpi">${IC('heart')}<small>Memnuniyet</small><b>${KE.pct(Math.round(sum.sat))}</b></div>
+        <div class="kpi">${IC('gift')}<small>Bahşiş</small><b>${KE.tl(S.tips)}</b></div>
+      </div>
+      ${advice(b, S).slice(1).map((a) => `<div class="alert ${a[0]}">${IC(a[0] === 'ok' ? 'check' : 'bolt')}<span>${a[1]}</span></div>`).join('')}
+      <div><h4>Satılan ürünler</h4><div class="prodbars">${prods.map(([pid, n]) => `<div class="pbar">${KE.ART.dish(pid)}<span>${pn(pid)}</span>${bar(n / maxP * 100, 'or')}<b>${n}</b></div>`).join('') || '<p class="muted">Satış yok</p>'}</div></div>
+      <div class="shares">${preview.map(([s, v]) => `<div class="share"><span class="avatar sm">${KE.portrait(KE.staffLook(s), { mood: KE.moodFromValue(s.morale) })}</span><span><b>${esc(s.name)}</b><small>${roleName(s)} · ${Math.round(s.servedToday)} iş</small></span><b class="num">${KE.tl(v)}</b></div>`).join('')}</div>`;
+    }
   }
 
   /* Kapanış: üç satırlık özet (kazanç, en büyük kayıp, yarın için tek öneri) */

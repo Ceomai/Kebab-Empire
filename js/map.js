@@ -264,7 +264,9 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
     [base, ov].forEach((el) => { if (el.getAttribute('preserveAspectRatio') !== par) el.setAttribute('preserveAspectRatio', par); });
     const night = KE.G && KE.G.phase === 'closing';
     base.classList.toggle('night', !!night); ov.classList.toggle('night', !!night);
-    ov.innerHTML = M.overlay(opts);
+    /* üst katman değişmediyse yeniden yazılmaz (rAF / yeniden boyutlama yenilemeleri çoğu zaman aynı çizimi üretir) */
+    const html = M.overlay(opts), O = /** @type {any} */ (ov);
+    if (O._h !== html || ov.childNodes.length === 0) { ov.innerHTML = html; O._h = html; }
     /* dokunma alanı ekranda en az 48 px olsun: bir pimin ekrandaki boyundan ölçek bulunur (yakınlaştırmasız, --mz = 1),
        viewBox birimine çevrilir; değiştiyse katman bir kez yeniden çizilir */
     const pin = ov.querySelector('g.place.fac .lift rect');
@@ -272,7 +274,7 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
     if (w) {
       const k = w / 52 / (parseFloat(frame.style.getPropertyValue('--mz')) || 1);
       const h = Math.round(Math.max(30, Math.min(90, 24 / Math.max(0.05, k))));
-      if (Math.abs(h - hitHalf) > 2) { hitHalf = h; ov.innerHTML = M.overlay(opts); }
+      if (Math.abs(h - hitHalf) > 2) { hitHalf = h; const h2 = M.overlay(opts); ov.innerHTML = h2; O._h = h2; }
     }
   };
   /* Üst katman: tesisler, dükkânlar, iş etiketleri, rota, bulutlar (ve seçim modunda semtler) */

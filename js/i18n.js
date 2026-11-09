@@ -28,14 +28,29 @@
     const list = [...set].filter((s) => s && s.length > 1).sort((a, b) => b.length - a.length);
     entities = list.map((s) => ({ s, re: new RegExp('(^|[^A-Za-zÇĞİÖŞÜçğıöşü])(' + s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(?=$|[^A-Za-zÇĞİÖŞÜçğıöşü])', 'g') }));
   }
-  I.refreshEntities = () => { entities = null; };
+  I.refreshEntities = () => { entities = null; trCache.clear(); };
 
   /* Metni kalıba çevir: { key, parts } — parts yer tutucuların asıl değerleri */
   let sig = '';
   const gameSig = () => (KE.G ? KE.G.saveId + ':' + KE.G.staff.map((x) => x.id).join(',') + ':' + KE.G.branches.length + ':' + KE.G.owner : '');
-  I.normalize = function (text) {
+  /* Oyundaki adlar (ekip, şube, sahip) yalnızca bir eylemden ya da çizimden sonra değişebilir: imza her çağrıda
+     değil, oyun nesnesi ya da arayüzün değişiklik sayacı (KE.UI.mutSeq) değiştiğinde yeniden hesaplanır.
+     Adlar değiştiyse varlık listesi ve çeviri önbelleği sıfırlanır. */
+  let sigG = null, sigSeq = -1;
+  const checkSig = () => {
+    const seq = KE.UI ? KE.UI.mutSeq : -2;
+    /* arayüz yoksa (testler, sunucu) sayaç da yok: imza her seferinde hesaplanır */
+    if (KE.UI && sigG === KE.G && sigSeq === seq && entities) return;
+    sigG = KE.G; sigSeq = seq;
     const g = gameSig();
-    if (!entities || g !== sig) { sig = g; buildEntities(); }
+    if (!entities || g !== sig) { sig = g; buildEntities(); trCache.clear(); }
+  };
+  /* tr() sonuçları (dil, bağlam, metin) için önbellekte; sözlük değişince ya da sınır aşılınca boşalır */
+  const trCache = new Map();
+  let trCacheDict = null;
+  const TR_CACHE_MAX = 4000;
+  I.normalize = function (text) {
+    checkSig();
     const parts = [];
     let s = text;
     const mark = (v) => { parts.push(v); return '\u0001' + String.fromCharCode(0xE000 + parts.length - 1) + '\u0002'; };
@@ -59,6 +74,19 @@
   I.t = function (text, ctx) { return brandSwap(tr(text, ctx)); };
   function tr(text, ctx) {
     if (I.lang === 'tr' || !text || !TR.test(text)) return text;
+    if (I.collect) return trRaw(text, ctx);
+    checkSig();
+    if (trCacheDict !== I.dict) { trCacheDict = I.dict; trCache.clear(); }
+    const k = ctx ? ctx + '\u0000' + text : text;
+    let v = trCache.get(k);
+    if (v === undefined) {
+      v = trRaw(text, ctx);
+      if (trCache.size >= TR_CACHE_MAX) trCache.clear();
+      trCache.set(k, v);
+    }
+    return v;
+  }
+  function trRaw(text, ctx) {
     const lead = text.match(/^\s*/)[0], trail = text.match(/\s*$/)[0];
     const core = text.trim();
     if (!core) return text;
@@ -75,6 +103,9 @@
 
   /* ---------- DOM: eklenen ve değişen metinleri çevir ---------- */
   const orig = new WeakMap();
+  /* çevrilmiş bir metin düğümünün asıl (Türkçe) metni; çevrilmemişse null. Canlı panel güncellemesi (UI.patch)
+     aynı kaynağı yeniden yazıp çeviriyi boşuna tetiklemesin diye */
+  I.srcOf = (n) => { const o = orig.get(n); return o && o.out === n.nodeValue ? o.tr : null; };
   const ATTRS = ['placeholder', 'title', 'aria-label'];
   function doText(n) {
     const cur = n.nodeValue;
@@ -125,7 +156,7 @@
     I.lang = lang; I.dict = DICTS[lang] || {};
     try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* yok */ }
     document.documentElement.lang = lang;
-    entities = null;
+    entities = null; trCache.clear();
     if (lang !== 'tr' || branded()) { observe(); walk(document.body); }
     else if (was !== 'tr' && KE.UI && KE.UI.render) KE.UI.render();
     if (was !== lang && lang !== 'tr' && KE.UI && KE.UI.render) KE.UI.render();
