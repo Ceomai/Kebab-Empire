@@ -44,7 +44,8 @@ function validateBrand(B, fileId, opts = {}) {
     if (!Array.isArray(B.nameParts) || !B.nameParts.length || B.nameParts.length > 3) errs.push('nameParts: 1–3 parçalık liste olmalı');
     else B.nameParts.forEach((p, i) => plain(p, `nameParts[${i}]`, 24));
   }
-  if (B.rival != null) plain(B.rival, 'rival', 30);
+  if (B.rival != null) { plain(B.rival, 'rival', 30); if (B.rival !== 'Lüks Kebap' && String(B.rival).includes('Lüks Kebap')) errs.push('rival: yeni ad "Lüks Kebap" içeremez'); }
+  if (B.gameName && B.gameName !== 'Kebab Empire' && String(B.gameName).includes('Kebab Empire')) errs.push('gameName: yeni ad "Kebab Empire" içeremez');
   if (B.shopName != null) plain(B.shopName, 'shopName', 24);
   text(B.tagline, 'tagline', 80);
   text(B.orderLabel, 'orderLabel', 30);
@@ -70,7 +71,9 @@ function validateBrand(B, fileId, opts = {}) {
   if (B.logoSvg != null) {
     const s = String(B.logoSvg);
     if (!/^\s*<svg[\s>]/i.test(s)) errs.push('logoSvg: <svg ile başlamalı');
-    if (/<script|<foreignobject|<iframe|<object|<embed|\son[a-z]+\s*=|javascript:|(?:xlink:)?href\s*=\s*(?!["']?#)/i.test(s)) errs.push('logoSvg: betik, olay özniteliği, dış bağlantı ya da gömülü nesne içeremez (logoUrl ile dosya kullan)');
+    /* oyun SVG'yi <img> olarak çizer (betik çalışmaz); yine de açıkça zararlı içerik reddedilir */
+    if (!/<\/svg>\s*$/i.test(s)) errs.push('logoSvg: </svg> ile bitmeli');
+    if (/<script|<foreignobject|<iframe|<object|<embed|<meta|<base|[\s/"']on[a-z]+\s*=|javascript:/i.test(s)) errs.push('logoSvg: betik, olay özniteliği ya da gömülü nesne içeremez (logoUrl ile dosya kullan)');
     if (s.length > 20000) errs.push('logoSvg: en fazla 20 KB');
   }
   if (B.app != null) {

@@ -207,7 +207,8 @@
   const baseLogo = A.logo;
   A.logo = () => {
     const BR = KE.BRAND;
-    if (BR && BR.logoSvg) return String(BR.logoSvg).replace('<svg ', '<svg class="logo-mark" ');
+    /* satır içi SVG bile <img> olarak çizilir: görsel olarak yüklenen SVG betik çalıştıramaz, sayfaya HTML ekleyemez */
+    if (BR && BR.logoSvg) return `<img class="logo-mark" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(String(BR.logoSvg))}" alt="">`;
     if (BR && BR.logoUrl) return `<img class="logo-mark" src="${String(BR.logoUrl).replace(/"/g, '')}" alt="">`;
     return baseLogo();
   };

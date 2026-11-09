@@ -5,3 +5,4 @@ dist
 coverage
 dist-*
 reports/screens/
+.brand-applied.json

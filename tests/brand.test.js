@@ -49,6 +49,17 @@ describe('marka ayarı', () => {
     const { KE: K2 } = loadGame(FILES, { globals: { __BRAND__: Object.assign({}, demo, { rival: 'Kral Döner' }) } });
     expect(K2.BRAND.swap('"Lüks Kebap"ı geride bırak')).toBe('"Kral Döner"i geride bırak');
     expect(K2.BRAND.swap('"Lüks Kebap"a teklif ver')).toBe('"Kral Döner"e teklif ver');
+    expect(K2.BRAND.swap('"Lüks Kebap"tan kaç')).toBe('"Kral Döner"den kaç');
+    expect(K2.BRAND.swap('Lüks Kebap ve Lüks Kebap')).toBe('Kral Döner ve Kral Döner');
+    /* yeni ad eskisini içerse de tek kez değişir */
+    const { KE: K3 } = loadGame(FILES, { globals: { __BRAND__: Object.assign({}, demo, { rival: 'Lüks Kebap Plus' }) } });
+    expect(K3.BRAND.swap('"Lüks Kebap"ı geç')).toBe('"Lüks Kebap Plus"u geç');
+  });
+  it('satır içi logo <img> olarak çizilir (sayfaya HTML eklenmez)', () => {
+    const { KE } = loadGame(['data', 'brand', 'art'], { globals: { __BRAND__: Object.assign({}, demo, { logoUrl: null, logoSvg: '<svg xmlns="http://www.w3.org/2000/svg"><meta http-equiv="refresh"></svg>' }) } });
+    const html = KE.ART.logo();
+    expect(html.startsWith('<img class="logo-mark" src="data:image/svg+xml')).toBe(true);
+    expect(html).not.toMatch(/<meta|<svg/);
   });
   it('metin alanları dile göre yazılabilir', () => {
     const { KE } = loadGame(FILES, { globals: { __BRAND__: demo } });
@@ -95,6 +106,11 @@ describe('marka ayarı', () => {
     expect(bad({ logoUrl: null, logoSvg: '<svg onload="alert(1)"></svg>' }).join()).toMatch(/logoSvg/);
     expect(bad({ logoUrl: null, logoSvg: '<svg><script>alert(1)</script></svg>' }).join()).toMatch(/logoSvg/);
     expect(bad({ logoUrl: null, logoSvg: '<svg><use href="#a"/></svg>' })).toEqual([]);
+    expect(bad({ logoUrl: null, logoSvg: "<svg><image href = '#x'/></svg>" })).toEqual([]);
+    expect(bad({ logoUrl: null, logoSvg: "<svg><meta http-equiv='refresh' content='0;url=x'></svg>" }).join()).toMatch(/logoSvg/);
+    expect(bad({ logoUrl: null, logoSvg: '<svg><img/src=x/onerror=alert(1)></svg>' }).join()).toMatch(/logoSvg/);
+    expect(bad({ logoUrl: null, logoSvg: '<svg></svg><div>x</div>' }).join()).toMatch(/logoSvg/);
+    expect(bad({ rival: 'Lüks Kebap Plus' }).join()).toMatch(/rival/);
     expect(bad({ colors: { primary: 'red;}' } }).join()).toMatch(/colors/);
     expect(bad({ tagline: { tr: 'Merhaba', en: 'Hello' } })).toEqual([]);
     expect(bad({ tagline: { xx: 'Hi' } }).join()).toMatch(/tagline/);

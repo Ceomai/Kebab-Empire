@@ -38,26 +38,46 @@ edit('android/app/build.gradle', (s) => s.replace(/applicationId "[^"]*"/, `appl
 edit('ios/App/App/Info.plist', (s) => s.replace(/(<key>CFBundleDisplayName<\/key>\s*<string>)[^<]*(<\/string>)/, (m, a, b) => a + xml(app.name) + b));
 edit('ios/App/App.xcodeproj/project.pbxproj', (s) => s.replace(/PRODUCT_BUNDLE_IDENTIFIER = [^;]*;/g, `PRODUCT_BUNDLE_IDENTIFIER = ${app.id};`));
 
-/* Simgeler: markanınkiler varsa kopyalanır; "default" ile depodaki özgün simgelere dönülür */
-const RES = 'android/app/src/main/res';
-const ICON_PATHS = (fs.existsSync(RES) ? fs.readdirSync(RES).filter((d) => d.startsWith('mipmap-')).map((d) => RES + '/' + d) : []).concat(['ios/App/App/Assets.xcassets/AppIcon.appiconset']);
-if (id === 'default') {
-  try {
-    execFileSync('git', ['checkout', '--', ...ICON_PATHS.filter((p) => fs.existsSync(p))], { stdio: 'ignore' });
-    execFileSync('git', ['clean', '-fdq', '--', ...ICON_PATHS.filter((p) => fs.existsSync(p))], { stdio: 'ignore' });
-    changed.push('simgeler depodaki özgün hâline döndü');
-  } catch (e) { console.warn('Uyarı: simgeler git ile geri alınamadı; android/app/src/main/res ve iOS AppIcon klasörünü elle geri yükle.'); }
+/* Simgeler: markanın kopyaladığı dosyalar .brand-applied.json kaydına yazılır. Bir sonraki çalıştırmada
+   (başka marka ya da "default") yalnızca bu dosyalar geri alınır: depoda olan dosya git'teki hâline döner,
+   depoda olmayan (markanın eklediği) dosya silinir. Kaydın dışındaki hiçbir dosyaya dokunulmaz. */
+const LOG = '.brand-applied.json';
+const tracked = (f) => { try { execFileSync('git', ['ls-files', '--error-unmatch', '--', f], { stdio: 'ignore' }); return true; } catch (e) { return false; } };
+if (fs.existsSync(LOG)) {
+  let prev = null;
+  try { prev = JSON.parse(fs.readFileSync(LOG, 'utf8')); } catch (e) { prev = null; }
+  const files = prev && Array.isArray(prev.files) ? prev.files : [];
+  let failed = 0;
+  for (const f of files) {
+    /* yalnızca simge ve açılış klasörlerindeki göreli yollar */
+    if (typeof f !== 'string' || f.includes('..') || !/^(android\/app\/src\/main\/res\/(mipmap|drawable)[^/]*\/|ios\/App\/App\/Assets\.xcassets\/AppIcon\.appiconset\/)[^/]+$/.test(f)) continue;
+    if (tracked(f)) { try { execFileSync('git', ['checkout', '--', f], { stdio: 'ignore' }); } catch (e) { failed++; } }
+    else if (fs.existsSync(f)) { fs.rmSync(f); const d = path.dirname(f); if (fs.existsSync(d) && !fs.readdirSync(d).length) fs.rmdirSync(d); }
+  }
+  if (failed) console.warn(`Uyarı: ${failed} simge dosyası git ile geri alınamadı.`);
+  fs.rmSync(LOG);
+  if (files.length) changed.push(`önceki markanın ${files.length} simge dosyası geri alındı`);
 }
+const copied = [];
+const copyTree = (src, dst) => {
+  for (const e of fs.readdirSync(src, { withFileTypes: true })) {
+    const s2 = path.join(src, e.name), d2 = dst + '/' + e.name;
+    if (e.isDirectory()) { if (!/^(mipmap|drawable)/.test(e.name) && dst.endsWith('/res')) { console.warn('Atlandı (yalnızca mipmap-* ve drawable-* kopyalanır): ' + s2); continue; } fs.mkdirSync(d2, { recursive: true }); copyTree(s2, d2); }
+    else if (e.isFile() && !dst.endsWith('/res')) { fs.copyFileSync(s2, d2); copied.push(d2); }
+  }
+};
 const ares = path.join('brands', id, 'android-res');
-if (fs.existsSync(ares)) {
-  fs.cpSync(ares, 'android/app/src/main/res', { recursive: true });
+if (fs.existsSync(ares) && fs.existsSync('android/app/src/main/res')) {
+  copyTree(ares, 'android/app/src/main/res');
   changed.push('android/app/src/main/res (simgeler; geri dönmek için: npm run brand default)');
 }
+const IOS_ICON = 'ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png';
 const iicon = path.join('brands', id, 'ios-icon.png');
-if (fs.existsSync(iicon)) {
-  fs.copyFileSync(iicon, 'ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png');
+if (fs.existsSync(iicon) && fs.existsSync(path.dirname(IOS_ICON))) {
+  fs.copyFileSync(iicon, IOS_ICON); copied.push(IOS_ICON);
   changed.push('iOS uygulama simgesi');
 }
+if (copied.length) fs.writeFileSync(LOG, JSON.stringify({ id, files: copied }, null, 2) + '\n');
 
 console.log(`Marka "${id}" uygulandı: ${app.name} (${app.id})`);
 changed.forEach((c) => console.log('  · ' + c));

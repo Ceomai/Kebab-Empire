@@ -49,7 +49,10 @@ npm run brand default
 - `gameName` zorunlu. Metinlerde `<` ve `>` kullanılamaz.
 - Bağlantılar (`orderUrl`, `promo.url`) yalnızca `https://`.
 - Renkler `#rrggbb`. Kupon kodu yalnızca harf, rakam, `-` ve `_`.
-- Logo: tercihen `logoUrl` ile `public/` altındaki bir dosya. `logoSvg` kullanılırsa betik, olay özniteliği (`onload` vb.) ya da dış bağlantı içeremez.
+- Logo: tercihen `logoUrl` ile `public/` altındaki bir dosya. `logoSvg` kullanılırsa oyun onu görsel (`<img>`) olarak çizer; betik, olay özniteliği (`onload` vb.), `<meta>` ya da `</svg>` sonrasında içerik kabul edilmez.
+- Yeni rakip adı "Lüks Kebap"ı, yeni oyun adı "Kebab Empire"ı içeremez.
+
+Bilinen sınır: ek uyumu yalnızca addan hemen sonra tırnak ya da kesme işaretiyle gelen eklerde çalışır. Oyun adı iyelik ekli bir tamlamaysa ("... Oyunu") bazı ekler ("Oyunu'nda" yerine "Oyunu'da") düzgün çıkmayabilir; oyundaki mevcut metinlerde bu durum yok.
 
 Ürün kimlikleri: döner modunda `tavuk_durum, et_durum, ekmek_arasi, iskender, pilav_ustu, tavuk_porsiyon, cag, tantuni, kunefe`; kebap modunda `adana, urfa, kuzu_sis, beyti, ali_nazik, lahmacun, ciger, icli_kofte, kunefe`.
 
@@ -58,8 +61,9 @@ npm run brand default
 - Android: `brands/<id>/android-res/` içine `mipmap-mdpi … mipmap-xxxhdpi` klasörleri (Android Studio → Image Asset ile üretilebilir). `npm run brand <id>` bunları projeye kopyalar.
 - iOS: `brands/<id>/ios-icon.png` (1024×1024, saydamsız PNG).
 - Web/PWA simgeleri `public/icons/` altında; markalı yayında onları da değiştir.
-- **Açılış ekranı (splash):** Android `android/app/src/main/res/drawable*/splash.png`, iOS `ios/App/App/Assets.xcassets/Splash.imageset/`. Marka betiği bunlara dokunmaz; markalı yayında elle değiştir.
-- `npm run brand default` uygulama adını, paket kimliğini ve simgeleri (`mipmap-*` ve iOS AppIcon) depodaki özgün hâline döndürür (git gerekir). Elle değiştirdiğin açılış ekranlarını ayrıca geri al.
+- **Açılış ekranı (splash):** Android için `brands/<id>/android-res/drawable*/splash.png` koyarsan betik onu da kopyalar. iOS açılış ekranı (`ios/App/App/Assets.xcassets/Splash.imageset/`) elle değiştirilir.
+- `android-res` içinden yalnızca `mipmap-*` ve `drawable*` klasörleri kopyalanır; başka klasörler atlanır.
+- Betik kopyaladığı dosyaları `.brand-applied.json` kaydına yazar (depoya girmez). Başka bir marka ya da `npm run brand default` çalıştırıldığında yalnızca bu dosyalar geri alınır: depodaki dosya özgün hâline döner, markanın eklediği dosya silinir. Kaydın dışındaki dosyalara (kendi notların, elle eklediğin simgeler) dokunulmaz. Elle değiştirdiğin iOS açılış ekranını ayrıca geri al.
 
 Markalı web derlemesinde sekme başlığı, iOS ana ekran adı (`apple-mobile-web-app-title`), açıklama ve tema rengi `index.html` içinde kendiliğinden markanınkiyle değişir.
 
