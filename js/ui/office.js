@@ -37,7 +37,7 @@
         ${KE.G.loans.length ? `<div class="kpi">${IC('lock')}<small>Kredi borcu</small><b>${KE.tl(KE.G.loans.reduce((a, l) => a + l.monthly * l.remaining, 0))}</b></div>` : ''}
       </div>
       ${keys.length ? `<h3>Son ${keys.length} gün</h3>` : ''}
-      ${keys.length ? lineChart([{ name: 'Ciro', color: '#f28c28', values: keys.map((k) => byDay[k].rev), area: true }, { name: 'Malzeme', color: '#2f6fb5', values: keys.map((k) => byDay[k].pur) }, { name: 'Günlük net', color: '#23a26d', values: keys.map((k) => byDay[k].net) }], keys.map((k) => { const d = KE.dateOf(k); return d.getUTCDate() + '/' + (d.getUTCMonth() + 1); }), { label: 'Günlük ciro ve net' }) : '<p class="muted">İlk günü bitirince grafikler burada görünecek.</p>'}
+      ${keys.length ? lineChart([{ name: 'Ciro', color: 'var(--kor)', values: keys.map((k) => byDay[k].rev), area: true }, { name: 'Malzeme', color: 'var(--cini-light)', values: keys.map((k) => byDay[k].pur) }, { name: 'Günlük net', color: 'var(--nane)', values: keys.map((k) => byDay[k].net) }], keys.map((k) => { const d = KE.dateOf(k); return d.getUTCDate() + '/' + (d.getUTCMonth() + 1); }), { label: 'Günlük ciro ve net' }) : '<p class="muted">İlk günü bitirince grafikler burada görünecek.</p>'}
       <p class="small muted">Ay sonu (${KE.dateStr(monthEnd)}) kapanışında bordro, kira, stopaj, faturalar, KDV, çiftlik gideri ve kredi taksitleri kasadan düşer.</p>`;
   };
   OFFICE.gunluk = () => {
@@ -70,7 +70,7 @@
     });
     const list = Object.values(weeks).sort((a, b) => b.w - a.w);
     const asc = list.slice().reverse();
-    return `${asc.length > 1 ? lineChart([{ name: 'Haftalık ciro', color: '#f28c28', values: asc.map((w) => w.rev), area: true }, { name: 'Haftalık net', color: '#23a26d', values: asc.map((w) => w.net) }], asc.map((w) => w.w + '. hf'), { label: 'Haftalık ciro' }) : ''}
+    return `${asc.length > 1 ? lineChart([{ name: 'Haftalık ciro', color: 'var(--kor)', values: asc.map((w) => w.rev), area: true }, { name: 'Haftalık net', color: 'var(--nane)', values: asc.map((w) => w.net) }], asc.map((w) => w.w + '. hf'), { label: 'Haftalık ciro' }) : ''}
       <div class="tablewrap"><table class="fin"><thead><tr><th>Hafta</th><th>Başlangıç</th><th class="r">Müşteri</th><th class="r">Kaçan</th><th class="r">Ciro</th><th class="r">Malzeme</th><th class="r">Bahşiş</th><th class="r">Memnuniyet</th><th>En çok satan</th><th class="r">Net</th></tr></thead><tbody>
       ${list.map((w) => { const top = Object.entries(w.prods).sort((a, b) => b[1] - a[1])[0]; return `<tr><td>${w.w}. hafta</td><td>${KE.dateStr(w.start)}</td><td class="r">${w.served}</td><td class="r">${w.lost}</td><td class="r">${KE.tl(w.rev)}</td><td class="r">${KE.tl(w.pur)}</td><td class="r">${KE.tl(w.tips)}</td><td class="r">%${w.satN ? Math.round(w.satS / w.satN) : 0}</td><td>${top ? pn(top[0]) : '–'}</td><td class="r ${w.net >= 0 ? 'pos' : 'neg'}">${KE.tl(w.net)}</td></tr>`; }).join('') || '<tr><td colspan="10" class="muted">Henüz kayıt yok.</td></tr>'}
       </tbody></table></div>`;

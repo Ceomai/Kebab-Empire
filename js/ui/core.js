@@ -330,10 +330,10 @@
     series.forEach((s) => {
       if (!s.values.length) return;
       const pts = s.values.map((v, i) => `${x(i)},${y(v)}`).join(' ');
-      if (s.area) g += `<polygon points="${x(0)},${y(Math.max(0, min))} ${pts} ${x(s.values.length - 1)},${y(Math.max(0, min))}" fill="${s.color}" opacity=".14"/>`;
-      g += `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>`;
+      if (s.area) g += `<polygon points="${x(0)},${y(Math.max(0, min))} ${pts} ${x(s.values.length - 1)},${y(Math.max(0, min))}" style="fill:${s.color}" opacity=".14"/>`;
+      g += `<polyline points="${pts}" fill="none" style="stroke:${s.color}" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>`;
       const li = s.values.length - 1;
-      g += `<circle cx="${x(li)}" cy="${y(s.values[li])}" r="4.5" fill="${s.color}" stroke="#fff" stroke-width="2"/>`;
+      g += `<circle cx="${x(li)}" cy="${y(s.values[li])}" r="4.5" style="fill:${s.color};stroke:var(--white)" stroke-width="2"/>`;
     });
     return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label || 'grafik')}">${g}</svg>
       <div class="legend">${series.map((s) => `<span><i style="background:${s.color}"></i>${esc(s.name)}</span>`).join('')}</div>`;
@@ -348,7 +348,7 @@
     const mi = values.indexOf(max);
     values.forEach((v, i) => {
       const h = (H - pt - pb) * Math.max(0, v) / max;
-      g += `<rect x="${pl + i * bw + bw * 0.16}" y="${H - pb - h}" width="${bw * 0.68}" height="${h}" rx="4" fill="${i === mi ? '#d7263d' : (opts.color || '#f28c28')}"/>`;
+      g += `<rect x="${pl + i * bw + bw * 0.16}" y="${H - pb - h}" width="${bw * 0.68}" height="${h}" rx="4" style="fill:${i === mi ? 'var(--biber)' : (opts.color || 'var(--kor)')}"/>`;
       g += `<text x="${pl + i * bw + bw / 2}" y="${H - 8}" text-anchor="middle">${esc(labels[i])}</text>`;
     });
     return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.label || 'grafik')}">${g}</svg>`;
@@ -357,7 +357,7 @@
     const tot = parts.reduce((a, p) => a + Math.max(0, p.v), 0) || 1;
     let acc = 0, segs = '';
     const R = 54, C = 2 * Math.PI * R;
-    parts.forEach((p) => { const f = Math.max(0, p.v) / tot; segs += `<circle cx="70" cy="70" r="${R}" fill="none" stroke="${p.c}" stroke-width="22" stroke-dasharray="${f * C} ${C}" stroke-dashoffset="${-acc * C}" transform="rotate(-90 70 70)"/>`; acc += f; });
+    parts.forEach((p) => { const f = Math.max(0, p.v) / tot; segs += `<circle cx="70" cy="70" r="${R}" fill="none" style="stroke:${p.c}" stroke-width="22" stroke-dasharray="${f * C} ${C}" stroke-dashoffset="${-acc * C}" transform="rotate(-90 70 70)"/>`; acc += f; });
     return `<div class="donut"><svg viewBox="0 0 140 140" role="img" aria-label="${esc(label)}">${segs}<text x="70" y="66" text-anchor="middle" class="d1">${esc(label)}</text><text x="70" y="84" text-anchor="middle" class="d2">${KE.tl(tot)}</text></svg>
       <ul>${parts.map((p) => `<li><i style="background:${p.c}"></i><span>${esc(p.l)}</span><b>${Math.round(Math.max(0, p.v) / tot * 100)}%</b></li>`).join('')}</ul></div>`;
   }

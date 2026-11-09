@@ -263,7 +263,7 @@
   UI.confetti = function () {
     const box = document.createElement('div');
     box.className = 'confetti';
-    const cols = ['#ffc93c', '#d7263d', '#23a26d', '#2f6fb5', '#f28c28'];
+    const cols = ['var(--altin)', 'var(--biber)', 'var(--nane)', 'var(--cini-light)', 'var(--kor)'];
     for (let i = 0; i < 46; i++) { const p = document.createElement('i'); p.style.left = Math.random() * 100 + '%'; p.style.background = cols[i % 5]; p.style.animationDelay = Math.random() * 0.4 + 's'; p.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px'); box.appendChild(p); }
     document.body.appendChild(box);
     setTimeout(() => box.remove(), 2400);
@@ -475,7 +475,7 @@
     const opened = KE.placesOfEra(e.n).map((id) => KE.MAP.place(id)).filter(Boolean);
     const extra = { 3: ['Büyük yatırımlar: imza tarif, amiral dükkân, toplu siparişler'], 4: ['"Lüks Kebap"ı satın alma teklifi (Merkez Ofis)'] }[e.n] || [];
     return `<div class="unlock era-up"><span class="kicker">Yeni dönem · ${e.n}/${KE.ERAS.length}</span><div class="era-big">${e.n}</div><h2>${esc(e.name)}</h2><p class="lead">${esc(e.story)}</p>
-      ${opened.length || extra.length ? `<div class="era-open">${opened.map((p) => `<span class="eo" style="--c:${p.color}">${IC(p.icon)}<b>${esc(p.name)}</b> açıldı</span>`).join('')}${extra.map((x) => `<span class="eo" style="--c:#7a1f3d">${IC('star')}<b>${esc(x)}</b></span>`).join('')}</div>` : ''}
+      ${opened.length || extra.length ? `<div class="era-open">${opened.map((p) => `<span class="eo" style="--c:${p.color}">${IC(p.icon)}<b>${esc(p.name)}</b> açıldı</span>`).join('')}${extra.map((x) => `<span class="eo" style="--c:var(--sumak)">${IC('star')}<b>${esc(x)}</b></span>`).join('')}</div>` : ''}
       ${e.req.length ? `<p class="small muted">Sıradaki döneme geçmek için:</p><div class="chips center">${e.req.map((r) => `<span class="chip">${esc(r.label)}</span>`).join('')}</div>` : ''}
       <div class="acts center"><button class="btn big green" data-a="closeModal">${IC('play')}Devam</button></div></div>`;
   }
@@ -497,7 +497,7 @@
   }
   function monthReportHtml(m) {
     const line = (l, v, cls) => `<tr class="${cls || ''}"><td>${l}</td><td class="r">${KE.tl(v)}</td></tr>`;
-    const parts = [{ l: 'Malzeme', v: m.purchases, c: '#f28c28' }, { l: 'Personel', v: m.personnel, c: '#7a1f3d' }, { l: 'Kira', v: m.rent, c: '#2f6fb5' }, { l: 'KDV', v: m.kdv, c: '#8e7cc3' }, { l: 'Fatura', v: m.util, c: '#23a26d' }, { l: 'Diğer', v: m.accountant + m.loan + (m.ads || 0) + (m.fines || 0) + Math.max(0, m.other || 0) + (m.farm || 0) + (m.farmFixed || 0), c: '#9a8b7a' }];
+    const parts = [{ l: 'Malzeme', v: m.purchases, c: 'var(--kor)' }, { l: 'Personel', v: m.personnel, c: 'var(--sumak)' }, { l: 'Kira', v: m.rent, c: 'var(--cini-light)' }, { l: 'KDV', v: m.kdv, c: '#8e7cc3' }, { l: 'Fatura', v: m.util, c: 'var(--nane)' }, { l: 'Diğer', v: m.accountant + m.loan + (m.ads || 0) + (m.fines || 0) + Math.max(0, m.other || 0) + (m.farm || 0) + (m.farmFixed || 0), c: '#9a8b7a' }];
     return `<div class="mhead"><span class="kicker">Aylık kapanış</span><h2>${m.name} bilançosu</h2></div>
       <div class="kpis"><div class="kpi">${IC('coin')}<small>Ciro (KDV dahil)</small><b>${KE.tl(m.revenue)}</b></div><div class="kpi">${IC('users')}<small>Müşteri</small><b>${KE.num(m.customers)}</b></div><div class="kpi">${IC('chef')}<small>Personel maliyeti</small><b>${KE.tl(m.personnel)}</b></div><div class="kpi">${IC('chart')}<small>Aylık net</small><b class="${m.net >= 0 ? 'pos' : 'neg'}">${KE.tl(m.net)}</b></div></div>
       <div class="cols2"><div class="tablewrap"><table class="fin"><tbody>

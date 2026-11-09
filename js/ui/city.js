@@ -60,7 +60,7 @@
     const f = target ? Math.min(1, val / target) : 0;
     const R = 44, C = 2 * Math.PI * R;
     const done = prog.filter((g) => g.state === 'done').length;
-    return `<div class="cp-goal"><svg viewBox="0 0 112 112" class="gring" aria-label="Günlük hedef ${val}/${target}"><circle cx="56" cy="56" r="${R}" fill="none" stroke="#efe0bf" stroke-width="12"/><circle cx="56" cy="56" r="${R}" fill="none" stroke="#ffc93c" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(C * f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 56 56)"/><text x="56" y="58" text-anchor="middle" class="r1">${val}</text><text x="56" y="76" text-anchor="middle" class="r2">/ ${target}</text></svg>
+    return `<div class="cp-goal"><svg viewBox="0 0 112 112" class="gring" aria-label="Günlük hedef ${val}/${target}"><circle cx="56" cy="56" r="${R}" fill="none" stroke="#efe0bf" stroke-width="12"/><circle cx="56" cy="56" r="${R}" fill="none" style="stroke:var(--altin)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(C * f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 56 56)"/><text x="56" y="58" text-anchor="middle" class="r1">${val}</text><text x="56" y="76" text-anchor="middle" class="r2">/ ${target}</text></svg>
       <div class="cp-stats"><span class="k">${live ? 'Bugün' : 'Beklenen'}</span>
         <div><i style="background:#3b8ee0"></i><span>Müşteri</span><b>${live ? served : exp}</b></div>
         <div><i style="background:#2ecc71"></i><span>Bahşiş</span><b>${live ? KE.tl(tips) : '—'}</b></div>
