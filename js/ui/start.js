@@ -34,14 +34,14 @@
       <div class="t-sea"><div class="t-ferry"><svg viewBox="0 0 90 40" aria-hidden="true"><path d="M4 22 h82 l-10 14 h-62z" fill="#fff"/><rect x="18" y="8" width="54" height="14" rx="3" fill="#d7263d"/><rect x="40" y="0" width="8" height="10" fill="#2c3e50"/><g fill="#bde3f7"><rect x="23" y="12" width="7" height="6"/><rect x="34" y="12" width="7" height="6"/><rect x="49" y="12" width="7" height="6"/><rect x="60" y="12" width="7" height="6"/></g></svg></div><div class="t-gulls">⌒⌒ ⌒</div></div>
       <div class="t-street"><div class="t-walk w1">${KE.figure(hc.walkers[0], { pose: 'walk', mood: 'happy' })}</div><div class="t-walk w2">${KE.figure(hc.walkers[1], { pose: 'walk', mood: 'happy' })}</div><div class="t-walk w3">${KE.figure(hc.walkers[2], { pose: 'walk', mood: 'happy' })}</div><div class="t-walk w4">${KE.figure(hc.walkers[3], { pose: 'walk', mood: 'happy' })}</div></div>
       <div class="t-shop">
-        <div class="t-store">${KE.ART.storefront('Kebab Empire', '#d7263d', true)}</div>
+        <div class="t-store">${KE.ART.storefront(KE.BRAND ? KE.BRAND.gameName : 'Kebab Empire', (KE.BRAND && KE.BRAND.colors.primary) || '#d7263d', true)}</div>
         <div class="t-doner">${KE.ART.doner('et')}</div>
         <div class="t-fig f1">${KE.figure(KE.staffLook(hc.usta), { mood: 'happy' })}</div>
         <div class="t-fig f2">${KE.figure(KE.staffLook(hc.komi), { mood: 'happy', tray: true, trayDish: KE.ART.dish('iskender') })}</div>
       </div>
       <div class="t-dish d1">${KE.ART.dish('adana')}</div><div class="t-dish d2">${KE.ART.dish('lahmacun')}</div><div class="t-dish d3">${KE.ART.dish('et_durum')}</div><div class="t-dish d4">${KE.ART.dish('kunefe')}</div>
       <div class="t-front">
-        <div class="t-logo"><span class="t-mark">${KE.ART.logo()}</span><h1><span>Kebab</span><em>Empire</em></h1><span class="t-ribbon">Döner ve kebap işletme oyunu</span></div>
+        <div class="t-logo"><span class="t-mark">${KE.ART.logo()}</span><h1 translate="no">${(() => { const p = KE.BRAND ? KE.BRAND.nameParts : ['Kebab', 'Empire']; return `<span>${esc(p[0])}</span>${p[1] ? `<em>${esc(p.slice(1).join(' '))}</em>` : ''}`; })()}</h1>${KE.BRAND && KE.BRAND.tagline ? `<span class="t-ribbon" translate="no">${esc(KE.BRAND.text(KE.BRAND.tagline))}</span>` : '<span class="t-ribbon">Döner ve kebap işletme oyunu</span>'}</div>
         <div class="t-cta"><div class="t-r1">${has ? `<button class="btn big green" data-a="continue">${IC('play')}Devam et</button>` : ''}<button class="btn big ${has ? 'gold' : 'green'}" data-a="newgame">${IC('plus')}Yeni oyun</button></div><div class="t-r2"><button class="btn big ghost" data-a="guide">${IC('book')}Kılavuz</button><button class="btn big ghost" data-a="race">${IC('target')}Haftanın yarışı</button></div><div class="t-r3"><button class="btn big ghost round langbtn" data-a="lang" aria-label="Dil / Language" title="Dil / Language">${(KE.I18N ? KE.I18N.lang : 'tr').toUpperCase()}</button><button class="btn big ghost round" data-a="importSave" aria-label="Yedek dosyasından yükle" title="Yedek dosyasından yükle">${IC('arrow')}</button><button class="btn big ghost round" data-a="sound" aria-label="Ses">${IC(KE.SND.on ? 'sound' : 'mute')}</button></div></div>
         ${(() => { const h = UI.hall ? UI.hall() : []; return h.length ? `<div class="t-hall"><span class="kicker">${IC('crown')}Şeref kürsüsü</span>${h.slice(0, 3).map((x) => `<span><b>${esc(x.shop)}</b> · ${x.gen}. kuşak · ${x.days} günde imparator${x.stars ? ` · ${'★'.repeat(x.stars)}` : ''}${x.donated ? ` · ${KE.tl(x.donated)} bağış` : ''}</span>`).join('')}</div>` : ''; })()}
       </div>
@@ -72,7 +72,7 @@
       <div class="modecards">${lg ? card(lg.mode) : card('doner') + card('kebap')}</div>
       <div class="panel formrow">
         <label class="field">Adın<input id="ng-owner" value="${esc(ng.owner || '')}" placeholder="Örn. Deniz" maxlength="24" autocomplete="off"></label>
-        <label class="field grow">Dükkânının adı<input id="ng-shop" value="${esc(ng.shopName || '')}" placeholder="${ng.mode === 'kebap' ? 'Örn. Köz Ocakbaşı' : 'Örn. Yaprak Döner'}" maxlength="26" autocomplete="off"></label>
+        <label class="field grow">Dükkânının adı<input id="ng-shop" value="${esc((KE.BRAND && KE.BRAND.shopName) || ng.shopName || '')}" ${KE.BRAND && KE.BRAND.shopName ? 'readonly' : ''} placeholder="${ng.mode === 'kebap' ? 'Örn. Köz Ocakbaşı' : 'Örn. Yaprak Döner'}" maxlength="26" autocomplete="off"></label>
         <button class="btn big green" data-a="ngStep" data-to="newDistrict" ${ng.mode ? '' : 'disabled'}>Devam ${IC('play')}</button>
       </div></main>`;
   };

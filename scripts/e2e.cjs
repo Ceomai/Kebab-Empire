@@ -21,7 +21,7 @@ const OUT = process.argv[3] || require('fs').mkdtempSync(require('os').tmpdir() 
   await shot('01-title');
   await click('[data-a="newgame"]');
   await click(`[data-a="pickMode"][data-m="${mode}"]`);
-  await page.fill('#ng-owner', 'Deniz'); await page.fill('#ng-shop', mode === 'doner' ? 'Yaprak Döner' : 'Köz Ocakbaşı');
+  await page.fill('#ng-owner', 'Deniz'); if (await page.isEditable('#ng-shop')) await page.fill('#ng-shop', mode === 'doner' ? 'Yaprak Döner' : 'Köz Ocakbaşı'); // markalı sürümde dükkân adı sabit
   await shot('02-mode');
   await click('[data-a="ngStep"][data-to="newDistrict"]');
   await click('.dl[data-d="kadiceşme"]');

@@ -8994,5 +8994,17 @@
  "Servis sürerken kayıt alınmaz; gün sonunda kendiliğinden kaydedilir. Bugünün sabahı kayıtlı.": {
   "en": "Saving is off while the shop is open; the game saves itself at the end of the day. This morning is saved.",
   "de": "Während der Öffnungszeit wird nicht gespeichert; das Spiel speichert am Tagesende selbst. Der heutige Morgen ist gespeichert."
+ },
+ "Kupon kodu kopyalandı.": {
+  "en": "Coupon code copied.",
+  "de": "Gutscheincode kopiert."
+ },
+ "Ödül kuponu": {
+  "en": "Reward coupon",
+  "de": "Belohnungsgutschein"
+ },
+ "Sipariş ver": {
+  "en": "Order now",
+  "de": "Jetzt bestellen"
  }
 }

@@ -6,3 +6,6 @@ interface ImportMetaEnv { readonly VITE_SUPABASE_URL?: string; readonly VITE_SUP
 interface ImportMeta { readonly env: ImportMetaEnv; }
 declare module 'virtual:pwa-register' { export function registerSW(o?: any): (reload?: boolean) => Promise<void>; }
 declare module '*.css';
+
+/** Marka ayarı: derlemede Vite define ile brands/<id>.json içeriği */
+declare const __BRAND__: any;

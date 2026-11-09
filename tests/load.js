@@ -7,6 +7,7 @@ export function loadGame(files = ['data', 'calendar', 'characters', 'economy', '
   const store = {};
   const ctx = { console, Intl, Math, Date, JSON, setTimeout, clearTimeout,
     localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { if (opts.quota != null && String(v).length > opts.quota) throw new Error('QuotaExceededError'); store[k] = String(v); }, removeItem: (k) => { delete store[k]; } } };
+  Object.assign(ctx, opts.globals || {});
   ctx.window = ctx; vm.createContext(ctx);
   for (const f of files) vm.runInContext(fs.readFileSync(path.join(root, f + '.js'), 'utf8'), ctx, { filename: f + '.js' });
   return { KE: ctx.KE, store };
