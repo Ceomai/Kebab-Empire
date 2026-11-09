@@ -262,7 +262,8 @@
     UI.mapLabels(f);
     /* üst çubuk / alt sekme ölçüleri (layoutVars) yerleşince harita son boyunu alır: dokunma alanları ona göre yeniden */
     requestAnimationFrame(() => { if (UI.screen === 'map') UI.mapRefresh(); });
-    if (UI.a11y && UI.a11y.calm) f.querySelectorAll('svg').forEach((sv) => { if (/** @type {any} */ (sv).pauseAnimations) /** @type {any} */ (sv).pauseAnimations(); });
+    UI.mapIdle = false; mapWake();
+    UI.syncSvgMotion(f);
     if (f.scrollWidth > f.clientWidth + 4 && KE.G) {
       const P = KE.MAP.POS[B().district] || { x: 700, y: 430 };
       const sv = f.querySelector('svg');
@@ -271,6 +272,24 @@
       f.scrollTop = Math.max(0, P.y * k - f.clientHeight / 2);
     }
   };
+  /* Harita boşta: 12 sn dokunulmazsa süsleme hareketleri (bulut, martı, vapur, araba, duman, ağaç) durur; iş
+     işaretleri (nabız, rota) çalışmaya devam eder. İlk dokunuş / kaydırma / tuşta hepsi kaldığı yerden sürer. */
+  const MAP_IDLE_MS = 12000;
+  let idleT = 0;
+  function setMapIdle(on) {
+    UI.mapIdle = on;
+    const f = document.getElementById('cityframe');
+    if (!f) return;
+    f.classList.toggle('idle', on);
+    UI.syncSvgMotion(f, on);
+  }
+  function mapWake() {
+    clearTimeout(idleT);
+    if (UI.screen !== 'map') return;
+    if (UI.mapIdle) setMapIdle(false);
+    idleT = setTimeout(() => { if (UI.screen === 'map') setMapIdle(true); }, MAP_IDLE_MS);
+  }
+  ['pointerdown', 'wheel', 'keydown', 'scroll'].forEach((ev) => document.addEventListener(ev, mapWake, { passive: true, capture: true }));
   let rsz = 0;
   window.addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(() => UI.mapRefresh(), 200); });
   document.addEventListener('mouseover', (e) => {

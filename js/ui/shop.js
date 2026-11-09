@@ -267,16 +267,21 @@
     st.appendChild(d);
     setTimeout(() => d.remove(), 3200);
   }
+  /* Konfeti: en çok 20 parça; servis sürerken (sahne oynarken) ve hareketi azaltta yok; üst üste tetiklenmez */
   UI.confetti = function () {
+    if (UI.calm() || (KE.G && KE.G.phase === 'service') || document.querySelector('.confetti')) return;
     const box = document.createElement('div');
     box.className = 'confetti';
     const cols = ['var(--altin)', 'var(--biber)', 'var(--nane)', 'var(--cini-light)', 'var(--kor)'];
-    for (let i = 0; i < 46; i++) { const p = document.createElement('i'); p.style.left = Math.random() * 100 + '%'; p.style.background = cols[i % 5]; p.style.animationDelay = Math.random() * 0.4 + 's'; p.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px'); box.appendChild(p); }
+    for (let i = 0; i < 20; i++) { const p = document.createElement('i'); p.style.left = Math.random() * 100 + '%'; p.style.background = cols[i % 5]; p.style.animationDelay = Math.random() * 0.4 + 's'; p.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px'); box.appendChild(p); }
     document.body.appendChild(box);
     setTimeout(() => box.remove(), 2400);
   };
   /* Tezgâh: üstte sipariş rayı (2-3 fiş), altta 6 büyük istasyon. Sıradaki adım hangi istasyondaysa o parlar. */
   let tzLast = {};
+  /* fişin rayda ilk görüldüğü an: yeni fiş 220 ms boyunca giriş hareketini sürdürür (her dakika yeniden çizilse de) */
+  let tzBorn = {};
+  const TZ_IN = 220;
   function renderTezgah() {
     const box = document.getElementById('tezgah');
     const wrap = document.querySelector('.stagewrap');
@@ -285,7 +290,7 @@
     if (!L) return;
     const P = L.player;
     if (wrap) wrap.classList.toggle('tzon', !!P.active);
-    if (!P.active) { box.innerHTML = ''; return; }
+    if (!P.active) { box.innerHTML = ''; tzBorn = {}; return; }
     const b = B(), cap = KE.playerCap(G, b), slots = P.slots || [];
     const need = {}, want = {};
     /* istasyon düğmesinde kategori yerine o an gereken malzemenin adı yazar. Sıra, dokununca motorun yapacağıyla
@@ -300,9 +305,13 @@
       (want[st] = want[st] || []).push({ l: steps[sl.step] });
     });
     Object.keys(KE.TIMED).forEach((k) => { if (want[k]) want[k].sort((a, b) => (b.take ? 1 : 0) - (a.take ? 1 : 0)); });
+    const now = Date.now(), calmNow = UI.calm(), born = {};
     const cards = slots.map((sl, i) => {
       const t = L.tickets.find((x) => x.id === sl.tid);
       if (!t) return '';
+      born[t.id] = tzBorn[t.id] || now;
+      const age = now - born[t.id];
+      const enter = !calmNow && age < TZ_IN ? ` enter" style="animation-delay:-${age}ms` : '';
       const p = prod(t.pid), c = t.cid != null ? L.custs[t.cid] : null, steps = KE.ticketSteps(G, t);
       const fs = sl.fst || 'ates';
       const st = sl.fire != null ? fs : KE.stepStation(steps[sl.step]);
@@ -321,7 +330,7 @@
       const rushLeft = t.rush ? Math.ceil(p.prep * 1.25 - (L.minute - (t.firstTake != null ? t.firstTake : sl.start))) : 0;
       const tags = (t.menu ? `<span class="tz-tag menu">${IC('fries')}Menü</span>` : '') + (t.rush ? `<span class="tz-tag rush ${rushLeft <= 0 ? 'late' : ''}">${IC('bolt')}${rushLeft > 0 ? `Acele ${rushLeft} dk` : 'Acele'}</span>` : '') + (t.gurme ? `<span class="tz-tag gurme">${IC('star')}Gurme</span>` : '');
       const pat = c ? clamp(1 - c.wait / (c.patience * 2.6), 0, 1) : 1;
-      return `<button class="tz-card ${i === P.sel ? 'sel' : ''} ${sl.errors ? 'err' : ''}" data-a="psel" data-i="${i}" aria-label="${esc(p.name)}">
+      return `<button class="tz-card ${i === P.sel ? 'sel' : ''} ${sl.errors ? 'err' : ''}${enter}" data-a="psel" data-i="${i}" data-tid="${t.id}" aria-label="${esc(p.name)}">
         <span class="tz-cd">${KE.ART.dish(p.id)}${t.count > 1 ? `<b>×${t.count}</b>` : ''}</span>
         <span class="tz-cb"><b class="tz-cn">${esc(p.name)}${t.paket ? ' · paket' : ''}</b>${tags || fire ? `<span class="tz-tags">${fire}${tags}</span>` : ''}
           <span class="tz-rec">${steps.map((x, k) => { const sid = KE.stepStation(x); const S = KE.STATIONS.find((y) => y.id === sid); return `<i class="${k < sl.step ? 'done' : k === sl.step ? 'now' : ''} s-${sid}">${IC(k < sl.step ? 'check' : S.ic)}<em>${esc(x)}</em></i>`; }).join('')}</span></span>
@@ -348,7 +357,23 @@
        (parmağın altındaki düğme kaybolmasın) */
     if (!box.querySelector('.tz2')) { box.innerHTML = '<div class="tz2"><div class="tz-top"></div><div class="tz-rail"></div><div class="tz-sts" id="stepbtns"></div></div>'; tzLast = {}; }
     box.firstElementChild.classList.toggle('onfire', (P.combo || 0) >= 3);
-    [['.tz-top', top], ['.tz-rail', cards], ['.tz-sts', stations]].forEach(([sel, html]) => { if (tzLast[sel] !== html) { box.querySelector(sel).innerHTML = html; tzLast[sel] = html; } });
+    tzBorn = born;
+    [['.tz-top', top], ['.tz-rail', cards], ['.tz-sts', stations]].forEach(([sel, html]) => {
+      if (tzLast[sel] === html) return;
+      const el = box.querySelector(sel);
+      /* biten / raydan kalkan fiş: eski kartın kopyası aynı yerde kısa bir çıkış oynar (yalnızca o an ölçülür) */
+      const ghosts = [];
+      if (sel === '.tz-rail' && !calmNow) el.querySelectorAll('.tz-card[data-tid]:not(.leave)').forEach((c) => {
+        const h = /** @type {HTMLElement} */ (c);
+        if (born[h.dataset.tid]) return;
+        const g = /** @type {HTMLElement} */ (h.cloneNode(true));
+        g.className = 'tz-card leave'; g.removeAttribute('data-a'); g.removeAttribute('data-tid'); g.setAttribute('aria-hidden', 'true'); g.removeAttribute('style');
+        g.style.left = h.offsetLeft + 'px'; g.style.top = h.offsetTop + 'px'; g.style.width = h.offsetWidth + 'px'; g.style.height = h.offsetHeight + 'px';
+        ghosts.push(g);
+      });
+      el.innerHTML = html; tzLast[sel] = html;
+      ghosts.forEach((g) => { el.appendChild(g); const rm = () => g.remove(); g.addEventListener('animationend', rm); setTimeout(rm, 400); });
+    });
     /* sabit panelin yüksekliği: sahne kırpması ve sayfa boşluğu buna göre */
     const h = box.firstElementChild ? box.firstElementChild.getBoundingClientRect().height : 0;
     if (h && Math.abs(h - (UI.tzh || 0)) > 2) { UI.tzh = h; document.documentElement.style.setProperty('--tzh', Math.round(h) + 'px'); }

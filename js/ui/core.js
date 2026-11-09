@@ -28,6 +28,55 @@
   /* ---------- Kayıt (ayrıntılar save.js'te) ---------- */
   /* Uygulama mı (Android/iOS), tarayıcı mı */
   UI.isNative = () => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } };
+
+  /* ---------- Hareket ve dokunsal geri bildirim ---------- */
+  /* Hareketi azalt: oyun içi ayar ya da sistem tercihi (prefers-reduced-motion). İkisi de body.calm'ı açar (UI.applyA11y). */
+  const RM = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+  UI.reduceMotionMQ = RM;
+  UI.calm = () => !!((UI.a11y && UI.a11y.calm) || (RM && RM.matches));
+  /* SVG içi SMIL hareketleri (haritadaki araba, vapur, martı; ocak alevi) CSS kurallarıyla durmaz: SVG'nin kendi saati
+     duraklatılır. extra: hareketi azalt dışında da durdur (ör. harita bir süredir boşta). */
+  UI.syncSvgMotion = function (root, extra) {
+    const stop = UI.calm() || !!extra;
+    const seen = new Set();
+    (root || document).querySelectorAll('animateMotion, animate, animateTransform').forEach((a) => {
+      let sv = /** @type {any} */ (a).ownerSVGElement;
+      while (sv && sv.ownerSVGElement) sv = sv.ownerSVGElement;
+      if (!sv || seen.has(sv) || !sv.pauseAnimations) return;
+      seen.add(sv);
+      if (stop) { if (!sv.animationsPaused()) sv.pauseAnimations(); } else if (sv.animationsPaused()) sv.unpauseAnimations();
+    });
+  };
+  /* Ekran değişimi: View Transitions API varsa kısa çapraz geçiş (yalnızca kullanıcının açtığı ekran / sekme değişimi;
+     servis sırasındaki dakika güncellemeleri buradan geçmez), yoksa ana içerik 150 ms'de belirir. Hareketi azaltta yok. */
+  UI.transition = function (fn) {
+    const doc = /** @type {any} */ (document);
+    if (UI.calm()) { fn(); return; }
+    if (typeof doc.startViewTransition === 'function' && !document.querySelector('.modal-bg')) {
+      try { doc.startViewTransition(fn); return; } catch (e) { /* aşağıda düz çizim */ }
+    }
+    fn();
+    const main = app() && /** @type {HTMLElement} */ (app().querySelector(':scope > main, :scope > section, :scope > div:not(.topbar)'));
+    if (main && main.animate) main.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 150, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+  };
+  /* Dokunsal geri bildirim: KE.haptic('light' | 'medium' | 'success' | 'warning' | 'error').
+     Uygulamada @capacitor/haptics (src/main.js yalnızca uygulamada yükler, UI.nativeHaptics), tarayıcıda navigator.vibrate.
+     Menü → Görünüm → Titreşim ile kapatılır; art arda gelen çağrılar 90 ms içinde birleşir. */
+  const VIB = { light: 10, medium: 22, success: [14, 60, 22], warning: [30, 60, 30], error: [45, 40, 45] };
+  let lastHaptic = 0;
+  UI.hapticOn = () => !(UI.a11y && UI.a11y.haptic === false);
+  KE.haptic = function (kind) {
+    if (!UI.hapticOn()) return false;
+    const now = Date.now();
+    if (now - lastHaptic < 90) return false;
+    lastHaptic = now;
+    if (UI.nativeHaptics) { try { UI.nativeHaptics(kind); } catch (e) { /* yok */ } return true; }
+    const nav = /** @type {any} */ (navigator);
+    /* tarayıcı titreşimi kullanıcı sayfaya dokunmadan engeller (konsola uyarı yazar): o durumda hiç çağırma */
+    if (!nav.vibrate || (nav.userActivation && !nav.userActivation.hasBeenActive)) return false;
+    try { nav.vibrate(VIB[kind] || VIB.light); } catch (e) { /* yok */ }
+    return true;
+  };
   UI.save = function () {
     /* servis sırasında kayıt yok: kayıt sabah durumunu ve gün sonunu tutar; yarım gün kaydedilirse stok kaybolur */
     if (!KE.G || UI.staleTab || KE.G.phase === 'service') return;
@@ -150,7 +199,7 @@
     t.className = 'toast ' + (kind || '');
     t.innerHTML = (kind === 'gold' ? IC('star') : kind === 'bad' ? IC('bolt') : IC('check')) + `<span>${esc(msg)}</span>`;
     box.appendChild(t);
-    if (kind === 'gold' && UI.confetti) { UI.confetti(); KE.SND.play('goal'); }
+    if (kind === 'gold') { KE.haptic('success'); if (UI.confetti) UI.confetti(); KE.SND.play('goal'); }
     setTimeout(() => t.classList.add('out'), 3400);
     setTimeout(() => t.remove(), 3800);
   };
@@ -207,10 +256,28 @@
   UI.A.modalX = () => UI.dismissModal('x');
   /* pencere hangi yoldan kaldırılırsa kaldırılsın (doğrudan .remove() dahil) arka planın inert durumu güncellenir */
   new MutationObserver(syncInert).observe(document.body, { childList: true });
+  /* Kapanış hareketi: pencere hemen "kapalı" sayılır (sınıfı .modal-out olur: inert, tıklanmaz, sorgulara girmez),
+     160 ms'de solup küçülür (telefon alt sayfası aşağı kayar), sonra DOM'dan çıkar. Arada açılan yeni pencere
+     ve odak dönüşü bundan etkilenmez; aynı pencere iki kez kapatılamaz. */
+  const SHEET_MQ = typeof matchMedia === 'function' ? matchMedia('(max-width: 760px), (max-height: 520px)') : null;
+  function leaveModal(bg) {
+    bg.classList.replace('modal-bg', 'modal-out');
+    bg.setAttribute('inert', ''); bg.setAttribute('aria-hidden', 'true');
+    const md = /** @type {HTMLElement} */ (bg.firstElementChild);
+    if (UI.calm() || !md || typeof md.animate !== 'function') { bg.remove(); return; }
+    const sheet = md.classList.contains('sheet') && SHEET_MQ && SHEET_MQ.matches;
+    const opt = { duration: 160, easing: 'cubic-bezier(.4, 0, 1, 1)', fill: /** @type {FillMode} */ ('forwards') };
+    bg.animate([{ opacity: 1 }, { opacity: 0 }], opt);
+    const a = md.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: sheet ? 'translateY(40px)' : 'translateY(6px) scale(.96)' }], opt);
+    let gone = false;
+    const done = () => { if (!gone) { gone = true; bg.remove(); } };
+    a.finished.then(done, done);
+    setTimeout(done, 400);
+  }
   UI.closeModal = function () {
     const m = document.querySelectorAll('.modal-bg');
     let opener = null;
-    if (m.length) { opener = /** @type {any} */ (m[m.length - 1])._opener; m[m.length - 1].remove(); }
+    if (m.length) { opener = /** @type {any} */ (m[m.length - 1])._opener; leaveModal(m[m.length - 1]); }
     syncInert();
     if (!document.querySelector('.modal-bg')) {
       if (modalQueue.length) modalQueue.shift()();
@@ -306,6 +373,7 @@
     if (inGame && !UI.holdEvent && KE.G.pendingEvent && KE.G.phase === 'morning' && !document.querySelector('.modal-bg')) H.showEvent();
     if (UI.undoChip) UI.undoChip();
     UI.layoutVars();
+    UI.syncSvgMotion(app(), UI.screen === 'map' && UI.mapIdle);
   };
   /* Telefon düzeni: üst çubuk ve alt sekme yüksekliği CSS'e aktarılır, harita ekranı tam bu kadar yer kaplar;
      servis sahnesi ekran genişliğine sığar */
@@ -398,7 +466,15 @@
   function todayRevenue() { return KE.G.live ? KE.G.branches.reduce((a, b) => a + (KE.G.live[b.id] ? KE.G.live[b.id].stats.revenue : 0), 0) : 0; }
   UI.refreshBars = function () {
     const td = document.getElementById('tb-today');
-    if (td) { const t = 'Bugün +' + KE.tl(todayRevenue()); if (td.textContent !== t) { td.textContent = t; td.classList.remove('bump'); void td.offsetWidth; td.classList.add('bump'); } }
+    if (td) {
+      const t = 'Bugün +' + KE.tl(todayRevenue());
+      if (td.textContent !== t) {
+        td.textContent = t;
+        /* sayaç zıplaması: yeniden başlatmak için yerleşim zorlanmaz (eskiden offsetWidth), Web Animations ile */
+        const tt = /** @type {any} */ (td);
+        if (tt.animate && !UI.calm()) { if (tt._bump) tt._bump.cancel(); tt._bump = tt.animate([{ transform: 'none' }, { transform: 'scale(1.18)', color: '#fff', offset: 0.4 }, { transform: 'none' }], { duration: 350, easing: 'cubic-bezier(.2, .8, .2, 1)' }); }
+      }
+    }
     const bb = document.querySelector('.branchbar');
     if (bb) bb.innerHTML = branchTabs();
     const m = document.querySelector('.tb-money b');

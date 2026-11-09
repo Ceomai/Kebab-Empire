@@ -107,6 +107,28 @@
 
   const ent = {};
   let stageId = null, fxStage = null;
+  /* Konumlar sahnenin yüzdesi; ekrana transform ile px olarak yazılır (left/top yerleşim tetikler, transform yalnızca
+     birleştirme). Sahne boyu ResizeObserver ile izlenir; her dakika ölçüm yapılmaz. */
+  let SW = 0, SH = 0, walkS = 0.9, sizeStage = null;
+  const ro = typeof ResizeObserver === 'function' ? new ResizeObserver((list) => {
+    const r = list[list.length - 1].contentRect;
+    if (Math.abs(r.width - SW) < 0.5 && Math.abs(r.height - SH) < 0.5) return;
+    SW = r.width; SH = r.height;
+    /* boy değişti (döndürme, panel açıldı): varlıklar yürümeden yeni yerlerine */
+    Object.values(ent).forEach((e) => {
+      const el = e.el;
+      el.style.transition = 'none'; el.style.transform = xf(e.x, e.y);
+      requestAnimationFrame(() => requestAnimationFrame(() => { el.style.transition = ''; }));
+    });
+  }) : null;
+  function trackSize(stage) {
+    if (sizeStage === stage) return;
+    sizeStage = stage;
+    SW = stage.clientWidth; SH = stage.clientHeight;
+    if (ro) { ro.disconnect(); ro.observe(stage); }
+  }
+  const xf = (x, y) => `translate(${(x * SW / 100).toFixed(1)}px, ${(y * SH / 100).toFixed(1)}px) translate(-50%, -100%)`;
+  const calm = () => !!(KE.UI && KE.UI.calm && KE.UI.calm());
   /* sahnede aynı anda gösterilecek en çok efekt (birikmiş efektler bir anda yüzlerce div ve ses olmasın) */
   const FX_MAX = 24;
   S.reset = function () { Object.keys(ent).forEach((k) => delete ent[k]); stageId = null; };
@@ -118,20 +140,28 @@
     if (!e || !e.el.isConnected) {
       const el = document.createElement('div');
       el.className = 'ent ' + (cls || '');
-      el.style.left = (from ? from.x : x) + '%';
-      el.style.top = (from ? from.y : y) + '%';
+      el.style.transform = from ? xf(from.x, from.y) : xf(x, y);
       L.appendChild(el);
       e = ent[key] = { el, html: null, x, y };
-      requestAnimationFrame(() => { el.style.left = x + '%'; el.style.top = y + '%'; });
+      if (from && !calm()) {
+        /* kapıdan gir: ilk karede kapıda çizilsin, sonraki karede hedefe yürüsün (stil okumadan) */
+        const me = e;
+        me.entering = true;
+        requestAnimationFrame(() => requestAnimationFrame(() => { me.entering = false; if (el.isConnected) { el.style.transform = xf(me.x, me.y); markMoving(me); } }));
+      } else if (from) el.style.transform = xf(x, y);
     }
     if (e.el.parentNode !== L) L.appendChild(e.el);
     if (html != null && e.html !== html) { e.el.innerHTML = html; e.html = html; }
     if (e.x !== x || e.y !== y) {
-      const dx = x - e.x;
+      const dx = x - e.x, dist = Math.abs(dx) + Math.abs(y - e.y);
       if (Math.abs(dx) > 0.5) e.el.classList.toggle('flip', dx < 0);
-      e.el.style.left = x + '%'; e.el.style.top = y + '%';
-      if (Math.abs(dx) + Math.abs(y - e.y) > 0.6) markMoving(e);
       e.x = x; e.y = y;
+      if (!e.entering) {
+        /* kısa adım yumuşak başlayıp durur, uzun yürüyüş sabit hızda */
+        e.el.style.transitionTimingFunction = dist < 4 ? 'var(--ease-in-out)' : '';
+        e.el.style.transform = xf(x, y);
+        if (dist > 0.6) markMoving(e);
+      }
     }
     if (cls != null) e.el.className = 'ent ' + cls + (e.el.classList.contains('flip') ? ' flip' : '') + (e.moveT ? ' moving' : '');
     e.el.style.zIndex = z != null ? z : Math.round(y * 10);
@@ -140,11 +170,10 @@
   }
   /* Yürüme: geçiş süresi boyunca 'moving' sınıfı; varınca bacaklar durur */
   function markMoving(e) {
-    const st = document.getElementById('stage');
-    const dur = st ? parseFloat(getComputedStyle(st).getPropertyValue('--walk')) || 0.9 : 0.9;
+    /* süre stilden okunmaz (her yürüyüşte stil hesaplatırdı): --walk ile aynı değer S.update'te tutulur */
     e.el.classList.add('moving');
     clearTimeout(e.moveT);
-    e.moveT = setTimeout(() => { e.moveT = null; e.el.classList.remove('moving'); }, dur * 1000);
+    e.moveT = setTimeout(() => { e.moveT = null; e.el.classList.remove('moving'); }, walkS * 1000);
   }
   function sweep(prefix, onGone) {
     Object.keys(ent).forEach((k) => {
@@ -171,7 +200,9 @@
     const cooking = KE.cookingStaff(G, b);
     const tablePos = S.tablePos(L.tables.length);
     const speed = G.speed || 1;
-    stage.style.setProperty('--walk', Math.max(0.25, 0.9 / speed) + 's');
+    trackSize(stage);
+    const w = Math.max(0.25, 0.9 / speed);
+    if (w !== walkS || freshStage) { walkS = w; stage.style.setProperty('--walk', w + 's'); }
 
     /* masalar */
     L.tables.forEach((t, i) => {
@@ -268,7 +299,8 @@
       const ex = GEO.door.x + GEO.exitDx;
       e.el.classList.toggle('flip', ex < e.x);
       clearTimeout(e.moveT); e.el.classList.add('moving');
-      e.el.style.left = ex + '%'; e.el.style.top = GEO.door.y + '%';
+      e.el.style.transitionTimingFunction = '';
+      e.el.style.transform = xf(ex, GEO.door.y);
       setTimeout(() => e.el.remove(), 1200);
     });
 
@@ -287,6 +319,8 @@
       else if (f.t === 'bad') KE.SND.play('bad');
       else if (f.t === 'served' && f.match) KE.SND.play('match');
       if (f.t === 'regular') KE.SND.play('match');
+      /* tezgâh görevi tamam (oyuncunun müdavim efekti): başarı titreşimi */
+      if (f.t === 'regular' && f.sid === 'player') KE.haptic('success');
       const cls = f.t === 'combo' ? 'combo' : f.t === 'regular' ? 'reg' : f.t === 'bad' ? 'bad' : f.t === 'tip' ? 'tip' : f.t === 'pay' ? 'pay' : f.match ? 'match' : f.t === 'ready' ? 'ready' : '';
       const text = f.t === 'ready' ? 'Hazır!' : f.text;
       if (!text || f.t === 'pass') return;
@@ -319,21 +353,32 @@
   };
 
   let lastCoin = 0;
+  /* Para uçuşu: dakika güncellemesinin ortasında ölçüm yapılmaz (zorunlu yerleşim olurdu); bir sonraki karede
+     sahne ve hedef bir kez ölçülür, para başta left/top ile yerleşir, hedefe transform ile uçar (FLIP). */
   function coinFly(stage, x, y) {
     const now = Date.now();
-    if (now - lastCoin < 350) return;
+    if (now - lastCoin < 350 || calm() || typeof document.body.animate !== 'function') return;
     lastCoin = now;
-    /* telefonda "bugün" yazısı gizli: görünen kasa göstergesine uç, o da yoksa hiç uçma */
-    const cands = [document.getElementById('tb-today'), document.querySelector('.tb-money')];
-    const target = cands.find((e) => e && e.getBoundingClientRect().width > 0);
-    if (!target) return;
-    const sr = stage.getBoundingClientRect(), tr = target.getBoundingClientRect();
-    const c = document.createElement('div');
-    c.className = 'coinfly';
-    c.style.left = (sr.left + sr.width * x / 100) + 'px'; c.style.top = (sr.top + sr.height * y / 100) + 'px';
-    document.body.appendChild(c);
-    requestAnimationFrame(() => requestAnimationFrame(() => { c.style.left = (tr.left + 10) + 'px'; c.style.top = (tr.top + 6) + 'px'; c.style.transform = 'scale(.5)'; c.style.opacity = '.4'; }));
-    setTimeout(() => c.remove(), 900);
+    requestAnimationFrame(() => {
+      if (!stage.isConnected) return;
+      /* telefonda "bugün" yazısı gizli: görünen kasa göstergesine uç, o da yoksa hiç uçma */
+      let tr = null;
+      for (const t of [document.getElementById('tb-today'), document.querySelector('.tb-money')]) { if (!t) continue; const r = t.getBoundingClientRect(); if (r.width > 0) { tr = r; break; } }
+      if (!tr) return;
+      const sr = stage.getBoundingClientRect();
+      const x0 = sr.left + sr.width * x / 100, y0 = sr.top + sr.height * y / 100;
+      const dx = tr.left + 10 - x0, dy = tr.top + 6 - y0;
+      const c = document.createElement('div');
+      c.className = 'coinfly';
+      c.style.left = x0 + 'px'; c.style.top = y0 + 'px';
+      document.body.appendChild(c);
+      /* yay: önce yukarı hızlı, yana yavaş (eski left/top eğrilerinin karşılığı) */
+      c.animate([
+        { transform: 'translate(0, 0)', opacity: 1 },
+        { transform: `translate(${dx * 0.22}px, ${dy * 0.8}px) scale(.8)`, opacity: 0.9, offset: 0.5 },
+        { transform: `translate(${dx}px, ${dy}px) scale(.5)`, opacity: 0.4 }
+      ], { duration: 750, easing: 'cubic-bezier(.3, .6, .6, 1)' }).finished.then(() => c.remove(), () => c.remove());
+    });
   }
   function ownerLook(G) {
     if (!G.ownerLook) G.ownerLook = Object.assign(KE.randomLook(Math.random() < 0.5 ? 'e' : 'k', 'orta'), { outfit: 'onluk', outfitColor: '#d7263d', shirt: '#fdfefe', logo: true, accent: '#ffc93c', head: 'none' });

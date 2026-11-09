@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",
+    "@capacitor/haptics": "^8.0.2",
     "@fontsource/baloo-2": "^5.3.0",
     "@fontsource/kalam": "^5.3.0",
     "@fontsource/nunito": "^5.3.0",

@@ -9974,5 +9974,21 @@
  "G{0}": {
   "en": "D{0}",
   "de": "T{0}"
+ },
+ "Yazı boyutu, hareket ve titreşim ayarı. Seçim bu cihazda saklanır.": {
+  "en": "Text size, motion and vibration. Saved on this device.",
+  "de": "Textgröße, Bewegung und Vibration. Wird auf diesem Gerät gespeichert."
+ },
+ "Titreşimi kapat": {
+  "en": "Turn off vibration",
+  "de": "Vibration ausschalten"
+ },
+ "Titreşimi aç": {
+  "en": "Turn on vibration",
+  "de": "Vibration einschalten"
+ },
+ "Tezgâh dokunuşları, biten sipariş, hedef ve alışverişte kısa titreşim": {
+  "en": "Short vibration for counter taps, finished orders, goals and purchases",
+  "de": "Kurze Vibration bei Tresen-Tipps, fertigen Bestellungen, Zielen und Einkäufen"
  }
 }

@@ -4,7 +4,8 @@
   const { esc, clamp, IC, MODE, B, prod, pn, CL, track } = H;
 
   /* =================== EYLEMLER =================== */
-  A.go = (d) => { const p = Object.assign({}, d); delete p.a; const s = p.s; delete p.s; UI.go(s, p); };
+  /* kullanıcının açtığı ekran / sekme değişimi kısa bir geçişle (UI.transition); kod içinden UI.go anında çizer */
+  A.go = (d) => { const p = Object.assign({}, d); delete p.a; const s = p.s; delete p.s; UI.transition(() => UI.go(s, p)); };
   A.newgame = () => { if (KE.G) UI.save(); KE.G = null; UI.ng = {}; UI.go('newMode'); };
   A.continue = () => { KE.G = UI.load(); if (!KE.G) { UI.toast('Kayıt bulunamadı.', 'bad'); return; } UI.go('map'); };
   A.pickMode = (d) => { readNg(); UI.ng.mode = d.m; UI.ng.masters = null; UI.ng.master = null; UI.render(); };
@@ -129,24 +130,34 @@
     const w = document.querySelector('.stagewrap');
     if (L.player.active && w) { const tb = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tbh')) || 0; window.scrollTo({ top: Math.max(0, w.getBoundingClientRect().top + window.scrollY - tb - 8), behavior: 'smooth' }); }
   };
-  const shake = () => { const box = document.getElementById('stepbtns'); if (box) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); } };
+  /* yanlış istasyon: istasyon sırası sallanır. Yeniden başlatma Web Animations ile (sınıf + offsetWidth yerleşim zorlardı) */
+  const shake = () => {
+    const box = document.getElementById('stepbtns');
+    if (!box || !box.animate || UI.calm()) return;
+    box.animate([{ transform: 'none' }, { transform: 'translateX(-6px)', offset: 0.25 }, { transform: 'translateX(6px)', offset: 0.75 }, { transform: 'none' }], { duration: 300, easing: 'ease-in-out' });
+  };
   /* dokunuş animasyonu: istasyondan seçili fişe uçan malzeme; düğme hafifçe zıplar */
   function flyFrom(st) {
-    const btn = /** @type {HTMLElement} */ (document.querySelector(`.tz2 [data-a="pst"][data-s="${st}"]`)), card = document.querySelector('.tz-card.sel') || document.querySelector('.tz-card');
-    if (!btn) return;
-    btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop');
-    if (!card || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const btn = /** @type {HTMLElement} */ (document.querySelector(`.tz2 [data-a="pst"][data-s="${st}"]`)), card = document.querySelector('.tz-card.sel') || document.querySelector('.tz-card:not(.leave)');
+    if (!btn || UI.calm() || !btn.animate) return;
+    btn.animate([{ transform: 'none' }, { transform: 'scale(1.08)', offset: 0.4 }, { transform: 'none' }], { duration: 220, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+    if (!card) return;
+    /* FLIP: başta left/top ile bir kez yerleşir, fişe transform ile uçar, bitince kalkar */
     const a = btn.getBoundingClientRect(), b = card.getBoundingClientRect();
+    const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2;
+    const dx = b.left + b.width / 2 - x0, dy = b.top + b.height / 2 - y0;
     const f = document.createElement('div');
     f.className = 'tz-fly s-' + st; f.innerHTML = btn.querySelector('svg') ? btn.querySelector('svg').outerHTML : '';
-    f.style.left = a.left + a.width / 2 + 'px'; f.style.top = a.top + a.height / 2 + 'px';
+    f.style.left = x0 + 'px'; f.style.top = y0 + 'px';
     document.body.appendChild(f);
-    requestAnimationFrame(() => requestAnimationFrame(() => { f.style.left = b.left + b.width / 2 + 'px'; f.style.top = b.top + b.height / 2 + 'px'; f.style.transform = 'translate(-50%, -50%) scale(.5)'; f.style.opacity = '.2'; }));
-    setTimeout(() => f.remove(), 420);
+    const done = () => f.remove();
+    f.animate([{ transform: 'translate(-50%, -50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(.5)`, opacity: 0.2 }], { duration: 380, easing: 'cubic-bezier(.3, .7, .4, 1)' }).finished.then(done, done);
   }
   function station(r, st) {
-    if (r.ok === false) { if (!r.none) { KE.SND.play('bad'); if (navigator.vibrate) try { navigator.vibrate(60); } catch (e) { /* yok */ } } H.renderTezgah(); shake(); return; }
+    if (r.ok === false) { if (!r.none) { KE.SND.play('bad'); KE.haptic('error'); } H.renderTezgah(); shake(); return; }
     if (st && !r.woke && !r.wait) flyFrom(st);
+    /* doğru dokunuş hafif; fiş tamamlandı (kombo dahil) başarı titreşimi */
+    if (!r.woke && !r.wait) KE.haptic(r.done ? 'success' : 'light');
     KE.SND.play(r.done ? 'ready' : r.fire ? 'sizzle' : 'click');
     if (r.burnt) UI.toast('Biraz yandı, kalite düştü.', 'bad');
     if (r.done) while (KE.act(KE.G, 'ptake'));
@@ -190,6 +201,7 @@
   }
   A.finalize = () => {
     const out = closeDayCore();
+    KE.haptic('medium');
     document.querySelectorAll('.modal-bg').forEach((m) => m.remove());
     UI.holdEvent = true;
     UI.go('shop');
@@ -225,7 +237,7 @@
     UI.toast(c > 0 ? `${b.name}: bugünün ihtiyacı tamamlandı (${KE.tl(c)}).` : 'Stok bugüne zaten yetiyor.');
     UI.render();
   };
-  A.buy = (d) => { const c = KE.buyExtra(KE.G, B(), d.k, +d.q); UI.toast(`${KE.tl(c)} malzeme alındı.`); UI.render(); };
+  A.buy = (d) => { const c = KE.buyExtra(KE.G, B(), d.k, +d.q); KE.haptic('light'); UI.toast(`${KE.tl(c)} malzeme alındı.`); UI.render(); };
   A.capFull = (d) => {
     const ch = KE.canHire(KE.G, B(), d.r);
     UI.modal(`<h2>${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu (${ch.used}/${ch.cap})</h2><p>${ch.hint}</p><div class="row end"><button class="btn ghost" data-a="closeModal">Tamam</button>${KE.STAFF_GROUPS[ch.group].up ? '<button class="btn gold" data-a="goSheet" data-s="dekor">Mobilya ve Dekor</button>' : ''}<button class="btn red" data-a="goKadro" data-g="${ch.group}">Kadroya git</button></div>`);
@@ -239,6 +251,7 @@
     KE.G.cash -= s.fee || 0; if (s.fee) KE.addExtra(KE.G, 'other', s.fee);
     s.branchId = KE.G.activeBranch; s.hiredDay = KE.G.day; delete s.fee;
     KE.G.staff.push(s); KE.G.market = KE.G.market.filter((x) => x.id !== s.id);
+    KE.haptic('light');
     UI.toast(`${s.name} ekibe katıldı!`, 'good'); UI.render();
   };
   A.hireWorker = (d) => {
@@ -248,6 +261,7 @@
     if (!ch.ok) { UI.toast(`${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu: ${ch.used}/${ch.cap}`, 'bad'); UI.toast(ch.hint); return; }
     s.branchId = KE.G.activeBranch; s.hiredDay = KE.G.day;
     KE.G.staff.push(s); KE.G.workers = KE.G.workers.filter((x) => x.id !== s.id);
+    KE.haptic('light');
     UI.toast(`${s.name} işe başladı.`, 'good'); UI.render();
   };
   A.raise = (d) => { const r = KE.raiseStaff(KE.G, KE.G.staff.find((x) => x.id === d.id)); UI.toast(r.msg, r.ok ? 'good' : 'bad'); if (r.ok) UI.render(); };
@@ -288,12 +302,14 @@
     const b = B(); const eq = MODE().equipment[d.k]; const next = eq.levels[b.equipment[d.k] + 1];
     const cost = next.cost * KE.G.priceIndex;
     KE.G.cash -= cost; KE.addExtra(KE.G, 'capex', cost); b.equipment[d.k] += 1;
+    KE.haptic('light');
     if (KE.G.live && KE.G.live[b.id] && d.k === 'service') { const L = KE.G.live[b.id]; while (L.tables.length < KE.tableCount(KE.G, b)) L.tables.push({ id: L.tables.length, occ: null, dirty: false, by: null }); }
     UI.toast(`${next.name} kuruldu. Dükkân değişti!`, 'gold'); UI.render();
   };
   A.buyDecor = (d) => {
     const b = B(); const it = KE.DECOR.find((x) => x.id === d.id); const cost = it.cost * KE.G.priceIndex;
     KE.G.cash -= cost; KE.addExtra(KE.G, 'capex', cost); b.decor.push(it.id);
+    KE.haptic('light');
     if (it.id === 'dismasa' && KE.G.live && KE.G.live[b.id]) { const L = KE.G.live[b.id]; while (L.tables.length < KE.tableCount(KE.G, b)) L.tables.push({ id: L.tables.length, occ: null, dirty: false, by: null }); }
     const amb = KE.ambience(KE.G, b);
     UI.toast(amb.concept ? `Konsept açıldı: ${amb.concept.name}!` : `${it.name} yerleştirildi.`, amb.concept ? 'gold' : 'good');
@@ -310,11 +326,11 @@
     if (c.rep) { const best = Math.max(...MODE().products.map((p) => KE.bestStar(KE.G, b, p.id))); KE.G.reputation = clamp(KE.G.reputation + (best >= 4 ? 4 : 1), 0, 100); }
     UI.toast(`${c.name} başladı.`, 'good'); UI.render();
   };
-  A.openBranch = (d) => { const b = KE.openBranch(KE.G, d.d); track('branch_open', { district: d.d, day: KE.G.day }); KE.G.activeBranch = b.id; KE.checkGoals(KE.G); UI.toast(`${b.name} açıldı! Şimdi usta ve ekip al.`, 'gold'); UI.render(); };
+  A.openBranch = (d) => { const b = KE.openBranch(KE.G, d.d); KE.haptic('light'); track('branch_open', { district: d.d, day: KE.G.day }); KE.G.activeBranch = b.id; KE.checkGoals(KE.G); UI.toast(`${b.name} açıldı! Şimdi usta ve ekip al.`, 'gold'); UI.render(); };
   A.central = () => { const c = 450000 * KE.G.priceIndex; KE.G.cash -= c; KE.addExtra(KE.G, 'capex', c); KE.G.centralKitchen = true; UI.toast('Merkezi mutfak kuruldu.', 'gold'); UI.render(); };
   A.tipRule = (d) => { KE.G.tipRule = d.r; UI.todayRule = null; if (KE.G.phase === 'closing' && document.querySelector('.tipbox')) H.showClosing(); else UI.render(); };
   A.buyFarm = () => { KE.buyFarm(KE.G); track('farm_buy', { day: KE.G.day }); KE.checkGoals(KE.G); UI.toast('Besi çiftliği artık senin!', 'gold'); UI.render(); };
-  A.buyAnimal = (d) => { const c = KE.buyAnimals(KE.G, d.k); UI.toast(`${KE.FARM[d.k].name} alındı · ${KE.tl(c)}`, 'good'); UI.render(); };
+  A.buyAnimal = (d) => { const c = KE.buyAnimals(KE.G, d.k); KE.haptic('light'); UI.toast(`${KE.FARM[d.k].name} alındı · ${KE.tl(c)}`, 'good'); UI.render(); };
   A.slaughter = (d) => { const r = KE.slaughter(KE.G, d.k); UI.toast(`${r.heads} ${KE.FARM[d.k].unit} kesimhaneye gitti: ${Object.values(r.got).map((v) => KE.num(v, 0) + ' kg').join(', ')}`, 'good'); UI.render(); };
   A.upgradePen = (d) => { KE.upgradePen(KE.G, d.k); UI.toast('Ağıl büyütüldü.', 'good'); UI.render(); };
 
@@ -579,7 +595,7 @@
       ${life.duels ? `<p class="end-duel">${IC('fire')}Cüneyt Bey'le ${life.duels + (life.duelsLost || 0)} hesaplaşmanın ${life.duels} tanesini sen kazandın.</p>` : ''}
       <div class="end-stats">${stat('chart', 'Toplam ciro', KE.tl(life.revenue))}${stat('users', 'Doyurulan müşteri', KE.num(life.served))}${stat('gift', 'Toplanan bahşiş', KE.tl(life.tips))}${stat('store', 'Şube', life.branches)}${stat('crown', 'Şampiyonluk tacı', life.crowns)}${best ? stat('star', 'En sevilen', `${esc(best)} · ${KE.num(life.bestCount)}`) : ''}</div>
       <div class="acts"><button class="btn ghost" data-a="newgame">${IC('plus')}Yeni imparatorluk kur</button><button class="btn gold" data-a="newGeneration">${IC('users')}Yeni nesil: ${(G.gen || 1) + 1}. kuşak</button><button class="btn big green" data-a="closeModal">${IC('play')}Oyuna devam et</button></div></div>`, { cls: 'endingmodal', wide: true });
-    if (UI.confetti) { UI.confetti(); setTimeout(UI.confetti, 900); }
+    if (UI.confetti) UI.confetti();
     if (KE.SND) KE.SND.play('goal');
   };
   /* Görünüm: yazı boyutu ve hareket */
@@ -589,18 +605,25 @@
     const z = UI.a11y.zoom || 1;
     document.documentElement.style.setProperty('--zoom', String(z));
     document.body.classList.toggle('zoomed', z !== 1);
-    document.body.classList.toggle('calm', !!UI.a11y.calm);
+    /* hareketi azalt: oyun ayarı ya da sistem tercihi; ikisi de aynı CSS kurallarını (body.calm) açar */
+    document.body.classList.toggle('calm', UI.calm());
+    UI.syncSvgMotion(document, UI.screen === 'map' && UI.mapIdle);
   };
+  if (UI.reduceMotionMQ && UI.reduceMotionMQ.addEventListener) UI.reduceMotionMQ.addEventListener('change', () => UI.applyA11y());
   A.view = () => {
     UI.closeModal();
-    UI.picker('Görünüm', 'Yazı boyutu ve hareket ayarı. Seçim bu cihazda saklanır.', [
+    UI.picker('Görünüm', 'Yazı boyutu, hareket ve titreşim ayarı. Seçim bu cihazda saklanır.', [
       { label: 'Normal yazı', sub: 'Varsayılan', key: 'z1', sel: (UI.a11y.zoom || 1) === 1 },
       { label: 'Büyük yazı', sub: '%15 daha büyük', key: 'z115', sel: UI.a11y.zoom === 1.15 },
       { label: 'Çok büyük yazı', sub: '%30 daha büyük', key: 'z13', sel: UI.a11y.zoom === 1.3 },
-      { label: UI.a11y.calm ? 'Hareketleri aç' : 'Hareketleri azalt', sub: 'Bulut, dalga, zıplayan rozetler ve yürüyüş animasyonları', key: 'calm' }
+      { label: UI.a11y.calm ? 'Hareketleri aç' : 'Hareketleri azalt', sub: 'Bulut, dalga, zıplayan rozetler ve yürüyüş animasyonları', key: 'calm' },
+      { label: UI.hapticOn() ? 'Titreşimi kapat' : 'Titreşimi aç', sub: 'Tezgâh dokunuşları, biten sipariş, hedef ve alışverişte kısa titreşim', key: 'haptic' }
     ], (o) => {
-      if (o.key === 'calm') UI.a11y.calm = !UI.a11y.calm; else UI.a11y.zoom = { z1: 1, z115: 1.15, z13: 1.3 }[o.key];
+      if (o.key === 'calm') UI.a11y.calm = !UI.a11y.calm;
+      else if (o.key === 'haptic') UI.a11y.haptic = !UI.hapticOn();
+      else UI.a11y.zoom = { z1: 1, z115: 1.15, z13: 1.3 }[o.key];
       try { localStorage.setItem(A11Y_KEY, JSON.stringify(UI.a11y)); } catch (e) { /* yok */ }
+      if (o.key === 'haptic') KE.haptic('light');
       UI.applyA11y(); UI.render();
     });
   };

@@ -59,6 +59,14 @@ if (native) import('@capacitor/app').then(({ App }) => {
   KE.UI.nativeExit = () => App.exitApp();
   App.addListener('backButton', () => KE.UI.handleBack());
 }).catch(() => { /* eklenti yoksa varsayılan davranış */ });
+/* Dokunsal geri bildirim (KE.haptic): uygulamada yerel titreşim motoru; tarayıcıda navigator.vibrate kullanılır */
+if (native) import('@capacitor/haptics').then(({ Haptics, ImpactStyle, NotificationType }) => {
+  const NOTE = { success: NotificationType.Success, warning: NotificationType.Warning, error: NotificationType.Error };
+  KE.UI.nativeHaptics = (kind) => {
+    const p = NOTE[kind] ? Haptics.notification({ type: NOTE[kind] }) : Haptics.impact({ style: kind === 'medium' ? ImpactStyle.Medium : ImpactStyle.Light });
+    if (p && p.catch) p.catch(() => { /* titreşim yoksa sessiz */ });
+  };
+}).catch(() => { /* eklenti yoksa tarayıcı yolu */ });
 if (!native) registerSW({
   immediate: true,
   onNeedRefresh() { if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Yeni sürüm hazır. Sayfayı yenileyince yüklenecek.'); },
