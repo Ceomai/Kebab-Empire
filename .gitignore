@@ -7,3 +7,4 @@ dist-*
 reports/screens/
 .brand-applied.json
 .brand-backup/
+.brand-applied.json.tmp

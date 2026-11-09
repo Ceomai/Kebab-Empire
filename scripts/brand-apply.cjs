@@ -33,24 +33,10 @@ function edit(p, fn) {
 const LOG = '.brand-applied.json';
 const BAK = '.brand-backup';
 const IOS_ICON = 'ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png';
-const SAFE = (f) => typeof f === 'string' && !f.includes('..') && (f === IOS_ICON || /^android\/app\/src\/main\/res\/(mipmap|drawable)[^/]*\/[^/]+$/.test(f));
+const SAFE = (f) => typeof f === 'string' && !f.includes('..') && (f === IOS_ICON || /^android\/app\/src\/main\/res\/(mipmap|drawable)[^/]*\/[^/.][^/]*$/.test(f));
+/* kayıt atomik yazılır (önce geçici dosya, sonra yeniden adlandırma): yarıda kesilse de bozuk kayıt kalmaz */
+const writeLog = (obj) => { fs.writeFileSync(LOG + '.tmp', JSON.stringify(obj, null, 2) + '\n'); fs.renameSync(LOG + '.tmp', LOG); };
 const fail = (msg) => { console.error('Hata: ' + msg + '\nHiçbir dosya değiştirilmedi.'); process.exit(1); };
-
-if (!fs.existsSync(LOG) && fs.existsSync(BAK)) fail(`${BAK}/ var ama ${LOG} yok. Önceki bir çalıştırmadan kalmış olabilir: içindeki özgün simgeleri kontrol edip elle geri yükle, sonra klasörü sil.`);
-if (fs.existsSync(LOG)) {
-  let prev;
-  try { prev = JSON.parse(fs.readFileSync(LOG, 'utf8')); } catch (e) { fail(`${LOG} okunamadı.`); }
-  const files = (prev && Array.isArray(prev.files) ? prev.files : []).filter((it) => it && SAFE(it.file));
-  /* önce bütün yedekler yerinde mi: eksikse hiçbir şeye dokunmadan dur */
-  const missing = files.filter((it) => it.backup && !fs.existsSync(path.join(BAK, it.file)));
-  if (missing.length) fail(`şu özgün simgelerin yedeği ${BAK}/ altında yok: ${missing.map((it) => it.file).join(', ')}. Kayıt ve yedek korunuyor; bu dosyaları elle geri yükle.`);
-  for (const it of files) {
-    if (it.backup) fs.copyFileSync(path.join(BAK, it.file), it.file);
-    else if (fs.existsSync(it.file)) { fs.rmSync(it.file); const d = path.dirname(it.file); if (fs.existsSync(d) && !fs.readdirSync(d).length) fs.rmdirSync(d); }
-  }
-  fs.rmSync(LOG); fs.rmSync(BAK, { recursive: true, force: true });
-  if (files.length) changed.push(`önceki markanın ${files.length} simge dosyası geri alındı`);
-}
 
 /* kopyalanacakları önceden topla */
 const plan = [];
@@ -69,9 +55,28 @@ const iicon = path.join('brands', id, 'ios-icon.png');
 if (fs.existsSync(iicon) && fs.existsSync(path.dirname(IOS_ICON))) plan.push([iicon, IOS_ICON]);
 plan.forEach(([, dst]) => { if (fs.existsSync(dst) && !fs.statSync(dst).isFile()) fail(`${dst} bir dosya değil.`); });
 
+if (!fs.existsSync(LOG) && fs.existsSync(BAK)) fail(`${BAK}/ var ama ${LOG} yok. Önceki bir çalıştırmadan kalmış olabilir: içindeki özgün simgeleri kontrol edip elle geri yükle, sonra klasörü sil.`);
+if (fs.existsSync(LOG)) {
+  let prev;
+  try { prev = JSON.parse(fs.readFileSync(LOG, 'utf8')); } catch (e) { fail(`${LOG} okunamadı.`); }
+  const files = prev && prev.done ? [] : (prev && Array.isArray(prev.files) ? prev.files : []).filter((it) => it && SAFE(it.file));
+  /* önce bütün yedekler yerinde mi: eksikse hiçbir şeye dokunmadan dur */
+  const missing = files.filter((it) => it.backup && !fs.existsSync(path.join(BAK, it.file)));
+  if (missing.length) fail(`şu özgün simgelerin yedeği ${BAK}/ altında yok: ${missing.map((it) => it.file).join(', ')}. Kayıt ve yedek korunuyor; bu dosyaları elle geri yükle.`);
+  for (const it of files) {
+    if (it.backup) fs.copyFileSync(path.join(BAK, it.file), it.file);
+    else if (fs.existsSync(it.file) && fs.statSync(it.file).isFile()) { fs.rmSync(it.file); const d = path.dirname(it.file); if (fs.existsSync(d) && !fs.readdirSync(d).length) fs.rmdirSync(d); }
+  }
+  /* geri alma bitti: kayda "tamam" yazılır, sonra yedek ve kayıt silinir. Bu arada kesilirse sonraki çalıştırma
+     yalnızca temizliği tamamlar. */
+  writeLog({ id: prev && prev.id, done: true, files: [] });
+  fs.rmSync(BAK, { recursive: true, force: true }); fs.rmSync(LOG);
+  if (files.length) changed.push(`önceki markanın ${files.length} simge dosyası geri alındı`);
+}
+
 if (plan.length) {
   const log = { id, files: [] };
-  const saveLog = () => fs.writeFileSync(LOG, JSON.stringify(log, null, 2) + '\n');
+  const saveLog = () => writeLog(log);
   saveLog();
   for (const [src, dst] of plan) {
     const hadOriginal = fs.existsSync(dst);
