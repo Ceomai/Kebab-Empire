@@ -57,49 +57,90 @@
   UI.hasSave = () => KE.SAVE.exists();
 
   /* ---------- İlk gün rehberi ---------- */
+  /* sel: öncelik sırasıyla seçiciler; görünen ilki işaretlenir (telefonda gizli olanın yerine görünen eşdeğeri) */
   const TUT = [
-    { phase: 'morning', screen: 'map', sel: '.cp-goal', text: 'Burası şehir haritası, ana menün. Sağ üstte günün hedefi ve sayıları var.' },
-    { phase: 'morning', screen: 'map', sel: '.cp-tasks', text: 'Yapılacaklar saate göre dizilir. Bir işe dokununca haritada dükkânından oraya rota çizilir; tıklayınca oraya gidersin.' },
-    { phase: 'morning', screen: 'map', sel: '.cp-places', text: 'Hal, usta pazarı, banka… Şehirdeki bütün yerler burada. Numaralı olanlarda seni bekleyen iş var; kilitli olanlar ileriki dönemlerde açılır.' },
-    { phase: 'morning', screen: 'map', sel: '.citypanel .btn.big', text: 'Şimdi dükkâna geçelim.' },
-    { phase: 'morning', sel: '.daypanel', text: 'Her gün üç küçük hedefin ve bir bonus hedefin olur. Tutturdukça ek para ve itibar gelir.' },
-    { phase: 'morning', sel: '.crewlist', text: 'Ekibin burada. Usta yalnızca pişirir; kasiyer sipariş alır, komi yemeği masaya götürür. Görevi bu düğmelerle değiştirirsin.' },
-    { phase: 'morning', sel: '.dishgrid', text: 'Fiyatları buradan ayarla. Piyasanın çok üstü öğrenciyi ve işçiyi kaçırır.' },
-    { phase: 'morning', sel: '[data-a="openShop"]', text: 'Hazırsan kepengi aç. Bütün şubeler aynı anda çalışır.' },
-    { phase: 'service', sel: '.stagewrap', text: 'Müşteri kapıdan girer, kasada öder, usta pişirir, komi masaya götürür. Yemek bitince bahşiş kavanoza düşer.' },
-    { phase: 'service', sel: '.st-hud', text: 'Yoğunluk göstergesi. Kırmızıya dönen yere bir kişi daha ver: kuyruk uzarsa kasaya, tabak beklerse servise.' },
-    { phase: 'service', sel: '#crew', text: 'Yorulan çalışanı sakin saatte molaya gönder, yoğun saatte geri çağır. İstersen otomatik yönetimi açık bırak.' },
-    { phase: 'service', sel: '#tezgahBtn', text: 'İstersen tezgâha geçip siparişleri kendin hazırlarsın: parlayan istasyona dokun, ateştekini pişince al. Hatasız ve hızlı olursan kombo yapar, kaliteyi artırırsın.' },
-    { phase: 'service', sel: '.speed', text: 'Hızı buradan ayarla. Gün bitince bahşişi nasıl dağıtacağını seçip günlüğünü okuyacaksın. Kolay gelsin!' }
+    { phase: 'morning', screen: 'map', sel: ['.cp-goal'], text: 'Burası şehir haritası, ana menün. Günün hedefi ve sayıları bu kartta.' },
+    { phase: 'morning', screen: 'map', sel: ['.cp-tasks'], text: 'Yapılacaklar saate göre dizilir. Bir işe dokununca haritada dükkânından oraya rota çizilir; tıklayınca oraya gidersin.' },
+    { phase: 'morning', screen: 'map', sel: ['.cp-places', '.tabbar [data-a="places"]'], text: 'Hal, usta pazarı, banka… Şehirdeki bütün yerler burada. Numaralı olanlarda seni bekleyen iş var; kilitli olanlar ileriki dönemlerde açılır.' },
+    { phase: 'morning', screen: 'map', sel: ['.citypanel .btn.big', '.cp-go', '.tabbar [data-s="shop"]'], text: 'Şimdi dükkâna geçelim.' },
+    { phase: 'morning', sel: ['.daypanel'], text: 'Her gün üç küçük hedefin ve bir bonus hedefin olur. Tutturdukça ek para ve itibar gelir.' },
+    { phase: 'morning', sel: ['.crewlist', '.crewboard'], text: 'Ekibin burada. Usta yalnızca pişirir; kasiyer sipariş alır, komi yemeği masaya götürür. Görevi bu düğmelerle değiştirirsin.' },
+    { phase: 'morning', sel: ['.dishgrid'], text: 'Fiyatları buradan ayarla. Piyasanın çok üstü öğrenciyi ve işçiyi kaçırır.' },
+    { phase: 'morning', sel: ['.checklist'], text: 'Malzeme Hal\'den gelir: Rıza her sabah bugünün tahminine göre getirir. Açılış kontrolü stok akşama yetmeyecekse uyarır; o zaman siparişi "Bol"a çevir ya da Hal\'den ek al. Fazla stok fireye gider.' },
+    { phase: 'morning', sel: ['[data-a="openShop"]'], text: 'Hazırsan kepengi aç. Bütün şubeler aynı anda çalışır.' },
+    { phase: 'service', sel: ['.stagewrap'], text: 'Müşteri kapıdan girer, kasada öder, usta pişirir, komi masaya götürür. Yemek bitince bahşiş kavanoza düşer.' },
+    { phase: 'service', sel: ['.st-hud'], text: 'Yoğunluk göstergesi. Kırmızıya dönen yere bir kişi daha ver: kuyruk uzarsa kasaya, tabak beklerse servise.' },
+    { phase: 'service', sel: ['#crew'], text: 'Yorulan çalışanı sakin saatte molaya gönder, yoğun saatte geri çağır. İstersen otomatik yönetimi açık bırak.' },
+    { phase: 'service', sel: ['#tezgahBtn'], text: 'İstersen tezgâha geçip siparişleri kendin hazırlarsın: parlayan istasyona dokun, ateştekini pişince al. Hatasız ve hızlı olursan kombo yapar, kaliteyi artırırsın.' },
+    { phase: 'service', sel: ['.speed'], text: 'Hızı buradan ayarla. Gün bitince bahşişi nasıl dağıtacağını seçip günlüğünü okuyacaksın. Kolay gelsin!' }
   ];
   UI.TUT = TUT;
+  const PHASES = ['morning', 'service', 'closing'];
+  const visible = (el) => { if (!el) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; };
+  /* Rehber kilitlenmesin: oyun daha ileri bir aşamaya geçtiyse (sabah → servis) o aşamanın ilk adımına,
+     aynı aşamada başka ekrandaysa o ekranın sıradaki adımına atlanır */
+  function tutSync() {
+    const G = KE.G, st = TUT[G.tut];
+    if (!st) return;
+    const pi = PHASES.indexOf(G.phase), si = PHASES.indexOf(st.phase);
+    if (pi > si) { const j = TUT.findIndex((x, i) => i > G.tut && x.phase === G.phase); if (j >= 0) G.tut = j; return; }
+    if (pi === si && UI.screen !== (st.screen || 'shop')) { const j = TUT.findIndex((x, i) => i > G.tut && x.phase === G.phase && (x.screen || 'shop') === UI.screen); if (j >= 0) G.tut = j; }
+  }
+  let tutEl = null, tutRaf = 0;
   UI.tutor = function () {
     document.querySelectorAll('.tut').forEach((x) => x.remove());
     document.querySelectorAll('.tut-hl').forEach((x) => x.classList.remove('tut-hl'));
+    tutEl = null;
     if (!KE.G || KE.G.tut == null || KE.G.tut >= TUT.length || document.querySelector('.modal-bg')) return;
+    tutSync();
     const st = TUT[KE.G.tut];
-    if (st.phase !== KE.G.phase || UI.screen !== (st.screen || 'shop')) return;
-    const el = document.querySelector(st.sel);
+    if (!st || st.phase !== KE.G.phase || UI.screen !== (st.screen || 'shop')) return;
+    /* telefonda harita çekmecesi kapalıysa hedef görünsün diye açılır */
+    if (st.screen === 'map' && UI.screen === 'map' && document.querySelector('.mapscreen2.sheet-min') && st.sel[0] !== '.citypanel .btn.big' && UI.A.sheetToggle) { UI.A.sheetToggle(); setTimeout(UI.tutor, 320); return; }
+    const el = st.sel.map((q) => document.querySelector(q)).find(visible) || null;
     if (!el) return;
+    tutEl = el;
     el.classList.add('tut-hl');
     el.scrollIntoView({ block: 'center', behavior: 'smooth' });
     const box = document.createElement('div');
     box.className = 'tut';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-live', 'polite');
     box.innerHTML = `<div class="tut-in"><span class="kicker">İlk gün · ${KE.G.tut + 1}/${TUT.length}</span><p>${st.text}</p><div class="row end"><button class="btn xs ghost" data-a="tutSkip">Rehberi geç</button><button class="btn sm green" data-a="tutNext">${KE.G.tut === TUT.length - 1 ? 'Başlayalım' : 'Anladım'}</button></div></div>`;
     document.body.appendChild(box);
-    const place = () => {
-      if (!box.isConnected) return;
-      const r = el.getBoundingClientRect();
-      const bw = Math.min(340, window.innerWidth - 32);
-      box.style.width = bw + 'px';
-      let top = r.bottom + 12;
-      if (top + box.offsetHeight > window.innerHeight - 10) top = Math.max(10, r.top - box.offsetHeight - 12);
-      if (top < 10) top = Math.min(window.innerHeight - box.offsetHeight - 10, r.top + 12);
-      box.style.top = top + 'px';
-      box.style.left = Math.max(16, Math.min(window.innerWidth - bw - 16, r.left + r.width / 2 - bw / 2)) + 'px';
-    };
-    place(); setTimeout(place, 400);
+    tutPlace(); setTimeout(tutPlace, 400);
   };
+  /* kutu her zaman ekranın içinde: hedefin altına, sığmazsa üstüne, o da olmazsa ekranın altına sabitlenir */
+  function tutPlace() {
+    const box = /** @type {HTMLElement} */ (document.querySelector('.tut'));
+    if (!box || !tutEl || !tutEl.isConnected) return;
+    const z = (UI.a11y && UI.a11y.zoom) || 1;
+    const vw = window.innerWidth / z, vh = window.innerHeight / z;
+    const r0 = tutEl.getBoundingClientRect();
+    const r = { top: r0.top / z, bottom: r0.bottom / z, left: r0.left / z, width: r0.width / z };
+    const tabH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tabh')) || 0;
+    const bottomLimit = vh - 10 - tabH / z;
+    const bw = Math.min(340, vw - 32);
+    box.style.width = bw + 'px';
+    const bh = box.offsetHeight;
+    let top = r.bottom + 12;
+    if (top + bh > bottomLimit) top = r.top - bh - 12;
+    if (top < 10) top = bottomLimit - bh;
+    top = Math.max(10, Math.min(bottomLimit - bh, top));
+    box.style.top = top + 'px';
+    box.style.left = Math.max(16, Math.min(vw - bw - 16, r.left + r.width / 2 - bw / 2)) + 'px';
+  }
+  const tutReplace = () => { if (tutRaf || !tutEl) return; tutRaf = requestAnimationFrame(() => { tutRaf = 0; tutPlace(); }); };
+  window.addEventListener('scroll', tutReplace, { passive: true, capture: true });
+  window.addEventListener('scrollend', tutReplace, { passive: true, capture: true });
+  /* işaretli öğeye dokunmak da adımı ilerletir */
+  document.addEventListener('click', (e) => {
+    const t = /** @type {any} */ (e.target);
+    if (!tutEl || !KE.G || KE.G.tut == null || KE.G.tut >= TUT.length || !t || !t.closest) return;
+    if (t.closest('.tut') || !tutEl.contains(t)) return;
+    const was = KE.G.tut;
+    setTimeout(() => { if (KE.G && KE.G.tut === was) { KE.G.tut++; UI.tutor(); } }, 0);
+  }, true);
   window.addEventListener('resize', () => { if (document.querySelector('.tut')) UI.tutor(); });
 
   /* ---------- Bildirim ---------- */
@@ -115,26 +156,89 @@
   };
 
   /* ---------- Modal ---------- */
-  let modalQueue = [];
+  let modalQueue = [], modalSeq = 0;
+  /* Pencere türleri:
+     - kapatılabilir (varsayılan, içinde "kapat/vazgeç/tamam" düğmesi varsa): sağ üstte 44 px X, arka plana dokunma
+       ve Escape kapatır (hepsi pencerenin kendi kapatma düğmesine basar);
+     - onay (opts.confirm: yıkıcı işlem): X yok, arka plan kapatmaz; Escape / geri tuşu yalnızca "Vazgeç"e basar;
+     - zorunlu seçim (kapatma düğmesi olmayan: olay kartı, kapanış raporu): X yok, kapanmaz.
+     Açıkken arka plan inert, Tab pencere içinde döner, kapanınca odak açan düğmeye döner. */
+  const DISMISS = '[data-a="closeModal"], [data-a="closeModalRender"], .sheet-x';
+  const topModal = () => { const m = document.querySelectorAll('.modal-bg'); return m.length ? /** @type {HTMLElement} */ (m[m.length - 1]) : null; };
+  const syncInert = () => {
+    const all = [...document.querySelectorAll('.modal-bg')], top = all[all.length - 1];
+    const set = (el, on) => { if (el) { if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert'); } };
+    set(app(), !!top); set(document.getElementById('undochip'), !!top);
+    document.querySelectorAll('.tut').forEach((t) => set(t, !!top));
+    all.forEach((m) => set(m, m !== top));
+  };
   UI.modal = function (html, opts) {
     opts = opts || {};
     const bg = document.createElement('div');
     bg.className = 'modal-bg';
+    const id = 'mh' + (++modalSeq);
     bg.innerHTML = `<div class="modal ${opts.wide ? 'wide' : ''} ${opts.cls || ''}" role="dialog" aria-modal="true">${html}</div>`;
+    const m = /** @type {HTMLElement} */ (bg.firstElementChild);
+    const h = m.querySelector('h2, h1');
+    if (h) { if (!h.id) h.id = id; m.setAttribute('aria-labelledby', h.id); }
+    const dismiss = m.querySelector(DISMISS);
+    const kind = opts.confirm ? 'confirm' : (opts.closable != null ? opts.closable : !!dismiss) ? 'close' : 'forced';
+    bg.dataset.kind = kind;
+    if (kind === 'close' && !m.querySelector('.sheet-x')) m.insertAdjacentHTML('afterbegin', `<button class="mx" data-a="modalX" aria-label="Kapat">${IC('x')}</button>`);
+    /** @type {any} */ (bg)._opener = document.activeElement;
     document.body.appendChild(bg);
-    const f = bg.querySelector('button, input');
+    syncInert();
+    const f = m.querySelector('.acts .btn, button:not(.mx):not(.sheet-x), input') || m.querySelector('button');
     if (f) /** @type {HTMLElement} */ (f).focus({ preventScroll: true });
+    UI.tutor();
     return bg;
   };
+  /* Kullanıcı kapatmak istedi (X, Escape, arka plan, geri tuşu): pencerenin kendi kapatma eylemi çalışır.
+     Zorunlu pencere kapanmaz; onay penceresinde yalnızca "Vazgeç". Kapandıysa true döner. */
+  UI.dismissModal = function (how) {
+    const bg = topModal();
+    if (!bg) return false;
+    const kind = bg.dataset.kind;
+    if (kind === 'forced' || (kind === 'confirm' && how === 'backdrop')) return false;
+    const d = /** @type {HTMLElement} */ (bg.querySelector('.modal ' + DISMISS.split(', ').join(', .modal ')));
+    if (d) d.click(); else UI.closeModal();
+    return true;
+  };
+  UI.A.modalX = () => UI.dismissModal('x');
+  /* pencere hangi yoldan kaldırılırsa kaldırılsın (doğrudan .remove() dahil) arka planın inert durumu güncellenir */
+  new MutationObserver(syncInert).observe(document.body, { childList: true });
   UI.closeModal = function () {
     const m = document.querySelectorAll('.modal-bg');
-    if (m.length) m[m.length - 1].remove();
+    let opener = null;
+    if (m.length) { opener = /** @type {any} */ (m[m.length - 1])._opener; m[m.length - 1].remove(); }
+    syncInert();
     if (!document.querySelector('.modal-bg')) {
       if (modalQueue.length) modalQueue.shift()();
       else if (UI.holdEvent) { UI.holdEvent = false; if (KE.G && KE.G.pendingEvent && KE.G.phase === 'morning') H.showEvent(); }
       if (!document.querySelector('.modal-bg')) setTimeout(UI.tutor, 80);
     }
+    if (!document.querySelector('.modal-bg') || opener && opener.closest && topModal() && topModal().contains(opener)) {
+      if (opener && opener.isConnected && opener.focus) { try { opener.focus({ preventScroll: true }); } catch (x) { /* yok */ } }
+    }
   };
+  /* arka plana dokunma: yalnızca kapatılabilir pencere */
+  document.addEventListener('click', (e) => {
+    const t = /** @type {any} */ (e.target);
+    if (t && t.classList && t.classList.contains('modal-bg') && t === topModal() && t.dataset.kind === 'close') UI.dismissModal('backdrop');
+  });
+  /* Tab pencerenin içinde döner; Escape kapatılabilir pencereyi kapatır, onayda "Vazgeç" */
+  document.addEventListener('keydown', (e) => {
+    const bg = topModal();
+    if (!bg) return;
+    if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); UI.dismissModal('esc'); return; }
+    if (e.key !== 'Tab') return;
+    const f = [...bg.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')].filter((x) => !(/** @type {any} */ (x).disabled) && /** @type {HTMLElement} */ (x).offsetParent !== null);
+    if (!f.length) { e.preventDefault(); return; }
+    const first = /** @type {HTMLElement} */ (f[0]), last = /** @type {HTMLElement} */ (f[f.length - 1]);
+    if (!bg.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }, true);
   const queueModal = (fn) => { if (document.querySelector('.modal-bg')) modalQueue.push(fn); else fn(); };
 
   /* Seçici: select yerine kartlı seçim penceresi */
@@ -167,12 +271,28 @@
     const st = e.state;
     const m = document.querySelector('.modal-bg');
     const keep = () => { try { history.pushState({ ke: UI.screen, p: UI.params }, ''); } catch (x) { /* yok */ } };
-    if (m) { if (m.querySelector('[data-a="closeModal"], .sheet-x')) UI.closeModal(); keep(); return; }
+    if (m) { UI.dismissModal('back'); keep(); return; }
     if (!KE.G || ['title', 'newMode', 'newDistrict', 'newMaster'].includes(UI.screen)) return;
     if (st && st.ke && SCREENS[st.ke]) { UI.go(st.ke, st.p, { pop: true }); return; }
     /* haritada geri: tarayıcıda sayfada kal; uygulamada geçmişi bırak ki geri tuşu uygulamadan çıksın */
     if (UI.screen !== 'map') { UI.go('map', {}, { pop: true }); keep(); } else if (!UI.isNative()) keep();
   });
+  /* Android geri tuşu (yalnızca uygulamada; src/main.js @capacitor/app ile bağlar):
+     açık pencere varsa onu kapatır (kendi kapatma eylemiyle; zorunlu seçim ve onay asla kendiliğinden onaylanmaz),
+     yoksa uygulama içi geçmişte bir geri gider, haritada / başlıkta çıkmak için onay sorar. */
+  const SETUP_BACK = { newMode: 'title', newDistrict: 'newMode', newMaster: 'newDistrict' };
+  UI.handleBack = function () {
+    if (document.querySelector('.modal-bg')) { UI.dismissModal('back'); return 'modal'; }
+    if (UI.screen === 'guide') { UI.go(UI.guideFrom || 'title'); return 'back'; }
+    if (SETUP_BACK[UI.screen]) { UI.go(SETUP_BACK[UI.screen]); return 'back'; }
+    if (KE.G && UI.screen !== 'map' && UI.screen !== 'title') {
+      if (histOk && history.state && history.state.ke && history.length > 1) history.back(); else UI.go('map');
+      return 'back';
+    }
+    UI.modal(`<div class="mhead"><h2>Oyundan çıkılsın mı?</h2><p>${KE.G && KE.G.phase === 'service' ? 'Servis sürüyor; bugünün sabahı kayıtlı, gün yarıda kalır.' : 'Oyunun kaydedilir; kaldığın yerden devam edersin.'}</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="exitApp">Çık</button></div>`);
+    return 'ask';
+  };
+  UI.A.exitApp = () => { UI.save(); UI.closeModal(); if (UI.nativeExit) UI.nativeExit(); };
   UI.render = function () {
     const fn = SCREENS[UI.screen] || SCREENS.title;
     const inGame = KE.G && !['title', 'newMode', 'newDistrict', 'newMaster'].includes(UI.screen);
@@ -227,7 +347,7 @@
         <div class="tb-clock ${KE.G.phase}">${IC('clock')}<b id="tb-clock">${clock}</b><span>${phase}</span></div>
         <div class="tb-money ${KE.G.cash < 0 ? 'neg' : ''}">${IC('coin')}<span class="tbm"><b>${KE.tl(KE.G.cash)}</b>${KE.G.phase === 'service' ? `<small id="tb-today">Bugün +${KE.tl(todayRevenue())}</small>` : ''}</span></div>
         <div class="tb-rep" title="İtibar ${Math.round(KE.G.reputation)}/100"><span class="repstars">${st}</span><small>İtibar ${Math.round(KE.G.reputation)}</small></div>
-        <nav class="tb-nav">${nav.map(([s, ic, l]) => `<button class="navbtn ${UI.screen === s ? 'on' : ''}" data-a="go" data-s="${s}">${IC(ic)}<span>${l}</span></button>`).join('')}<button class="navbtn snd ${KE.SND.on ? 'on2' : ''}" data-a="sound" aria-label="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}" title="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}">${IC(KE.SND.on ? 'sound' : 'mute')}</button><button class="navbtn" data-a="menu" aria-label="Menü">${IC('menu')}</button></nav>
+        <nav class="tb-nav">${nav.map(([s, ic, l]) => `<button class="navbtn ${UI.screen === s ? 'on' : ''}" data-a="go" data-s="${s}">${IC(ic)}<span>${l}</span></button>`).join('')}<button class="navbtn snd ${KE.SND.on ? 'on2' : ''}" data-a="sound" aria-label="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}" title="${KE.SND.on ? 'Sesi kapat' : 'Sesi aç'}">${IC(KE.SND.on ? 'sound' : 'mute')}</button><button class="navbtn" data-a="menu" data-trc="nav" aria-label="Menü">${IC('menu')}</button></nav>
       </div>
       <div class="branchbar" role="tablist" aria-label="Şubeler">${branchTabs()}</div>
     </header>${tabbar()}`;
@@ -237,7 +357,7 @@
   function tabbar() {
     const n = UI.cityTasks ? UI.cityTasks().length : 0;
     const inPlace = PLACE_SCREENS().includes(UI.screen);
-    const t = (on, a, extra, ic, l, badge) => `<button class="tbb ${on ? 'on' : ''}" data-a="${a}" ${extra}>${IC(ic)}${badge ? `<b class="tbb-n">${badge}</b>` : ''}<span>${l}</span></button>`;
+    const t = (on, a, extra, ic, l, badge) => `<button class="tbb ${on ? 'on' : ''}" data-a="${a}" ${extra}>${IC(ic)}${badge ? `<b class="tbb-n">${badge}</b>` : ''}<span data-trc="nav">${l}</span></button>`;
     return `<nav class="tabbar" aria-label="Gezinme">
       ${t(UI.screen === 'map', 'go', 'data-s="map"', 'map', 'Harita')}
       ${t(UI.screen === 'shop', 'go', 'data-s="shop"', 'store', 'Dükkân')}
@@ -359,8 +479,10 @@
     const R = 54, C = 2 * Math.PI * R;
     parts.forEach((p) => { const f = Math.max(0, p.v) / tot; segs += `<circle cx="70" cy="70" r="${R}" fill="none" style="stroke:${p.c}" stroke-width="22" stroke-dasharray="${f * C} ${C}" stroke-dashoffset="${-acc * C}" transform="rotate(-90 70 70)"/>`; acc += f; });
     return `<div class="donut"><svg viewBox="0 0 140 140" role="img" aria-label="${esc(label)}">${segs}<text x="70" y="66" text-anchor="middle" class="d1">${esc(label)}</text><text x="70" y="84" text-anchor="middle" class="d2">${KE.tl(tot)}</text></svg>
-      <ul>${parts.map((p) => `<li><i style="background:${p.c}"></i><span>${esc(p.l)}</span><b>${Math.round(Math.max(0, p.v) / tot * 100)}%</b></li>`).join('')}</ul></div>`;
+      <ul>${parts.map((p) => `<li><i style="background:${p.c}"></i><span>${esc(p.l)}</span><b>${KE.pct(Math.round(Math.max(0, p.v) / tot * 100))}</b></li>`).join('')}</ul></div>`;
   }
 
-  Object.assign(H, { sentences, esc, clamp, IC, MODE, B, prod, pn, stars, roleName, bar, moodCls, CL, track, avatar, queueModal, npc, head, morningOnly, lineChart, barChart, donut });
+  /* boş liste: kısa açıklama (boş alan bırakma) */
+  const empty = (text, ic) => `<p class="empty">${IC(ic || 'clock')}<span>${esc(text)}</span></p>`;
+  Object.assign(H, { empty, sentences, esc, clamp, IC, MODE, B, prod, pn, stars, roleName, bar, moodCls, CL, track, avatar, queueModal, npc, head, morningOnly, lineChart, barChart, donut });
 })();

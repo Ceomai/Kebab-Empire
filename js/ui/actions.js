@@ -28,12 +28,12 @@
   A.closeModal = () => UI.closeModal();
   A.soundMenu = () => { KE.SND.toggle(); UI.closeModal(); A.menu(); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
   A.sound = (d, el) => { KE.SND.toggle(); el.innerHTML = IC(KE.SND.on ? 'sound' : 'mute'); el.classList.toggle('on2', KE.SND.on); el.setAttribute('aria-label', KE.SND.on ? 'Sesi kapat' : 'Sesi aç'); UI.toast(KE.SND.on ? 'Ses ve müzik açık.' : 'Ses kapalı.'); };
-  A.menu = () => UI.modal(`<div class="mhead"><h2>Menü</h2><p class="muted">${UI.isNative() ? 'Oyun her gün sonunda bu cihaza kaydedilir.' : 'Oyun her gün sonunda bu tarayıcıya kaydedilir.'}</p></div>
-    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="guide">${IC('book')}Oyun kılavuzu</button><button class="btn ghost" data-a="soundMenu">${IC(KE.SND.on ? 'sound' : 'mute')}${KE.SND.on ? 'Ses ve müzik açık · kapat' : 'Ses kapalı · aç'}</button><button class="btn ghost" data-a="guideLevel">${IC('bolt')}<span>Yönlendirme düzeyi:</span> <b>${({ cok: 'Çok', az: 'Az', kapali: 'Sessiz' })[UI.guideLevel()]}</b></button><button class="btn ghost" data-a="view">${IC('eye')}Görünüm ve yazı boyutu</button>${KE.BRAND && KE.BRAND.orderUrl ? `<a class="btn green" href="${esc(KE.BRAND.orderUrl)}" target="_blank" rel="noopener">${IC('store')}<span${KE.BRAND.hasOrderLabel ? ' translate="no"' : ''}>${esc(KE.BRAND.text(KE.BRAND.orderLabel) || 'Sipariş ver')}</span></a>` : ''}<button class="btn ghost" data-a="legal">${IC('lock')}Gizlilik ve koşullar</button><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`);
+  A.menu = () => UI.modal(`<div class="mhead"><h2 data-trc="nav">Menü</h2><p class="muted">${UI.isNative() ? 'Oyun her gün sonunda bu cihaza kaydedilir.' : 'Oyun her gün sonunda bu tarayıcıya kaydedilir.'}</p></div>
+    <div class="stack"><button class="btn green" data-a="saveNow">${IC('check')}Şimdi kaydet</button><div class="row"><button class="btn ghost grow" data-a="exportSave">${IC('arrow')}Dosyaya yedekle</button><button class="btn ghost grow" data-a="importSave">${IC('plus')}Dosyadan yükle</button></div><button class="btn ghost" data-a="guide">${IC('book')}Oyun kılavuzu</button><button class="btn ghost" data-a="soundMenu">${IC(KE.SND.on ? 'sound' : 'mute')}${KE.SND.on ? 'Ses ve müzik açık · kapat' : 'Ses kapalı · aç'}</button><button class="btn ghost" data-a="guideLevel">${IC('bolt')}<span>Yönlendirme düzeyi:</span> <b>${({ cok: 'Çok', az: 'Az', kapali: 'Sessiz' })[UI.guideLevel()]}</b></button><button class="btn ghost" data-a="view">${IC('eye')}Görünüm ve yazı boyutu</button>${KE.BRAND && KE.BRAND.orderUrl ? `<a class="btn green" href="${esc(KE.BRAND.orderUrl)}" target="_blank" rel="noopener">${IC('store')}<span${KE.BRAND.hasOrderLabel ? ' translate="no"' : ''}>${esc(KE.BRAND.text(KE.BRAND.orderLabel) || 'Sipariş ver')}</span></a>` : ''}<button class="btn ghost" data-a="legal">${IC('lock')}Gizlilik ve koşullar</button><button class="btn ghost" data-a="lang">${IC('map')}Dil / Language</button><button class="btn ghost" data-a="privacy">${IC('lock')}Hesap ve gizlilik</button><button class="btn ghost" data-a="toTitle">${IC('arrow')}Ana menüye dön</button><button class="btn red" data-a="confirmNew">${IC('plus')}Yeni oyun başlat</button><button class="btn ghost" data-a="closeModal">Kapat</button></div>`, { cls: 'sheet menusheet' });
   /* Yönlendirme düzeyi: yeni oyuncu her şeyi görür, deneyimli oyuncu yalnızca acil uyarıları */
   UI.guideLevel = () => { try { return localStorage.getItem('kebab-empire-guide') || 'cok'; } catch (e) { return 'cok'; } };
   A.guideLevel = () => UI.modal(`<div class="mhead"><h2>Yönlendirme düzeyi</h2><p class="muted">"Bugün ne yapmalıyım?" kartı ve öneriler ne kadar konuşsun?</p></div>
-    <div class="choices">${[['cok', 'Çok', 'Bütün öneriler ve ipuçları (yeni başlayanlar için).'], ['az', 'Az', 'Yalnızca acil uyarılar: ustasız şube, boş kasa, eksik stok, eksi kasa.'], ['kapali', 'Sessiz', 'Danışman kartı gizlenir. Sabah kontrol listesi kalır.']].map(([k, l, d]) => `<button class="choice ${UI.guideLevel() === k ? 'sel' : ''}" data-a="setGuide" data-v="${k}"><b>${l}</b><small>${d}</small></button>`).join('')}</div>`);
+    <div class="choices">${[['cok', 'Çok', 'Bütün öneriler ve ipuçları (yeni başlayanlar için).'], ['az', 'Az', 'Yalnızca acil uyarılar: ustasız şube, boş kasa, eksik stok, eksi kasa.'], ['kapali', 'Sessiz', 'Danışman kartı gizlenir. Sabah kontrol listesi kalır.']].map(([k, l, d]) => `<button class="choice ${UI.guideLevel() === k ? 'sel' : ''}" data-a="setGuide" data-v="${k}"><b>${l}</b><small>${d}</small></button>`).join('')}</div>`, { closable: true });
   A.setGuide = (d) => { try { localStorage.setItem('kebab-empire-guide', d.v); } catch (e) { /* yok */ } UI.closeModal(); UI.render(); UI.toast(({ cok: 'Yönlendirme: Çok', az: 'Yönlendirme: Az', kapali: 'Yönlendirme: Sessiz' })[d.v]); };
   A.saveNow = () => {
     UI.closeModal();
@@ -81,7 +81,7 @@
     try { loaded(KE.SAVE.open(JSON.parse(v))); } catch (e) { UI.toast(e instanceof SyntaxError ? 'Kod bozuk: tamamını kopyaladığından emin ol.' : e.message, 'bad'); }
   };
   A.toTitle = () => { UI.save(); UI.closeModal(); UI.go('title'); };
-  A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Yeni oyunun kurulumuna geçilecek. Kayıtlı oyunun, yeni oyunu başlatana kadar silinmez; kurulumdan vazgeçip devam edebilirsin.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Yeni oyun kur</button></div>`); };
+  A.confirmNew = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Emin misin?</h2><p>Yeni oyunun kurulumuna geçilecek. Kayıtlı oyunun, yeni oyunu başlatana kadar silinmez; kurulumdan vazgeçip devam edebilirsin.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doNew">Yeni oyun kur</button></div>`, { confirm: true }); };
   A.doNew = () => { UI.save(); KE.G = null; UI.closeModal(); UI.ng = {}; UI.go('newMode'); };
   A.backToTitle = () => { UI.go('title'); };
   A.tutNext = () => { KE.G.tut++; if (KE.G.tut >= UI.TUT.length) track('tutorial_done', { day: KE.G.day }); UI.tutor(); };
@@ -264,7 +264,7 @@
   };
   A.fire = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
-    UI.modal(`<div class="mhead"><h2>${esc(s.name)} işten çıkarılsın mı?</h2><p>İki haftalık brüt ücret ödenir: <b>${KE.tl(s.wage / 2)}</b>. Ekibin geri kalanının morali biraz düşer.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doFire" data-id="${s.id}">İşten çıkar</button></div>`);
+    UI.modal(`<div class="mhead"><h2>${esc(s.name)} işten çıkarılsın mı?</h2><p>İki haftalık brüt ücret ödenir: <b>${KE.tl(s.wage / 2)}</b>. Ekibin geri kalanının morali biraz düşer.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doFire" data-id="${s.id}">İşten çıkar</button></div>`, { confirm: true });
   };
   A.doFire = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
@@ -378,7 +378,6 @@
   document.addEventListener('pointerover', (e) => { if (/** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('#crew')) UI.crewHover = Date.now(); });
   document.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && /** @type {any} */ (e.target).matches && /** @type {any} */ (e.target).matches('g.place[data-a]')) { e.preventDefault(); const fn = A[/** @type {any} */ (e.target).dataset.a]; if (fn) fn(Object.assign({}, /** @type {any} */ (e.target).dataset)); }
-    if (e.key === 'Escape' && document.querySelector('.modal-bg [data-a="closeModal"]')) UI.closeModal();
     /* tezgâh klavyesi: 1-6 istasyon, Q sıradaki fiş */
     const G = KE.G, L = G && G.phase === 'service' && G.live && G.live[G.activeBranch];
     if (!L || !L.player.active || document.querySelector('.modal-bg') || /** @type {any} */ (e.target).matches('input, textarea, select')) return;
@@ -399,7 +398,7 @@
     const st = KE.empireStatus(KE.G);
     if (!st.ready) return;
     UI.modal(`<div class="mhead"><span class="kicker">${IC('crown')} Son hamle</span><h2>"Lüks Kebap"a teklif ver</h2><p>Cüneyt Bey'in bütün zincirini ${KE.tl(st.price)} karşılığında satın alacaksın. Rakip ortadan kalkar, onun müşterileri sana gelir ve oyun "Kebap İmparatoru" unvanıyla devam eder.</p></div>
-      <div class="acts"><button class="btn ghost" data-a="closeModal">Biraz daha bekle</button><button class="btn gold" data-a="buyRivalYes">${IC('crown')}Teklifi ver</button></div>`);
+      <div class="acts"><button class="btn ghost" data-a="closeModal">Biraz daha bekle</button><button class="btn gold" data-a="buyRivalYes">${IC('crown')}Teklifi ver</button></div>`, { confirm: true });
   };
   A.buyRivalYes = () => {
     const r = KE.buyRival(KE.G);
@@ -430,7 +429,7 @@
       <ul class="chk"><li>${IC('chef')}<span><b>Mirasın:</b> ${heir ? `${esc(KE.ek(heir.name, 'in'))} bütün uzmanlıkları ilk ustana geçer` : 'ailenin ocak bilgisi'}${sig ? `, aile tarifi ${esc(KE.MODES[G.mode].products.find((p) => p.id === sig.pid).name)} ilk günden menüde öne çıkar` : ''}.</span></li>
       <li>${IC('fire')}<span><b>Zorluk:</b> "Lüks Kebap" Cüneyt Bey'in oğluna geçti; rakip bu sefer daha güçlü başlar.</span></li>
       <li>${IC('lock')}<span>Kayıtlı oyunun silinmez; ana menüden yedeğini alabilirsin. Yeni nesli başlattığında kayıt yuvası yeni oyuna geçer.</span></li></ul>
-      <div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn gold" data-a="newGenYes">${IC('play')}Yeni nesli başlat</button></div>`);
+      <div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn gold" data-a="newGenYes">${IC('play')}Yeni nesli başlat</button></div>`, { confirm: true });
     UI.heir = { gen: (G.gen || 1) + 1, from: G.shopName || G.branches[0].name, owner: G.owner, spec: heir ? Object.assign({}, heir.spec) : null, heirName: heir ? heir.name : null, sigPid: sig ? sig.pid : null, mode: G.mode };
   };
   A.newGenYes = () => {
@@ -671,7 +670,7 @@
     if (KE.CLOUD.connectionFailed && KE.CLOUD.connectionFailed()) { await KE.CLOUD.retry(); if (KE.CLOUD.ready) { UI.cloudChecked = false; UI.checkCloud(); } }
     await UI.fillRanking();
   };
-  A.deleteData = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Bütün bulut verilerin silinsin mi?</h2><p>Bulut kaydın, sıralama sonuçların, istatistiklerin ve anonim hesabın kalıcı olarak silinir. Bu cihazdaki oyun kalır.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="deleteDataYes">Evet, sil</button></div>`); };
+  A.deleteData = () => { UI.closeModal(); UI.modal(`<div class="mhead"><h2>Bütün bulut verilerin silinsin mi?</h2><p>Bulut kaydın, sıralama sonuçların, istatistiklerin ve anonim hesabın kalıcı olarak silinir. Bu cihazdaki oyun kalır.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="deleteDataYes">Evet, sil</button></div>`, { confirm: true }); };
   A.deleteDataYes = async () => { try { await KE.CLOUD.deleteMyData(); UI.closeModal(); UI.toast('Bulut verilerin silindi.', 'good'); } catch (e) { UI.toast(e.message, 'bad'); } };
   UI.boot = function () { UI.applyA11y(); UI.go('title'); if (CL() && KE.CLOUD.needsConsent()) setTimeout(() => UI.privacyModal(true), 900); };
 })();

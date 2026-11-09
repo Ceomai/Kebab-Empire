@@ -7,7 +7,7 @@
   /** @type {any} */
   const I = KE.I18N = { lang: 'tr', dict: {}, langs: { tr: 'Türkçe', en: 'English', de: 'Deutsch' }, collect: null };
   const LANG_KEY = 'kebab-empire-lang';
-  const NUM = /[−-]?\d[\d.,]*(?:\s?₺)?|%\s?\d[\d.,]*/g;
+  const NUM = /[−-]?\d[\d.,]*(?:\s?[₺%])?|%\s?\d[\d.,]*/g;
   const TR = /[A-Za-zÇĞİÖŞÜçğıöşü]/;
   let entities = null; // [{ s, re }] uzun olan önce
 
@@ -54,12 +54,15 @@
   /* marka ayarı: rakip zincir ve oyun adı markanınkiyle değişir (her dilde, çeviriden sonra) */
   const brandSwap = (s) => (KE.BRAND && KE.BRAND.swaps && KE.BRAND.swaps.length ? KE.BRAND.swap(s) : s);
   const branded = () => !!(KE.BRAND && KE.BRAND.swaps && KE.BRAND.swaps.length);
-  I.t = function (text) { return brandSwap(tr(text)); };
-  function tr(text) {
+  /* bağlam: aynı Türkçe sözcük farklı anlamdaysa (gezinmedeki "Menü" ↔ tezgâhtaki "Menü" fişi) öğe
+     data-trc="bağlam" taşır; sözlükte önce "bağlam|metin" anahtarı aranır */
+  I.t = function (text, ctx) { return brandSwap(tr(text, ctx)); };
+  function tr(text, ctx) {
     if (I.lang === 'tr' || !text || !TR.test(text)) return text;
     const lead = text.match(/^\s*/)[0], trail = text.match(/\s*$/)[0];
     const core = text.trim();
     if (!core) return text;
+    if (ctx && I.dict[ctx + '|' + core] != null) return lead + I.dict[ctx + '|' + core] + trail;
     if (I.dict[core] != null) return lead + I.dict[core] + trail;
     const { key, parts } = I.normalize(core);
     if (I.collect) I.collect(key, core);
@@ -77,13 +80,14 @@
     const cur = n.nodeValue;
     let src = orig.get(n);
     if (src == null || (src.out !== cur)) src = { tr: cur };
-    const out = I.t(src.tr);
+    const p = n.parentNode;
+    const out = I.t(src.tr, p && p.dataset ? p.dataset.trc : undefined);
     src.out = out;
     orig.set(n, src);
     if (out !== cur) n.nodeValue = out;
   }
   function doEl(el) {
-    ATTRS.forEach((a) => { if (el.hasAttribute && el.hasAttribute(a)) { const k = 'data-tr-' + a; const v = el.getAttribute(a); const base = el.getAttribute(k) && I.t(el.getAttribute(k)) === v ? el.getAttribute(k) : v; if (!el.hasAttribute(k)) el.setAttribute(k, base); const out = I.t(base); if (out !== v) el.setAttribute(a, out); } });
+    ATTRS.forEach((a) => { if (el.hasAttribute && el.hasAttribute(a)) { const k = 'data-tr-' + a; const v = el.getAttribute(a); const base = el.getAttribute(k) && I.t(el.getAttribute(k), el.dataset ? el.dataset.trc : undefined) === v ? el.getAttribute(k) : v; if (!el.hasAttribute(k)) el.setAttribute(k, base); const out = I.t(base, el.dataset ? el.dataset.trc : undefined); if (out !== v) el.setAttribute(a, out); } });
   }
   /* translate="no" (marka adı, slogan, kupon): çevrilmez, yalnızca marka adı değişimi uygulanmaz */
   const noTr = (el) => !!(el && el.closest && el.closest('[translate="no"]'));

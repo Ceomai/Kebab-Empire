@@ -54,6 +54,11 @@ else if (KE.BRAND && KE.BRAND.swaps.length) KE.I18N.set('tr'); /* markalı sür�
 
 /* servis çalışanı yalnızca web sürümünde: uygulamanın dosyaları zaten cihazda, güncellemeyi mağaza yapar */
 const native = (() => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } })();
+/* Android geri tuşu: pencere kapat → geri git → çıkış onayı (ayrıntı: KE.UI.handleBack). Eklenti yalnızca uygulamada yüklenir. */
+if (native) import('@capacitor/app').then(({ App }) => {
+  KE.UI.nativeExit = () => App.exitApp();
+  App.addListener('backButton', () => KE.UI.handleBack());
+}).catch(() => { /* eklenti yoksa varsayılan davranış */ });
 if (!native) registerSW({
   immediate: true,
   onNeedRefresh() { if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Yeni sürüm hazır. Sayfayı yenileyince yüklenecek.'); },

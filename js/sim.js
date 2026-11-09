@@ -329,6 +329,36 @@
     Object.keys(b.usage).forEach((k) => { const q = KE.stockNeed(G, b, k, f) - (b.stock[k] || 0); if (q > 0.01) { items.push(k); cost += q * KE.ingPrice(G, b, k); } });
     return { cost, items, factor: f };
   };
+  /* Sabah kontrol listesi için gerçekçi stok tahmini (motoru değiştirmez, yalnızca okur):
+     bugünkü müşteri tahmini × gelen kapıdaki fazlalık payı × dünkü ürün karışımı (en çok satan ağır basar).
+     Her malzeme için saatlik yoğunluk eğrisine göre bitiş saati hesaplanır; kapanıştan önce bitecekse eksiktir. */
+  KE.STOCK_SAFETY = 1.15;
+  KE.stockForecast = function (G, b) {
+    const M = MODE(G), sp = KE.specialDay(G.day), C = KE.HOUR_CURVE;
+    const on = M.products.filter((p) => b.menu[p.id] && !(KE.isLocked && KE.isLocked(G, p)));
+    const cust = KE.forecastCustomers(G, b) * KE.STOCK_SAFETY;
+    const sum = G.lastSummary && G.lastSummary.branches && G.lastSummary.branches[b.id];
+    const by = (sum && sum.stats.byProduct) || {};
+    const tot = on.reduce((a, p) => a + (by[p.id] || 0), 0);
+    const share = {};
+    on.forEach((p) => { share[p.id] = tot >= 20 ? (by[p.id] || 0) / tot : 1 / (on.length || 1); });
+    const top = on.slice().sort((a, c) => share[c.id] - share[a.id])[0];
+    const hours = Object.keys(C).map(Number).sort((a, c) => a - c);
+    const w = hours.map((h) => C[h] * (sp && sp.hours ? (sp.hours[h] || 1) : 1));
+    const wSum = w.reduce((a, x) => a + x, 0) || 1;
+    const items = [];
+    Object.keys(b.usage).forEach((k) => {
+      let per = (M.drink.ing[k] || 0) * M.drinkRate;
+      on.forEach((p) => { per += share[p.id] * (p.ing[k] || 0); });
+      const need = cust * per, have = b.stock[k] || 0;
+      if (need <= 0) return;
+      let acc = 0, outHour = null;
+      for (let i = 0; i < hours.length; i++) { acc += need * w[i] / wSum; if (acc > have + 1e-9) { outHour = hours[i]; break; } }
+      items.push({ k, need, have, outHour });
+    });
+    const short = items.filter((x) => x.outHour != null).sort((a, c) => a.outHour - c.outHour);
+    return { customers: cust, top: top ? top.id : null, items, short, ok: !short.length };
+  };
   KE.topUpToday = function (G, b) {
     if (G.phase !== 'morning') return 0;
     const r = fillStock(G, b, KE.demandFactor(G, b));

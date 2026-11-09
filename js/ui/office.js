@@ -1,7 +1,7 @@
 /* Kebab Empire — arayüz: muhasebe ofisi. */
 (function () {
   const UI = KE.UI, H = UI.H, SCREENS = UI.SCREENS, A = UI.A, C = UI.C;
-  const { esc, IC, pn, head, lineChart, barChart } = H;
+  const { esc, IC, pn, head, lineChart, barChart, empty } = H;
 
   /* ---------- Muhasebe ---------- */
   SCREENS.office = () => {
@@ -36,7 +36,7 @@
         <div class="kpi">${IC('store')}<small>Kira ve fatura</small><b>${KE.tl(rent + util)}</b></div>
         ${KE.G.loans.length ? `<div class="kpi">${IC('lock')}<small>Kredi borcu</small><b>${KE.tl(KE.G.loans.reduce((a, l) => a + l.monthly * l.remaining, 0))}</b></div>` : ''}
       </div>
-      ${keys.length ? `<h3>Son ${keys.length} gün</h3>` : ''}
+      ${keys.length ? `<h3>Son ${keys.length} gün</h3>` : empty('Grafik, ilk günü kapattıktan sonra burada görünür.', 'chart')}
       ${keys.length ? lineChart([{ name: 'Ciro', color: 'var(--kor)', values: keys.map((k) => byDay[k].rev), area: true }, { name: 'Malzeme', color: 'var(--cini-light)', values: keys.map((k) => byDay[k].pur) }, { name: 'Günlük net', color: 'var(--nane)', values: keys.map((k) => byDay[k].net) }], keys.map((k) => { const d = KE.dateOf(k); return d.getUTCDate() + '/' + (d.getUTCMonth() + 1); }), { label: 'Günlük ciro ve net' }) : '<p class="muted">İlk günü bitirince grafikler burada görünecek.</p>'}
       <p class="small muted">Ay sonu (${KE.dateStr(monthEnd)}) kapanışında bordro, kira, stopaj, faturalar, KDV, çiftlik gideri ve kredi taksitleri kasadan düşer.</p>`;
   };
@@ -56,8 +56,9 @@
           <tr class="total"><td>Günlük net</td><td class="r">${KE.tl(d.net)}</td></tr></tbody></table></div>
         <div class="chips">${prods.map(([pid, n]) => `<span class="chip or">${pn(pid)}: ${n}</span>`).join('')}</div></div>`;
     }
+    if (!days.length) return empty('Henüz kapanmış gün yok. İlk günü kapatınca her günün dökümü burada listelenir.');
     return `${detail}<div class="tablewrap"><table class="fin"><thead><tr><th>Tarih</th><th>Şube</th><th class="r">Müşteri</th><th class="r">Kaçan</th><th class="r">Ciro</th><th class="r">Malzeme</th><th class="r">Bahşiş</th><th class="r">Memnuniyet</th><th class="r">Net</th></tr></thead><tbody>
-      ${days.map((d) => `<tr class="click" data-a="go" data-s="office" data-tab="gunluk" data-day="${d.day}" data-b="${d.branchId}"><td>${d.date}</td><td>${esc((KE.G.branches.find((b) => b.id === d.branchId) || {}).name || '')}</td><td class="r">${d.served}</td><td class="r">${d.lost}</td><td class="r">${KE.tl(d.revenue)}</td><td class="r">${KE.tl(d.purchases)}</td><td class="r">${KE.tl(d.tips)}</td><td class="r">%${Math.round(d.sat)}</td><td class="r ${d.net >= 0 ? 'pos' : 'neg'}">${KE.tl(d.net)}</td></tr>`).join('') || '<tr><td colspan="9" class="muted">Henüz kayıt yok.</td></tr>'}
+      ${days.map((d) => `<tr class="click" data-a="go" data-s="office" data-tab="gunluk" data-day="${d.day}" data-b="${d.branchId}"><td>${d.date}</td><td>${esc((KE.G.branches.find((b) => b.id === d.branchId) || {}).name || '')}</td><td class="r">${d.served}</td><td class="r">${d.lost}</td><td class="r">${KE.tl(d.revenue)}</td><td class="r">${KE.tl(d.purchases)}</td><td class="r">${KE.tl(d.tips)}</td><td class="r">${KE.pct(Math.round(d.sat))}</td><td class="r ${d.net >= 0 ? 'pos' : 'neg'}">${KE.tl(d.net)}</td></tr>`).join('') || '<tr><td colspan="9" class="muted">Henüz kayıt yok.</td></tr>'}
     </tbody></table></div><p class="small muted">Bir satıra tıklayınca o günün dökümü açılır.</p>`;
   };
   OFFICE.haftalik = () => {
@@ -70,9 +71,10 @@
     });
     const list = Object.values(weeks).sort((a, b) => b.w - a.w);
     const asc = list.slice().reverse();
+    if (!list.length) return empty('Haftalık rapor, ilk günü kapattıktan sonra burada görünür.');
     return `${asc.length > 1 ? lineChart([{ name: 'Haftalık ciro', color: 'var(--kor)', values: asc.map((w) => w.rev), area: true }, { name: 'Haftalık net', color: 'var(--nane)', values: asc.map((w) => w.net) }], asc.map((w) => w.w + '. hf'), { label: 'Haftalık ciro' }) : ''}
       <div class="tablewrap"><table class="fin"><thead><tr><th>Hafta</th><th>Başlangıç</th><th class="r">Müşteri</th><th class="r">Kaçan</th><th class="r">Ciro</th><th class="r">Malzeme</th><th class="r">Bahşiş</th><th class="r">Memnuniyet</th><th>En çok satan</th><th class="r">Net</th></tr></thead><tbody>
-      ${list.map((w) => { const top = Object.entries(w.prods).sort((a, b) => b[1] - a[1])[0]; return `<tr><td>${w.w}. hafta</td><td>${KE.dateStr(w.start)}</td><td class="r">${w.served}</td><td class="r">${w.lost}</td><td class="r">${KE.tl(w.rev)}</td><td class="r">${KE.tl(w.pur)}</td><td class="r">${KE.tl(w.tips)}</td><td class="r">%${w.satN ? Math.round(w.satS / w.satN) : 0}</td><td>${top ? pn(top[0]) : '–'}</td><td class="r ${w.net >= 0 ? 'pos' : 'neg'}">${KE.tl(w.net)}</td></tr>`; }).join('') || '<tr><td colspan="10" class="muted">Henüz kayıt yok.</td></tr>'}
+      ${list.map((w) => { const top = Object.entries(w.prods).sort((a, b) => b[1] - a[1])[0]; return `<tr><td>${w.w}. hafta</td><td>${KE.dateStr(w.start)}</td><td class="r">${w.served}</td><td class="r">${w.lost}</td><td class="r">${KE.tl(w.rev)}</td><td class="r">${KE.tl(w.pur)}</td><td class="r">${KE.tl(w.tips)}</td><td class="r">${KE.pct(w.satN ? Math.round(w.satS / w.satN) : 0)}</td><td>${top ? pn(top[0]) : '–'}</td><td class="r ${w.net >= 0 ? 'pos' : 'neg'}">${KE.tl(w.net)}</td></tr>`; }).join('') || '<tr><td colspan="10" class="muted">Henüz kayıt yok.</td></tr>'}
       </tbody></table></div>`;
   };
   OFFICE.aylik = () => {
@@ -84,9 +86,9 @@
     const kdv = Math.max(0, mtd.rev * 0.1 / 1.1 - mtd.pur * 0.01 / 1.01);
     return `<div class="subpanel"><h3>${KE.monthName(mtd.key)} (devam ediyor, tahmini)</h3>
       <div class="kpis"><div class="kpi">${IC('coin')}<small>Ciro (şimdiye kadar)</small><b>${KE.tl(mtd.rev)}</b></div><div class="kpi">${IC('cart')}<small>Malzeme</small><b>${KE.tl(mtd.pur)}</b></div><div class="kpi">${IC('chart')}<small>KDV (tahmini)</small><b>${KE.tl(kdv)}</b></div><div class="kpi">${IC('users')}<small>Ay sonu sabit gider</small><b>${KE.tl(personnel + rent + util + KE.ECON.muhasebeci + (KE.G.farm ? KE.FARM_MONTHLY * KE.G.priceIndex : 0))}</b></div></div></div>
-      <div class="tablewrap"><table class="fin"><thead><tr><th>Ay</th><th class="r">Ciro</th><th class="r">KDV</th><th class="r">Malzeme</th><th class="r">Personel</th><th class="r">Kira</th><th class="r">Fatura</th><th class="r">Net</th></tr></thead><tbody>
+${!ms.length ? empty('Aylık raporlar ay sonu kapanışından sonra burada listelenir.') : `<div class="tablewrap"><table class="fin"><thead><tr><th>Ay</th><th class="r">Ciro</th><th class="r">KDV</th><th class="r">Malzeme</th><th class="r">Personel</th><th class="r">Kira</th><th class="r">Fatura</th><th class="r">Net</th></tr></thead><tbody>
       ${ms.map((m, i) => `<tr class="click" data-a="go" data-s="office" data-tab="aylik" data-m="${i}"><td><b>${m.name}</b></td><td class="r">${KE.tl(m.revenue)}</td><td class="r">${KE.tl(m.kdv)}</td><td class="r">${KE.tl(m.purchases)}</td><td class="r">${KE.tl(m.personnel)}</td><td class="r">${KE.tl(m.rent)}</td><td class="r">${KE.tl(m.util)}</td><td class="r ${m.net >= 0 ? 'pos' : 'neg'}">${KE.tl(m.net)}</td></tr>`).join('') || '<tr><td colspan="8" class="muted">İlk ay sonu kapanışından sonra raporlar burada listelenir.</td></tr>'}
-      </tbody></table></div>`;
+      </tbody></table></div>`}`;
   };
   OFFICE.bordro = () => {
     const mtd = monthToDate();

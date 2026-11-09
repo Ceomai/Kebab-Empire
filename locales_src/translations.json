@@ -4060,8 +4060,8 @@
   "de": "Das ist der Stadtplan, dein Hauptmenü. Oben rechts stehen das Tagesziel und die Zahlen."
  },
  "Yapılacaklar saate göre dizilir. Bir işe dokununca haritada dükkânından oraya rota çizilir; tıklayınca oraya gidersin.": {
-  "en": "Tasks are sorted by time. Hover a task to see the route from your shop on the map; click to go there.",
-  "de": "Aufgaben sind nach Uhrzeit sortiert. Zeigst du auf eine Aufgabe, erscheint der Weg von deinem Laden; ein Klick bringt dich hin."
+  "en": "Tasks are sorted by time. Tap a task to see the route from your shop on the map; tap again to go there.",
+  "de": "Aufgaben sind nach Uhrzeit sortiert. Tippe auf eine Aufgabe, um den Weg von deinem Laden auf der Karte zu sehen; tippe noch einmal, um hinzugehen."
  },
  "Hal, usta pazarı, banka, çiftlik… Şehirdeki bütün yerler burada. Numaralı olanlarda seni bekleyen iş var.": {
   "en": "Market, master market, bank, farm… Every place in the city is here. Numbered ones have a task waiting.",
@@ -9062,5 +9062,909 @@
  "Yükleniyor…": {
   "en": "Loading…",
   "de": "Wird geladen…"
+ },
+ "Kebab": {
+  "en": "Kebab",
+  "de": "Kebab"
+ },
+ "Empire": {
+  "en": "Empire",
+  "de": "Empire"
+ },
+ "EN": {
+  "en": "EN",
+  "de": "EN"
+ },
+ "XX": {
+  "en": "XX",
+  "de": "XX"
+ },
+ "Burgazada": {
+  "en": "Burgazada",
+  "de": "Burgazada"
+ },
+ "Heybeliada": {
+  "en": "Heybeliada",
+  "de": "Heybeliada"
+ },
+ "Büyükada": {
+  "en": "Büyükada",
+  "de": "Büyükada"
+ },
+ "Erkan Usta": {
+  "en": "Erkan Usta",
+  "de": "Erkan Usta"
+ },
+ "Serkan Usta": {
+  "en": "Serkan Usta",
+  "de": "Serkan Usta"
+ },
+ "Tuğba Usta": {
+  "en": "Tuğba Usta",
+  "de": "Tuğba Usta"
+ },
+ "Uğur Usta": {
+  "en": "Uğur Usta",
+  "de": "Uğur Usta"
+ },
+ "Mustafa": {
+  "en": "Mustafa",
+  "de": "Mustafa"
+ },
+ "Sevgi": {
+  "en": "Sevgi",
+  "de": "Sevgi"
+ },
+ "Hatice": {
+  "en": "Hatice",
+  "de": "Hatice"
+ },
+ "İbrahim": {
+  "en": "İbrahim",
+  "de": "İbrahim"
+ },
+ "Kemal": {
+  "en": "Kemal",
+  "de": "Kemal"
+ },
+ "Tarık": {
+  "en": "Tarık",
+  "de": "Tarık"
+ },
+ "Selim": {
+  "en": "Selim",
+  "de": "Selim"
+ },
+ "İsmail": {
+  "en": "İsmail",
+  "de": "İsmail"
+ },
+ "Kadıçeşme": {
+  "en": "Kadıçeşme",
+  "de": "Kadıçeşme"
+ },
+ "Sultanpazarı": {
+  "en": "Sultanpazarı",
+  "de": "Sultanpazarı"
+ },
+ "Kulealtı": {
+  "en": "Kulealtı",
+  "de": "Kulealtı"
+ },
+ "Bostansahil": {
+  "en": "Bostansahil",
+  "de": "Bostansahil"
+ },
+ "Kampüstepe": {
+  "en": "Kampüstepe",
+  "de": "Kampüstepe"
+ },
+ "Beşiktepe": {
+  "en": "Beşiktepe",
+  "de": "Beşiktepe"
+ },
+ "Kadıköy": {
+  "en": "Kadıköy",
+  "de": "Kadıköy"
+ },
+ "Eminönü / Sultanahmet": {
+  "en": "Eminönü / Sultanahmet",
+  "de": "Eminönü / Sultanahmet"
+ },
+ "Levent / Maslak": {
+  "en": "Levent / Maslak",
+  "de": "Levent / Maslak"
+ },
+ "Caddebostan": {
+  "en": "Caddebostan",
+  "de": "Caddebostan"
+ },
+ "Merter / İkitelli": {
+  "en": "Merter / İkitelli",
+  "de": "Merter / İkitelli"
+ },
+ "Avcılar / Beyazıt": {
+  "en": "Avcılar / Beyazıt",
+  "de": "Avcılar / Beyazıt"
+ },
+ "Beşiktaş": {
+  "en": "Beşiktaş",
+  "de": "Beşiktaş"
+ },
+ "Türkçe": {
+  "en": "Türkçe",
+  "de": "Türkçe"
+ },
+ "English": {
+  "en": "English",
+  "de": "English"
+ },
+ "Deutsch": {
+  "en": "Deutsch",
+  "de": "Deutsch"
+ },
+ "Çırak Yusuf": {
+  "en": "Çırak Yusuf",
+  "de": "Çırak Yusuf"
+ },
+ "Sinan Usta": {
+  "en": "Sinan Usta",
+  "de": "Sinan Usta"
+ },
+ "Nur Usta": {
+  "en": "Nur Usta",
+  "de": "Nur Usta"
+ },
+ "Yusuf": {
+  "en": "Yusuf",
+  "de": "Yusuf"
+ },
+ "Hüseyin": {
+  "en": "Hüseyin",
+  "de": "Hüseyin"
+ },
+ "Ahmet": {
+  "en": "Ahmet",
+  "de": "Ahmet"
+ },
+ "Emre": {
+  "en": "Emre",
+  "de": "Emre"
+ },
+ "Halil": {
+  "en": "Halil",
+  "de": "Halil"
+ },
+ "Seda": {
+  "en": "Seda",
+  "de": "Seda"
+ },
+ "Ayşe": {
+  "en": "Ayşe",
+  "de": "Ayşe"
+ },
+ "Murat Usta": {
+  "en": "Murat Usta",
+  "de": "Murat Usta"
+ },
+ "Esra Usta": {
+  "en": "Esra Usta",
+  "de": "Esra Usta"
+ },
+ "Yusuf Usta": {
+  "en": "Yusuf Usta",
+  "de": "Yusuf Usta"
+ },
+ "Cem Usta": {
+  "en": "Cem Usta",
+  "de": "Cem Usta"
+ },
+ "Derya": {
+  "en": "Derya",
+  "de": "Derya"
+ },
+ "Ömer": {
+  "en": "Ömer",
+  "de": "Ömer"
+ },
+ "Murat": {
+  "en": "Murat",
+  "de": "Murat"
+ },
+ "Merve": {
+  "en": "Merve",
+  "de": "Merve"
+ },
+ "Barış": {
+  "en": "Barış",
+  "de": "Barış"
+ },
+ "Onur Usta": {
+  "en": "Onur Usta",
+  "de": "Onur Usta"
+ },
+ "Zeynep Usta": {
+  "en": "Zeynep Usta",
+  "de": "Zeynep Usta"
+ },
+ "İbrahim Usta": {
+  "en": "İbrahim Usta",
+  "de": "İbrahim Usta"
+ },
+ "Çırak Ali": {
+  "en": "Çırak Ali",
+  "de": "Çırak Ali"
+ },
+ "Nermin": {
+  "en": "Nermin",
+  "de": "Nermin"
+ },
+ "Gül": {
+  "en": "Gül",
+  "de": "Gül"
+ },
+ "Volkan": {
+  "en": "Volkan",
+  "de": "Volkan"
+ },
+ "Recep": {
+  "en": "Recep",
+  "de": "Recep"
+ },
+ "Serkan": {
+  "en": "Serkan",
+  "de": "Serkan"
+ },
+ "Menu": {
+  "en": "Menu",
+  "de": "Menu"
+ },
+ "Branches": {
+  "en": "Branches",
+  "de": "Branches"
+ },
+ "Tailor": {
+  "en": "Tailor",
+  "de": "Tailor"
+ },
+ "Bank": {
+  "en": "Bank",
+  "de": "Bank"
+ },
+ "Accounting": {
+  "en": "Accounting",
+  "de": "Accounting"
+ },
+ "{0} Döner": {
+  "en": "{0} Döner",
+  "de": "{0} Döner"
+ },
+ "{0} Dönerc": {
+  "en": "{0} Dönerc",
+  "de": "{0} Dönerc"
+ },
+ "{0} Dö": {
+  "en": "{0} Dö",
+  "de": "{0} Dö"
+ },
+ "{0} Dönerci": {
+  "en": "{0} Dönerci",
+  "de": "{0} Dönerci"
+ },
+ "{0} Dönercis": {
+  "en": "{0} Dönercis",
+  "de": "{0} Dönercis"
+ },
+ "Levent Usta": {
+  "en": "Levent Usta",
+  "de": "Levent Usta"
+ },
+ "Can Usta": {
+  "en": "Can Usta",
+  "de": "Can Usta"
+ },
+ "Tarık Usta": {
+  "en": "Tarık Usta",
+  "de": "Tarık Usta"
+ },
+ "Onur": {
+  "en": "Onur",
+  "de": "Onur"
+ },
+ "Elif": {
+  "en": "Elif",
+  "de": "Elif"
+ },
+ "Tuğba": {
+  "en": "Tuğba",
+  "de": "Tuğba"
+ },
+ "Kadir": {
+  "en": "Kadir",
+  "de": "Kadir"
+ },
+ "Levent": {
+  "en": "Levent",
+  "de": "Levent"
+ },
+ "Nazlı Usta": {
+  "en": "Nazlı Usta",
+  "de": "Nazlı Usta"
+ },
+ "Hatice Usta": {
+  "en": "Hatice Usta",
+  "de": "Hatice Usta"
+ },
+ "Can": {
+  "en": "Can",
+  "de": "Can"
+ },
+ "Sinan": {
+  "en": "Sinan",
+  "de": "Sinan"
+ },
+ "Kerem": {
+  "en": "Kerem",
+  "de": "Kerem"
+ },
+ "Ebru": {
+  "en": "Ebru",
+  "de": "Ebru"
+ },
+ "Çırak Emre": {
+  "en": "Çırak Emre",
+  "de": "Çırak Emre"
+ },
+ "Çırak Can": {
+  "en": "Çırak Can",
+  "de": "Çırak Can"
+ },
+ "Selin": {
+  "en": "Selin",
+  "de": "Selin"
+ },
+ "Aslı": {
+  "en": "Aslı",
+  "de": "Aslı"
+ },
+ "Nur": {
+  "en": "Nur",
+  "de": "Nur"
+ },
+ "Esra": {
+  "en": "Esra",
+  "de": "Esra"
+ },
+ "Sevgi Usta": {
+  "en": "Sevgi Usta",
+  "de": "Sevgi Usta"
+ },
+ "Recep Usta": {
+  "en": "Recep Usta",
+  "de": "Recep Usta"
+ },
+ "Kerem Usta": {
+  "en": "Kerem Usta",
+  "de": "Kerem Usta"
+ },
+ "Kemal Usta": {
+  "en": "Kemal Usta",
+  "de": "Kemal Usta"
+ },
+ "Hasan": {
+  "en": "Hasan",
+  "de": "Hasan"
+ },
+ "Orhan": {
+  "en": "Orhan",
+  "de": "Orhan"
+ },
+ "Fatma": {
+  "en": "Fatma",
+  "de": "Fatma"
+ },
+ "Net": {
+  "en": "Net",
+  "de": "Net"
+ },
+ "Mahmut": {
+  "en": "Mahmut",
+  "de": "Mahmut"
+ },
+ "Yaprak Döner": {
+  "en": "Yaprak Döner",
+  "de": "Yaprak Döner"
+ },
+ "Language / Dil": {
+  "en": "Language / Dil",
+  "de": "Language / Dil"
+ },
+ "Selin Usta": {
+  "en": "Selin Usta",
+  "de": "Selin Usta"
+ },
+ "Ahmet Usta": {
+  "en": "Ahmet Usta",
+  "de": "Ahmet Usta"
+ },
+ "Gizem Usta": {
+  "en": "Gizem Usta",
+  "de": "Gizem Usta"
+ },
+ "Mehmet": {
+  "en": "Mehmet",
+  "de": "Mehmet"
+ },
+ "Emine": {
+  "en": "Emine",
+  "de": "Emine"
+ },
+ "Barış Usta": {
+  "en": "Barış Usta",
+  "de": "Barış Usta"
+ },
+ "Büşra Usta": {
+  "en": "Büşra Usta",
+  "de": "Büşra Usta"
+ },
+ "Emre Usta": {
+  "en": "Emre Usta",
+  "de": "Emre Usta"
+ },
+ "Burak": {
+  "en": "Burak",
+  "de": "Burak"
+ },
+ "Erkan": {
+  "en": "Erkan",
+  "de": "Erkan"
+ },
+ "Mehmet Usta": {
+  "en": "Mehmet Usta",
+  "de": "Mehmet Usta"
+ },
+ "Büşra": {
+  "en": "Büşra",
+  "de": "Büşra"
+ },
+ "Cem": {
+  "en": "Cem",
+  "de": "Cem"
+ },
+ "Yeşim": {
+  "en": "Yeşim",
+  "de": "Yeşim"
+ },
+ "Çırak Halil": {
+  "en": "Çırak Halil",
+  "de": "Çırak Halil"
+ },
+ "Çırak Recep": {
+  "en": "Çırak Recep",
+  "de": "Çırak Recep"
+ },
+ "Volkan Usta": {
+  "en": "Volkan Usta",
+  "de": "Volkan Usta"
+ },
+ "Ali": {
+  "en": "Ali",
+  "de": "Ali"
+ },
+ "Pınar": {
+  "en": "Pınar",
+  "de": "Pınar"
+ },
+ "Çırak Ahmet": {
+  "en": "Çırak Ahmet",
+  "de": "Çırak Ahmet"
+ },
+ "Mustafa Usta": {
+  "en": "Mustafa Usta",
+  "de": "Mustafa Usta"
+ },
+ "Burak Usta": {
+  "en": "Burak Usta",
+  "de": "Burak Usta"
+ },
+ "Derya Usta": {
+  "en": "Derya Usta",
+  "de": "Derya Usta"
+ },
+ "{0} Usta": {
+  "en": "{0} Usta",
+  "de": "{0} Usta"
+ },
+ "Ali Usta": {
+  "en": "Ali Usta",
+  "de": "Ali Usta"
+ },
+ "Gizem": {
+  "en": "Gizem",
+  "de": "Gizem"
+ },
+ "Nazlı": {
+  "en": "Nazlı",
+  "de": "Nazlı"
+ },
+ "Emine Usta": {
+  "en": "Emine Usta",
+  "de": "Emine Usta"
+ },
+ "Yasin": {
+  "en": "Yasin",
+  "de": "Yasin"
+ },
+ "Ebru Usta": {
+  "en": "Ebru Usta",
+  "de": "Ebru Usta"
+ },
+ "Çırak Yasin": {
+  "en": "Çırak Yasin",
+  "de": "Çırak Yasin"
+ },
+ "Gül Usta": {
+  "en": "Gül Usta",
+  "de": "Gül Usta"
+ },
+ "Hülya": {
+  "en": "Hülya",
+  "de": "Hülya"
+ },
+ "Seda Usta": {
+  "en": "Seda Usta",
+  "de": "Seda Usta"
+ },
+ "Yasin Usta": {
+  "en": "Yasin Usta",
+  "de": "Yasin Usta"
+ },
+ "Zeynep": {
+  "en": "Zeynep",
+  "de": "Zeynep"
+ },
+ "Ayşe Usta": {
+  "en": "Ayşe Usta",
+  "de": "Ayşe Usta"
+ },
+ "Çırak Volkan": {
+  "en": "Çırak Volkan",
+  "de": "Çırak Volkan"
+ },
+ "Merve Usta": {
+  "en": "Merve Usta",
+  "de": "Merve Usta"
+ },
+ "Çırak Barış": {
+  "en": "Çırak Barış",
+  "de": "Çırak Barış"
+ },
+ "Çırak Onur": {
+  "en": "Çırak Onur",
+  "de": "Çırak Onur"
+ },
+ "Uğur": {
+  "en": "Uğur",
+  "de": "Uğur"
+ },
+ "Çırak İbrahim": {
+  "en": "Çırak İbrahim",
+  "de": "Çırak İbrahim"
+ },
+ "Hülya Usta": {
+  "en": "Hülya Usta",
+  "de": "Hülya Usta"
+ },
+ "Yeşim Usta": {
+  "en": "Yeşim Usta",
+  "de": "Yeşim Usta"
+ },
+ "Sound": {
+  "en": "Sound",
+  "de": "Ton"
+ },
+ "şubesine başlar (şube şeridinden değiştirebilirsin). {0} yeri: {1}": {
+  "en": "branch (you can change it from the branch strip). {0} slots: {1}",
+  "de": "an (du kannst es in der Filialleiste ändern). {0}-Plätze: {1}"
+ },
+ "{0} ve salon büyüdükçe kadro genişler.": {
+  "en": "{0}, and the staff limit grows as the dining room grows.",
+  "de": "{0}, und das Personallimit wächst mit dem Gastraum."
+ },
+ "{0} dönem · sıradaki: Semtin yıldızı": {
+  "en": "Era {0} · next: Star of the district",
+  "de": "Epoche {0} · als Nächstes: Stern des Viertels"
+ },
+ "Dönem hedefi: Bir haftayı kârla kapat": {
+  "en": "Era goal: Close a week in profit",
+  "de": "Epochenziel: Eine Woche mit Gewinn abschließen"
+ },
+ "Semtin yıldızı dönemine geçmek için": {
+  "en": "To reach the Star of the district era",
+  "de": "Für die Epoche „Stern des Viertels“"
+ },
+ "{0} {1} dönemde açılır: Semtin yıldızı.": {
+  "en": "{0} opens in era {1}: Star of the district.",
+  "de": "{0} öffnet in Epoche {1}: Stern des Viertels."
+ },
+ "{0} dönem · sıradaki: İmparatorluk yolu": {
+  "en": "Era {0} · next: Road to empire",
+  "de": "Epoche {0} · als Nächstes: Weg zum Imperium"
+ },
+ "Dönem hedefi: Dört şubeli zincir": {
+  "en": "Era goal: A four-branch chain",
+  "de": "Epochenziel: Eine Kette mit vier Filialen"
+ },
+ "İmparatorluk yolu dönemine geçmek için": {
+  "en": "To reach the Road to empire era",
+  "de": "Für die Epoche „Weg zum Imperium“"
+ },
+ "artık usta işi (seviye {0}).": {
+  "en": "is now a master's dish (level {0}).",
+  "de": "ist jetzt Meisterarbeit (Stufe {0})."
+ },
+ "Sıradaki döneme geçmek için: Bir semt tacı kazan · İkinci şubeyi aç · Bir ayda {0} milyon ₺ ciro": {
+  "en": "To reach the next era: Win a district crown · Open a second branch · {0} million ₺ revenue in a month",
+  "de": "Für die nächste Epoche: Eine Bezirkskrone gewinnen · Zweite Filiale eröffnen · {0} Mio. ₺ Umsatz in einem Monat"
+ },
+ "Sıradaki döneme geçmek için: Dört şubeli zincir · İtibar {0} · Bir imza tarif geliştir": {
+  "en": "To reach the next era: A four-branch chain · Reputation {0} · Develop a signature recipe",
+  "de": "Für die nächste Epoche: Kette mit vier Filialen · Ansehen {0} · Ein Signature-Rezept entwickeln"
+ },
+ "{0} {1}:{2}'da bitti, ardından {3} de tükendi.": {
+  "en": "{0} ran out at {1}:{2}, then {3} sold out too.",
+  "de": "{0} war um {1}:{2} aus, danach auch {3}."
+ },
+ "{0} {1}:{2}'te bitti, ardından {3} de tükendi.": {
+  "en": "{0} ran out at {1}:{2}, then {3} sold out too.",
+  "de": "{0} war um {1}:{2} aus, danach auch {3}."
+ },
+ "Kılavuz": {
+  "en": "Guide",
+  "de": "Anleitung"
+ },
+ "Bir şubeni şehrin simgesine dönüştür: +{0} masa, +{1} ocak yeri, {2} fiyat primi; o şubede müşteri +{3} bütün zincirde +{4}": {
+  "en": "Turn a branch into a city landmark: +{0} tables, +{1} grill slot, a {2} price premium; +{3} customers there, +{4} across the chain.",
+  "de": "Mach eine Filiale zum Wahrzeichen: +{0} Tische, +{1} Grillplatz, {2} Preisaufschlag; dort +{3} Kunden, in der ganzen Kette +{4}."
+ },
+ "Amiral dükkân {0}: o şubeye +{1} masa ve +{2} ocak yeri, müşteriler {3} daha yüksek fiyata katlanır; o şubede müşteri +{4} zincirde +{5} semt şampiyonluğu çıtası {6} puan düşer.": {
+  "en": "Flagship store {0}: +{1} tables and +{2} grill slot at that branch, customers accept {3} higher prices; +{4} customers there, +{5} across the chain, and the district championship bar drops by {6} points.",
+  "de": "Flagship-Laden {0}: +{1} Tische und +{2} Grillplatz in dieser Filiale, Gäste akzeptieren {3} höhere Preise; dort +{4} Kunden, in der Kette +{5}, und die Hürde für die Bezirksmeisterschaft sinkt um {6} Punkte."
+ },
+ "Dönem hedefi: Altı şubeli zincir": {
+  "en": "Era goal: A six-branch chain",
+  "de": "Epochenziel: Eine Kette mit sechs Filialen"
+ },
+ "Dün gelenlerin {0}'i hizmet alamadan gitti. Salon kadrosu dolu: salonu büyüt, sonra eleman al.": {
+  "en": "Yesterday {0} of arrivals left without being served. The floor staff is full: enlarge the dining room, then hire.",
+  "de": "Gestern gingen {0} der Gäste ohne Bedienung. Das Saalpersonal ist voll: Gastraum vergrößern, dann einstellen."
+ },
+ "Dün gelenlerin {0}'yi hizmet alamadan gitti. Salon kadrosu dolu: salonu büyüt, sonra eleman al.": {
+  "en": "Yesterday {0} of arrivals left without being served. The floor staff is full: enlarge the dining room, then hire.",
+  "de": "Gestern gingen {0} der Gäste ohne Bedienung. Das Saalpersonal ist voll: Gastraum vergrößern, dann einstellen."
+ },
+ "Dün gelenlerin {0}'ü hizmet alamadan gitti. Salon kadrosu dolu: salonu büyüt, sonra eleman al.": {
+  "en": "Yesterday {0} of arrivals left without being served. The floor staff is full: enlarge the dining room, then hire.",
+  "de": "Gestern gingen {0} der Gäste ohne Bedienung. Das Saalpersonal ist voll: Gastraum vergrößern, dann einstellen."
+ },
+ "Dün gelenlerin {0}'ı hizmet alamadan gitti. Salon kadrosu dolu: salonu büyüt, sonra eleman al.": {
+  "en": "Yesterday {0} of arrivals left without being served. The floor staff is full: enlarge the dining room, then hire.",
+  "de": "Gestern gingen {0} der Gäste ohne Bedienung. Das Saalpersonal ist voll: Gastraum vergrößern, dann einstellen."
+ },
+ "Dün gelenlerin {0}'yi hizmet alamadan gitti. Ocağı büyüt, sonra pişirmeci al.": {
+  "en": "Yesterday {0} of arrivals left without being served. Expand the grill, then hire a cook.",
+  "de": "Gestern gingen {0} der Gäste ohne Bedienung. Grill erweitern, dann einen Koch einstellen."
+ },
+ "Biten: {0}, {1}, {2}": {
+  "en": "Sold out: {0}, {1}, {2}",
+  "de": "Ausverkauft: {0}, {1}, {2}"
+ },
+ "{0}'in gönlü +{1}": {
+  "en": "{0}'s goodwill +{1}",
+  "de": "Zuneigung von {0} +{1}"
+ },
+ "\"Bu davayı kazanırsak ilk kutlama burada.\" {0} dosyaları toparlayıp koştu.": {
+  "en": "\"If we win this case, the first celebration is here.\" {0} gathered the files and hurried off.",
+  "de": "„Wenn wir diesen Fall gewinnen, feiern wir zuerst hier.“ {0} packte die Akten und eilte los."
+ },
+ "{0} gülümsedi: \"Sağ ol, ihtiyacım vardı.\"": {
+  "en": "{0} smiled: \"Thanks, I needed that.\"",
+  "de": "{0} lächelte: „Danke, das habe ich gebraucht.“"
+ },
+ "{0}'in davası: duruşma günü ({1}/{2})": {
+  "en": "{0}'s case: the hearing ({1}/{2})",
+  "de": "Der Fall von {0}: die Verhandlung ({1}/{2})"
+ },
+ "{0} telaşla geldi: \"Yarın duruşma var, fırıncı Hüsnü Amca'ya tanıklık edecek esnaf lazım. Sen yıllardır komşususun.\"": {
+  "en": "{0} rushed in: \"The hearing is tomorrow, and baker Uncle Hüsnü needs a shopkeeper to testify for him. You've been his neighbour for years.\"",
+  "de": "{0} kam aufgeregt herein: „Morgen ist die Verhandlung, Bäcker Onkel Hüsnü braucht einen Ladenbesitzer als Zeugen. Du bist seit Jahren sein Nachbar.“"
+ },
+ "{0} davayı kazandı! ({1}/{2})": {
+  "en": "{0} won the case! ({1}/{2})",
+  "de": "{0} hat den Fall gewonnen! ({1}/{2})"
+ },
+ "{0} kapıdan \"Kazandık!\" diye girdi, arkasında Hüsnü Amca ve yarım mahalle. \"Bundan sonra senin bütün sözleşmelerine ben bakarım, hem de bedava.\"": {
+  "en": "{0} burst in shouting \"We won!\", with Uncle Hüsnü and half the neighbourhood behind. \"From now on I'll handle all your contracts, for free.\"",
+  "de": "{0} kam mit „Gewonnen!“ zur Tür herein, dahinter Onkel Hüsnü und das halbe Viertel. „Ab jetzt kümmere ich mich um all deine Verträge, kostenlos.“"
+ },
+ "Kutlama gece yarısına kadar sürdü. {0} artık dükkânın avukatı: cezalar ve sözleşmeler dert değil.": {
+  "en": "The celebration lasted until midnight. {0} is now the shop's lawyer: fines and contracts are no longer a worry.",
+  "de": "Die Feier dauerte bis Mitternacht. {0} ist jetzt der Anwalt des Ladens: Strafen und Verträge sind kein Problem mehr."
+ },
+ "Ustasız": {
+  "en": "No master",
+  "de": "Ohne Meister"
+ },
+ "Liste": {
+  "en": "List",
+  "de": "Liste"
+ },
+ "Pano": {
+  "en": "Board",
+  "de": "Tafel"
+ },
+ "Geri al: x": {
+  "en": "Undo: x",
+  "de": "Rückgängig: x"
+ },
+ "Buyursunlar": {
+  "en": "Let them in",
+  "de": "Herein mit ihnen"
+ },
+ "Bekleyelim": {
+  "en": "Let's wait",
+  "de": "Lass uns warten"
+ },
+ "Hırslı": {
+  "en": "Ambitious",
+  "de": "Ehrgeizig"
+ },
+ "Sadık": {
+  "en": "Loyal",
+  "de": "Treu"
+ },
+ "Bağışla": {
+  "en": "Donate",
+  "de": "Spenden"
+ },
+ "Aşevi": {
+  "en": "Soup kitchen",
+  "de": "Suppenküche"
+ },
+ "Başla": {
+  "en": "Start",
+  "de": "Start"
+ },
+ "Yarış": {
+  "en": "Race",
+  "de": "Rennen"
+ },
+ "{0} müşteri yemeğini bekleyemedi (gelenlerin {1}'u kaçtı)": {
+  "en": "{0} customers couldn't wait for their food ({1} of arrivals lost)",
+  "de": "{0} Gäste konnten nicht auf ihr Essen warten ({1} der Gäste verloren)"
+ },
+ "{0} müşteri yemeğini bekleyemedi (gelenlerin {1}'ı kaçtı)": {
+  "en": "{0} customers couldn't wait for their food ({1} of arrivals lost)",
+  "de": "{0} Gäste konnten nicht auf ihr Essen warten ({1} der Gäste verloren)"
+ },
+ "{0} müşteri istediğini bulamadı (gelenlerin {1}'i kaçtı)": {
+  "en": "{0} customers couldn't get what they wanted ({1} of arrivals lost)",
+  "de": "{0} Gäste bekamen nicht, was sie wollten ({1} der Gäste verloren)"
+ },
+ "dün gelenlerin {0}'yı kapasite yetmediği için gitti. Reklamın getireceği müşterilerin çoğu da kapıdan dönecek; önce ekibi ya da salonu büyüt.": {
+  "en": "yesterday {0} of arrivals left because capacity ran short. Most customers an ad brings in will turn away at the door too; grow the team or the dining room first.",
+  "de": "gestern gingen {0} der Gäste, weil die Kapazität nicht reichte. Die meisten Gäste aus einer Werbung würden auch an der Tür umkehren; vergrößere zuerst Team oder Gastraum."
+ },
+ "{0} közle": {
+  "en": "{0} on the coals",
+  "de": "{0} über der Glut"
+ },
+ "Selim çok mutsuz": {
+  "en": "Selim is very unhappy",
+  "de": "Selim ist sehr unglücklich"
+ },
+ "{0}: Selim çok mutsuz": {
+  "en": "{0}: Selim is very unhappy",
+  "de": "{0}: Selim ist sehr unglücklich"
+ },
+ "nav|Menü": {
+  "en": "Menu",
+  "de": "Menü"
+ },
+ "journal|Günlük": {
+  "en": "Journal",
+  "de": "Tagebuch"
+ },
+ "Oyundan çıkılsın mı?": {
+  "en": "Quit the game?",
+  "de": "Spiel beenden?"
+ },
+ "Servis sürüyor; bugünün sabahı kayıtlı, gün yarıda kalır.": {
+  "en": "Service is running; this morning is saved and today will be left unfinished.",
+  "de": "Der Service läuft; der heutige Morgen ist gespeichert, der Tag bleibt unvollendet."
+ },
+ "Oyunun kaydedilir; kaldığın yerden devam edersin.": {
+  "en": "Your game is saved; you'll continue where you left off.",
+  "de": "Dein Spiel wird gespeichert; du machst dort weiter, wo du aufgehört hast."
+ },
+ "Çık": {
+  "en": "Quit",
+  "de": "Beenden"
+ },
+ "Burası şehir haritası, ana menün. Günün hedefi ve sayıları bu kartta.": {
+  "en": "This is the city map, your main menu. Today's goal and numbers are on this card.",
+  "de": "Das ist der Stadtplan, dein Hauptmenü. Tagesziel und Zahlen stehen auf dieser Karte."
+ },
+ "Malzeme Hal'den gelir: Rıza her sabah bugünün tahminine göre getirir. Açılış kontrolü stok akşama yetmeyecekse uyarır; o zaman siparişi \"Bol\"a çevir ya da Hal'den ek al. Fazla stok fireye gider.": {
+  "en": "Ingredients come from the Market: every morning Rıza delivers according to today's forecast. The opening check warns you if stock won't last until evening; then switch the order to \"Plenty\" or buy extra at the Market. Surplus stock goes to waste.",
+  "de": "Zutaten kommen vom Großmarkt: Rıza liefert jeden Morgen nach der heutigen Prognose. Die Öffnungskontrolle warnt, wenn der Bestand nicht bis zum Abend reicht; dann stell die Bestellung auf „Reichlich“ oder kauf auf dem Großmarkt nach. Überschuss wird zu Abfall."
+ },
+ "Stok akşama yetmeyebilir": {
+  "en": "Stock may not last until evening",
+  "de": "Bestand reicht evtl. nicht bis zum Abend"
+ },
+ "{0} {1}:{2} civarı biter · en çok satan: {3}": {
+  "en": "{0} runs out around {1}:{2} · top seller: {3}",
+  "de": "{0} ist gegen {1}:{2} aus · Bestseller: {3}"
+ },
+ "{0}: {1} {2}:{3} civarı biter · en çok satan: {4}": {
+  "en": "{0}: {1} runs out around {2}:{3} · top seller: {4}",
+  "de": "{0}: {1} ist gegen {2}:{3} aus · Bestseller: {4}"
+ },
+ "{0} beklenen kalabalığa yetmez.": {
+  "en": "{0} won't cover the expected crowd.",
+  "de": "{0} reicht nicht für den erwarteten Andrang."
+ },
+ "{0} ve {1} beklenen kalabalığa yetmez.": {
+  "en": "{0} and {1} won't cover the expected crowd.",
+  "de": "{0} und {1} reichen nicht für den erwarteten Andrang."
+ },
+ "bugün kalabalık (+{0})": {
+  "en": "busy today (+{0})",
+  "de": "heute viel los (+{0})"
+ },
+ "Piyasa {0} · +{1}": {
+  "en": "Market {0} · +{1}",
+  "de": "Markt {0} · +{1}"
+ },
+ "Piyasa {0} · -{1}": {
+  "en": "Market {0} · -{1}",
+  "de": "Markt {0} · -{1}"
+ },
+ "Piyasa {0} · {1}": {
+  "en": "Market {0} · {1}",
+  "de": "Markt {0} · {1}"
+ },
+ "Bazı malzemeler bitmek üzere. Rıza'nın çırağı motorla getirebilir (normal fiyatın {0} katı).": {
+  "en": "Some ingredients are about to run out. Rıza's apprentice can bring more by motorbike ({0}× the normal price).",
+  "de": "Einige Zutaten gehen bald aus. Rızas Lehrling kann mit dem Motorrad nachliefern (das {0}-Fache des normalen Preises)."
+ },
+ "{0} ürün bitti. Rıza'nın çırağı motorla getirebilir (normal fiyatın {1} katı).": {
+  "en": "{0} items sold out. Rıza's apprentice can bring more by motorbike ({1}× the normal price).",
+  "de": "{0} Produkte ausverkauft. Rızas Lehrling kann mit dem Motorrad nachliefern (das {1}-Fache des normalen Preises)."
+ },
+ "Grafik, ilk günü kapattıktan sonra burada görünür.": {
+  "en": "The chart appears here after you close your first day.",
+  "de": "Das Diagramm erscheint hier, sobald du den ersten Tag abgeschlossen hast."
+ },
+ "Henüz kapanmış gün yok. İlk günü kapatınca her günün dökümü burada listelenir.": {
+  "en": "No closed days yet. Once you close your first day, each day's breakdown is listed here.",
+  "de": "Noch keine abgeschlossenen Tage. Sobald du den ersten Tag abschließt, steht hier die Aufstellung jedes Tages."
+ },
+ "Haftalık rapor, ilk günü kapattıktan sonra burada görünür.": {
+  "en": "The weekly report appears here after you close your first day.",
+  "de": "Der Wochenbericht erscheint hier, sobald du den ersten Tag abgeschlossen hast."
+ },
+ "Aylık raporlar ay sonu kapanışından sonra burada listelenir.": {
+  "en": "Monthly reports are listed here after the month-end close.",
+  "de": "Monatsberichte erscheinen hier nach dem Monatsabschluss."
+ },
+ "Henüz ustan yok. Pazar sekmesinden bir usta işe al.": {
+  "en": "You have no masters yet. Hire one from the Market tab.",
+  "de": "Du hast noch keinen Meister. Stell auf dem Markt-Tab einen ein."
+ },
+ "Acil kurye · {0}": {
+  "en": "Emergency courier · {0}",
+  "de": "Eilkurier · {0}"
  }
 }

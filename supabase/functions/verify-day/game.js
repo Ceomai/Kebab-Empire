@@ -882,6 +882,9 @@ KE.huyOf = function (s) {
   const fmt = (d) => { const k = KE.locale() + d; return fmts[k] || (fmts[k] = new Intl.NumberFormat(KE.locale(), { maximumFractionDigits: d, minimumFractionDigits: d })); };
   KE.tl = (v) => (v < 0 ? '−' : '') + fmt(0).format(Math.round(Math.abs(v))) + ' ₺';
   KE.num = (v, d) => fmt(d || 0).format(v);
+  /* yüzde, dile göre: TR "%74", EN "74%", DE "74 %"; v yüzde değeri (74), sign: işaretli (+12%) */
+  const pfmts = {};
+  KE.pct = (v, sign, d) => { const k = KE.locale() + (sign ? 's' : '') + (d || 0); const f = pfmts[k] || (pfmts[k] = new Intl.NumberFormat(KE.locale(), { style: 'percent', maximumFractionDigits: d || 0, minimumFractionDigits: d || 0, signDisplay: sign ? 'exceptZero' : 'auto' })); return f.format((+v || 0) / 100); };
   KE.clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   /* ---------- Takvim: 1. gün = 2 Mart 2026 Pazartesi ---------- */
@@ -1351,6 +1354,36 @@ KE.huyOf = function (s) {
     let cost = 0; const items = [];
     Object.keys(b.usage).forEach((k) => { const q = KE.stockNeed(G, b, k, f) - (b.stock[k] || 0); if (q > 0.01) { items.push(k); cost += q * KE.ingPrice(G, b, k); } });
     return { cost, items, factor: f };
+  };
+  /* Sabah kontrol listesi için gerçekçi stok tahmini (motoru değiştirmez, yalnızca okur):
+     bugünkü müşteri tahmini × gelen kapıdaki fazlalık payı × dünkü ürün karışımı (en çok satan ağır basar).
+     Her malzeme için saatlik yoğunluk eğrisine göre bitiş saati hesaplanır; kapanıştan önce bitecekse eksiktir. */
+  KE.STOCK_SAFETY = 1.15;
+  KE.stockForecast = function (G, b) {
+    const M = MODE(G), sp = KE.specialDay(G.day), C = KE.HOUR_CURVE;
+    const on = M.products.filter((p) => b.menu[p.id] && !(KE.isLocked && KE.isLocked(G, p)));
+    const cust = KE.forecastCustomers(G, b) * KE.STOCK_SAFETY;
+    const sum = G.lastSummary && G.lastSummary.branches && G.lastSummary.branches[b.id];
+    const by = (sum && sum.stats.byProduct) || {};
+    const tot = on.reduce((a, p) => a + (by[p.id] || 0), 0);
+    const share = {};
+    on.forEach((p) => { share[p.id] = tot >= 20 ? (by[p.id] || 0) / tot : 1 / (on.length || 1); });
+    const top = on.slice().sort((a, c) => share[c.id] - share[a.id])[0];
+    const hours = Object.keys(C).map(Number).sort((a, c) => a - c);
+    const w = hours.map((h) => C[h] * (sp && sp.hours ? (sp.hours[h] || 1) : 1));
+    const wSum = w.reduce((a, x) => a + x, 0) || 1;
+    const items = [];
+    Object.keys(b.usage).forEach((k) => {
+      let per = (M.drink.ing[k] || 0) * M.drinkRate;
+      on.forEach((p) => { per += share[p.id] * (p.ing[k] || 0); });
+      const need = cust * per, have = b.stock[k] || 0;
+      if (need <= 0) return;
+      let acc = 0, outHour = null;
+      for (let i = 0; i < hours.length; i++) { acc += need * w[i] / wSum; if (acc > have + 1e-9) { outHour = hours[i]; break; } }
+      items.push({ k, need, have, outHour });
+    });
+    const short = items.filter((x) => x.outHour != null).sort((a, c) => a.outHour - c.outHour);
+    return { customers: cust, top: top ? top.id : null, items, short, ok: !short.length };
   };
   KE.topUpToday = function (G, b) {
     if (G.phase !== 'morning') return 0;

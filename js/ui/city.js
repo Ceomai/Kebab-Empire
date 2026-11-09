@@ -85,7 +85,7 @@
       <div class="cp-placewrap"><div class="cp-sec">Yerler</div>
       <div class="cp-places">${KE.MAP.PLACES.map((p) => { const t = tasks.find((x) => x.id === p.id); const lk = !KE.placeOpen(KE.G, p.id); return `<button class="cp-pl ${lk ? 'lk' : ''}" data-a="go" data-s="${p.id}" data-route="${p.id}" style="--c:${lk ? '#a99a88' : p.color}" title="${esc(p.name)}${lk ? ' · ' + KE.PLACE_ERA[p.id] + '. dönem' : ''}" aria-label="${esc(p.name)}">${IC(lk ? 'lock' : p.icon)}${t ? `<b>${t.n}</b>` : ''}<small class="cp-pn">${esc(p.name)}</small></button>`; }).join('')}</div></div>
       <button class="btn big green block cp-main" data-a="go" data-s="shop">${IC(act[0])}${act[1]}</button>
-      ${KE.G.phase === 'morning' ? `<button class="btn ghost block quickday" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün: servisi atla, sonuca geç</button>${KE.quickWeekOpen(KE.G) ? `<button class="btn ghost block quickday" data-a="quickWeek">${IC('ff')}Haftayı hızlı geç (önemli bir şey olursa durur)</button>` : ''}` : ''}
+      ${KE.G.phase === 'morning' ? `${KE.G.day > 2 ? `<button class="btn ghost block quickday" data-a="quickDay" title="Servisi izlemeden günü tamamla">${IC('ff')}Hızlı gün: servisi atla, sonuca geç</button>` : ''}${KE.quickWeekOpen(KE.G) ? `<button class="btn ghost block quickday" data-a="quickWeek">${IC('ff')}Haftayı hızlı geç (önemli bir şey olursa durur)</button>` : ''}` : ''}
     </div></aside>`;
   }
 
@@ -103,13 +103,13 @@
       if (morning) {
         /* sabah siparişi o güne yansır: kalabalık gün ya da kampanya sonrası eksik varsa tek dokunuşla tamamla */
         const sh = KE.shortfall(G, b);
-        if (sh.items.length) add(1, 'cart', nm + 'stok bugüne yetmeyecek', (sh.items.length > 2 ? `${sh.items.length} malzeme` : sh.items.map((k) => KE.MODES[G.mode].ingredients[k].name).join(', ')) + ' beklenen kalabalığa yetmez.|Sabah eksiği tamamlarsan ürünler gün ortasında bitmez.', `Tamamla · ${KE.tl(sh.cost)}`, `data-a="topUpToday" data-id="${b.id}"`);
+        if (sh.items.length) add(1, 'cart', nm + 'stok bugüne yetmeyecek', (() => { const n = sh.items.map((k) => KE.MODES[G.mode].ingredients[k].name); return n.length > 2 ? `${n.length} malzeme beklenen kalabalığa yetmez.` : n.length === 2 ? `${n[0]} ve ${n[1]} beklenen kalabalığa yetmez.` : `${n[0]} beklenen kalabalığa yetmez.`; })() + '|Sabah eksiği tamamlarsan ürünler gün ortasında bitmez.', `Tamamla · ${KE.tl(sh.cost)}`, `data-a="topUpToday" data-id="${b.id}"`);
         if (b.bolNote) add(2, 'truck', nm + 'sabah siparişi "Bol"a çekildi', 'Dün acil kurye çağrıldı; bugün stok daha bol geldi. Fire artarsa Hal\'den "Normal"e dön.', 'Hal', 'data-a="go" data-s="hal"');
         const yso = G.lastSummary && G.lastSummary.branches[b.id] && Object.entries(G.lastSummary.branches[b.id].stats.stockouts || {}).filter(([, m]) => m < 600);
         if (!sh.items.length && yso && yso.length >= 2 && b.stockLevel < 1.5 && !KE.isManaged(G, b)) add(1, 'cart', nm + 'dün ürün bitti', `${yso.length} ürün akşam saatlerinden önce tükendi. Sabah siparişini "Bol"a çevir; fark bugüne hemen yansır.`, 'Bol sipariş', `data-a="advBol" data-id="${b.id}"`);
         if (sh.factor >= 1.15) {
           const front = st.filter((s) => s.pos === 'kasa' || s.pos === 'servis').length;
-          add(sh.items.length ? 2 : 1, 'users', nm + `bugün kalabalık (+%${Math.round((sh.factor - 1) * 100)})`, (front < 2 ? 'Kasada ve serviste tek kişi var; kuyruk uzar.|' : '') + 'Kimseyi molaya gönderme; stok ve ekip hazır olsun.', 'Hal tahmini', 'data-a="go" data-s="hal"');
+          add(sh.items.length ? 2 : 1, 'users', nm + `bugün kalabalık (${KE.pct(Math.round((sh.factor - 1) * 100), 1)})`, (front < 2 ? 'Kasada ve serviste tek kişi var; kuyruk uzar.|' : '') + 'Kimseyi molaya gönderme; stok ve ekip hazır olsun.', 'Hal tahmini', 'data-a="go" data-s="hal"');
         }
       }
       const ys = G.lastSummary && G.lastSummary.branches[b.id] && G.lastSummary.branches[b.id].stats;
@@ -126,16 +126,16 @@
           else add(1, 'table', nm + 'kuyruk eriyemiyor', pct + ' Salon kadrosu dolu: salonu büyüt, sonra eleman al.', 'Mobilya ve Dekor', 'data-a="go" data-s="dekor"');
         }
       }
-      if (morning && !KE.isManaged(G, b) && KE.priceRatio(G, b) < 0.95) add(1, 'coin', nm + 'fiyatlar enflasyonun gerisinde', `Fiyatların piyasanın %${Math.round((1 - KE.priceRatio(G, b)) * 100)} altında; kâr payın eriyor.`, 'Fiyatları güncelle', `data-a="advPrices" data-id="${b.id}"`);
+      if (morning && !KE.isManaged(G, b) && KE.priceRatio(G, b) < 0.95) add(1, 'coin', nm + 'fiyatlar enflasyonun gerisinde', `Fiyatların piyasanın ${KE.pct(Math.round((1 - KE.priceRatio(G, b)) * 100))} altında; kâr payın eriyor.`, 'Fiyatları güncelle', `data-a="advPrices" data-id="${b.id}"`);
       if (b.cleanliness < 50 && !st.some((s) => s.role === 'temizlik') && KE.canHire(G, b, 'temizlik').ok) add(1, 'broom', nm + 'temizlik düşük', 'Memnuniyet düşer, denetimde ceza riski var. Temizlikçi en verimli işe alımdır.', 'Eleman Bürosu', 'data-a="go" data-s="buro"');
       const sad = st.filter((s) => s.morale < 35);
-      if (sad.length) add(1, 'heart', nm + `${sad[0].name.split(' ')[0]} çok mutsuz`, 'Moral 18\'in altına inerse istifa eder. Zam, mola ya da kostüm moral yükseltir.', KE.isCook(sad[0]) ? 'Usta Pazarı' : 'Eleman Bürosu', `data-a="go" data-s="${KE.isCook(sad[0]) ? 'lonca' : 'buro'}"`);
+      if (sad.length) add(1, 'heart', nm + `${sad[0].name} çok mutsuz`, 'Moral 18\'in altına inerse istifa eder. Zam, mola ya da kostüm moral yükseltir.', KE.isCook(sad[0]) ? 'Usta Pazarı' : 'Eleman Bürosu', `data-a="go" data-s="${KE.isCook(sad[0]) ? 'lonca' : 'buro'}"`);
     });
     const sp2 = morning && KE.specialDay(G.day + 1);
     /* her hafta gelen cuma bilinir; yalnızca maç ve bayram önceden haber verilir */
     if (sp2 && sp2.id !== 'cuma') add(2, 'star', `Yarın ${sp2.name}`, 'Kalabalık bekleniyor. Rıza siparişi kendisi artırır; ekibi tam kadro hazırla.', 'Hal tahmini', 'data-a="go" data-s="hal"');
     /* müfettiş yalnızca rezervasyonlu şubede önceden görünür; öteki şubelere habersiz gelir */
-    const need = `Yıldız için memnuniyet %${KE.INSPECT.sat} ve kaçan müşteri %${Math.round(KE.INSPECT.lost * 100)}'in altında olmalı.`;
+    const need = `Yıldız için memnuniyet ${KE.pct(KE.INSPECT.sat)} ve kaçan müşteri %${Math.round(KE.INSPECT.lost * 100)}'in altında olmalı.`;
     if (morning && G.inspect) { const ib = G.branches.find((x) => x.id === G.inspect.bid); if (ib && KE.resOn(ib)) add(0, 'star', `Rehber müfettişi bugün ${ib.name} şubesinde`, `Defterdeki "R. Güler" adına iki kişilik masa o.|${need} Ekibi tam kadro koy, stoğu tamamla.`, 'Şubeye git', `data-a="viewBranch" data-id="${ib.id}"`); }
     if (morning && G.inspectNext) { const ib = G.branches.find((x) => x.id === G.inspectNext.bid); if (ib && KE.resOn(ib)) add(1, 'book', `Yarın ${ib.name} defterinde tanıdık bir isim`, `"R. Güler" adına iki kişilik akşam masası: rehber müfettişi olabilir.|${need} Bugünden ekibi ve stoğu hazırla.`, 'Şubeye git', `data-a="viewBranch" data-id="${ib.id}"`); }
     if (morning && (G.era || 1) >= KE.RESERVATION.era && G.reputation >= 80) {
@@ -160,7 +160,7 @@
     if (lvl === 'kapali') return '';
     const list = UI.advice().filter((x) => lvl === 'cok' || x.pri === 0 || (x.pri === 1 && x.ic === 'cart'));
     if (!list.length) return '';
-    return `<div class="advice ${compact ? 'compact' : ''}"><span class="kicker">${IC('bolt')}Bugün ne yapmalıyım?</span>${list.map((a) => `<div class="adv p${a.pri}"><span class="adv-ic">${IC(a.ic)}</span><span class="adv-t"><b>${esc(a.title)}</b><small>${a.why.split('|').map((w) => `<span>${esc(w.replace(/^ +/, ''))}</span>`).join(' ')}</small></span><button class="btn xs ${a.pri === 0 ? 'red' : a.pri === 1 ? 'gold' : 'ghost'}" ${a.attrs}>${esc(a.btn)}</button></div>`).join('')}</div>`;
+    return `<div class="advice ${compact ? 'compact' : ''}"><span class="kicker">${IC('bolt')}Bugün ne yapmalıyım?</span>${list.map((a) => `<div class="adv p${a.pri}"><span class="adv-ic">${IC(a.ic)}</span><span class="adv-t"><b>${(() => { const i = a.title.indexOf(': '); return i > 0 ? `<span>${esc(a.title.slice(0, i + 1))}</span> <span>${esc(a.title.slice(i + 2))}</span>` : esc(a.title); })()}</b><small>${a.why.split('|').map((w) => `<span>${esc(w.replace(/^ +/, ''))}</span>`).join(' ')}</small></span><button class="btn xs ${a.pri === 0 ? 'red' : a.pri === 1 ? 'gold' : 'ghost'}" ${a.attrs}>${esc(a.btn)}</button></div>`).join('')}</div>`;
   };
   A.viewDekor = (d) => { KE.G.activeBranch = d.id; UI.go('dekor'); };
   A.advBol = (d) => { KE.G.activeBranch = d.id; A.stockLevel({ v: 1.5 }); };
@@ -214,8 +214,23 @@
     f.style.setProperty('--mz', String(z));
     f.scrollLeft = Math.max(0, px * z - cx); f.scrollTop = Math.max(0, py * z - cy);
     const zb = document.querySelectorAll('.mapzoom button');
-    if (zb.length === 2) { /** @type {any} */ (zb[0]).disabled = z >= ZMAX - 0.01; /** @type {any} */ (zb[1]).disabled = z <= ZMIN + 0.01; }
+    if (zb.length === 2) { /** @type {any} */ (zb[0]).disabled = z >= ZMAX - 0.01; /** @type {any} */ (zb[1]).disabled = z <= ZMIN + 0.01; }    UI.mapLabels(f);
   }
+  /* Harita yazıları viewBox biriminde: ekranda 11 px'in altına düşerse etiketler büyütülür (en çok 2,2 kat);
+     o da yetmezse (telefonda tam harita) gizlenir, yakınlaştırınca geri gelir. Yer adları alt paneldeki düğmelerde de yazar. */
+  UI.mapLabels = function (f) {
+    f = f || document.getElementById('cityframe');
+    if (!f) return;
+    f.querySelectorAll('svg.citymap').forEach((sv) => {
+      const vb = /** @type {any} */ (sv).viewBox && /** @type {any} */ (sv).viewBox.baseVal;
+      const r = sv.getBoundingClientRect();
+      if (!vb || !vb.width || !r.width) return;
+      const k = (/slice/.test(sv.getAttribute('preserveAspectRatio') || '') ? Math.max : Math.min)(r.width / vb.width, r.height / vb.height);
+      const lk = 11.5 / (13.5 * k);
+      sv.classList.toggle('nolbl', lk > 2.2);
+      /** @type {any} */ (sv).style.setProperty('--lk', String(Math.max(1, Math.min(2.2, lk)).toFixed(2)));
+    });
+  };
   const saveZoom = () => { try { localStorage.setItem(ZOOM_KEY, String(Math.round(UI.mapZoom * 100) / 100)); } catch (e) { /* yok */ } };
   A.mapZoom = (d) => { const f = document.getElementById('cityframe'); if (!f) return; setZoom(f, UI.mapZoom * (+d.d > 0 ? 1.35 : 1 / 1.35)); saveZoom(); };
   function bindPinch(f) {
@@ -242,6 +257,7 @@
     if (!f) return;
     KE.MAP.mount(f, mapOpts());
     if (window.innerWidth <= 760 || (window.innerHeight <= 520 && window.innerWidth > window.innerHeight)) UI.mapZoomInit(f);
+    UI.mapLabels(f);
     if (UI.a11y && UI.a11y.calm) f.querySelectorAll('svg').forEach((sv) => { if (/** @type {any} */ (sv).pauseAnimations) /** @type {any} */ (sv).pauseAnimations(); });
     if (f.scrollWidth > f.clientWidth + 4 && KE.G) {
       const P = KE.MAP.POS[B().district] || { x: 700, y: 430 };

@@ -2,5 +2,5 @@
   "id": "default",
   "gameName": "Kebab Empire",
   "nameParts": ["Kebab", "Empire"],
-  "app": { "id": "com.ceomai.kebabempire", "name": "Kebab Empire", "themeColor": "#d7263d", "background": "#ece2cb", "description": "Döner ve kebap işletme oyunu" }
+  "app": { "id": "com.ceomai.kebabempire", "name": "Kebab Empire", "themeColor": "#fffaf0", "background": "#ece2cb", "description": "Döner ve kebap işletme oyunu" }
 }

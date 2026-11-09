@@ -281,7 +281,7 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
       s += `<g class="place fac ${foc ? 'foc' : ''} ${eraLock ? 'eralock' : ''}" data-a="go" data-s="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}">
         ${foc ? `<circle cx="${p.x}" cy="${p.y}" r="34" fill="${p.color}" opacity=".45" class="pulse"/>` : ''}
         <g class="lift"><g filter="url(#kmDs)"><rect x="${p.x - 26}" y="${p.y - 26}" width="52" height="52" rx="14" fill="${eraLock ? '#a99a88' : p.color}" stroke="#fff" stroke-width="4"/>${iconAt(eraLock ? 'lock' : p.icon, p.x, p.y, 28)}
-        <rect x="${p.x - W / 2}" y="${p.y + 34}" width="${W}" height="24" rx="12" fill="#fff"/><text x="${p.x}" y="${p.y + 51}" text-anchor="middle" class="plbl">${esc(lbl)}</text></g>
+        <g class="plg"><rect x="${p.x - W / 2}" y="${p.y + 34}" width="${W}" height="24" rx="12" fill="#fff"/><text x="${p.x}" y="${p.y + 51}" text-anchor="middle" class="plbl">${esc(lbl)}</text></g></g>
         ${locked ? `<circle cx="${p.x + 24}" cy="${p.y - 24}" r="10" fill="#ffc93c" stroke="#fff" stroke-width="2.5"/><text x="${p.x + 24}" y="${p.y - 20}" text-anchor="middle" class="poi-tag">₺</text>` : ''}</g></g>`;
     });
     /* iş etiketleri */
