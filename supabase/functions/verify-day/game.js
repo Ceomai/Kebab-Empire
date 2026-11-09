@@ -1150,7 +1150,7 @@ KE.huyOf = function (s) {
     const d = KE.DISTRICTS.find((x) => x.id === districtId);
     const mode = MODE(G);
     const b = {
-      id: 'b' + (G.nextId++), district: districtId, name: d.name + ' ' + (G.mode === 'doner' ? 'Dönercisi' : 'Ocakbaşı'),
+      id: 'b' + (G.nextId++), district: districtId, name: KE.BRAND ? KE.BRAND.branchName(d.name, d.name + ' ' + (G.mode === 'doner' ? 'Dönercisi' : 'Ocakbaşı')) : d.name + ' ' + (G.mode === 'doner' ? 'Dönercisi' : 'Ocakbaşı'),
       tier: 1, equipment: { cook: 0, prep: 0, cold: 0, service: 0 }, decor: [], prices: {}, menu: {}, stock: {}, usage: {},
       stockLevel: 1.15, cleanliness: 72, rent: Math.round(d.rent * G.priceIndex), openedDay: G.day, history: [], autoStaff: true
     };

@@ -51,7 +51,11 @@
   const canon = (k) => k.replace(/\}'n?[ıiuü]n(?=[^a-zçğıöşü]|$)/g, "}'İN").replace(/\}'[ny]?[ıiuü](?=[^a-zçğıöşü]|$)/g, "}'I").replace(/\}'n?[dt][ae]n(?=[^a-zçğıöşü]|$)/g, "}'DEN").replace(/\}'n?[dt][ae](ki)?(?=[^a-zçğıöşü]|$)/g, "}'DE$1").replace(/\}'[yn]?[ae](?=[^a-zçğıöşü]|$)/g, "}'E");
   let canonFor = null, canonMap = null;
   const canonDict = () => { if (canonFor !== I.dict) { canonFor = I.dict; canonMap = {}; Object.keys(I.dict).forEach((k) => { if (k.includes("}'")) canonMap[canon(k)] = I.dict[k]; }); } return canonMap; };
-  I.t = function (text) {
+  /* marka ayarı: rakip zincir ve oyun adı markanınkiyle değişir (her dilde, çeviriden sonra) */
+  const brandSwap = (s) => (KE.BRAND && KE.BRAND.swaps && KE.BRAND.swaps.length ? KE.BRAND.swap(s) : s);
+  const branded = () => !!(KE.BRAND && KE.BRAND.swaps && KE.BRAND.swaps.length);
+  I.t = function (text) { return brandSwap(tr(text)); };
+  function tr(text) {
     if (I.lang === 'tr' || !text || !TR.test(text)) return text;
     const lead = text.match(/^\s*/)[0], trail = text.match(/\s*$/)[0];
     const core = text.trim();
@@ -64,7 +68,7 @@
     if (tpl == null && parts.length && /^[{}\d\s.,:;·\-–—/+%₺×~()]*$/.test(key)) tpl = key; // yalnızca yer tutucu: adları çevir
     if (tpl == null) return text;
     return lead + tpl.replace(/\{(\d+)\}/g, (m, i) => (parts[+i] != null ? word(parts[+i]) : m)) + trail;
-  };
+  }
 
   /* ---------- DOM: eklenen ve değişen metinleri çevir ---------- */
   const orig = new WeakMap();
@@ -91,9 +95,9 @@
   }
   let obs = null;
   function observe() {
-    if (obs || I.lang === 'tr') return;
+    if (obs || (I.lang === 'tr' && !branded())) return;
     obs = new MutationObserver((ms) => {
-      if (I.lang === 'tr') return;
+      if (I.lang === 'tr' && !branded()) return;
       ms.forEach((m) => {
         if (m.type === 'characterData') doText(m.target);
         else if (m.type === 'attributes') doEl(m.target);
@@ -116,7 +120,7 @@
     try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* yok */ }
     document.documentElement.lang = lang;
     entities = null;
-    if (lang !== 'tr') { observe(); walk(document.body); }
+    if (lang !== 'tr' || branded()) { observe(); walk(document.body); }
     else if (was !== 'tr' && KE.UI && KE.UI.render) KE.UI.render();
     if (was !== lang && lang !== 'tr' && KE.UI && KE.UI.render) KE.UI.render();
   };

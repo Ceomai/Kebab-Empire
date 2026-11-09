@@ -203,6 +203,15 @@
     <path d="M32 10 v42" stroke="#cfd6dc" stroke-width="3" stroke-linecap="round"/><path d="M20 16 L44 16 L38 46 L26 46 Z" fill="#b5541f" stroke="#3b2417" stroke-width="1.5" stroke-linejoin="round"/>
     <path d="M22 22 h20 M23 28 h18 M24 34 h16 M25 40 h14" stroke="#7a3a18" stroke-width="2"/><path d="M48 18 v28" stroke="#ff9a3c" stroke-width="4" stroke-linecap="round"/>`, 'logo-mark', 'Kebab Empire');
 
+  /* marka ayarı: zincirin logosu (satır içi SVG ya da görsel dosyası) varsayılan logonun yerine geçer */
+  const baseLogo = A.logo;
+  A.logo = () => {
+    const BR = KE.BRAND;
+    if (BR && BR.logoSvg) return String(BR.logoSvg).replace('<svg ', '<svg class="logo-mark" ');
+    if (BR && BR.logoUrl) return `<img class="logo-mark" src="${String(BR.logoUrl).replace(/"/g, '')}" alt="">`;
+    return baseLogo();
+  };
+
   /* ---------------- Vitrin (şube kartları ve harita için) ---------------- */
   A.storefront = (name, color, open) => svg('0 0 120 90', `<rect x="6" y="20" width="108" height="66" rx="4" fill="#fbe9cf" ${OL}/><rect x="6" y="8" width="108" height="20" rx="4" fill="${color || '#d7263d'}" ${OL}/>
     <text x="60" y="22" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="Baloo 2, sans-serif">${(name || '').slice(0, 18)}</text>

@@ -19,7 +19,8 @@
     "audit:visual": "node scripts/audit/visual.cjs reports/screens",
     "audit:runtime": "node scripts/audit/runtime.cjs",
     "sim:multi": "node scripts/sim-multi.cjs",
-    "cap:sync": "npm run build && node -e \"require('fs').readdirSync('dist/assets').filter(f=>f.endsWith('.map')).forEach(f=>require('fs').unlinkSync('dist/assets/'+f))\" && npx cap sync"
+    "cap:sync": "npm run build && node -e \"require('fs').readdirSync('dist/assets').filter(f=>f.endsWith('.map')).forEach(f=>require('fs').unlinkSync('dist/assets/'+f))\" && npx cap sync",
+    "brand": "node scripts/brand-apply.cjs"
   },
   "devDependencies": {
     "@capacitor/android": "^8.6.0",

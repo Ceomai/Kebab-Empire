@@ -19,6 +19,7 @@ import '@fontsource/kalam/latin-400.css';
 import '@fontsource/kalam/latin-ext-400.css';
 import '../css/style.css';
 import '../js/data.js';
+import '../js/brand.js';
 import '../js/calendar.js';
 import '../js/characters.js';
 import '../js/art.js';
@@ -49,6 +50,7 @@ KE.CONTACT = import.meta.env.VITE_CONTACT_EMAIL || '';
 
 KE.CLOUD.init().finally(() => { KE.CONFIG.load(); if (KE.UI.checkCloud) KE.UI.checkCloud(); });
 if (KE.I18N.preferred() !== 'tr') KE.I18N.set(KE.I18N.preferred());
+else if (KE.BRAND && KE.BRAND.swaps.length) KE.I18N.set('tr'); /* markalı sürüm: Türkçede de ad değişimi */
 
 /* servis çalışanı yalnızca web sürümünde: uygulamanın dosyaları zaten cihazda, güncellemeyi mağaza yapar */
 const native = (() => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } })();

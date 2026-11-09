@@ -350,6 +350,7 @@
       ${KE.G.branches.length > 1 ? `<div class="kpis"><div class="kpi">${IC('coin')}<small>Bütün şubeler ciro</small><b>${KE.tl(tot)}</b></div><div class="kpi">${IC('gift')}<small>Bütün şubeler bahşiş</small><b>${KE.tl(tips)}</b></div></div>
         <div class="tabs">${KE.G.branches.map((x) => `<button class="tab ${x.id === tab ? 'on' : ''}" data-a="closeTab" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}
       ${closeSummary(b, S, sum)}
+      ${promoCard(S0)}
       <details class="closedet"><summary>${IC('chart')}Ayrıntılar: rakamlar, satılan ürünler, kim ne kadar bahşiş alır</summary>
       <div class="kpis">
         <div class="kpi">${IC('coin')}<small>Ciro</small><b>${KE.tl(S.revenue)}</b></div>
@@ -371,6 +372,17 @@
   }
 
   /* Kapanış: üç satırlık özet (kazanç, en büyük kayıp, yarın için tek öneri) */
+  /* Marka kuponu (marka ayarında tanımlıysa): günün hedefleri tamamlanınca kapanışta çıkar */
+  function promoCard(S0) {
+    const BR = KE.BRAND;
+    if (!BR || !BR.promo) return '';
+    const goals = (S0 && S0.daily) || [];
+    const P = BR.promoFor(KE.G, goals.filter((g) => g.state === 'done').length, goals.length);
+    if (!P) return '';
+    return `<section class="promo"><div class="promo-ic">${IC('gift')}</div><div class="promo-b"><span class="kicker">${esc(P.title || 'Ödül kuponu')}</span><p>${esc(P.text || '')}</p>
+      <div class="promo-code"><b id="promocode">${esc(P.code)}</b><button class="btn sm" data-a="copyPromo">${IC('check')}Kopyala</button>${P.url ? `<a class="btn sm green" href="${esc(P.url)}" target="_blank" rel="noopener">${esc(P.urlLabel || BR.orderLabel || 'Sipariş ver')}</a>` : ''}</div>
+      ${P.terms ? `<small class="muted">${esc(P.terms)}</small>` : ''}</div></section>`;
+  }
   function closeSummary(b, S, sum) {
     const lostAll = S.lostWait + S.lostFull + S.lostFood + S.lostPrice + S.lostStock;
     const big = [[S.lostWait, 'kuyrukta bekleyemedi'], [S.lostFood, 'yemeğini bekleyemedi'], [S.lostFull, 'yer bulamadı'], [S.lostPrice, 'fiyatı pahalı buldu'], [S.lostStock, 'istediğini bulamadı']].sort((a, c) => c[0] - a[0])[0];

@@ -1,0 +1,25 @@
+{
+  "id": "usta-durum",
+  "_not": "ÖRNEK MARKA: hayalidir, satış görüşmelerinde markalı sürümün nasıl görüneceğini göstermek için.",
+  "gameName": "Usta Dürüm Oyunu",
+  "nameParts": ["Usta", "Dürüm"],
+  "tagline": "Usta Dürüm'ün mutfağına hoş geldin",
+  "logoUrl": "brands/usta-durum/logo.svg",
+  "colors": { "primary": "#1e6b45", "primaryDeep": "#124a2f", "accent": "#f5b62e", "accentDeep": "#c28a10", "wine": "#124a2f", "flame": "#e2702d" },
+  "rival": "Altın Şiş",
+  "shopName": "Usta Dürüm",
+  "products": { "et_durum": "Usta Et Dürüm", "tavuk_durum": "Usta Tavuk Dürüm", "iskender": "Usta İskender" },
+  "promo": {
+    "title": "Usta Dürüm kuponu",
+    "text": "Günün bütün hedeflerini tamamladın! Bu kodla şubelerimizde dürümde %15 indirim.",
+    "code": "OYUN15",
+    "afterDay": 2,
+    "needGoals": true,
+    "url": "https://example.com/siparis",
+    "urlLabel": "Hemen sipariş ver",
+    "terms": "Örnek kampanyadır. Kod günde bir kez, kasada gösterilerek kullanılır."
+  },
+  "orderUrl": "https://example.com/siparis",
+  "orderLabel": "Usta Dürüm'den sipariş ver",
+  "app": { "id": "com.ornek.ustadurum", "name": "Usta Dürüm Oyunu", "themeColor": "#1e6b45", "background": "#f3efe2", "description": "Usta Dürüm'ün döner işletme oyunu" }
+}
