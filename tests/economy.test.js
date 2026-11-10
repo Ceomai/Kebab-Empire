@@ -4,7 +4,13 @@ const { KE } = loadGame();
 KE.CAL.applyYear(2026);
 const G = { payLate: false };
 const worker = (wage, cumBase = 0) => ({ id: 1, name: 'T', role: 'usta', wage, cumBase });
-const zeroOT = () => { const o = KE.ECON.fazlaMesaiOrani; KE.ECON.fazlaMesaiOrani = 0; return () => { KE.ECON.fazlaMesaiOrani = o; }; };
+const zeroOT = () => {
+  const o = KE.ECON.fazlaMesaiOrani;
+  KE.ECON.fazlaMesaiOrani = 0;
+  return () => {
+    KE.ECON.fazlaMesaiOrani = o;
+  };
+};
 
 describe('gelir vergisi dilimleri', () => {
   it('kümülatif dilimleri doğru uygular', () => {
@@ -48,13 +54,14 @@ describe('bordro (2026)', () => {
     expect(dec.net).toBeLessThan(jan.net);
   });
   it('bayram ikramiyesi brütün yarısı kadar maliyet ekler', () => {
-    const a = KE.payroll(G, worker(40000), 3, { bonus: true }), b = KE.payroll(G, worker(40000), 3);
+    const a = KE.payroll(G, worker(40000), 3, { bonus: true }),
+      b = KE.payroll(G, worker(40000), 3);
     expect(a.total - b.total).toBe(Math.round(a.brut * 0.5));
   });
 });
 
 describe('yıl değişimi', () => {
-  it('2027 için asgari ücret ve dilimler artar, 2026\'ya dönünce geri gelir', () => {
+  it("2027 için asgari ücret ve dilimler artar, 2026'ya dönünce geri gelir", () => {
     KE.CAL.applyYear(2027);
     expect(KE.ECON.asgariBrut).toBeGreaterThan(33030);
     KE.CAL.applyYear(2026);

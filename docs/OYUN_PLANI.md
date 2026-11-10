@@ -21,16 +21,16 @@ Bu belge, oyunun bütün sistemlerini ve geliştirme sırasını tanımlar. İş
 
 ## 3. Modlar: Dönerci ve Kebapçı
 
-| Alan | Dönerci | Kebapçı |
-|---|---|---|
-| Ürünler | Tavuk ve et döner, dürüm, iskender, porsiyon | Adana, Urfa, şiş, beyti, ali nazik, lahmacun, ciğer |
-| Ana ekipman | Döner ocağı, kesme bıçağı, kesim robotu | Mangal, ocakbaşı tezgâhı, lahmacun fırını |
-| Hız ve kâr | Hızlı servis, çok müşteri, düşük kâr payı | Yavaş servis, masaya oturan müşteri, yüksek kâr payı |
-| Kritik kaynak | Et yaprağı hazırlığı, döner çubuğu kapasitesi | Kömür, kıyma kalitesi, usta becerisi |
-| Personel | Dönerci ustası, kasiyer, paketçi, kurye | Kebap ustası, mangalcı, lahmacuncu, garson, komi |
-| Müşteri tipi | Öğrenci, işçi, gece çıkışı, paket sipariş | Aile, iş yemeği, özel gün sofraları |
-| Dekor | Modern ve neon, sokak büfesi | Ahşap, bakır, yer sofrası, çini |
-| Rastgele olaylar | Gece yarısı yoğunluğu, maç günü | Düğün siparişi, iftar, kömür krizi |
+| Alan             | Dönerci                                       | Kebapçı                                              |
+| ---------------- | --------------------------------------------- | ---------------------------------------------------- |
+| Ürünler          | Tavuk ve et döner, dürüm, iskender, porsiyon  | Adana, Urfa, şiş, beyti, ali nazik, lahmacun, ciğer  |
+| Ana ekipman      | Döner ocağı, kesme bıçağı, kesim robotu       | Mangal, ocakbaşı tezgâhı, lahmacun fırını            |
+| Hız ve kâr       | Hızlı servis, çok müşteri, düşük kâr payı     | Yavaş servis, masaya oturan müşteri, yüksek kâr payı |
+| Kritik kaynak    | Et yaprağı hazırlığı, döner çubuğu kapasitesi | Kömür, kıyma kalitesi, usta becerisi                 |
+| Personel         | Dönerci ustası, kasiyer, paketçi, kurye       | Kebap ustası, mangalcı, lahmacuncu, garson, komi     |
+| Müşteri tipi     | Öğrenci, işçi, gece çıkışı, paket sipariş     | Aile, iş yemeği, özel gün sofraları                  |
+| Dekor            | Modern ve neon, sokak büfesi                  | Ahşap, bakır, yer sofrası, çini                      |
+| Rastgele olaylar | Gece yarısı yoğunluğu, maç günü               | Düğün siparişi, iftar, kömür krizi                   |
 
 Oyun tek bir motor üzerinde çalışır. Her mod kendi veri dosyasıyla gelir: menü, ekipman, personel, olaylar ve metinler. Böylece ileride yeni modlar (lahmacuncu, pideci...) kolayca eklenebilir.
 
@@ -40,15 +40,15 @@ Kuşbakışı, canlı bir harita. Ortasından bir boğaz geçer; Avrupa ve Anado
 
 ### Semtler
 
-| Semt | Esinlendiği yer | Müşteri profili | Kira |
-|---|---|---|---|
-| Kadıçeşme | Kadıköy | Öğrenci, gece çıkışı, genç | Orta |
-| Sultanpazarı | Eminönü / Sultanahmet | Turist, gurme, esnaf | Yüksek |
-| Kulealtı | Levent / Maslak | Beyaz yaka, hızlı öğle yemeği | Çok yüksek |
-| Bostansahil | Caddebostan | Aile, hafta sonu kalabalığı | Yüksek |
-| Merterli Sanayi | Merter / İkitelli | İşçi, inşaat ekibi | Düşük |
-| Kampüstepe | Avcılar / Beyazıt | Öğrenci | Düşük |
-| Beşiktepe | Beşiktaş | Karışık, maç günü yoğunluğu | Orta-Yüksek |
+| Semt            | Esinlendiği yer       | Müşteri profili               | Kira        |
+| --------------- | --------------------- | ----------------------------- | ----------- |
+| Kadıçeşme       | Kadıköy               | Öğrenci, gece çıkışı, genç    | Orta        |
+| Sultanpazarı    | Eminönü / Sultanahmet | Turist, gurme, esnaf          | Yüksek      |
+| Kulealtı        | Levent / Maslak       | Beyaz yaka, hızlı öğle yemeği | Çok yüksek  |
+| Bostansahil     | Caddebostan           | Aile, hafta sonu kalabalığı   | Yüksek      |
+| Merterli Sanayi | Merter / İkitelli     | İşçi, inşaat ekibi            | Düşük       |
+| Kampüstepe      | Avcılar / Beyazıt     | Öğrenci                       | Düşük       |
+| Beşiktepe       | Beşiktaş              | Karışık, maç günü yoğunluğu   | Orta-Yüksek |
 
 ### Haritadaki noktalar
 
@@ -68,6 +68,7 @@ Kuşbakışı, canlı bir harita. Ortasından bir boğaz geçer; Avrupa ve Anado
 ## 5. Oyun döngüsü
 
 **Gün (yaklaşık 3–5 dakika):**
+
 - **Sabah hazırlığı:** Stok kontrolü, vardiya ataması, fiyat ayarı.
 - **Servis:** Varsayılan olarak personel servisi yürütür. Oyuncu istediği an "Tezgâha geç" düğmesiyle siparişleri kendisi hazırlayabilir: döner kesme, şiş çevirme, dürüm sarma gibi mini oyunlar. Oyuncu tezgâhtayken o pozisyondaki çalışan mola verir ve morali hafifçe artar. Oyuncunun hızlı ve doğru servisi bahşişe yansır.
 - **Kapanış:** Günlük rapor, bahşiş dağıtımı ve gün sonu günlüğü.
@@ -91,25 +92,25 @@ Her usta bir ya da birkaç **uzmanlık ürünü** ile gelir. Uzmanlık o ürün�
 Örnek kart:
 
 > **Halil Usta**: Urfa ★5 · Ciğer ★5
-> *Memleket: Şanlıurfa · 22 yıllık ocakbaşı ustası*
+> _Memleket: Şanlıurfa · 22 yıllık ocakbaşı ustası_
 
 ### Dönerci ustaları (örnekler)
 
-| Usta | Uzmanlık | Artı | Eksi | Maliyet |
-|---|---|---|---|---|
-| İsmail Usta (Bursa) | İskender ★5, yaprak döner ★4 | Aileleri ve iskender severleri çeker | Yavaş, tereyağı maliyeti yüksek | Yüksek |
-| Kadir Usta (Erzurum) | Cağ kebabı ★5 | Nadir ürün, gurme müşteri, yüksek bahşiş | Tek ürüne odaklı | Yüksek |
-| Selim Usta | Tavuk döner ★4, dürüm ★4 | Çok hızlı, öğrencileri çeker | Et dönerde ★2 | Orta |
-| Çırak Burak | Dürüm ★2 | Ucuz, gelişime açık | Hata oranı yüksek | Düşük |
+| Usta                 | Uzmanlık                     | Artı                                     | Eksi                            | Maliyet |
+| -------------------- | ---------------------------- | ---------------------------------------- | ------------------------------- | ------- |
+| İsmail Usta (Bursa)  | İskender ★5, yaprak döner ★4 | Aileleri ve iskender severleri çeker     | Yavaş, tereyağı maliyeti yüksek | Yüksek  |
+| Kadir Usta (Erzurum) | Cağ kebabı ★5                | Nadir ürün, gurme müşteri, yüksek bahşiş | Tek ürüne odaklı                | Yüksek  |
+| Selim Usta           | Tavuk döner ★4, dürüm ★4     | Çok hızlı, öğrencileri çeker             | Et dönerde ★2                   | Orta    |
+| Çırak Burak          | Dürüm ★2                     | Ucuz, gelişime açık                      | Hata oranı yüksek               | Düşük   |
 
 ### Kebapçı ustaları (örnekler)
 
-| Usta | Uzmanlık | Artı | Eksi | Maliyet |
-|---|---|---|---|---|
-| Mahmut Usta (Adana) | Adana ★5 | Acı severleri ve gece müşterisini çeker | Gösterişçi, sahne ister | Yüksek |
-| Halil Usta (Şanlıurfa) | Urfa ★5, ciğer ★5 | Sabah ciğer servisini açar | Kömürü çok yakar | Yüksek |
-| Hüseyin Usta (Gaziantep) | Ali nazik ★4, beyti ★4, lahmacun ★5 | Çok yönlü | Orta hız | Orta-Yüksek |
-| Ramazan Usta | Kuzu şiş ★4 | Tutarlı, fire az | Diğer ürünlerde zayıf | Orta |
+| Usta                     | Uzmanlık                            | Artı                                    | Eksi                    | Maliyet     |
+| ------------------------ | ----------------------------------- | --------------------------------------- | ----------------------- | ----------- |
+| Mahmut Usta (Adana)      | Adana ★5                            | Acı severleri ve gece müşterisini çeker | Gösterişçi, sahne ister | Yüksek      |
+| Halil Usta (Şanlıurfa)   | Urfa ★5, ciğer ★5                   | Sabah ciğer servisini açar              | Kömürü çok yakar        | Yüksek      |
+| Hüseyin Usta (Gaziantep) | Ali nazik ★4, beyti ★4, lahmacun ★5 | Çok yönlü                               | Orta hız                | Orta-Yüksek |
+| Ramazan Usta             | Kuzu şiş ★4                         | Tutarlı, fire az                        | Diğer ürünlerde zayıf   | Orta        |
 
 ### Usta gelişimi
 
@@ -121,15 +122,15 @@ Her usta bir ya da birkaç **uzmanlık ürünü** ile gelir. Uzmanlık o ürün�
 
 Her müşterinin bir **favori ürünü**, bir **fiyat hassasiyeti**, bir **sabır süresi** ve bir **bahşiş eğilimi** vardır.
 
-| Müşteri tipi | Favori | Sabır | Bahşiş eğilimi |
-|---|---|---|---|
-| Öğrenci | Tavuk dürüm, lahmacun | Orta | Düşük |
-| Beyaz yaka | İskender, beyti | Düşük | Orta |
-| Aile | Karışık porsiyon | Yüksek | Orta |
-| Gurme / yemek yazarı | Cağ, Urfa, ciğer | Yüksek | Çok yüksek, itibar etkisi |
-| Turist | İskender, Adana | Orta | Yüksek |
-| İnşaat ekibi | Et döner, ayran | Düşük | Düşük, kalabalık gelir |
-| Gece çıkışı | Dürüm, Adana | Düşük | Orta |
+| Müşteri tipi         | Favori                | Sabır  | Bahşiş eğilimi            |
+| -------------------- | --------------------- | ------ | ------------------------- |
+| Öğrenci              | Tavuk dürüm, lahmacun | Orta   | Düşük                     |
+| Beyaz yaka           | İskender, beyti       | Düşük  | Orta                      |
+| Aile                 | Karışık porsiyon      | Yüksek | Orta                      |
+| Gurme / yemek yazarı | Cağ, Urfa, ciğer      | Yüksek | Çok yüksek, itibar etkisi |
+| Turist               | İskender, Adana       | Orta   | Yüksek                    |
+| İnşaat ekibi         | Et döner, ayran       | Düşük  | Düşük, kalabalık gelir    |
+| Gece çıkışı          | Dürüm, Adana          | Düşük  | Orta                      |
 
 ### Çekim
 
@@ -164,14 +165,14 @@ Memnuniyet = Ürün kalitesi (usta yıldızı + malzeme kalitesi)
 
 Her çalışanın 0–100 arası bir moral çubuğu ve buna göre değişen yüz ifadesi vardır.
 
-| Morali artıran | Morali düşüren |
-|---|---|
-| Adil bahşiş payı | Bahşişe el koyma |
-| Zamanında maaş ve zam | Maaş gecikmesi |
-| Yeni kostüm | Fazla mesai, yorgunluk |
+| Morali artıran        | Morali düşüren             |
+| --------------------- | -------------------------- |
+| Adil bahşiş payı      | Bahşişe el koyma           |
+| Zamanında maaş ve zam | Maaş gecikmesi             |
+| Yeni kostüm           | Fazla mesai, yorgunluk     |
 | Dinlenme odası, klima | Sıcak mutfak, kötü ekipman |
-| Eğitim ve terfi | Haksız uyarı |
-| Bayram ikramiyesi | Sürekli yoğun vardiya |
+| Eğitim ve terfi       | Haksız uyarı               |
+| Bayram ikramiyesi     | Sürekli yoğun vardiya      |
 
 - **Yüksek moral (>75):** Hız +%10, kalite bonusu, güler yüz ve bahşiş artışı.
 - **Düşük moral (<30):** Hata ve fire artar, geç kalma görülür, istifa ya da rakibe geçme riski doğar.
@@ -196,6 +197,7 @@ Değerler Türkiye'ye yakın tutulur. Bütün oranlar tek bir ayar tablosunda ye
 **Haftalık rapor:** En çok satan ürünler, saat bazlı yoğunluk, memnuniyet trendi, tedarikçi borçları.
 
 **Aylık bordro (her çalışan için):**
+
 - Brüt maaş
 - SGK işçi payı ve işsizlik sigortası işçi payı
 - Gelir vergisi (kademeli dilimler) ve asgari ücret istisnası
@@ -215,18 +217,19 @@ Değerler Türkiye'ye yakın tutulur. Bütün oranlar tek bir ayar tablosunda ye
 ## 12. Kostüm, dekor ve ekipman
 
 **Kostümler:** temel önlük → markalı önlük → şef ceketi → yöresel kostüm.
+
 - Yöresel kostüm örnekleri: Urfalı ustaya puşi ve yelek, Adanalı ustaya şalvar ve kuşak, iskender ustasına klasik beyaz ceket ve papyon.
 - Etkileri: moral, konsept puanı, kostüme uygun ürünlerde ek bahşiş.
 - Bazı kostümler yalnızca başarımla açılır.
 
 **Ekipman:**
 
-| Kategori | Dönerci | Kebapçı | Etki |
-|---|---|---|---|
-| Pişirme | Gazlı ocak → elektrikli → çift ocak | Kömür mangalı → bakır ocakbaşı → odun fırını | Kapasite, kalite |
-| Hazırlık | Kıyma makinesi, döner kesme robotu | Zırh (el kıyması) tezgâhı | Hız, ustaya bonus |
-| Soğutma | Tezgâh altı → soğuk oda | Aynı | Fire azalır |
-| Servis | Self servis tezgâh, sipariş ekranı | Masa düzeni, yer sofrası köşesi | Kapasite, ortam |
+| Kategori | Dönerci                             | Kebapçı                                      | Etki              |
+| -------- | ----------------------------------- | -------------------------------------------- | ----------------- |
+| Pişirme  | Gazlı ocak → elektrikli → çift ocak | Kömür mangalı → bakır ocakbaşı → odun fırını | Kapasite, kalite  |
+| Hazırlık | Kıyma makinesi, döner kesme robotu  | Zırh (el kıyması) tezgâhı                    | Hız, ustaya bonus |
+| Soğutma  | Tezgâh altı → soğuk oda             | Aynı                                         | Fire azalır       |
+| Servis   | Self servis tezgâh, sipariş ekranı  | Masa düzeni, yer sofrası köşesi              | Kapasite, ortam   |
 
 **Dekor:** Çini pano, bakır sahan duvarı, neon tabela, nostaljik fotoğraflar, bitkiler, dış masalar ve benzeri. Her öğenin bir tarzı vardır: modern, geleneksel, sokak ya da lüks. Tarzlar uyumluysa konsept bonusu açılır. Örneğin geleneksel dekor, yöresel kostüm ve Urfalı usta bir aradaysa "Otantik Ocakbaşı" etiketi gelir; gurme ve turist çekimi artar.
 
@@ -243,7 +246,7 @@ Değerler Türkiye'ye yakın tutulur. Bütün oranlar tek bir ayar tablosunda ye
 ## 14. Anlatı ve metin
 
 - **Gün sonu günlüğü:** İşletme sahibinin ağzından, günün gerçek verilerinden şablonlarla üretilen kısa bir paragraf.
-  > *"Bugün Hasan Usta yine erkenden gelmiş, ocağı yakmıştı. Öğlen inşaat ekibi akın etti; tavuk döner 13:40'ta bitti..."*
+  > _"Bugün Hasan Usta yine erkenden gelmiş, ocağı yakmıştı. Öğlen inşaat ekibi akın etti; tavuk döner 13:40'ta bitti..."_
 - **Olay kartları:** 2–3 seçenekli kararlar. Sonuçları sonraki günlere yansır. Örnekler:
   - Mahmut Usta'ya rakipten teklif geldi.
   - Bahşiş kavanozu kayboldu.
@@ -257,17 +260,17 @@ Değerler Türkiye'ye yakın tutulur. Bütün oranlar tek bir ayar tablosunda ye
 
 Yuvarlak hatlı, sıcak renkli, ifadeli yüzleri olan çizgi film karakterleri. Temsil saygılıdır ve karikatüre kaçmaz.
 
-| Karakter | Rol | Görsel ve kültürel detay |
-|---|---|---|
-| Hasan Usta | Kıdemli usta | Gür bıyık, beyaz önlük. Sabırlı, usta-çırak geleneğinden |
-| Zeynep Hanım | Muhasebeci | Gözlük, klasör. Titiz, rakamlarla konuşur |
-| Mehmet | Çırak / komi | Genç, kasket, enerjik. Hatalarıyla öğrenir |
-| Ayşe Teyze | Müdavim | Başörtüsü, alışveriş filesi. Mahallenin sesi |
-| Kasap Rıza | Tedarikçi | Kasap önlüğü. Pazarlıkçı ama sözünün eri |
-| Bülent Bey | Belediye müfettişi | Takım elbise, evrak çantası. Kuralcı |
-| Kurye Emre | Paket servis | Kask, mont, telefon |
-| "Lüks Kebap" sahibi | Rakip | Şık ceket, altın saat. Rekabetçi |
-| Müşteriler | Çeşitli | Farklı yaş, giyim ve kültürlerden rastgele kombinasyonlar |
+| Karakter            | Rol                | Görsel ve kültürel detay                                  |
+| ------------------- | ------------------ | --------------------------------------------------------- |
+| Hasan Usta          | Kıdemli usta       | Gür bıyık, beyaz önlük. Sabırlı, usta-çırak geleneğinden  |
+| Zeynep Hanım        | Muhasebeci         | Gözlük, klasör. Titiz, rakamlarla konuşur                 |
+| Mehmet              | Çırak / komi       | Genç, kasket, enerjik. Hatalarıyla öğrenir                |
+| Ayşe Teyze          | Müdavim            | Başörtüsü, alışveriş filesi. Mahallenin sesi              |
+| Kasap Rıza          | Tedarikçi          | Kasap önlüğü. Pazarlıkçı ama sözünün eri                  |
+| Bülent Bey          | Belediye müfettişi | Takım elbise, evrak çantası. Kuralcı                      |
+| Kurye Emre          | Paket servis       | Kask, mont, telefon                                       |
+| "Lüks Kebap" sahibi | Rakip              | Şık ceket, altın saat. Rekabetçi                          |
+| Müşteriler          | Çeşitli            | Farklı yaş, giyim ve kültürlerden rastgele kombinasyonlar |
 
 **Teknik:** Katmanlı SVG parçaları (yüz, saç, kıyafet, aksesuar). Göz kırpma, konuşma, sevinme ve kızma animasyonları. Müşteriler bu parçaların rastgele birleşimleriyle üretilir.
 
@@ -282,17 +285,17 @@ Yuvarlak hatlı, sıcak renkli, ifadeli yüzleri olan çizgi film karakterleri. 
 
 Tarayıcıda çalışan HTML5 oyunu (Canvas ve SVG), harici kütüphane gerektirmez.
 
-| Modül | Görev |
-|---|---|
-| Oyun durumu ve kayıt | Tek durum nesnesi, tarayıcıda kayıt |
-| Zaman motoru | Gün, hafta, ay döngüsü |
-| Ekonomi ve bordro | Ciro, gider, vergi, bordro hesapları; ayar tablosu |
-| Müşteri simülasyonu | Geliş, tercih, memnuniyet, bahşiş |
-| Personel ve usta | Yetenek, uzmanlık, moral, gelişim |
-| Şube simülasyonu | Arka planda çalışan şubeler |
-| Olay ve metin motoru | Olay kartları, günlük, gazete |
-| Karakter oluşturucu | SVG parça sistemi ve animasyonlar |
-| Sahneler ve arayüz | Harita, dükkân, ofis ekranları, tezgâh mini oyunları |
+| Modül                | Görev                                                |
+| -------------------- | ---------------------------------------------------- |
+| Oyun durumu ve kayıt | Tek durum nesnesi, tarayıcıda kayıt                  |
+| Zaman motoru         | Gün, hafta, ay döngüsü                               |
+| Ekonomi ve bordro    | Ciro, gider, vergi, bordro hesapları; ayar tablosu   |
+| Müşteri simülasyonu  | Geliş, tercih, memnuniyet, bahşiş                    |
+| Personel ve usta     | Yetenek, uzmanlık, moral, gelişim                    |
+| Şube simülasyonu     | Arka planda çalışan şubeler                          |
+| Olay ve metin motoru | Olay kartları, günlük, gazete                        |
+| Karakter oluşturucu  | SVG parça sistemi ve animasyonlar                    |
+| Sahneler ve arayüz   | Harita, dükkân, ofis ekranları, tezgâh mini oyunları |
 
 Moda özel içerik ayrı veri nesnelerinde tutulur.
 
@@ -307,12 +310,12 @@ Moda özel içerik ayrı veri nesnelerinde tutulur.
 
 ## 19. Karar kaydı
 
-| Konu | Karar |
-|---|---|
-| Servis | Varsayılan personel servisi; oyuncu istediğinde tezgâha geçer |
-| Ekonomi | Türkiye değerlerine yakın, yuvarlanmış oranlar |
-| Harita | İstanbul'dan esinlenen hayali şehir ve semtler |
-| Başlangıç semti | Oyuncu seçer; dükkânın görünümünü etkilemez |
-| Bahşiş dağıtımı | Varsayılan kural, gün sonunda o güne özel değiştirilebilir |
-| Usta kimliği | İsim ve uzmanlıkla tanımlanır; yöre kimlik kartında yer alır |
-| Şubeler | Oyuncunun bulunmadığı şubeler arka planda simüle edilir |
+| Konu            | Karar                                                         |
+| --------------- | ------------------------------------------------------------- |
+| Servis          | Varsayılan personel servisi; oyuncu istediğinde tezgâha geçer |
+| Ekonomi         | Türkiye değerlerine yakın, yuvarlanmış oranlar                |
+| Harita          | İstanbul'dan esinlenen hayali şehir ve semtler                |
+| Başlangıç semti | Oyuncu seçer; dükkânın görünümünü etkilemez                   |
+| Bahşiş dağıtımı | Varsayılan kural, gün sonunda o güne özel değiştirilebilir    |
+| Usta kimliği    | İsim ve uzmanlıkla tanımlanır; yöre kimlik kartında yer alır  |
+| Şubeler         | Oyuncunun bulunmadığı şubeler arka planda simüle edilir       |

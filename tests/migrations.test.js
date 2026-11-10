@@ -12,7 +12,13 @@ describe('kayıt göçleri (KE.SAVE.migrate)', () => {
     expect(S.VERSION).toBe(4);
   });
   it('1 → 2: eğitim, müdavimler, enerji ve pozisyon tamamlanır', () => {
-    const g = { day: 3, staff: [{ id: 1, role: 'usta' }, { id: 2, role: 'garson', energy: 40, pos: 'x' }] };
+    const g = {
+      day: 3,
+      staff: [
+        { id: 1, role: 'usta' },
+        { id: 2, role: 'garson', energy: 40, pos: 'x' }
+      ]
+    };
     const out = S.migrate(g, 1);
     expect(out.tut).toBe(99);
     expect(Object.keys(out.regulars).length).toBe(KE.REGULARS.length);
@@ -63,11 +69,21 @@ describe('kayıt göçleri (KE.SAVE.migrate)', () => {
 });
 
 describe('KE.SAVE.open', () => {
-  const env = (KE, g, v) => ({ v, app: KE.SAVE.APP, savedAt: '2026-01-01T00:00:00Z', day: g.day, sum: KE.SAVE.hash(JSON.stringify(g)), game: g });
+  const env = (KE, g, v) => ({
+    v,
+    app: KE.SAVE.APP,
+    savedAt: '2026-01-01T00:00:00Z',
+    day: g.day,
+    sum: KE.SAVE.hash(JSON.stringify(g)),
+    game: g
+  });
   it('2. sürüm zarfını açar ve 4. sürüme göç ettirir', () => {
     const { KE } = loadGame();
     const g = JSON.parse(JSON.stringify(Object.assign({}, newGame(KE), { live: null })));
-    delete g.seed; delete g.actionLog; delete g.gen; delete g.stories;
+    delete g.seed;
+    delete g.actionLog;
+    delete g.gen;
+    delete g.stories;
     const G = KE.SAVE.open(env(KE, g, 2));
     expect(G.seed).toBeGreaterThan(0);
     expect(G.actionLog).toEqual([]);

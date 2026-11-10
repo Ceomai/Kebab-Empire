@@ -33,15 +33,15 @@ kullanım ölçümü ve hata raporu için:
 
 ## Tablolar
 
-| Tablo / görünüm | Ne tutar | Kim okur / yazar |
-|---|---|---|
-| `profiles` | takma ad, ölçüm rızası | yalnızca sahibi |
-| `saves` | tek bulut kayıt yuvası (≤2 MB) | yalnızca sahibi |
-| `day_results` | gün sonucu; doğrulanana kadar sabah kaydı + hamle günlüğü | sahibi ekler; `verified` alanını yalnızca `verify-day` değiştirir |
-| `leaderboard_month`, `district_champions` | doğrulanmış günlerden aylık sıralama | herkes okur (takma adla) |
-| `events` | kullanım ölçümü | yalnızca rıza verenler ekler; kimse okuyamaz (panelden bakılır) |
-| `errors` | hata raporu (kişisel veri yok) | herkes ekler; kimse okuyamaz |
-| `remote_config` | uzaktan denge/takvim ayarı | herkes okur; panelden değişir |
+| Tablo / görünüm                           | Ne tutar                                                  | Kim okur / yazar                                                  |
+| ----------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------- |
+| `profiles`                                | takma ad, ölçüm rızası                                    | yalnızca sahibi                                                   |
+| `saves`                                   | tek bulut kayıt yuvası (≤2 MB)                            | yalnızca sahibi                                                   |
+| `day_results`                             | gün sonucu; doğrulanana kadar sabah kaydı + hamle günlüğü | sahibi ekler; `verified` alanını yalnızca `verify-day` değiştirir |
+| `leaderboard_month`, `district_champions` | doğrulanmış günlerden aylık sıralama                      | herkes okur (takma adla)                                          |
+| `events`                                  | kullanım ölçümü                                           | yalnızca rıza verenler ekler; kimse okuyamaz (panelden bakılır)   |
+| `errors`                                  | hata raporu (kişisel veri yok)                            | herkes ekler; kimse okuyamaz                                      |
+| `remote_config`                           | uzaktan denge/takvim ayarı                                | herkes okur; panelden değişir                                     |
 
 `delete_my_data()` çağrısı oyuncunun bütün bulut verisini ve anonim hesabını siler (oyunda: Menü → Hesap ve gizlilik).
 

@@ -56,27 +56,61 @@ import { registerSW } from 'virtual:pwa-register';
 
 KE.CONTACT = import.meta.env.VITE_CONTACT_EMAIL || '';
 
-KE.CLOUD.init().finally(() => { KE.CONFIG.load(); if (KE.UI.checkCloud) KE.UI.checkCloud(); });
+KE.CLOUD.init().finally(() => {
+  KE.CONFIG.load();
+  if (KE.UI.checkCloud) KE.UI.checkCloud();
+});
 if (KE.I18N.preferred() !== 'tr') KE.I18N.set(KE.I18N.preferred());
 else if (KE.BRAND && KE.BRAND.swaps.length) KE.I18N.set('tr'); /* markalı sürüm: Türkçede de ad değişimi */
 
 /* servis çalışanı yalnızca web sürümünde: uygulamanın dosyaları zaten cihazda, güncellemeyi mağaza yapar */
-const native = (() => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } })();
+const native = (() => {
+  try {
+    const C = /** @type {any} */ (window).Capacitor;
+    return !!(C && C.isNativePlatform && C.isNativePlatform());
+  } catch (e) {
+    return false;
+  }
+})();
 /* Android geri tuşu: pencere kapat → geri git → çıkış onayı (ayrıntı: KE.UI.handleBack). Eklenti yalnızca uygulamada yüklenir. */
-if (native) import('@capacitor/app').then(({ App }) => {
-  KE.UI.nativeExit = () => App.exitApp();
-  App.addListener('backButton', () => KE.UI.handleBack());
-}).catch(() => { /* eklenti yoksa varsayılan davranış */ });
+if (native)
+  import('@capacitor/app')
+    .then(({ App }) => {
+      KE.UI.nativeExit = () => App.exitApp();
+      App.addListener('backButton', () => KE.UI.handleBack());
+    })
+    .catch(() => {
+      /* eklenti yoksa varsayılan davranış */
+    });
 /* Dokunsal geri bildirim (KE.haptic): uygulamada yerel titreşim motoru; tarayıcıda navigator.vibrate kullanılır */
-if (native) import('@capacitor/haptics').then(({ Haptics, ImpactStyle, NotificationType }) => {
-  const NOTE = { success: NotificationType.Success, warning: NotificationType.Warning, error: NotificationType.Error };
-  KE.UI.nativeHaptics = (kind) => {
-    const p = NOTE[kind] ? Haptics.notification({ type: NOTE[kind] }) : Haptics.impact({ style: kind === 'medium' ? ImpactStyle.Medium : ImpactStyle.Light });
-    if (p && p.catch) p.catch(() => { /* titreşim yoksa sessiz */ });
-  };
-}).catch(() => { /* eklenti yoksa tarayıcı yolu */ });
-if (!native) registerSW({
-  immediate: true,
-  onNeedRefresh() { if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Yeni sürüm hazır. Sayfayı yenileyince yüklenecek.'); },
-  onOfflineReady() { if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Oyun artık internetsiz de açılır.'); }
-});
+if (native)
+  import('@capacitor/haptics')
+    .then(({ Haptics, ImpactStyle, NotificationType }) => {
+      const NOTE = {
+        success: NotificationType.Success,
+        warning: NotificationType.Warning,
+        error: NotificationType.Error
+      };
+      KE.UI.nativeHaptics = (kind) => {
+        const p = NOTE[kind]
+          ? Haptics.notification({ type: NOTE[kind] })
+          : Haptics.impact({ style: kind === 'medium' ? ImpactStyle.Medium : ImpactStyle.Light });
+        if (p && p.catch)
+          p.catch(() => {
+            /* titreşim yoksa sessiz */
+          });
+      };
+    })
+    .catch(() => {
+      /* eklenti yoksa tarayıcı yolu */
+    });
+if (!native)
+  registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Yeni sürüm hazır. Sayfayı yenileyince yüklenecek.');
+    },
+    onOfflineReady() {
+      if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Oyun artık internetsiz de açılır.');
+    }
+  });

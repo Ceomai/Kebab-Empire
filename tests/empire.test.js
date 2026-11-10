@@ -2,8 +2,38 @@ import { describe, it, expect } from 'vitest';
 import { loadGame, newGame, playDays } from './load.js';
 
 describe('oyun sonu: imparatorluk', () => {
-  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim/rng', 'sim/staff', 'sim/branch', 'sim/morning', 'sim/service', 'sim/player', 'sim/close', 'sim/replay', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
-  const ready = (KE, G) => { ['besiktepe', 'sultanpazari', 'kulealti', 'bostansahil', 'merterli', 'kampustepe'].forEach((d) => KE.openBranch(G, d)); G.branches.slice(0, KE.EMPIRE.crowns).forEach((b) => { b.champions = 1; }); G.reputation = KE.EMPIRE.reputation + 5; G.cash = 2 * KE.empirePrice(G); G.era = 4; };
+  const files = [
+    'data',
+    'util',
+    'calendar',
+    'characters',
+    'economy',
+    'sim/rng',
+    'sim/staff',
+    'sim/branch',
+    'sim/morning',
+    'sim/service',
+    'sim/player',
+    'sim/close',
+    'sim/replay',
+    'midday',
+    'progress',
+    'farm',
+    'narrative',
+    'save',
+    'verify'
+  ];
+  const ready = (KE, G) => {
+    ['besiktepe', 'sultanpazari', 'kulealti', 'bostansahil', 'merterli', 'kampustepe'].forEach((d) =>
+      KE.openBranch(G, d)
+    );
+    G.branches.slice(0, KE.EMPIRE.crowns).forEach((b) => {
+      b.champions = 1;
+    });
+    G.reputation = KE.EMPIRE.reputation + 5;
+    G.cash = 2 * KE.empirePrice(G);
+    G.era = 4;
+  };
   it('şartlar tamamlanmadan satın alınamaz', () => {
     const { KE } = loadGame(files);
     const G = playDays(KE, newGame(KE), 2);
@@ -16,7 +46,8 @@ describe('oyun sonu: imparatorluk', () => {
     const { KE } = loadGame(files);
     const G = playDays(KE, newGame(KE), 2);
     ready(KE, G);
-    const price = KE.empirePrice(G), before = G.cash;
+    const price = KE.empirePrice(G),
+      before = G.cash;
     const r = KE.buyRival(G);
     expect(r.ok).toBe(true);
     expect(G.goals.imparator).toBe(G.day);

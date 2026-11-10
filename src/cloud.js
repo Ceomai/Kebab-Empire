@@ -20,7 +20,11 @@ let sb = null;
 const session = Math.random().toString(36).slice(2, 12);
 
 C.consent = function () {
-  try { return JSON.parse(localStorage.getItem(CONSENT_KEY) || 'null'); } catch (e) { return null; }
+  try {
+    return JSON.parse(localStorage.getItem(CONSENT_KEY) || 'null');
+  } catch (e) {
+    return null;
+  }
 };
 C.needsConsent = () => C.enabled && !C.consent();
 
@@ -34,19 +38,35 @@ function turnstileToken() {
       const box = document.createElement('div');
       box.style.cssText = 'position:fixed;bottom:8px;right:8px;z-index:90';
       document.body.appendChild(box);
-      /** @type {any} */ (window).turnstile.render(box, { sitekey: SITEKEY, size: 'invisible', callback: (t) => { box.remove(); resolve(t); }, 'error-callback': () => { box.remove(); resolve(null); } });
+      /** @type {any} */ (window).turnstile.render(box, {
+        sitekey: SITEKEY,
+        size: 'invisible',
+        callback: (t) => {
+          box.remove();
+          resolve(t);
+        },
+        'error-callback': () => {
+          box.remove();
+          resolve(null);
+        }
+      });
     };
     if (/** @type {any} */ (window).turnstile) return go();
     const sc = document.createElement('script');
     sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-    sc.async = true; sc.onload = go; sc.onerror = () => resolve(null);
+    sc.async = true;
+    sc.onload = go;
+    sc.onerror = () => resolve(null);
     document.head.appendChild(sc);
   });
 }
 async function ensureUser() {
   if (!sb) return null;
   const { data } = await sb.auth.getSession();
-  if (data.session) { C.user = data.session.user; return C.user; }
+  if (data.session) {
+    C.user = data.session.user;
+    return C.user;
+  }
   const captchaToken = await turnstileToken();
   const r = await sb.auth.signInAnonymously(captchaToken ? { options: { captchaToken } } : undefined);
   if (r.error) throw r.error;
@@ -66,25 +86,49 @@ C.init = async function () {
   const c = C.consent();
   C.initFailed = false;
   if (c && c.cloud) {
-    try { await ensureUser(); await upsertProfile(c); C.ready = true; C.lastError = null; } catch (e) { C.lastError = e.message; C.initFailed = true; }
+    try {
+      await ensureUser();
+      await upsertProfile(c);
+      C.ready = true;
+      C.lastError = null;
+    } catch (e) {
+      C.lastError = e.message;
+      C.initFailed = true;
+    }
   }
 };
 /* Rıza verilmiş ama bağlantı kurulamamış: arayüz "bulut kaydını aç" yerine bağlantı hatası gösterir */
 C.connectionFailed = () => !!(C.enabled && !C.ready && C.initFailed && (C.consent() || {}).cloud);
-C.retry = async function () { await C.init(); return C.ready; };
+C.retry = async function () {
+  await C.init();
+  return C.ready;
+};
 
 /* Rıza ekranından gelir: { cloud, analytics, name } */
 C.setConsent = async function (c) {
-  const v = { cloud: !!c.cloud, analytics: !!(c.cloud && c.analytics), name: (c.name || '').trim().slice(0, 24) || null, at: new Date().toISOString() };
+  const v = {
+    cloud: !!c.cloud,
+    analytics: !!(c.cloud && c.analytics),
+    name: (c.name || '').trim().slice(0, 24) || null,
+    at: new Date().toISOString()
+  };
   localStorage.setItem(CONSENT_KEY, JSON.stringify(v));
   if (!C.enabled) return v;
-  if (v.cloud) { await ensureUser(); await upsertProfile(v); C.ready = true; C.initFailed = false; }
-  else { C.ready = false; C.initFailed = false; }
+  if (v.cloud) {
+    await ensureUser();
+    await upsertProfile(v);
+    C.ready = true;
+    C.initFailed = false;
+  } else {
+    C.ready = false;
+    C.initFailed = false;
+  }
   return v;
 };
 
 /* ---------- Bulut kaydı ---------- */
-let saveTimer = null, pendingEnv = null;
+let saveTimer = null,
+  pendingEnv = null;
 C.queueSave = function (env) {
   if (!C.ready) return;
   pendingEnv = env;
@@ -95,12 +139,22 @@ C.queueSave = function (env) {
 C.flushSave = async function () {
   if (!C.ready || !pendingEnv) return !pendingEnv;
   clearTimeout(saveTimer);
-  const env = pendingEnv; pendingEnv = null;
+  const env = pendingEnv;
+  pendingEnv = null;
   let err = null;
   try {
-    const r = await sb.from('saves').upsert({ user_id: C.user.id, save_id: env.game.saveId, version: env.v, day: env.day, save: env, updated_at: new Date().toISOString() });
+    const r = await sb.from('saves').upsert({
+      user_id: C.user.id,
+      save_id: env.game.saveId,
+      version: env.v,
+      day: env.day,
+      save: env,
+      updated_at: new Date().toISOString()
+    });
     if (r && r.error) err = r.error.message || 'kayıt yazılamadı';
-  } catch (e) { err = (e && e.message) || String(e); }
+  } catch (e) {
+    err = (e && e.message) || String(e);
+  }
   if (!err) return true;
   C.lastError = err;
   if (!pendingEnv) pendingEnv = env; // bu arada daha yeni bir kayıt gelmediyse tekrar denensin
@@ -111,22 +165,39 @@ C.loadSave = async function () {
   if (!C.ready) return { error: 'bulut hazır değil' };
   try {
     const r = await sb.from('saves').select('save, day, updated_at').eq('user_id', C.user.id).maybeSingle();
-    if (r.error) { C.lastError = r.error.message; return { error: r.error.message }; }
+    if (r.error) {
+      C.lastError = r.error.message;
+      return { error: r.error.message };
+    }
     return r.data || null;
-  } catch (e) { C.lastError = e.message; return { error: e.message || String(e) }; }
+  } catch (e) {
+    C.lastError = e.message;
+    return { error: e.message || String(e) };
+  }
 };
 
 /* ---------- Gün sonucu ve doğrulama ---------- */
 C.submitDay = async function (p) {
   if (!C.ready) return null;
   const row = {
-    user_id: C.user.id, save_id: p.saveId, day: p.day, game_month: p.month, mode: p.mode, district: p.district,
-    served: p.served, revenue: Math.round(p.revenue), reputation: Math.round(p.reputation * 10) / 10,
-    morning: { envelope: p.morning, todayRule: p.todayRule }, action_log: p.log || []
+    user_id: C.user.id,
+    save_id: p.saveId,
+    day: p.day,
+    game_month: p.month,
+    mode: p.mode,
+    district: p.district,
+    served: p.served,
+    revenue: Math.round(p.revenue),
+    reputation: Math.round(p.reputation * 10) / 10,
+    morning: { envelope: p.morning, todayRule: p.todayRule },
+    action_log: p.log || []
   };
   if (p.race) row.race = p.race;
   const r = await sb.from('day_results').insert(row).select('id').single();
-  if (r.error) { C.lastError = r.error.message; return null; }
+  if (r.error) {
+    C.lastError = r.error.message;
+    return null;
+  }
   const v = await sb.functions.invoke('verify-day', { body: { id: r.data.id } });
   return v.data || null;
 };
@@ -138,17 +209,36 @@ const TIMEOUT_MS = 10000;
 function rows(q) {
   return new Promise((resolve, reject) => {
     const t = setTimeout(() => reject(new Error('zaman aşımı')), TIMEOUT_MS);
-    Promise.resolve(q).then((r) => { clearTimeout(t); if (r && r.error) reject(new Error(r.error.message || 'sorgu hatası')); else resolve((r && r.data) || []); },
-      (e) => { clearTimeout(t); reject(e); });
+    Promise.resolve(q).then(
+      (r) => {
+        clearTimeout(t);
+        if (r && r.error) reject(new Error(r.error.message || 'sorgu hatası'));
+        else resolve((r && r.data) || []);
+      },
+      (e) => {
+        clearTimeout(t);
+        reject(e);
+      }
+    );
   });
 }
 C.leaderboard = async function (month, mode) {
   if (!sb) return [];
-  return rows(sb.from('leaderboard_month').select('*').eq('game_month', month).eq('mode', mode).order('revenue', { ascending: false }).limit(20));
+  return rows(
+    sb
+      .from('leaderboard_month')
+      .select('*')
+      .eq('game_month', month)
+      .eq('mode', mode)
+      .order('revenue', { ascending: false })
+      .limit(20)
+  );
 };
 C.raceBoard = async function (week) {
   if (!sb) return [];
-  return rows(sb.from('leaderboard_race').select('*').eq('race', week).order('revenue', { ascending: false }).limit(20));
+  return rows(
+    sb.from('leaderboard_race').select('*').eq('race', week).order('revenue', { ascending: false }).limit(20)
+  );
 };
 C.champions = async function (month) {
   if (!sb) return [];
@@ -165,12 +255,20 @@ C.track = function (name, props) {
 };
 C.flushEvents = async function () {
   if (!C.ready || !queue.length) return;
-  const batch = queue; queue = [];
+  const batch = queue;
+  queue = [];
   const r = await sb.from('events').insert(batch);
   if (r.error) C.lastError = r.error.message;
 };
-setInterval(() => { C.flushEvents(); }, 20000);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { C.flushEvents(); C.flushSave(); } });
+setInterval(() => {
+  C.flushEvents();
+}, 20000);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    C.flushEvents();
+    C.flushSave();
+  }
+});
 
 /* ---------- Hata raporu ---------- */
 let errCount = 0;
@@ -179,11 +277,22 @@ C.reportError = async function (message, stack, context) {
   if (!sb || errCount >= 10) return;
   const key = String(message).slice(0, 120);
   if (seen.has(key)) return;
-  seen.add(key); errCount++;
-  await sb.from('errors').insert({ user_id: C.user ? C.user.id : null, message: String(message).slice(0, 500), stack: String(stack || '').slice(0, 4000), context: context || null, app_version: APP_VERSION });
+  seen.add(key);
+  errCount++;
+  await sb.from('errors').insert({
+    user_id: C.user ? C.user.id : null,
+    message: String(message).slice(0, 500),
+    stack: String(stack || '').slice(0, 4000),
+    context: context || null,
+    app_version: APP_VERSION
+  });
 };
-window.addEventListener('error', (e) => { C.reportError(e.message, e.error && e.error.stack, { src: e.filename, line: e.lineno }); });
-window.addEventListener('unhandledrejection', (e) => { C.reportError(e.reason && e.reason.message || String(e.reason), e.reason && e.reason.stack); });
+window.addEventListener('error', (e) => {
+  C.reportError(e.message, e.error && e.error.stack, { src: e.filename, line: e.lineno });
+});
+window.addEventListener('unhandledrejection', (e) => {
+  C.reportError((e.reason && e.reason.message) || String(e.reason), e.reason && e.reason.stack);
+});
 
 /* ---------- Uzaktan ayar ---------- */
 C.fetchConfig = async function () {
@@ -199,7 +308,12 @@ C.linkEmail = async function (email) {
   if (r.error) throw r.error;
 };
 C.deleteMyData = async function () {
-  if (sb && C.user) { const r = await sb.rpc('delete_my_data'); if (r.error) throw r.error; await sb.auth.signOut(); }
+  if (sb && C.user) {
+    const r = await sb.rpc('delete_my_data');
+    if (r.error) throw r.error;
+    await sb.auth.signOut();
+  }
   localStorage.removeItem(CONSENT_KEY);
-  C.ready = false; C.user = null;
+  C.ready = false;
+  C.user = null;
 };

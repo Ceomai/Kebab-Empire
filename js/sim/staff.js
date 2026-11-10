@@ -6,13 +6,31 @@
 
   /* ---------- Görevler ve pozisyonlar ---------- */
   KE.POSITIONS = {
-    usta: ['ocak', 'mola'], cirak: ['ocak', 'mola'],
-    kasiyer: ['kasa', 'servis', 'mola'], garson: ['servis', 'kasa', 'mola'],
-    temizlik: ['temizlik', 'servis', 'mola'], kurye: ['paket', 'mola'],
+    usta: ['ocak', 'mola'],
+    cirak: ['ocak', 'mola'],
+    kasiyer: ['kasa', 'servis', 'mola'],
+    garson: ['servis', 'kasa', 'mola'],
+    temizlik: ['temizlik', 'servis', 'mola'],
+    kurye: ['paket', 'mola'],
     mudur: ['yonetim', 'kasa', 'servis', 'mola']
   };
-  KE.POS_NAMES = { ocak: 'Ocakbaşı', kasa: 'Kasa', servis: 'Servis', temizlik: 'Temizlik', paket: 'Paket', yonetim: 'Yönetim', mola: 'Mola' };
-  KE.TASK_NAMES = { cook: 'Pişiriyor', order: 'Sipariş alıyor', deliver: 'Servis ediyor', clear: 'Masa topluyor', clean: 'Temizlik', paket: 'Paket yolda' };
+  KE.POS_NAMES = {
+    ocak: 'Ocakbaşı',
+    kasa: 'Kasa',
+    servis: 'Servis',
+    temizlik: 'Temizlik',
+    paket: 'Paket',
+    yonetim: 'Yönetim',
+    mola: 'Mola'
+  };
+  KE.TASK_NAMES = {
+    cook: 'Pişiriyor',
+    order: 'Sipariş alıyor',
+    deliver: 'Servis ediyor',
+    clear: 'Masa topluyor',
+    clean: 'Temizlik',
+    paket: 'Paket yolda'
+  };
 
   /* ---------- Personel üretimi ---------- */
   KE.wageFor = (spec, role) => {
@@ -22,17 +40,42 @@
     return Math.round((40000 + 9500 * (max - 1) + 3500 * (stars.length - 1)) / 500) * 500;
   };
   KE.makeStaff = function (G, o) {
-    const id = 's' + (G.nextId++);
+    const id = 's' + G.nextId++;
     const gender = o.gender || (KE.rand() < 0.8 ? 'e' : 'k');
     const age = o.age || pick(['genc', 'orta', 'orta', 'yasli']);
     /** @type {Staff} */
     const s = {
-      id, name: o.name, role: /** @type {string} */ (o.role), region: o.region || pick(Object.keys(KE.REGIONS)), gender, age,
-      spec: Object.assign({}, o.spec || {}), xp: {}, speed: o.speed || 1, quality: o.quality || 0.8, consistency: o.consistency || 0.8,
-      waste: o.waste || 0.6, teach: o.teach || 0.5, friendly: o.friendly || rnd(0.4, 0.9), skill: o.skill || rnd(0.4, 0.9),
-      trait: o.trait || null, wage: o.wage || KE.wageFor(o.spec || {}, /** @type {string} */ (o.role)), morale: o.morale || 66, costume: 'temel',
-      branchId: o.branchId, look: o.look || KE.randomLook(gender, age), cumBase: 0, tipsMonth: 0, tipsTotal: 0, hiredDay: G.day,
-      mentorId: null, servedToday: 0, servedTotal: 0, energy: 100, pos: null, task: null
+      id,
+      name: o.name,
+      role: /** @type {string} */ (o.role),
+      region: o.region || pick(Object.keys(KE.REGIONS)),
+      gender,
+      age,
+      spec: Object.assign({}, o.spec || {}),
+      xp: {},
+      speed: o.speed || 1,
+      quality: o.quality || 0.8,
+      consistency: o.consistency || 0.8,
+      waste: o.waste || 0.6,
+      teach: o.teach || 0.5,
+      friendly: o.friendly || rnd(0.4, 0.9),
+      skill: o.skill || rnd(0.4, 0.9),
+      trait: o.trait || null,
+      wage: o.wage || KE.wageFor(o.spec || {}, /** @type {string} */ (o.role)),
+      morale: o.morale || 66,
+      costume: 'temel',
+      branchId: o.branchId,
+      look: o.look || KE.randomLook(gender, age),
+      cumBase: 0,
+      tipsMonth: 0,
+      tipsTotal: 0,
+      hiredDay: G.day,
+      mentorId: null,
+      servedToday: 0,
+      servedTotal: 0,
+      energy: 100,
+      pos: null,
+      task: null
     };
     if (s.look.gender !== gender) s.look = KE.randomLook(gender, age);
     s.pos = KE.POSITIONS[s.role][0];
@@ -52,7 +95,8 @@
   KE.staffGroup = (role) => Object.keys(KE.STAFF_GROUPS).find((g) => KE.STAFF_GROUPS[g].roles.includes(role));
   KE.staffCapsAt = (G, b, eq) => {
     const M = KE.MODES[G.mode].equipment;
-    const st = M.cook.levels[eq.cook].stations, tables = M.service.levels[eq.service].tables;
+    const st = M.cook.levels[eq.cook].stations,
+      tables = M.service.levels[eq.service].tables;
     const fl = b && b.flagship ? 1 : 0;
     return { mutfak: st + 1 + fl, salon: Math.ceil((tables + 4 * fl) / 2), destek: eq.service + 1, yonetim: 1 };
   };
@@ -67,11 +111,22 @@
     if (used >= cap && g.up) {
       const eq = KE.MODES[G.mode].equipment[g.up];
       const next = eq.levels[b.equipment[g.up] + 1];
-      hint = next ? (g.up === 'cook' ? 'Yer açmak için Mobilya ve Dekor\'dan ocağı büyüt ya da kadrodan birini çıkar.' : 'Yer açmak için Mobilya ve Dekor\'dan salonu büyüt ya da kadrodan birini çıkar.') : 'Bu şube en büyük hâlinde: kadrodan birini çıkar ya da başka şubeye ata.';
+      hint = next
+        ? g.up === 'cook'
+          ? "Yer açmak için Mobilya ve Dekor'dan ocağı büyüt ya da kadrodan birini çıkar."
+          : "Yer açmak için Mobilya ve Dekor'dan salonu büyüt ya da kadrodan birini çıkar."
+        : 'Bu şube en büyük hâlinde: kadrodan birini çıkar ya da başka şubeye ata.';
     } else if (used >= cap) hint = 'Her şubede bir müdür olabilir. Yenisini almak için mevcut müdürü çıkar.';
     return { ok: used < cap, group, used, cap, hint };
   };
-  KE.roleName = (G, s) => s.role === 'usta' ? KE.MODES[G.mode].cookRole : s.role === 'garson' ? (G.mode === 'doner' ? 'Komi' : 'Garson') : KE.ROLES[s.role].name;
+  KE.roleName = (G, s) =>
+    s.role === 'usta'
+      ? KE.MODES[G.mode].cookRole
+      : s.role === 'garson'
+        ? G.mode === 'doner'
+          ? 'Komi'
+          : 'Garson'
+        : KE.ROLES[s.role].name;
 
   KE.randomMaster = function (G) {
     const mode = MODE(G);
@@ -87,27 +142,47 @@
     const gender = KE.rand() < 0.78 ? 'e' : 'k';
     const max = Math.max(...Object.values(spec));
     const role = max <= 2 && KE.rand() < 0.6 ? 'cirak' : 'usta';
-    const taken = new Set(G.staff.map((x) => x.name.replace(/^Çırak /, '').replace(/ Usta$/, '')).concat((G.market || []).map((x) => x.name.replace(/^Çırak /, '').replace(/ Usta$/, ''))));
+    const taken = new Set(
+      G.staff
+        .map((x) => x.name.replace(/^Çırak /, '').replace(/ Usta$/, ''))
+        .concat((G.market || []).map((x) => x.name.replace(/^Çırak /, '').replace(/ Usta$/, '')))
+    );
     let first = pick(KE.NAMES[gender]);
     for (let i = 0; i < 12 && taken.has(first); i++) first = pick(KE.NAMES[gender]);
     const s = KE.makeStaff(G, {
-      name: role === 'cirak' ? 'Çırak ' + first : first + ' Usta', role, gender, spec,
+      name: role === 'cirak' ? 'Çırak ' + first : first + ' Usta',
+      role,
+      gender,
+      spec,
       age: role === 'cirak' ? 'genc' : pick(['orta', 'orta', 'yasli', 'genc']),
-      speed: rnd(0.8, 1.25), quality: rnd(0.6, 0.98), consistency: rnd(0.6, 0.97), waste: rnd(0.35, 1.1), teach: rnd(0.2, 0.95),
+      speed: rnd(0.8, 1.25),
+      quality: rnd(0.6, 0.98),
+      consistency: rnd(0.6, 0.97),
+      waste: rnd(0.35, 1.1),
+      teach: rnd(0.2, 0.95),
       trait: pick(['mukemmel', 'gosterisci', 'hizli', 'sabirli', 'huysuz', 'hevesli', 'sohbet', null])
     });
-    s.fee = role === 'cirak' ? 0 : Math.round(s.wage * (0.3 + max * 0.18) / 500) * 500;
+    s.fee = role === 'cirak' ? 0 : Math.round((s.wage * (0.3 + max * 0.18)) / 500) * 500;
     return s;
   };
   KE.randomWorker = function (G, role) {
     const gender = KE.rand() < 0.6 ? 'e' : 'k';
     const first = pick(KE.NAMES[gender]);
     const s = KE.makeStaff(G, {
-      name: first, role, gender, age: role === 'mudur' ? pick(['orta', 'yasli']) : pick(['genc', 'genc', 'orta']),
-      speed: rnd(0.8, 1.25), friendly: rnd(0.3, 1), skill: rnd(0.3, 1), trait: pick(['sohbet', 'hizli', 'sabirli', 'huysuz', null, null])
+      name: first,
+      role,
+      gender,
+      age: role === 'mudur' ? pick(['orta', 'yasli']) : pick(['genc', 'genc', 'orta']),
+      speed: rnd(0.8, 1.25),
+      friendly: rnd(0.3, 1),
+      skill: rnd(0.3, 1),
+      trait: pick(['sohbet', 'hizli', 'sabirli', 'huysuz', null, null])
     });
     const base = /** @type {number} */ (KE.ROLES[role].baseWage);
-    s.wage = Math.max(KE.ECON.asgariBrut, Math.round(base * (0.85 + (role === 'mudur' ? s.skill : s.friendly) * 0.3) / 500) * 500);
+    s.wage = Math.max(
+      KE.ECON.asgariBrut,
+      Math.round((base * (0.85 + (role === 'mudur' ? s.skill : s.friendly) * 0.3)) / 500) * 500
+    );
     return s;
   };
 
@@ -119,14 +194,16 @@
       const t = pick(tmpl);
       const s = KE.makeStaff(G, Object.assign({}, t, { role: 'usta' }));
       const max = Math.max(...Object.values(s.spec));
-      s.fee = Math.round(s.wage * (0.3 + max * 0.18) / 500) * 500;
+      s.fee = Math.round((s.wage * (0.3 + max * 0.18)) / 500) * 500;
       G.market.push(s);
     }
     while (G.market.length < 5) G.market.push(KE.randomMaster(G));
   };
   KE.refreshWorkers = function (G) {
     G.workers = [];
-    ['kasiyer', 'garson', 'garson', 'kurye', 'temizlik', 'mudur', 'kasiyer', 'kurye'].forEach((r) => G.workers.push(KE.randomWorker(G, r)));
+    ['kasiyer', 'garson', 'garson', 'kurye', 'temizlik', 'mudur', 'kasiyer', 'kurye'].forEach((r) =>
+      G.workers.push(KE.randomWorker(G, r))
+    );
   };
 
   KE.gainXp = function (s, pid, amt) {
@@ -135,7 +212,12 @@
     if (cur >= 5) return false;
     s.xp[pid] = (s.xp[pid] || 0) + amt;
     const need = KE.STAR_NEED[cur + 1];
-    if (s.xp[pid] >= need) { s.xp[pid] -= need; s.spec[pid] = cur + 1; s.levelUps = (s.levelUps || []).concat([{ pid, star: cur + 1 }]); return true; }
+    if (s.xp[pid] >= need) {
+      s.xp[pid] -= need;
+      s.spec[pid] = cur + 1;
+      s.levelUps = (s.levelUps || []).concat([{ pid, star: cur + 1 }]);
+      return true;
+    }
     return false;
   };
 })();

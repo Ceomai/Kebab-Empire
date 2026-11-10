@@ -4,7 +4,28 @@ import { createRequire } from 'node:module';
 import { loadGame, playDays } from './load.js';
 const { validateBrand } = createRequire(import.meta.url)('../scripts/brand-validate.cjs');
 
-const FILES = ['data', 'util', 'brand', 'calendar', 'characters', 'economy', 'sim/rng', 'sim/staff', 'sim/branch', 'sim/morning', 'sim/service', 'sim/player', 'sim/close', 'sim/replay', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+const FILES = [
+  'data',
+  'util',
+  'brand',
+  'calendar',
+  'characters',
+  'economy',
+  'sim/rng',
+  'sim/staff',
+  'sim/branch',
+  'sim/morning',
+  'sim/service',
+  'sim/player',
+  'sim/close',
+  'sim/replay',
+  'midday',
+  'progress',
+  'farm',
+  'narrative',
+  'save',
+  'verify'
+];
 const demo = JSON.parse(fs.readFileSync(new URL('../brands/usta-durum.json', import.meta.url), 'utf8'));
 
 describe('marka ayarı', () => {
@@ -18,17 +39,42 @@ describe('marka ayarı', () => {
     const { KE } = loadGame(FILES, { globals: { __BRAND__: demo } });
     expect(KE.BRAND.id).toBe('usta-durum');
     expect(KE.MODES.doner.products.find((p) => p.id === 'et_durum').name).toBe('Usta Et Dürüm');
-    expect(KE.BRAND.swap('"Lüks Kebap" zincirini satın al · Kebab Empire')).toBe('"Altın Şiş" zincirini satın al · Usta Dürüm Oyunu');
-    const G = KE.newGame({ mode: 'doner', district: 'kadiceşme', master: KE.MASTER_TEMPLATES.doner[0], owner: 'T', shopName: 'Usta Dürüm', seed: 3 });
-    G.cash = 9e7; G.era = 4;
+    expect(KE.BRAND.swap('"Lüks Kebap" zincirini satın al · Kebab Empire')).toBe(
+      '"Altın Şiş" zincirini satın al · Usta Dürüm Oyunu'
+    );
+    const G = KE.newGame({
+      mode: 'doner',
+      district: 'kadiceşme',
+      master: KE.MASTER_TEMPLATES.doner[0],
+      owner: 'T',
+      shopName: 'Usta Dürüm',
+      seed: 3
+    });
+    G.cash = 9e7;
+    G.era = 4;
     const b = KE.openBranch(G, 'besiktepe');
     expect(b.name.startsWith('Usta Dürüm ')).toBe(true);
   });
   it('marka ekonomiye dokunmaz: aynı tohumla markalı ve varsayılan oyun aynı sonucu verir', () => {
     const run = (globals) => {
       const { KE } = loadGame(FILES, { globals });
-      const G = playDays(KE, KE.newGame({ mode: 'doner', district: 'kadiceşme', master: KE.MASTER_TEMPLATES.doner[0], owner: 'T', shopName: 'X', seed: 77 }), 5);
-      return [Math.round(G.cash), Math.round(G.reputation * 100), G.ledger.days.map((d) => Math.round(d.revenue)).join(',')];
+      const G = playDays(
+        KE,
+        KE.newGame({
+          mode: 'doner',
+          district: 'kadiceşme',
+          master: KE.MASTER_TEMPLATES.doner[0],
+          owner: 'T',
+          shopName: 'X',
+          seed: 77
+        }),
+        5
+      );
+      return [
+        Math.round(G.cash),
+        Math.round(G.reputation * 100),
+        G.ledger.days.map((d) => Math.round(d.revenue)).join(',')
+      ];
     };
     expect(run({ __BRAND__: demo })).toEqual(run({}));
   });
@@ -52,11 +98,20 @@ describe('marka ayarı', () => {
     expect(K2.BRAND.swap('"Lüks Kebap"tan kaç')).toBe('"Kral Döner"den kaç');
     expect(K2.BRAND.swap('Lüks Kebap ve Lüks Kebap')).toBe('Kral Döner ve Kral Döner');
     /* yeni ad eskisini içerse de tek kez değişir */
-    const { KE: K3 } = loadGame(FILES, { globals: { __BRAND__: Object.assign({}, demo, { rival: 'Lüks Kebap Plus' }) } });
+    const { KE: K3 } = loadGame(FILES, {
+      globals: { __BRAND__: Object.assign({}, demo, { rival: 'Lüks Kebap Plus' }) }
+    });
     expect(K3.BRAND.swap('"Lüks Kebap"ı geç')).toBe('"Lüks Kebap Plus"u geç');
   });
   it('satır içi logo <img> olarak çizilir (sayfaya HTML eklenmez)', () => {
-    const { KE } = loadGame(['data', 'util', 'brand', 'art'], { globals: { __BRAND__: Object.assign({}, demo, { logoUrl: null, logoSvg: '<svg xmlns="http://www.w3.org/2000/svg"><meta http-equiv="refresh"></svg>' }) } });
+    const { KE } = loadGame(['data', 'util', 'brand', 'art'], {
+      globals: {
+        __BRAND__: Object.assign({}, demo, {
+          logoUrl: null,
+          logoSvg: '<svg xmlns="http://www.w3.org/2000/svg"><meta http-equiv="refresh"></svg>'
+        })
+      }
+    });
     const html = KE.ART.logo();
     expect(html.startsWith('<img class="logo-mark" src="data:image/svg+xml')).toBe(true);
     expect(html).not.toMatch(/<meta|<svg/);
@@ -69,11 +124,19 @@ describe('marka ayarı', () => {
   });
   it('kapanışta kupon şartı: hedefler gün içi sayaçlardan hesaplanır, bonus hedef sayılmaz', () => {
     const { KE } = loadGame(FILES, { globals: { __BRAND__: demo } });
-    const G = KE.newGame({ mode: 'doner', district: 'kadiceşme', master: KE.MASTER_TEMPLATES.doner[0], owner: 'T', shopName: 'X', seed: 5 });
+    const G = KE.newGame({
+      mode: 'doner',
+      district: 'kadiceşme',
+      master: KE.MASTER_TEMPLATES.doner[0],
+      owner: 'T',
+      shopName: 'X',
+      seed: 5
+    });
     playDays(KE, G, 2);
     if (G.pendingEvent) KE.resolveEvent(G, 0);
     KE.startService(G);
-    let g = 0; while (!KE.allDone(G) && g++ < 1500) KE.tickAll(G);
+    let g = 0;
+    while (!KE.allDone(G) && g++ < 1500) KE.tickAll(G);
     KE.finishService(G);
     // kapanış ekranı anı: lastSummary.daily dünden kalma, canlı hedefler bugünün
     const goals = KE.dailyProgress(G, true).filter((x) => !x.bonus);
@@ -107,7 +170,9 @@ describe('marka ayarı', () => {
     expect(bad({ logoUrl: null, logoSvg: '<svg><script>alert(1)</script></svg>' }).join()).toMatch(/logoSvg/);
     expect(bad({ logoUrl: null, logoSvg: '<svg><use href="#a"/></svg>' })).toEqual([]);
     expect(bad({ logoUrl: null, logoSvg: "<svg><image href = '#x'/></svg>" })).toEqual([]);
-    expect(bad({ logoUrl: null, logoSvg: "<svg><meta http-equiv='refresh' content='0;url=x'></svg>" }).join()).toMatch(/logoSvg/);
+    expect(bad({ logoUrl: null, logoSvg: "<svg><meta http-equiv='refresh' content='0;url=x'></svg>" }).join()).toMatch(
+      /logoSvg/
+    );
     expect(bad({ logoUrl: null, logoSvg: '<svg><img/src=x/onerror=alert(1)></svg>' }).join()).toMatch(/logoSvg/);
     expect(bad({ logoUrl: null, logoSvg: '<svg></svg><div>x</div>' }).join()).toMatch(/logoSvg/);
     expect(bad({ rival: 'Lüks Kebap Plus' }).join()).toMatch(/rival/);

@@ -15,7 +15,9 @@ describe('kayıt sistemi', () => {
     const { KE, store } = loadGame();
     const G = newGame(KE);
     const legacy = JSON.parse(JSON.stringify(Object.assign({}, G, { live: null })));
-    delete legacy.regulars; delete legacy.tut; delete legacy.seed;
+    delete legacy.regulars;
+    delete legacy.tut;
+    delete legacy.seed;
     store[KE.SAVE.KEY] = JSON.stringify(legacy);
     const r = KE.SAVE.read();
     expect(r.game.regulars).toBeTruthy();
@@ -54,10 +56,14 @@ describe('kayıt sistemi', () => {
     /* aynı gün: yedek alınmaz; gün değişince bir önceki kayıt yedeğe geçer */
     KE.SAVE.write(G);
     expect(store[KE.SAVE.BACKUP]).toBeUndefined();
-    const day = G.day; playDays(KE, G, 1); KE.SAVE.write(G);
+    const day = G.day;
+    playDays(KE, G, 1);
+    KE.SAVE.write(G);
     expect(JSON.parse(store[KE.SAVE.BACKUP]).day).toBe(day);
     /* yuva başka biri tarafından (başka sekme) daha ileri bir günle yazıldıysa eski gün onu ezmez */
-    const ahead = JSON.parse(store[KE.SAVE.KEY]); ahead.day = G.day + 5; store[KE.SAVE.KEY] = JSON.stringify(ahead);
+    const ahead = JSON.parse(store[KE.SAVE.KEY]);
+    ahead.day = G.day + 5;
+    store[KE.SAVE.KEY] = JSON.stringify(ahead);
     expect(KE.SAVE.write(G)).toBe(false);
     expect(KE.SAVE.lastError).toBe('stale');
   });

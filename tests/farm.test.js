@@ -5,7 +5,8 @@ describe('besi çiftliği (js/farm.js)', () => {
   it('çiftlik almak bedeli kasadan düşer, yatırım olarak yazar ve moda göre ağılları açar', () => {
     const { KE } = loadGame();
     const G = newGame(KE);
-    const cash0 = G.cash, cost = KE.farmCost(G);
+    const cash0 = G.cash,
+      cost = KE.farmCost(G);
     KE.buyFarm(G);
     expect(G.cash).toBe(cash0 - cost);
     expect(G.monthExtras.capex).toBe(cost);
@@ -19,7 +20,8 @@ describe('besi çiftliği (js/farm.js)', () => {
     const { KE } = loadGame();
     const G = newGame(KE);
     KE.buyFarm(G);
-    const pen = G.farm.pens.tavuk, F = KE.FARM.tavuk;
+    const pen = G.farm.pens.tavuk,
+      F = KE.FARM.tavuk;
     let n = 0;
     while (KE.buyAnimals(G, 'tavuk') > 0 && n < 100) n++;
     expect(KE.penHeads(pen)).toBe(F.caps[0]);
@@ -31,8 +33,13 @@ describe('besi çiftliği (js/farm.js)', () => {
     const { KE } = loadGame();
     const G = newGame(KE);
     KE.buyFarm(G);
-    const F = KE.FARM.dana, pen = G.farm.pens.dana;
-    pen.batches = [{ count: 2, age: F.days }, { count: 1, age: F.days - 1 }, { count: 3, age: F.days + 5 }];
+    const F = KE.FARM.dana,
+      pen = G.farm.pens.dana;
+    pen.batches = [
+      { count: 2, age: F.days },
+      { count: 1, age: F.days - 1 },
+      { count: 3, age: F.days + 5 }
+    ];
     const r = KE.slaughter(G, 'dana');
     expect(r.heads).toBe(5);
     expect(r.got).toEqual({ et: 5 * F.yield.doner.et });
@@ -47,7 +54,8 @@ describe('besi çiftliği (js/farm.js)', () => {
     G.farm.auto = false;
     const F = KE.FARM.kuzu;
     G.farm.pens.kuzu.batches = [{ count: 4, age: F.days - 1 }];
-    const cash0 = G.cash, extra0 = G.monthExtras.farm || 0;
+    const cash0 = G.cash,
+      extra0 = G.monthExtras.farm || 0;
     const r = KE.farmDay(G);
     const feed = 4 * F.feed * G.priceIndex;
     expect(r.feed).toBeCloseTo(feed, 6);
@@ -78,7 +86,8 @@ describe('besi çiftliği (js/farm.js)', () => {
     const { KE } = loadGame();
     const G = newGame(KE);
     KE.buyFarm(G);
-    let d = G.day; while (!KE.isMonthEnd(d)) d++;
+    let d = G.day;
+    while (!KE.isMonthEnd(d)) d++;
     const r = KE.closeMonth(G, d);
     expect(r.farmFixed).toBe(Math.round(KE.FARM_MONTHLY * 1));
     expect(r.capex).toBe(KE.farmCost({ priceIndex: 1 }));

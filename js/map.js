@@ -3,13 +3,18 @@
    Adalar, köprüler ve simge yapılar. Zemin bir kez üretilip saklanır; tesis rozetleri,
    dükkânlar, iş etiketleri ve rota her çizimde üstüne eklenir. */
 (function () {
-  const M = KE.MAP = /** @type {KE_MAP} */ ({});
+  const M = (KE.MAP = /** @type {KE_MAP} */ ({}));
   const f1 = (n) => Math.round(n * 10) / 10;
 
   /* Dükkân konumları (1400×860) */
   M.POS = {
-    'kadiceşme': { x: 906, y: 542 }, kulealti: { x: 470, y: 128 }, besiktepe: { x: 600, y: 246 },
-    sultanpazari: { x: 578, y: 630 }, merterli: { x: 140, y: 432 }, kampustepe: { x: 232, y: 604 }, bostansahil: { x: 1262, y: 592 }
+    'kadiceşme': { x: 906, y: 542 },
+    kulealti: { x: 470, y: 128 },
+    besiktepe: { x: 600, y: 246 },
+    sultanpazari: { x: 578, y: 630 },
+    merterli: { x: 140, y: 432 },
+    kampustepe: { x: 232, y: 604 },
+    bostansahil: { x: 1262, y: 592 }
   };
   M.PLACES = [
     { id: 'hal', name: 'Hal ve Kasap', x: 345, y: 296, color: '#e8553d', icon: 'cart', group: 'Çarşı' },
@@ -27,25 +32,88 @@
   ];
   M.place = (id) => M.PLACES.find((p) => p.id === id);
   /** @type {Array<[number, number, string, string]>} */
-  const LABELS = [[470, 196, 'Kulealtı', 'kulealti'], [608, 346, 'Beşiktepe', 'besiktepe'], [515, 602, 'Sultanpazarı', 'sultanpazari'], [244, 500, 'Merterli Sanayi', 'merterli'], [130, 652, 'Kampüstepe', 'kampustepe'], [1146, 622, 'Bostansahil', 'bostansahil'], [880, 602, 'Kadıçeşme', 'kadiceşme']];
+  const LABELS = [
+    [470, 196, 'Kulealtı', 'kulealti'],
+    [608, 346, 'Beşiktepe', 'besiktepe'],
+    [515, 602, 'Sultanpazarı', 'sultanpazari'],
+    [244, 500, 'Merterli Sanayi', 'merterli'],
+    [130, 652, 'Kampüstepe', 'kampustepe'],
+    [1146, 622, 'Bostansahil', 'bostansahil'],
+    [880, 602, 'Kadıçeşme', 'kadiceşme']
+  ];
 
   /* ---------- Coğrafya ---------- */
   const STRAIT = 'M795 -30 C 765 70, 735 160, 748 250 C 762 330, 722 400, 736 470 C 745 520, 712 565, 700 620';
   const HALIC = 'M738 452 C 680 440, 620 452, 560 432 C 520 418, 480 404, 440 404';
-  const COAST = 'M0 702 C 90 696, 170 688, 250 684 C 330 680, 380 672, 430 668 C 500 662, 560 656, 610 648 C 650 642, 680 628, 690 612 L 755 600 C 780 604, 795 616, 808 632 C 822 650, 842 690, 870 692 C 896 694, 900 668, 926 664 C 956 660, 974 690, 1000 706 C 1022 716, 1044 694, 1084 686 C 1180 678, 1290 692, 1400 686';
+  const COAST =
+    'M0 702 C 90 696, 170 688, 250 684 C 330 680, 380 672, 430 668 C 500 662, 560 656, 610 648 C 650 642, 680 628, 690 612 L 755 600 C 780 604, 795 616, 808 632 C 822 650, 842 690, 870 692 C 896 694, 900 668, 926 664 C 956 660, 974 690, 1000 706 C 1022 716, 1044 694, 1084 686 C 1180 678, 1290 692, 1400 686';
   const SEA = COAST + ' L1400 860 L0 860Z';
-  const ROADS = ['M0 365 C 200 345, 380 340, 560 345 S 680 368, 704 372', 'M822 380 C 950 380, 1150 382, 1400 372', 'M0 210 C 250 192, 470 176, 712 176', 'M828 162 C 1000 152, 1200 140, 1400 150', 'M0 645 C 200 628, 380 610, 520 598 S 640 570, 690 530', 'M300 0 C 288 200, 322 420, 302 655', 'M1010 0 C 990 200, 1030 450, 1008 662', 'M790 520 C 900 600, 1050 630, 1400 650'];
+  const ROADS = [
+    'M0 365 C 200 345, 380 340, 560 345 S 680 368, 704 372',
+    'M822 380 C 950 380, 1150 382, 1400 372',
+    'M0 210 C 250 192, 470 176, 712 176',
+    'M828 162 C 1000 152, 1200 140, 1400 150',
+    'M0 645 C 200 628, 380 610, 520 598 S 640 570, 690 530',
+    'M300 0 C 288 200, 322 420, 302 655',
+    'M1010 0 C 990 200, 1030 450, 1008 662',
+    'M790 520 C 900 600, 1050 630, 1400 650'
+  ];
 
   function sample(d, step) {
     step = step || 4;
-    const t = d.match(/[MCSL]|-?\d+\.?\d*/g); let i = 0, cx = 0, cy = 0, px = 0, py = 0, cmd; const out = []; const num = () => +t[i++];
-    const cub = (x0, y0, x1, y1, x2, y2, x3, y3) => { const n = Math.max(4, Math.ceil(Math.hypot(x3 - x0, y3 - y0) / step)); for (let k = 1; k <= n; k++) { const s = k / n, a = (1 - s) ** 3, b = 3 * (1 - s) ** 2 * s, c = 3 * (1 - s) * s * s, e = s ** 3; out.push([a * x0 + b * x1 + c * x2 + e * x3, a * y0 + b * y1 + c * y2 + e * y3]); } };
+    const t = d.match(/[MCSL]|-?\d+\.?\d*/g);
+    let i = 0,
+      cx = 0,
+      cy = 0,
+      px = 0,
+      py = 0,
+      cmd;
+    const out = [];
+    const num = () => +t[i++];
+    const cub = (x0, y0, x1, y1, x2, y2, x3, y3) => {
+      const n = Math.max(4, Math.ceil(Math.hypot(x3 - x0, y3 - y0) / step));
+      for (let k = 1; k <= n; k++) {
+        const s = k / n,
+          a = (1 - s) ** 3,
+          b = 3 * (1 - s) ** 2 * s,
+          c = 3 * (1 - s) * s * s,
+          e = s ** 3;
+        out.push([a * x0 + b * x1 + c * x2 + e * x3, a * y0 + b * y1 + c * y2 + e * y3]);
+      }
+    };
     while (i < t.length) {
       if (/[MCSL]/.test(t[i])) cmd = t[i++];
-      if (cmd === 'M') { cx = num(); cy = num(); out.push([cx, cy]); px = cx; py = cy; }
-      else if (cmd === 'L') { const x = num(), y = num(); cub(cx, cy, cx, cy, x, y, x, y); cx = x; cy = y; px = cx; py = cy; }
-      else if (cmd === 'C') { const a = [num(), num(), num(), num(), num(), num()]; cub(cx, cy, ...a); px = a[2]; py = a[3]; cx = a[4]; cy = a[5]; }
-      else if (cmd === 'S') { const x1 = 2 * cx - px, y1 = 2 * cy - py, a = [num(), num(), num(), num()]; cub(cx, cy, x1, y1, ...a); px = a[0]; py = a[1]; cx = a[2]; cy = a[3]; }
+      if (cmd === 'M') {
+        cx = num();
+        cy = num();
+        out.push([cx, cy]);
+        px = cx;
+        py = cy;
+      } else if (cmd === 'L') {
+        const x = num(),
+          y = num();
+        cub(cx, cy, cx, cy, x, y, x, y);
+        cx = x;
+        cy = y;
+        px = cx;
+        py = cy;
+      } else if (cmd === 'C') {
+        const a = [num(), num(), num(), num(), num(), num()];
+        cub(cx, cy, ...a);
+        px = a[2];
+        py = a[3];
+        cx = a[4];
+        cy = a[5];
+      } else if (cmd === 'S') {
+        const x1 = 2 * cx - px,
+          y1 = 2 * cy - py,
+          a = [num(), num(), num(), num()];
+        cub(cx, cy, x1, y1, ...a);
+        px = a[0];
+        py = a[1];
+        cx = a[2];
+        cy = a[3];
+      }
     }
     return out;
   }
@@ -53,13 +121,40 @@
   /* ---------- Zemin (bir kez üretilir) ---------- */
   let BASE = null;
   function buildBase() {
-    let seed = 7; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    const sS = sample(STRAIT, 3), sH = sample(HALIC, 3), sC = sample(COAST, 3), sR = ROADS.map((r) => sample(r, 6)).flat();
+    let seed = 7;
+    const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const sS = sample(STRAIT, 3),
+      sH = sample(HALIC, 3),
+      sC = sample(COAST, 3),
+      sR = ROADS.map((r) => sample(r, 6)).flat();
     const near = (pts, x, y, r) => pts.some((p) => Math.hypot(p[0] - x, p[1] - y) < r);
-    const coastY = (x) => { let b = sC[0]; for (const p of sC) if (Math.abs(p[0] - x) < Math.abs(b[0] - x)) b = p; return b[1]; };
+    const coastY = (x) => {
+      let b = sC[0];
+      for (const p of sC) if (Math.abs(p[0] - x) < Math.abs(b[0] - x)) b = p;
+      return b[1];
+    };
     const isWater = (x, y, mg) => y > coastY(x) - mg || near(sS, x, y, 37 + mg) || near(sH, x, y, 17 + mg);
-    const EX = [[495, 25, 650, 172], [555, 265, 662, 330], [648, 322, 714, 358], [522, 320, 568, 414], [440, 440, 708, 562], [762, 552, 826, 598], [812, 262, 918, 408], [1048, 276, 1148, 378], [192, 372, 298, 460], [86, 540, 182, 630], [1078, 505, 1212, 598], [924, 610, 996, 656], [0, 0, 470, 118], [1070, 0, 1400, 262], [1040, 0, 1070, 90]];
-    M.PLACES.forEach((p) => { const hw = Math.max(p.name.length * 7.4 + 26, 52) / 2 + 8; EX.push([p.x - hw, p.y - 40, p.x + hw, p.y + 64]); });
+    const EX = [
+      [495, 25, 650, 172],
+      [555, 265, 662, 330],
+      [648, 322, 714, 358],
+      [522, 320, 568, 414],
+      [440, 440, 708, 562],
+      [762, 552, 826, 598],
+      [812, 262, 918, 408],
+      [1048, 276, 1148, 378],
+      [192, 372, 298, 460],
+      [86, 540, 182, 630],
+      [1078, 505, 1212, 598],
+      [924, 610, 996, 656],
+      [0, 0, 470, 118],
+      [1070, 0, 1400, 262],
+      [1040, 0, 1070, 90]
+    ];
+    M.PLACES.forEach((p) => {
+      const hw = Math.max(p.name.length * 7.4 + 26, 52) / 2 + 8;
+      EX.push([p.x - hw, p.y - 40, p.x + hw, p.y + 64]);
+    });
     Object.values(M.POS).forEach((p) => EX.push([p.x - 50, p.y - 50, p.x + 70, p.y + 40]));
     LABELS.forEach((l) => EX.push([l[0] - 62, l[1] - 18, l[0] + 62, l[1] + 8]));
     const inEX = (x, y) => EX.some((e) => x > e[0] && x < e[2] && y > e[1] && y < e[3]);
@@ -67,51 +162,135 @@
     function blocks(id, rot) {
       let r = `<pattern id="${id}" width="150" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(${rot})"><rect width="150" height="120" fill="#ece2cb"/>`;
       let y = 3;
-      while (y < 117) { const h = Math.min(117 - y, 14 + R() * 14); let x = 3; while (x < 147) { const w = Math.min(147 - x, 14 + R() * 26); const c = R(); if (w > 6 && h > 6) r += `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w - 4)}" height="${f1(h - 4)}" rx="2" fill="${c < 0.66 ? '#fbf5e8' : c < 0.84 ? '#f4dccb' : '#e6ecef'}"/>`; x += w; } y += h; }
+      while (y < 117) {
+        const h = Math.min(117 - y, 14 + R() * 14);
+        let x = 3;
+        while (x < 147) {
+          const w = Math.min(147 - x, 14 + R() * 26);
+          const c = R();
+          if (w > 6 && h > 6)
+            r += `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w - 4)}" height="${f1(h - 4)}" rx="2" fill="${c < 0.66 ? '#fbf5e8' : c < 0.84 ? '#f4dccb' : '#e6ecef'}"/>`;
+          x += w;
+        }
+        y += h;
+      }
       return r + '</pattern>';
     }
-    const AP = [['#fbe3c9', '#e8c49e'], ['#d9ecf6', '#b5d3e6'], ['#f8d4d4', '#e3b0b0'], ['#fff5d6', '#e9d9a8'], ['#e3f0d8', '#c3d9b2']];
+    const AP = [
+      ['#fbe3c9', '#e8c49e'],
+      ['#d9ecf6', '#b5d3e6'],
+      ['#f8d4d4', '#e3b0b0'],
+      ['#fff5d6', '#e9d9a8'],
+      ['#e3f0d8', '#c3d9b2']
+    ];
     function aptSym(i, fl) {
-      const [fc, sc] = AP[i % AP.length]; const h = fl * 5 + 4, w = 16;
+      const [fc, sc] = AP[i % AP.length];
+      const h = fl * 5 + 4,
+        w = 16;
       let s = `<symbol id="kmap${i}_${fl}" viewBox="0 0 24 ${h + 8}"><path d="M3 ${h + 6} h${w} l4 -3 v-${h} l-4 3z" fill="${sc}"/><rect x="3" y="5" width="${w}" height="${h + 1}" fill="${fc}"/><path d="M3 5 l4 -3 h${w} l-4 3z" fill="#fff" opacity=".8"/>`;
-      for (let r = 0; r < fl; r++) for (let c = 0; c < 3; c++) s += `<rect class="win" x="${5 + c * 5}" y="${8 + r * 5}" width="3" height="2.6"/>`;
+      for (let r = 0; r < fl; r++)
+        for (let c = 0; c < 3; c++) s += `<rect class="win" x="${5 + c * 5}" y="${8 + r * 5}" width="3" height="2.6"/>`;
       return s + '<rect x="9" y="1" width="4" height="3" fill="#9aa5ab"/></symbol>';
     }
-    let syms = ''; const aptIds = [];
-    for (let i = 0; i < 5; i++) for (const fl of [3, 5, 7]) { syms += aptSym(i, fl); aptIds.push([`kmap${i}_${fl}`, fl * 5 + 12]); }
-    const pts = []; let tries = 0;
+    let syms = '';
+    const aptIds = [];
+    for (let i = 0; i < 5; i++)
+      for (const fl of [3, 5, 7]) {
+        syms += aptSym(i, fl);
+        aptIds.push([`kmap${i}_${fl}`, fl * 5 + 12]);
+      }
+    const pts = [];
+    let tries = 0;
     while (pts.length < 110 && tries < 20000) {
-      tries++; const x = 20 + R() * 1360, y = 40 + R() * 660;
+      tries++;
+      const x = 20 + R() * 1360,
+        y = 40 + R() * 660;
       if (isWater(x, y, 10) || inEX(x, y) || near(sR, x, y, 11)) continue;
       if (y < 150 && R() < 0.5) continue;
       if (pts.some((p) => Math.hypot(p[0] - x, p[1] - y) < 30)) continue;
       pts.push([x, y]);
     }
     pts.sort((a, b) => a[1] - b[1]);
-    const apts = pts.map(([x, y]) => { const [id, h] = aptIds[Math.floor(R() * aptIds.length)]; return `<use href="#${id}" x="${f1(x - 12)}" y="${f1(y - h)}" width="24" height="${h + 8}"/>`; }).join('');
-    const yc = ['#f4b6a6', '#f6e0a8', '#bfe0f0', '#fff', '#d98a62', '#e9c7e8']; let yal = '';
+    const apts = pts
+      .map(([x, y]) => {
+        const [id, h] = aptIds[Math.floor(R() * aptIds.length)];
+        return `<use href="#${id}" x="${f1(x - 12)}" y="${f1(y - h)}" width="24" height="${h + 8}"/>`;
+      })
+      .join('');
+    const yc = ['#f4b6a6', '#f6e0a8', '#bfe0f0', '#fff', '#d98a62', '#e9c7e8'];
+    let yal = '';
     for (let k = 6; k < sS.length - 6; k += 5) {
-      const [x, y] = sS[k], [x2, y2] = sS[k + 1]; if (y < 10 || y > 335 || (y > 140 && y < 200)) continue;
-      const dx = x2 - x, dy = y2 - y, L = Math.hypot(dx, dy), nx = -dy / L, ny = dx / L;
-      for (const sd of [-1, 1]) { const px = x + nx * 44 * sd, py = y + ny * 44 * sd; if (inEX(px, py) || R() < 0.25) continue; const c = yc[Math.floor(R() * yc.length)]; yal += `<g transform="translate(${f1(px)} ${f1(py)})"><rect x="-6" y="-9" width="12" height="9" fill="${c}"/><path d="M-7.5 -9 l7.5 -5 l7.5 5z" fill="#b5523b"/><rect class="win" x="-3.5" y="-6" width="2.5" height="2.5"/><rect class="win" x="1" y="-6" width="2.5" height="2.5"/></g>`; }
+      const [x, y] = sS[k],
+        [x2, y2] = sS[k + 1];
+      if (y < 10 || y > 335 || (y > 140 && y < 200)) continue;
+      const dx = x2 - x,
+        dy = y2 - y,
+        L = Math.hypot(dx, dy),
+        nx = -dy / L,
+        ny = dx / L;
+      for (const sd of [-1, 1]) {
+        const px = x + nx * 44 * sd,
+          py = y + ny * 44 * sd;
+        if (inEX(px, py) || R() < 0.25) continue;
+        const c = yc[Math.floor(R() * yc.length)];
+        yal += `<g transform="translate(${f1(px)} ${f1(py)})"><rect x="-6" y="-9" width="12" height="9" fill="${c}"/><path d="M-7.5 -9 l7.5 -5 l7.5 5z" fill="#b5523b"/><rect class="win" x="-3.5" y="-6" width="2.5" height="2.5"/><rect class="win" x="1" y="-6" width="2.5" height="2.5"/></g>`;
+      }
     }
-    const fc = ['#bfe08a', '#d9e68e', '#a8d070', '#e8d98a', '#c9e3a0', '#b4d67c']; let fields = '';
-    for (let gx = 1080; gx < 1400; gx += 58) for (let gy = -10; gy < 250; gy += 46) { if (Math.abs(gy + 20 - 146) < 14) continue; fields += `<rect x="${f1(gx + R() * 4)}" y="${f1(gy + R() * 4)}" width="${f1(50 + R() * 6)}" height="${f1(38 + R() * 5)}" rx="3" fill="${fc[Math.floor(R() * fc.length)]}" transform="rotate(-4 ${gx} ${gy})"/>`; }
-    const isl = [['Kınalıada', 1000, 752, 'M-20 -6 C-14 -14 4 -16 16 -10 C24 -4 20 8 8 11 C-6 14 -24 6 -20 -6Z'], ['Burgazada', 1078, 774, 'M-18 -10 C-6 -20 14 -18 20 -6 C26 6 14 18 0 18 C-14 18 -26 4 -18 -10Z'], ['Heybeliada', 1168, 790, 'M-34 -8 C-28 -20 -10 -18 -2 -12 C6 -22 26 -20 34 -8 C40 4 30 18 14 16 C4 22 -10 22 -20 16 C-34 14 -40 2 -34 -8Z'], ['Büyükada', 1290, 808, 'M-30 -26 C-18 -40 10 -38 22 -26 C34 -14 30 0 36 12 C40 26 26 40 6 38 C-12 36 -22 26 -28 12 C-34 0 -40 -14 -30 -26Z'], ['Sedef', 1378, 770, 'M-12 -4 C-6 -9 8 -8 12 -2 C14 4 4 8 -4 7 C-12 6 -16 1 -12 -4Z']];
+    const fc = ['#bfe08a', '#d9e68e', '#a8d070', '#e8d98a', '#c9e3a0', '#b4d67c'];
+    let fields = '';
+    for (let gx = 1080; gx < 1400; gx += 58)
+      for (let gy = -10; gy < 250; gy += 46) {
+        if (Math.abs(gy + 20 - 146) < 14) continue;
+        fields += `<rect x="${f1(gx + R() * 4)}" y="${f1(gy + R() * 4)}" width="${f1(50 + R() * 6)}" height="${f1(38 + R() * 5)}" rx="3" fill="${fc[Math.floor(R() * fc.length)]}" transform="rotate(-4 ${gx} ${gy})"/>`;
+      }
+    const isl = [
+      ['Kınalıada', 1000, 752, 'M-20 -6 C-14 -14 4 -16 16 -10 C24 -4 20 8 8 11 C-6 14 -24 6 -20 -6Z'],
+      ['Burgazada', 1078, 774, 'M-18 -10 C-6 -20 14 -18 20 -6 C26 6 14 18 0 18 C-14 18 -26 4 -18 -10Z'],
+      [
+        'Heybeliada',
+        1168,
+        790,
+        'M-34 -8 C-28 -20 -10 -18 -2 -12 C6 -22 26 -20 34 -8 C40 4 30 18 14 16 C4 22 -10 22 -20 16 C-34 14 -40 2 -34 -8Z'
+      ],
+      [
+        'Büyükada',
+        1290,
+        808,
+        'M-30 -26 C-18 -40 10 -38 22 -26 C34 -14 30 0 36 12 C40 26 26 40 6 38 C-12 36 -22 26 -28 12 C-34 0 -40 -14 -30 -26Z'
+      ],
+      ['Sedef', 1378, 770, 'M-12 -4 C-6 -9 8 -8 12 -2 C14 4 4 8 -4 7 C-12 6 -16 1 -12 -4Z']
+    ];
     let islands = '';
     for (const [n, x, y, d] of isl) {
       const big = n === 'Büyükada' || n === 'Heybeliada';
       islands += `<g transform="translate(${x} ${y})"><path d="${d}" fill="#dff3fb" stroke="#dff3fb" stroke-width="12" stroke-linejoin="round" opacity=".8"/><path d="${d}" fill="#e9e0c4" stroke="#e9e0c4" stroke-width="4"/><path d="${d}" fill="#9fd07a" transform="scale(.9)"/>`;
-      const np = big ? 8 : 3; for (let i = 0; i < np; i++) { const px = (R() - 0.4) * (big ? 44 : 20), py = (R() - 0.2) * (big ? 40 : 14); islands += `<g transform="translate(${f1(px)} ${f1(py)})"><rect x="-.8" y="-2" width="1.6" height="5" fill="#6b4a2b"/><ellipse cx="0" cy="-3" rx="5" ry="3" fill="#3f8f3a"/></g>`; }
-      const nh = big ? 6 : n === 'Sedef' ? 1 : 3; for (let i = 0; i < nh; i++) { const hx = (i - (nh - 1) / 2) * 7 + (R() - 0.5) * 3, hy = (big ? -22 : -6) + Math.abs(i - (nh - 1) / 2) * 2.4; islands += `<g transform="translate(${f1(hx)} ${f1(hy)})"><rect x="-3" y="-4" width="6" height="5" fill="${['#fff', '#f6e0a8', '#f4b6a6', '#d9ecf6'][i % 4]}"/><path d="M-4 -4 l4 -3 l4 3z" fill="#c4553b"/></g>`; }
-      if (n === 'Büyükada') islands += '<g transform="translate(14 22)"><rect x="-3" y="-6" width="6" height="6" fill="#fff"/><path d="M-4 -6 l4 -4 l4 4z" fill="#c4553b"/></g>';
-      if (n === 'Heybeliada') islands += '<rect x="-30" y="2" width="16" height="7" fill="#f3efe6" stroke="#b9b2a2" stroke-width=".6"/>';
+      const np = big ? 8 : 3;
+      for (let i = 0; i < np; i++) {
+        const px = (R() - 0.4) * (big ? 44 : 20),
+          py = (R() - 0.2) * (big ? 40 : 14);
+        islands += `<g transform="translate(${f1(px)} ${f1(py)})"><rect x="-.8" y="-2" width="1.6" height="5" fill="#6b4a2b"/><ellipse cx="0" cy="-3" rx="5" ry="3" fill="#3f8f3a"/></g>`;
+      }
+      const nh = big ? 6 : n === 'Sedef' ? 1 : 3;
+      for (let i = 0; i < nh; i++) {
+        const hx = (i - (nh - 1) / 2) * 7 + (R() - 0.5) * 3,
+          hy = (big ? -22 : -6) + Math.abs(i - (nh - 1) / 2) * 2.4;
+        islands += `<g transform="translate(${f1(hx)} ${f1(hy)})"><rect x="-3" y="-4" width="6" height="5" fill="${['#fff', '#f6e0a8', '#f4b6a6', '#d9ecf6'][i % 4]}"/><path d="M-4 -4 l4 -3 l4 3z" fill="#c4553b"/></g>`;
+      }
+      if (n === 'Büyükada')
+        islands +=
+          '<g transform="translate(14 22)"><rect x="-3" y="-6" width="6" height="6" fill="#fff"/><path d="M-4 -6 l4 -4 l4 4z" fill="#c4553b"/></g>';
+      if (n === 'Heybeliada')
+        islands += '<rect x="-30" y="2" width="16" height="7" fill="#f3efe6" stroke="#b9b2a2" stroke-width=".6"/>';
       islands += '</g>';
     }
-    const tower = (x, y, w, h, c1, c2, spire) => `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c1}"/><path d="M${x + w} ${y} l6 -4 v${h} l-6 4z" fill="${c2}"/><path d="M${x} ${y} l6 -4 h${w} l-6 4z" fill="#eef8ff"/>${[...Array(Math.floor(h / 7))].map((_, i) => `<path class="twl" d="M${x + 2} ${y + 5 + i * 7} h${w - 4}" stroke="#fff" stroke-width="1" opacity=".55"/>`).join('')}<rect x="${x + 2}" y="${y + 2}" width="3" height="${h - 4}" fill="#fff" opacity=".35"/>${spire ? `<path d="M${x + w / 2 + 3} ${y - 4} v-18" stroke="#9fb3c2" stroke-width="2"/><circle cx="${x + w / 2 + 3}" cy="${y - 22}" r="1.6" fill="#e63946" class="blink"/>` : ''}</g>`;
-    const ferry = (c, dur, path) => `<g><g transform="translate(-18 -8)"><path d="M0 10 h36 l-5 7 h-26z" fill="#fff"/><rect x="6" y="2" width="24" height="8" rx="2" fill="#f4f1ea" stroke="#c9c2b4" stroke-width=".6"/><rect x="6" y="5" width="24" height="2" fill="${c}"/><rect x="16" y="-4" width="4" height="6" fill="#2c3e50"/></g><animateMotion dur="${dur}s" repeatCount="indefinite" rotate="auto" path="${path}"/></g>`;
-    const car = (c, dur, path, del) => `<g><rect x="-5" y="-2.6" width="10" height="5.2" rx="1.6" fill="${c}"/><animateMotion dur="${dur}s" begin="${del || 0}s" repeatCount="indefinite" rotate="auto" path="${path}"/></g>`;
-    const gull = (d, dur, del) => `<g><path class="gl" d="M-6 0 q3 -4 6 0 q3 -4 6 0" stroke="#fff" stroke-width="1.8" fill="none" style="animation-delay:${del}s"/><animateMotion dur="${dur}s" repeatCount="indefinite" path="${d}"/></g>`;
+    const tower = (x, y, w, h, c1, c2, spire) =>
+      `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c1}"/><path d="M${x + w} ${y} l6 -4 v${h} l-6 4z" fill="${c2}"/><path d="M${x} ${y} l6 -4 h${w} l-6 4z" fill="#eef8ff"/>${[...Array(Math.floor(h / 7))].map((_, i) => `<path class="twl" d="M${x + 2} ${y + 5 + i * 7} h${w - 4}" stroke="#fff" stroke-width="1" opacity=".55"/>`).join('')}<rect x="${x + 2}" y="${y + 2}" width="3" height="${h - 4}" fill="#fff" opacity=".35"/>${spire ? `<path d="M${x + w / 2 + 3} ${y - 4} v-18" stroke="#9fb3c2" stroke-width="2"/><circle cx="${x + w / 2 + 3}" cy="${y - 22}" r="1.6" fill="#e63946" class="blink"/>` : ''}</g>`;
+    const ferry = (c, dur, path) =>
+      `<g><g transform="translate(-18 -8)"><path d="M0 10 h36 l-5 7 h-26z" fill="#fff"/><rect x="6" y="2" width="24" height="8" rx="2" fill="#f4f1ea" stroke="#c9c2b4" stroke-width=".6"/><rect x="6" y="5" width="24" height="2" fill="${c}"/><rect x="16" y="-4" width="4" height="6" fill="#2c3e50"/></g><animateMotion dur="${dur}s" repeatCount="indefinite" rotate="auto" path="${path}"/></g>`;
+    const car = (c, dur, path, del) =>
+      `<g><rect x="-5" y="-2.6" width="10" height="5.2" rx="1.6" fill="${c}"/><animateMotion dur="${dur}s" begin="${del || 0}s" repeatCount="indefinite" rotate="auto" path="${path}"/></g>`;
+    const gull = (d, dur, del) =>
+      `<g><path class="gl" d="M-6 0 q3 -4 6 0 q3 -4 6 0" stroke="#fff" stroke-width="1.8" fill="none" style="animation-delay:${del}s"/><animateMotion dur="${dur}s" repeatCount="indefinite" path="${d}"/></g>`;
 
     return `<defs>
 ${blocks('kmCityE', -6)}${blocks('kmCityA', 10)}
@@ -188,18 +367,40 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
 
   /* ---------- Rota: dükkândan yere (gerekirse köprüden) ---------- */
   M.routePath = function (from, to) {
-    const side = (p) => p.x > 745 ? 'A' : 'E';
-    if (side(from) === side(to)) { const mx = (from.x + to.x) / 2, my = (from.y + to.y) / 2 - 40; return `M${from.x} ${from.y} Q ${mx} ${my} ${to.x} ${to.y}`; }
-    const br = Math.abs((from.y + to.y) / 2 - 170) < Math.abs((from.y + to.y) / 2 - 376) ? [[836, 161], [700, 176]] : [[826, 380], [700, 372]];
+    const side = (p) => (p.x > 745 ? 'A' : 'E');
+    if (side(from) === side(to)) {
+      const mx = (from.x + to.x) / 2,
+        my = (from.y + to.y) / 2 - 40;
+      return `M${from.x} ${from.y} Q ${mx} ${my} ${to.x} ${to.y}`;
+    }
+    const br =
+      Math.abs((from.y + to.y) / 2 - 170) < Math.abs((from.y + to.y) / 2 - 376)
+        ? [
+            [836, 161],
+            [700, 176]
+          ]
+        : [
+            [826, 380],
+            [700, 372]
+          ];
     const [a, b] = side(from) === 'A' ? br : [br[1], br[0]];
     return `M${from.x} ${from.y} C ${from.x} ${(from.y + a[1]) / 2}, ${a[0] + 20} ${a[1]}, ${a[0]} ${a[1]} L ${b[0]} ${b[1]} C ${b[0] - 20 * (side(from) === 'A' ? 1 : -1)} ${b[1]}, ${to.x} ${(b[1] + to.y) / 2}, ${to.x} ${to.y}`;
   };
 
-  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const iconAt = (name, x, y, size, color) => KE.ART.icon(name).replace('<svg ', `<svg x="${x - size / 2}" y="${y - size / 2}" width="${size}" height="${size}" style="color:${color || '#fff'}" `);
+  const esc = (s) =>
+    String(s == null ? '' : s).replace(
+      /[&<>"']/g,
+      (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]
+    );
+  const iconAt = (name, x, y, size, color) =>
+    KE.ART.icon(name).replace(
+      '<svg ',
+      `<svg x="${x - size / 2}" y="${y - size / 2}" width="${size}" height="${size}" style="color:${color || '#fff'}" `
+    );
 
   function shopMark(P, b, act, status, champ) {
-    const dx = P.x - 906, dy = P.y - 542;
+    const dx = P.x - 906,
+      dy = P.y - 542;
     const NW = Math.max(b.name.length * 8.6, status.length * 6.2) + 34;
     const px = P.x - 24;
     return `<g class="place shopmark ${act ? 'act' : ''}" data-a="viewBranch" data-id="${b.id}" tabindex="0" role="button" aria-label="${esc(b.name)}">
@@ -215,17 +416,31 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
      üzerine gelince kalkan çizim dokunma alanını oynatmaz (titreme olmaz). */
   let hitHalf = 30;
   function hitPoly(i) {
-    const c = M.PLACES[i], h = hitHalf;
-    let poly = [[c.x - h, c.y - h], [c.x + h, c.y - h], [c.x + h, c.y + h], [c.x - h, c.y + h]];
+    const c = M.PLACES[i],
+      h = hitHalf;
+    let poly = [
+      [c.x - h, c.y - h],
+      [c.x + h, c.y - h],
+      [c.x + h, c.y + h],
+      [c.x - h, c.y + h]
+    ];
     M.PLACES.forEach((q, j) => {
       if (j === i || Math.abs(q.x - c.x) > 2 * h || Math.abs(q.y - c.y) > 2 * h) return;
-      const nx = q.x - c.x, ny = q.y - c.y, mx = (q.x + c.x) / 2, my = (q.y + c.y) / 2;
+      const nx = q.x - c.x,
+        ny = q.y - c.y,
+        mx = (q.x + c.x) / 2,
+        my = (q.y + c.y) / 2;
       const side = (pt) => (pt[0] - mx) * nx + (pt[1] - my) * ny; /* <= 0: c tarafı */
       const out = [];
       poly.forEach((a, k) => {
-        const b = poly[(k + 1) % poly.length], sa = side(a), sb = side(b);
+        const b = poly[(k + 1) % poly.length],
+          sa = side(a),
+          sb = side(b);
         if (sa <= 0) out.push(a);
-        if ((sa < 0 && sb > 0) || (sa > 0 && sb < 0)) { const t = sa / (sa - sb); out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]); }
+        if ((sa < 0 && sb > 0) || (sa > 0 && sb < 0)) {
+          const t = sa / (sa - sb);
+          out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
+        }
       });
       poly = out;
     });
@@ -233,39 +448,61 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
   }
 
   /* opts: pick (semt seçimi), fill, tasks [{id, n, label, color}], route (yer id), focus (yer id) */
-  const DLBLS = () => `<g class="dlbls" font-family="Nunito, sans-serif" font-size="14.5" font-weight="800" text-anchor="middle" paint-order="stroke" stroke="#fffaf0" stroke-width="4" stroke-linejoin="round">${LABELS.map((l) => `<text x="${l[0]}" y="${l[1]}" class="dlbl" fill="#5b4a2e">${l[2]}</text>`).join('')}</g>`;
-  const svgOpen = (opts, cls) => `<svg preserveAspectRatio="${opts.par || (opts.fill ? 'xMidYMid slice' : 'xMidYMid meet')}" class="citymap ${cls || ''}" viewBox="0 0 1400 860" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Şehir haritası">`;
+  const DLBLS = () =>
+    `<g class="dlbls" font-family="Nunito, sans-serif" font-size="14.5" font-weight="800" text-anchor="middle" paint-order="stroke" stroke="#fffaf0" stroke-width="4" stroke-linejoin="round">${LABELS.map((l) => `<text x="${l[0]}" y="${l[1]}" class="dlbl" fill="#5b4a2e">${l[2]}</text>`).join('')}</g>`;
+  const svgOpen = (opts, cls) =>
+    `<svg preserveAspectRatio="${opts.par || (opts.fill ? 'xMidYMid slice' : 'xMidYMid meet')}" class="citymap ${cls || ''}" viewBox="0 0 1400 860" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Şehir haritası">`;
   /* Tek parça çizim (semt seçimi gibi bir kez çizilen yerler için) */
   M.render = function (opts) {
     opts = opts || {};
     if (!BASE) BASE = buildBase();
     const night = KE.G && KE.G.phase === 'closing' && !opts.pick;
-    return svgOpen(opts, (night ? 'night ' : '') + (opts.pick ? 'picking' : '')) + BASE + (opts.pick ? '' : DLBLS()) + M.overlay(opts) + '</svg>';
+    return (
+      svgOpen(opts, (night ? 'night ' : '') + (opts.pick ? 'picking' : '')) +
+      BASE +
+      (opts.pick ? '' : DLBLS()) +
+      M.overlay(opts) +
+      '</svg>'
+    );
   };
   /* Katmanlı çizim: zemin bir kez ayrıştırılır ve saklanır, yalnızca üst katman güncellenir */
   let baseEl = null;
   M.mount = function (frame, opts) {
     if (!BASE) BASE = buildBase();
-    if (!baseEl) { const t = document.createElement('div'); t.innerHTML = svgOpen(opts, 'base') + BASE + DLBLS() + '</svg>'; baseEl = t.firstChild; }
+    if (!baseEl) {
+      const t = document.createElement('div');
+      t.innerHTML = svgOpen(opts, 'base') + BASE + DLBLS() + '</svg>';
+      baseEl = t.firstChild;
+    }
     frame.classList.add('layered');
     frame.innerHTML = '';
-    const inner = document.createElement('div'); inner.className = 'mapinner';
+    const inner = document.createElement('div');
+    inner.className = 'mapinner';
     inner.appendChild(baseEl);
-    const ov = document.createElement('div'); ov.innerHTML = svgOpen(opts, 'overlay') + '</svg>';
+    const ov = document.createElement('div');
+    ov.innerHTML = svgOpen(opts, 'overlay') + '</svg>';
     inner.appendChild(ov.firstChild);
     frame.appendChild(inner);
     M.update(frame, opts);
   };
   M.update = function (frame, opts) {
-    const base = frame.querySelector('svg.base'), ov = frame.querySelector('svg.overlay');
+    const base = frame.querySelector('svg.base'),
+      ov = frame.querySelector('svg.overlay');
     if (!base || !ov) return M.mount(frame, opts);
     const par = opts.par || (opts.fill ? 'xMidYMid slice' : 'xMidYMid meet');
-    [base, ov].forEach((el) => { if (el.getAttribute('preserveAspectRatio') !== par) el.setAttribute('preserveAspectRatio', par); });
+    [base, ov].forEach((el) => {
+      if (el.getAttribute('preserveAspectRatio') !== par) el.setAttribute('preserveAspectRatio', par);
+    });
     const night = KE.G && KE.G.phase === 'closing';
-    base.classList.toggle('night', !!night); ov.classList.toggle('night', !!night);
+    base.classList.toggle('night', !!night);
+    ov.classList.toggle('night', !!night);
     /* üst katman değişmediyse yeniden yazılmaz (rAF / yeniden boyutlama yenilemeleri çoğu zaman aynı çizimi üretir) */
-    const html = M.overlay(opts), O = /** @type {any} */ (ov);
-    if (O._h !== html || ov.childNodes.length === 0) { ov.innerHTML = html; O._h = html; }
+    const html = M.overlay(opts),
+      O = /** @type {any} */ (ov);
+    if (O._h !== html || ov.childNodes.length === 0) {
+      ov.innerHTML = html;
+      O._h = html;
+    }
     /* dokunma alanı ekranda en az 48 px olsun: bir pimin ekrandaki boyundan ölçek bulunur (yakınlaştırmasız, --mz = 1),
        viewBox birimine çevrilir; değiştiyse katman bir kez yeniden çizilir */
     const pin = ov.querySelector('g.place.fac .lift rect');
@@ -273,7 +510,12 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
     if (w) {
       const k = w / 52 / (parseFloat(frame.style.getPropertyValue('--mz')) || 1);
       const h = Math.round(Math.max(30, Math.min(90, 24 / Math.max(0.05, k))));
-      if (Math.abs(h - hitHalf) > 2) { hitHalf = h; const h2 = M.overlay(opts); ov.innerHTML = h2; O._h = h2; }
+      if (Math.abs(h - hitHalf) > 2) {
+        hitHalf = h;
+        const h2 = M.overlay(opts);
+        ov.innerHTML = h2;
+        O._h = h2;
+      }
     }
   };
   /* Üst katman: tesisler, dükkânlar, iş etiketleri, rota, bulutlar (ve seçim modunda semtler) */
@@ -282,11 +524,13 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
     const pick = !!opts.pick;
     const phase = G ? G.phase : 'morning';
     let s = '';
-    if (phase === 'closing' && !pick) s += '<rect width="1400" height="860" fill="url(#kmNight)" pointer-events="none"/>';
+    if (phase === 'closing' && !pick)
+      s += '<rect width="1400" height="860" fill="url(#kmNight)" pointer-events="none"/>';
 
     if (pick) {
       KE.DISTRICTS.forEach((d) => {
-        const P = M.POS[d.id], sel = KE.UI.ng.district === d.id;
+        const P = M.POS[d.id],
+          sel = KE.UI.ng.district === d.id;
         const W = d.name.length * 9.4 + 40;
         s += `<g class="place dpick ${sel ? 'sel' : ''}" data-a="pickDistrict" data-d="${d.id}" tabindex="0" role="button" aria-label="${esc(d.name)}">
           <circle cx="${P.x}" cy="${P.y}" r="${sel ? 40 : 30}" fill="${sel ? '#d7263d' : '#fff'}" opacity="${sel ? 0.25 : 0.35}" class="${sel ? 'pulse' : ''}"/>
@@ -300,8 +544,12 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
     /* rota */
     const act = G && G.branches.find((b) => b.id === G.activeBranch);
     if (opts.route && act) {
-      const p = M.place(opts.route), from = M.POS[act.district];
-      if (p && from) { const d = M.routePath(from, p); s += `<path d="${d}" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".9"/><path class="march" d="${d}" fill="none" stroke="${p.color}" stroke-width="5" stroke-dasharray="2 10" stroke-linecap="round"/>`; }
+      const p = M.place(opts.route),
+        from = M.POS[act.district];
+      if (p && from) {
+        const d = M.routePath(from, p);
+        s += `<path d="${d}" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".9"/><path class="march" d="${d}" fill="none" stroke="${p.color}" stroke-width="5" stroke-dasharray="2 10" stroke-linecap="round"/>`;
+      }
     }
     /* tesis rozetleri */
     M.PLACES.forEach((p, i) => {
@@ -319,19 +567,34 @@ ${tower(1086, 536, 20, 56, '#f3d3c0', '#d9ab92')}${tower(1112, 516, 22, 76, '#e6
     });
     /* iş etiketleri */
     (opts.tasks || []).forEach((t) => {
-      const p = M.place(t.id); if (!p) return;
-      const w = t.label.length * 6.6 + 40, x = p.x + 18, y = p.y - 34;
+      const p = M.place(t.id);
+      if (!p) return;
+      const w = t.label.length * 6.6 + 40,
+        x = p.x + 18,
+        y = p.y - 34;
       s += `<g class="tasktag" pointer-events="none" filter="url(#kmDs)"><rect x="${x}" y="${y - 11}" width="${w}" height="22" rx="11" fill="#fff" stroke="${t.color}" stroke-width="2"/><circle cx="${x + 11}" cy="${y}" r="9" fill="${t.color}"/><text x="${x + 11}" y="${y + 4}" text-anchor="middle" class="tnum">${t.n}</text><text x="${x + 25}" y="${y + 4}" class="tlbl">${esc(t.label)}</text></g>`;
     });
     /* dükkânlar */
-    if (G) G.branches.forEach((b) => {
-      const P = M.POS[b.district]; if (!P) return;
-      const L = G.live && G.live[b.id];
-      const status = G.phase === 'service' && L ? (L.closed ? 'Ustası yok, kapalı' : L.done ? 'Kapandı' : `Açık · ${L.queue.length} sırada · ${KE.tl(L.stats.revenue)}`) : G.phase === 'closing' ? 'Kepenk indi' : 'Sabah hazırlığı';
-      s += shopMark(P, b, b.id === G.activeBranch, status, b.championUntil && G.day <= b.championUntil);
-    });
+    if (G)
+      G.branches.forEach((b) => {
+        const P = M.POS[b.district];
+        if (!P) return;
+        const L = G.live && G.live[b.id];
+        const status =
+          G.phase === 'service' && L
+            ? L.closed
+              ? 'Ustası yok, kapalı'
+              : L.done
+                ? 'Kapandı'
+                : `Açık · ${L.queue.length} sırada · ${KE.tl(L.stats.revenue)}`
+            : G.phase === 'closing'
+              ? 'Kepenk indi'
+              : 'Sabah hazırlığı';
+        s += shopMark(P, b, b.id === G.activeBranch, status, b.championUntil && G.day <= b.championUntil);
+      });
     /* bulutlar */
-    s += '<g class="cl" pointer-events="none"><g fill="#fff" opacity=".75"><ellipse cx="100" cy="110" rx="60" ry="16"/><ellipse cx="128" cy="98" rx="34" ry="16"/></g><ellipse cx="110" cy="190" rx="56" ry="9" fill="#1d4a6b" opacity=".07"/></g><g class="cl cl2" pointer-events="none"><g fill="#fff" opacity=".7"><ellipse cx="200" cy="470" rx="64" ry="16"/><ellipse cx="230" cy="456" rx="38" ry="18"/></g></g>';
+    s +=
+      '<g class="cl" pointer-events="none"><g fill="#fff" opacity=".75"><ellipse cx="100" cy="110" rx="60" ry="16"/><ellipse cx="128" cy="98" rx="34" ry="16"/></g><ellipse cx="110" cy="190" rx="56" ry="9" fill="#1d4a6b" opacity=".07"/></g><g class="cl cl2" pointer-events="none"><g fill="#fff" opacity=".7"><ellipse cx="200" cy="470" rx="64" ry="16"/><ellipse cx="230" cy="456" rx="38" ry="18"/></g></g>';
     return s;
   };
 })();

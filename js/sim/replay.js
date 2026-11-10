@@ -5,9 +5,21 @@
      günlüğe yazılır. Sabah durumu + tohum + günlük ile gün birebir yeniden oynatılabilir. */
   /** @type {Record<string, (G: Game, ...x: any[]) => any>} */
   const ACTS = {
-    setPos: (G, sid, pos) => { const s = G.staff.find((x) => x.id === sid); if (s) KE.setPos(G, s, pos); const b = s && G.branches.find((x) => x.id === s.branchId); if (b && G.phase === 'service') b.autoStaff = false; },
-    autoStaff: (G, bid, on) => { const b = G.branches.find((x) => x.id === bid); if (b) b.autoStaff = !!on; },
-    active: (G, bid) => { if (bid !== G.activeBranch && G.live && G.live[G.activeBranch] && G.live[G.activeBranch].player.active) KE.playerToggle(G, false); G.activeBranch = bid; },
+    setPos: (G, sid, pos) => {
+      const s = G.staff.find((x) => x.id === sid);
+      if (s) KE.setPos(G, s, pos);
+      const b = s && G.branches.find((x) => x.id === s.branchId);
+      if (b && G.phase === 'service') b.autoStaff = false;
+    },
+    autoStaff: (G, bid, on) => {
+      const b = G.branches.find((x) => x.id === bid);
+      if (b) b.autoStaff = !!on;
+    },
+    active: (G, bid) => {
+      if (bid !== G.activeBranch && G.live && G.live[G.activeBranch] && G.live[G.activeBranch].player.active)
+        KE.playerToggle(G, false);
+      G.activeBranch = bid;
+    },
     ptoggle: (G, on) => KE.playerToggle(G, !!on),
     ptake: (G) => KE.playerTake(G),
     pstep: (G, label) => KE.playerStep(G, label),
@@ -19,7 +31,10 @@
   /* servis saati: kapalı (ustasız) şubenin dakikası 0'da kalır, açık olanlardan okunur */
   /* günü bitmiş şubenin saati durur; günlük dakikası hâlâ çalışan bir şubeden okunmalı, yoksa gün sonundaki
      hamleler yeniden oynatmada erken uygulanır */
-  const clockL = (/** @type {Game} */ G) => { const ls = G.branches.map((b) => /** @type {Record<string, Live>} */ (G.live)[b.id]).filter((L) => L && !L.closed); return ls.find((L) => !L.done) || ls[0] || /** @type {Record<string, Live>} */ (G.live)[G.branches[0].id]; };
+  const clockL = (/** @type {Game} */ G) => {
+    const ls = G.branches.map((b) => /** @type {Record<string, Live>} */ (G.live)[b.id]).filter((L) => L && !L.closed);
+    return ls.find((L) => !L.done) || ls[0] || /** @type {Record<string, Live>} */ (G.live)[G.branches[0].id];
+  };
   KE.act = function (G, a, ...x) {
     const L = G.phase === 'service' && G.live ? clockL(G) : null;
     const m = L ? L.minute : 0;
@@ -34,7 +49,10 @@
     let guard = 0;
     while (!KE.allDone(G) && guard++ < 2000) {
       const m = clockL(G).minute;
-      while (q.length && q[0].m <= m) { const e = q.shift(); if (Object.prototype.hasOwnProperty.call(ACTS, e.a)) ACTS[e.a](G, ...(Array.isArray(e.x) ? e.x : [])); }
+      while (q.length && q[0].m <= m) {
+        const e = q.shift();
+        if (Object.prototype.hasOwnProperty.call(ACTS, e.a)) ACTS[e.a](G, ...(Array.isArray(e.x) ? e.x : []));
+      }
       KE.tickAll(G);
     }
     KE.finishService(G);

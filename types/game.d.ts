@@ -112,7 +112,12 @@ interface Ticket {
 type Customer = Record<string, any>;
 
 /** Çalışanın servis sırasındaki işi (s.task) */
-interface StaffTask { type: string; ref: any; remain: number; total: number }
+interface StaffTask {
+  type: string;
+  ref: any;
+  remain: number;
+  total: number;
+}
 
 /** Oyuncunun tezgâhta tuttuğu fiş (L.player.slots) */
 interface PlayerSlot {
@@ -129,7 +134,13 @@ interface PlayerSlot {
 }
 
 /** Oyuncunun tezgâh durumu (KE.playerStation) */
-interface PlayerState { active: boolean; slots: PlayerSlot[]; sel: number; combo: number; [k: string]: any }
+interface PlayerState {
+  active: boolean;
+  slots: PlayerSlot[];
+  sel: number;
+  combo: number;
+  [k: string]: any;
+}
 
 /** Bütün oyun durumu (kodda G); KE.newGame üretir, KE.SAVE yazar/okur */
 interface Game {
@@ -158,7 +169,11 @@ interface Game {
   /** 'esit' | 'usta' | 'performans' | 'kasa' (KE.TIP_RULES) */
   tipRule: string;
   /** gün satırları (days), ay raporları (months), sıkıştırılmış eski günler (archive) */
-  ledger: { days: any[]; months: any[]; archive?: { days: number; revenue: number; served: number; tips: number; byProduct: Record<string, number> } };
+  ledger: {
+    days: any[];
+    months: any[];
+    archive?: { days: number; revenue: number; served: number; tips: number; byProduct: Record<string, number> };
+  };
   /** ay içi ek giderler: ads, capex, fines, other, farm */
   monthExtras: Record<string, number>;
   /** 'morning' | 'service' | 'closing' */
@@ -212,7 +227,10 @@ interface FarmState {
   [k: string]: any;
 }
 /** Ağıl: seviye ve yetişmekte olan partiler */
-interface Pen { level: number; batches: { count: number; age: number; [k: string]: any }[] }
+interface Pen {
+  level: number;
+  batches: { count: number; age: number; [k: string]: any }[];
+}
 
 /** Bir şubenin gün sayaçları (L.stats): arrivals, served, lost…, revenue, tips, byProduct, stockouts… */
 type DayStats = Record<string, any>;
@@ -225,13 +243,28 @@ interface DaySummary {
 }
 
 /** Gün kapanışının sonucu (KE.finalizeDay): arayüzün kapanış ekranı bunu gösterir */
-interface DayResult { levelUps: any[]; quits: any[]; branches: Record<string, any>; [k: string]: any }
+interface DayResult {
+  levelUps: any[];
+  quits: any[];
+  branches: Record<string, any>;
+  [k: string]: any;
+}
 
 /** Süreli etki (G.mods): KE.modVal anahtarın çarpanlarını çarpar */
-interface Mod { key: string; mult: number; days: number; label?: string; [k: string]: any }
+interface Mod {
+  key: string;
+  mult: number;
+  days: number;
+  label?: string;
+  [k: string]: any;
+}
 
 /** Müdavimin gönül durumu (G.regulars) */
-interface RegularState { loyalty: number; visits: number; [k: string]: any }
+interface RegularState {
+  loyalty: number;
+  visits: number;
+  [k: string]: any;
+}
 
 /** Bankanın kredi teklifi (KE.loanOffer / KE.loanOffers) */
 interface LoanOffer {

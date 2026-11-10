@@ -2,8 +2,26 @@ import { describe, it, expect } from 'vitest';
 import { loadGame, newGame } from './load.js';
 
 /* Ay sonu kapanışı, bahşiş paylaşımı, semt şampiyonluğu ve defter sıkıştırma */
-const monthEnd = (KE, from) => { let d = from; while (!KE.isMonthEnd(d)) d++; return d; };
-const row = (KE, day, branchId, o = {}) => Object.assign({ day, month: KE.monthKey(day), branchId, revenue: 10000, purchases: 3000, tips: 200, served: 100, sat: 80, byProduct: { et_durum: 10 } }, o);
+const monthEnd = (KE, from) => {
+  let d = from;
+  while (!KE.isMonthEnd(d)) d++;
+  return d;
+};
+const row = (KE, day, branchId, o = {}) =>
+  Object.assign(
+    {
+      day,
+      month: KE.monthKey(day),
+      branchId,
+      revenue: 10000,
+      purchases: 3000,
+      tips: 200,
+      served: 100,
+      sat: 80,
+      byProduct: { et_durum: 10 }
+    },
+    o
+  );
 
 describe('ay sonu kapanışı (KE.closeMonth)', () => {
   it('maaşları, kirayı, faturaları ve kredi taksitlerini kasadan düşer', () => {
@@ -12,11 +30,15 @@ describe('ay sonu kapanışı (KE.closeMonth)', () => {
     const day = monthEnd(KE, G.day);
     G.day = day;
     G.ledger.days = [row(KE, day - 1, 'b1'), row(KE, day, 'b1')];
-    G.loans = [{ amount: 300000, monthly: 12000, remaining: 5 }, { amount: 100000, monthly: 4000, remaining: 1 }];
+    G.loans = [
+      { amount: 300000, monthly: 12000, remaining: 5 },
+      { amount: 100000, monthly: 4000, remaining: 1 }
+    ];
     const monthNo = KE.dateOf(day).getUTCMonth() + 1;
     const bonus = !!KE.bonusMonths[KE.monthKey(day)];
     const expectedPersonnel = G.staff.reduce((a, s) => a + KE.payroll(G, s, monthNo, { bonus }).total, 0);
-    const cash0 = G.cash, pi0 = G.priceIndex;
+    const cash0 = G.cash,
+      pi0 = G.priceIndex;
     const r = KE.closeMonth(G, day);
     expect(r.personnel).toBeCloseTo(expectedPersonnel, 6);
     expect(r.payroll.length).toBe(G.staff.length);
@@ -34,7 +56,10 @@ describe('ay sonu kapanışı (KE.closeMonth)', () => {
     const { KE } = loadGame();
     const G = newGame(KE);
     let day = monthEnd(KE, G.day);
-    G.loans = [{ amount: 300000, monthly: 12000, remaining: 2 }, { amount: 100000, monthly: 4000, remaining: 1 }];
+    G.loans = [
+      { amount: 300000, monthly: 12000, remaining: 2 },
+      { amount: 100000, monthly: 4000, remaining: 1 }
+    ];
     KE.closeMonth(G, day);
     expect(G.loans).toEqual([{ amount: 300000, monthly: 12000, remaining: 1 }]);
     day = monthEnd(KE, day + 1);
@@ -54,9 +79,14 @@ describe('ay sonu kapanışı (KE.closeMonth)', () => {
   it('ayın bahşiş sayaçları sıfırlanır, maaş matrahı birikir', () => {
     const { KE } = loadGame();
     const G = newGame(KE);
-    G.staff.forEach((s) => { s.tipsMonth = 500; });
+    G.staff.forEach((s) => {
+      s.tipsMonth = 500;
+    });
     KE.closeMonth(G, monthEnd(KE, G.day));
-    G.staff.forEach((s) => { expect(s.tipsMonth).toBe(0); expect(s.cumBase).toBeGreaterThan(0); });
+    G.staff.forEach((s) => {
+      expect(s.tipsMonth).toBe(0);
+      expect(s.cumBase).toBeGreaterThan(0);
+    });
   });
 });
 
@@ -66,7 +96,9 @@ describe('bahşiş paylaşımı (KE.tipShares)', () => {
     const G = newGame(KE);
     const b = G.branches[0];
     /* usta, çırak, kasiyer, garson */
-    G.staff.forEach((s, i) => { s.servedToday = [30, 0, 10, 60][i]; });
+    G.staff.forEach((s, i) => {
+      s.servedToday = [30, 0, 10, 60][i];
+    });
     return { KE, G, b, share: (rule, jar) => KE.tipShares(G, b, rule, jar).map(([s, v]) => [s.role, v]) };
   };
   it('eşit: herkes aynı payı alır, toplam kavanoza eşittir', () => {
@@ -86,9 +118,9 @@ describe('bahşiş paylaşımı (KE.tipShares)', () => {
     const { share } = setup();
     const r = Object.fromEntries(share('performans', 1000));
     const tot = 30 + 0.2 + 10 + 60;
-    expect(r.usta).toBeCloseTo(1000 * 30 / tot, 6);
-    expect(r.cirak).toBeCloseTo(1000 * 0.2 / tot, 6);
-    expect(r.garson).toBeCloseTo(1000 * 60 / tot, 6);
+    expect(r.usta).toBeCloseTo((1000 * 30) / tot, 6);
+    expect(r.cirak).toBeCloseTo((1000 * 0.2) / tot, 6);
+    expect(r.garson).toBeCloseTo((1000 * 60) / tot, 6);
     expect(Object.values(r).reduce((a, v) => a + v, 0)).toBeCloseTo(1000, 6);
   });
   it('kasaya al: kimse pay almaz', () => {
@@ -111,7 +143,10 @@ describe('semt şampiyonluğu (KE.championship)', () => {
     return { KE, G };
   };
   it('yeterli müşteri ve çıtayı geçen memnuniyet şampiyonluk getirir', () => {
-    const { KE, G } = setup((KE, d) => [row(KE, d - 1, 'b1', { served: 150, sat: 95 }), row(KE, d, 'b1', { served: 150, sat: 95 })]);
+    const { KE, G } = setup((KE, d) => [
+      row(KE, d - 1, 'b1', { served: 150, sat: 95 }),
+      row(KE, d, 'b1', { served: 150, sat: 95 })
+    ]);
     const rep0 = G.reputation;
     const [r] = KE.championship(G);
     expect(r.won).toBe(true);
@@ -128,18 +163,24 @@ describe('semt şampiyonluğu (KE.championship)', () => {
     expect(G.branches[0].champions).toBeUndefined();
   });
   it('çıtanın altındaki memnuniyetle kazanılmaz; müşteri ağırlıklı ortalama kullanılır', () => {
-    const { KE, G } = setup((KE, d) => [row(KE, d - 1, 'b1', { served: 290, sat: 50 }), row(KE, d, 'b1', { served: 10, sat: 100 })]);
+    const { KE, G } = setup((KE, d) => [
+      row(KE, d - 1, 'b1', { served: 290, sat: 50 }),
+      row(KE, d, 'b1', { served: 10, sat: 100 })
+    ]);
     const [r] = KE.championship(G);
     expect(r.sat).toBeCloseTo((290 * 50 + 10 * 100) / 300, 6);
     expect(r.won).toBe(false);
   });
   it('geçen ayın satırları sayılmaz', () => {
-    const { KE, G } = setup((KE, d) => [row(KE, d, 'b1', { served: 100, sat: 95, month: '1999-01' }), row(KE, d, 'b1', { served: 200, sat: 95 })]);
+    const { KE, G } = setup((KE, d) => [
+      row(KE, d, 'b1', { served: 100, sat: 95, month: '1999-01' }),
+      row(KE, d, 'b1', { served: 200, sat: 95 })
+    ]);
     const [r] = KE.championship(G);
     expect(r.served).toBe(200);
     expect(r.won).toBe(false);
   });
-  it('itibar 100\'ü geçmez', () => {
+  it("itibar 100'ü geçmez", () => {
     const { KE, G } = setup((KE, d) => [row(KE, d, 'b1', { served: 300, sat: 99 })]);
     G.reputation = 100;
     KE.championship(G);
@@ -148,10 +189,15 @@ describe('semt şampiyonluğu (KE.championship)', () => {
 });
 
 describe('defter sıkıştırma (KE.compactLedger)', () => {
-  const setup = () => { const { KE } = loadGame(); const G = newGame(KE); return { KE, G }; };
+  const setup = () => {
+    const { KE } = loadGame();
+    const G = newGame(KE);
+    return { KE, G };
+  };
   it('boş defterde arşiv açmaz', () => {
     const { KE, G } = setup();
-    G.day = 400; G.ledger.days = [];
+    G.day = 400;
+    G.ledger.days = [];
     KE.compactLedger(G);
     expect(G.ledger.archive).toBeUndefined();
     expect(G.ledger.days).toEqual([]);
@@ -168,7 +214,11 @@ describe('defter sıkıştırma (KE.compactLedger)', () => {
     const { KE, G } = setup();
     G.day = 200;
     const cut = 200 - KE.LEDGER_KEEP;
-    G.ledger.days = [row(KE, cut - 1, 'b1', { revenue: 100, served: 5, tips: 1, byProduct: { a: 2 } }), row(KE, cut, 'b1', { revenue: 50, served: 3, tips: 2, byProduct: { a: 1, b: 4 } }), row(KE, cut + 1, 'b1')];
+    G.ledger.days = [
+      row(KE, cut - 1, 'b1', { revenue: 100, served: 5, tips: 1, byProduct: { a: 2 } }),
+      row(KE, cut, 'b1', { revenue: 50, served: 3, tips: 2, byProduct: { a: 1, b: 4 } }),
+      row(KE, cut + 1, 'b1')
+    ];
     KE.compactLedger(G);
     expect(G.ledger.days.map((d) => d.day)).toEqual([cut + 1]);
     expect(G.ledger.archive).toEqual({ days: 2, revenue: 150, served: 8, tips: 3, byProduct: { a: 3, b: 4 } });

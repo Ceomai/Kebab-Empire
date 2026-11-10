@@ -2,10 +2,7 @@
   "id": "usta-durum",
   "_not": "ÖRNEK MARKA: hayalidir, satış görüşmelerinde markalı sürümün nasıl görüneceğini göstermek için.",
   "gameName": "Usta Dürüm Oyunu",
-  "nameParts": [
-    "Usta",
-    "Dürüm"
-  ],
+  "nameParts": ["Usta", "Dürüm"],
   "tagline": {
     "tr": "Usta Dürüm'ün mutfağına hoş geldin",
     "en": "Welcome to the Usta Dürüm kitchen",

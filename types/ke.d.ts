@@ -6,21 +6,68 @@
    Üye listesi ilk kez bir betikle (acorn ile bütün KE.X = … atamaları) çıkarıldı. */
 
 /** Sabah eylemi gibi ok/msg döndüren doğrulama sonucu (js/verify.js) */
-interface VerifyResult { ok: boolean; note?: string; [k: string]: any }
+interface VerifyResult {
+  ok: boolean;
+  note?: string;
+  [k: string]: any;
+}
 
 /** Haftalık toplu sipariş teklifi (KE.contractOffers) */
-interface ContractOffer { id: string; kind: string; name: string; who: string; pid: string; qty: number; pay: number; cost: number; morale: number }
+interface ContractOffer {
+  id: string;
+  kind: string;
+  name: string;
+  who: string;
+  pid: string;
+  qty: number;
+  pay: number;
+  cost: number;
+  morale: number;
+}
 
 /** İmparatorluk şartı (KE.empireStatus); ok ve p hesaplanınca eklenir */
-interface EmpireReq { id: string; label: string; have: number; need: number; money?: boolean; ok?: boolean; p?: number }
+interface EmpireReq {
+  id: string;
+  label: string;
+  have: number;
+  need: number;
+  money?: boolean;
+  ok?: boolean;
+  p?: number;
+}
 
 /** Kayıt zarfı (KE.SAVE.envelope) */
-interface SaveEnvelope { v: number; app: string; savedAt: string; day: number; tab: string; sum: string; game: string | Game; [k: string]: any }
+interface SaveEnvelope {
+  v: number;
+  app: string;
+  savedAt: string;
+  day: number;
+  tab: string;
+  sum: string;
+  game: string | Game;
+  [k: string]: any;
+}
 
 /** Bordro satırı (KE.payroll) */
 interface Payslip {
-  id: string; name: string; role: string; base: number; fm: number; brut: number; sgkI: number; issI: number; matrah: number; gv: number;
-  damga: number; net: number; sgkV: number; issV: number; yol: number; ikramiye: number; total: number; [k: string]: any;
+  id: string;
+  name: string;
+  role: string;
+  base: number;
+  fm: number;
+  brut: number;
+  sgkI: number;
+  issI: number;
+  matrah: number;
+  gv: number;
+  damga: number;
+  net: number;
+  sgkV: number;
+  issV: number;
+  yol: number;
+  ikramiye: number;
+  total: number;
+  [k: string]: any;
 }
 
 interface KE_U {
@@ -56,7 +103,9 @@ interface KE_CAL {
   religiousOn: (t: number) => string | null;
   ramazanOn: (t: number) => any;
   bonusMonth: (key: string) => any;
-  LAT: number; LON: number; TZ: number;
+  LAT: number;
+  LON: number;
+  TZ: number;
   sunsetMinute: (t: number) => number;
   ECON_YEARS: Record<number, { asgariBrut: number; gvDilim: [number, number][] }>;
   ECON_GROWTH: number;
@@ -65,17 +114,36 @@ interface KE_CAL {
 }
 
 interface KE_ECON {
-  asgariBrut: number; sgkIsci: number; issizlikIsci: number; sgkIsveren: number; issizlikIsveren: number; hazineTesvik: number; damga: number;
+  asgariBrut: number;
+  sgkIsci: number;
+  issizlikIsci: number;
+  sgkIsveren: number;
+  issizlikIsveren: number;
+  hazineTesvik: number;
+  damga: number;
   /** [üst sınır, oran] dilimleri */
   gvDilim: [number, number][];
-  kdvRestoran: number; kdvGida: number; kiraStopaj: number; muhasebeci: number; aylikEnflasyon: number;
-  yemekYardimiGunluk: number; yolYardimiAylik: number; bayramIkramiye: number; fazlaMesaiOrani: number; sarfOrani: number;
+  kdvRestoran: number;
+  kdvGida: number;
+  kiraStopaj: number;
+  muhasebeci: number;
+  aylikEnflasyon: number;
+  yemekYardimiGunluk: number;
+  yolYardimiAylik: number;
+  bayramIkramiye: number;
+  fazlaMesaiOrani: number;
+  sarfOrani: number;
   /** calendar.js'in uyguladığı yıl */
   year?: number;
 }
 
 interface KE_SAVE {
-  KEY: string; BACKUP: string; RACE_KEY: string; TAB: string; VERSION: number; APP: string;
+  KEY: string;
+  BACKUP: string;
+  RACE_KEY: string;
+  TAB: string;
+  VERSION: number;
+  APP: string;
   hash: (str: string) => string;
   migrate: (g: any, from: number) => Game;
   normalize: (g: any) => Game;
@@ -109,7 +177,10 @@ interface KE_I18N {
 }
 
 interface KE_BRAND {
-  id: string; gameName: string; nameParts: string[]; rival: string;
+  id: string;
+  gameName: string;
+  nameParts: string[];
+  rival: string;
   isDefault: boolean;
   /** [varsayılan ad, marka adı, ekleriyle eşleyen düzenli ifade] */
   swaps: [string, string, RegExp?][];
@@ -210,27 +281,99 @@ interface KE_CLOUD {
 
 /** Arayüz ad alanı (js/ui/*.js): bilerek gevşek, üyeler listelidir. A (eylemler), H (ortak parçalar), C, SCREENS dinamik tablolardır. */
 interface KE_UI {
-  H: any; SCREENS: Record<string, any>; A: Record<string, any>; C: Record<string, any>;
-  screen: string; params: any; ng: any;
+  H: any;
+  SCREENS: Record<string, any>;
+  A: Record<string, any>;
+  C: Record<string, any>;
+  screen: string;
+  params: any;
+  ng: any;
   TUT: any[];
   // durum alanları
-  quickDayRun: boolean; crewHover: number; holdEvent: boolean; weekRunning: boolean; cloudChecked: boolean; mapZoom: number; mapIdle: boolean;
-  saveDirty: boolean; staleTab: boolean; quotaWarned: boolean; pausedByHide: boolean; timer: any; dailyDone: number; reduceMotionMQ: MediaQueryList | null;
+  quickDayRun: boolean;
+  crewHover: number;
+  holdEvent: boolean;
+  weekRunning: boolean;
+  cloudChecked: boolean;
+  mapZoom: number;
+  mapIdle: boolean;
+  saveDirty: boolean;
+  staleTab: boolean;
+  quotaWarned: boolean;
+  pausedByHide: boolean;
+  timer: any;
+  dailyDone: number;
+  reduceMotionMQ: MediaQueryList | null;
   // işlevler (parametreler any)
-  guideLevel: (...a: any[]) => any; snapUndo: (...a: any[]) => any; undoChip: (...a: any[]) => any; hall: (...a: any[]) => any; hallAdd: (...a: any[]) => any;
-  fillRaceBoard: (...a: any[]) => any; raceCheck: (...a: any[]) => any; empireEnding: (...a: any[]) => any; applyA11y: (...a: any[]) => any; checkCloud: (...a: any[]) => any;
-  boot: (...a: any[]) => any; advice: (...a: any[]) => any; adviceCard: (...a: any[]) => any; cityTasks: (...a: any[]) => any; sheetState: (...a: any[]) => any;
-  mapLabels: (...a: any[]) => any; mapZoomInit: (...a: any[]) => any; mapRefresh: (...a: any[]) => any; mapMount: (...a: any[]) => any;
-  patch: (...a: any[]) => any; isNative: (...a: any[]) => any; calm: (...a: any[]) => any; syncSvgMotion: (...a: any[]) => any; transition: (...a: any[]) => any; hapticOn: (...a: any[]) => any;
-  saveSoon: (...a: any[]) => any; flushSave: (...a: any[]) => any; save: (...a: any[]) => any; load: (...a: any[]) => any; hasSave: (...a: any[]) => any; tutor: (...a: any[]) => any;
-  toast: (...a: any[]) => any; modal: (...a: any[]) => any; dismissModal: (...a: any[]) => any; closeModal: (...a: any[]) => any; picker: (...a: any[]) => any; go: (...a: any[]) => any;
-  handleBack: (...a: any[]) => any; render: (...a: any[]) => any; layoutVars: (...a: any[]) => any; refreshBars: (...a: any[]) => any; courierHtml: (...a: any[]) => any;
-  fillRanking: (...a: any[]) => any; privacyModal: (...a: any[]) => any; startLoop: (...a: any[]) => any; stopLoop: (...a: any[]) => any; sceneTick: (...a: any[]) => any;
-  confetti: (...a: any[]) => any; tzSync: (...a: any[]) => any;
+  guideLevel: (...a: any[]) => any;
+  snapUndo: (...a: any[]) => any;
+  undoChip: (...a: any[]) => any;
+  hall: (...a: any[]) => any;
+  hallAdd: (...a: any[]) => any;
+  fillRaceBoard: (...a: any[]) => any;
+  raceCheck: (...a: any[]) => any;
+  empireEnding: (...a: any[]) => any;
+  applyA11y: (...a: any[]) => any;
+  checkCloud: (...a: any[]) => any;
+  boot: (...a: any[]) => any;
+  advice: (...a: any[]) => any;
+  adviceCard: (...a: any[]) => any;
+  cityTasks: (...a: any[]) => any;
+  sheetState: (...a: any[]) => any;
+  mapLabels: (...a: any[]) => any;
+  mapZoomInit: (...a: any[]) => any;
+  mapRefresh: (...a: any[]) => any;
+  mapMount: (...a: any[]) => any;
+  patch: (...a: any[]) => any;
+  isNative: (...a: any[]) => any;
+  calm: (...a: any[]) => any;
+  syncSvgMotion: (...a: any[]) => any;
+  transition: (...a: any[]) => any;
+  hapticOn: (...a: any[]) => any;
+  saveSoon: (...a: any[]) => any;
+  flushSave: (...a: any[]) => any;
+  save: (...a: any[]) => any;
+  load: (...a: any[]) => any;
+  hasSave: (...a: any[]) => any;
+  tutor: (...a: any[]) => any;
+  toast: (...a: any[]) => any;
+  modal: (...a: any[]) => any;
+  dismissModal: (...a: any[]) => any;
+  closeModal: (...a: any[]) => any;
+  picker: (...a: any[]) => any;
+  go: (...a: any[]) => any;
+  handleBack: (...a: any[]) => any;
+  render: (...a: any[]) => any;
+  layoutVars: (...a: any[]) => any;
+  refreshBars: (...a: any[]) => any;
+  courierHtml: (...a: any[]) => any;
+  fillRanking: (...a: any[]) => any;
+  privacyModal: (...a: any[]) => any;
+  startLoop: (...a: any[]) => any;
+  stopLoop: (...a: any[]) => any;
+  sceneTick: (...a: any[]) => any;
+  confetti: (...a: any[]) => any;
+  tzSync: (...a: any[]) => any;
   // arayüz durumu (eylemlerin yazdığı geçici alanlar)
-  a11y: any; closeTab: string | null; crewPick: string | null; guideFrom: string | null; heir: any; heroCast: any; lastMin: number; lastMinB: string;
-  lastTracked: any; mapRoute: string; morningEnv: any; mutSeq: number; pendingCloud: any; pickOptions: any; todayRule: string | null; tzh: number; undo: any;
-  nativeExit?: (...a: any[]) => any; nativeHaptics?: (...a: any[]) => any;
+  a11y: any;
+  closeTab: string | null;
+  crewPick: string | null;
+  guideFrom: string | null;
+  heir: any;
+  heroCast: any;
+  lastMin: number;
+  lastMinB: string;
+  lastTracked: any;
+  mapRoute: string;
+  morningEnv: any;
+  mutSeq: number;
+  pendingCloud: any;
+  pickOptions: any;
+  todayRule: string | null;
+  tzh: number;
+  undo: any;
+  nativeExit?: (...a: any[]) => any;
+  nativeHaptics?: (...a: any[]) => any;
 }
 
 interface KENamespace {
@@ -359,7 +502,12 @@ interface KENamespace {
   staffGroup: (role: string) => string | undefined;
   staffCapsAt: (G: Game, b: Branch | null, eq: Record<string, number>) => Record<string, number>;
   staffCaps: (G: Game, b: Branch) => Record<string, number>;
-  canHire: (G: Game, b: Branch, role: string, exceptId?: string) => { ok: boolean; group: string | undefined; used: number; cap: number; hint: string };
+  canHire: (
+    G: Game,
+    b: Branch,
+    role: string,
+    exceptId?: string
+  ) => { ok: boolean; group: string | undefined; used: number; cap: number; hint: string };
   roleName: (G: Game, s: Staff) => string;
   randomMaster: (G: Game) => Staff;
   randomWorker: (G: Game, role: string) => Staff;
@@ -397,7 +545,18 @@ interface KENamespace {
   STOCK_HIST_DAYS: number;
   STOCK_Z: number;
   STOCK_CONV: number;
-  stockForecast: (G: Game, b: Branch) => { customers: number; top: any; products: Record<string, number>; drinks: number; items: any[]; short: any[]; ok: boolean };
+  stockForecast: (
+    G: Game,
+    b: Branch
+  ) => {
+    customers: number;
+    top: any;
+    products: Record<string, number>;
+    drinks: number;
+    items: any[];
+    short: any[];
+    ok: boolean;
+  };
   topUpToday: (G: Game, b: Branch) => number;
   morning: (G: Game) => void;
   buyExtra: (G: Game, b: Branch, k: string, qty: number) => number;
@@ -556,7 +715,15 @@ interface KENamespace {
   raceCheck: (race: any, morningEnv: any, now?: any) => VerifyResult;
   LOG_MAX: number;
   logCheck: (log: any) => VerifyResult;
-  verifyChain: (prevEnd: any, morningEnv: any, log: any, todayRule: any, claim: any, race?: any, now?: any) => VerifyResult;
+  verifyChain: (
+    prevEnd: any,
+    morningEnv: any,
+    log: any,
+    todayRule: any,
+    claim: any,
+    race?: any,
+    now?: any
+  ) => VerifyResult;
 
   // ---- arayüz: js/config.js, js/i18n.js, js/map.js, js/scene.js, js/ui/*.js, src/*.js ----
   CONFIG: KE_CONFIG;
