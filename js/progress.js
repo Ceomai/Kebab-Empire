@@ -183,13 +183,21 @@
   /* ---------- Sabah ekonomisi: işe alma, kıyafet, ekipman, dekor, hijyen, reklam, merkezi mutfak ----------
      Hepsi { ok, msg, ... } döndürür; arayüz yalnızca çağırır, mesajı gösterir ve yeniden çizer. */
   const NO_CASH = 'Kasada yeterli para yok.';
-  /* Servisin ortasında masa sayısı arttıysa (salon yükseltmesi, dış masalar) canlı salona yeni masaları ekle */
+  /** Servisin ortasında masa sayısı arttıysa (salon yükseltmesi, dış masalar) canlı salona yeni masaları ekle
+   * @param {Game} G
+   * @param {Branch} b
+   */
   KE.syncTables = function (G, b) {
     const L = G.live && G.live[b.id];
     if (!L) return;
     while (L.tables.length < KE.tableCount(G, b)) L.tables.push({ id: L.tables.length, occ: null, dirty: false, by: null });
   };
-  /* Usta pazarından işe al (transfer ücreti kasadan) */
+  /** Usta pazarından işe al (transfer ücreti kasadan)
+   * @param {Game} G
+   * @param {Branch} b işe alınacağı şube
+   * @param {string} id usta pazarındaki (G.market) çalışanın kimliği
+   * @returns {ActionResult} başarılıysa staff alanı yeni çalışandır
+   */
   KE.hireMaster = function (G, b, id) {
     const s = G.market.find((x) => x.id === id);
     if (!s) return { ok: false };
@@ -201,7 +209,12 @@
     G.staff.push(s); G.market = G.market.filter((x) => x.id !== s.id);
     return { ok: true, msg: `${s.name} ekibe katıldı!`, staff: s };
   };
-  /* İş ilanlarından işe al (ücretsiz) */
+  /** İş ilanlarından işe al (ücretsiz)
+   * @param {Game} G
+   * @param {Branch} b işe alınacağı şube
+   * @param {string} id iş ilanlarındaki (G.workers) çalışanın kimliği
+   * @returns {ActionResult}
+   */
   KE.hireWorker = function (G, b, id) {
     const s = G.workers.find((x) => x.id === id);
     if (!s) return { ok: false };
@@ -211,8 +224,16 @@
     G.staff.push(s); G.workers = G.workers.filter((x) => x.id !== s.id);
     return { ok: true, msg: `${s.name} işe başladı.`, staff: s };
   };
-  /* İşten çıkarma: iki haftalık brüt ücret tazminat (yasal yükümlülük: kasa eksiye düşse de ödenir); şubedeki ekibin morali −4 */
+  /** İşten çıkarma: iki haftalık brüt ücret tazminat (yasal yükümlülük: kasa eksiye düşse de ödenir); şubedeki ekibin morali −4
+   * @param {Staff} s
+   * @returns {number} tazminat (₺)
+   */
   KE.severance = (s) => s.wage / 2;
+  /**
+   * @param {Game} G
+   * @param {string} id çalışan kimliği
+   * @returns {ActionResult} cost: ödenen tazminat
+   */
   KE.fireStaff = function (G, id) {
     const s = G.staff.find((x) => x.id === id);
     if (!s) return { ok: false };
@@ -222,7 +243,12 @@
     G.staff.forEach((x) => { if (x.mentorId === s.id) x.mentorId = null; if (x.branchId === s.branchId) x.morale = clamp(x.morale - 4, 0, 100); });
     return { ok: true, msg: `${s.name} ayrıldı.`, cost: pay };
   };
-  /* Kıyafet: moral artar, kostüm hedefi kontrol edilir */
+  /** Kıyafet: moral artar, kostüm hedefi kontrol edilir
+   * @param {Game} G
+   * @param {string} sid çalışan kimliği
+   * @param {string} cid KE.COSTUMES kimliği
+   * @returns {ActionResult}
+   */
   KE.buyCostume = function (G, sid, cid) {
     const s = G.staff.find((x) => x.id === sid), c = KE.COSTUMES.find((x) => x.id === cid);
     if (!s || !c) return { ok: false };
@@ -232,8 +258,19 @@
     const goals = KE.checkGoals(G);
     return { ok: true, msg: `${s.name} yeni kıyafetine bayıldı!`, cost: c.cost, goals };
   };
-  /* Ekipmanı bir seviye yükselt */
+  /** Ekipmanı bir seviye yükselt
+   * @param {Game} G
+   * @param {Branch} b
+   * @param {string} k ekipman anahtarı
+   * @returns {number|null} bir sonraki seviyenin bedeli; son seviyedeyse null
+   */
   KE.upgradeCost = (G, b, k) => { const next = MODE(G).equipment[k].levels[b.equipment[k] + 1]; return next ? next.cost * G.priceIndex : null; };
+  /**
+   * @param {Game} G
+   * @param {Branch} b
+   * @param {string} k ekipman anahtarı
+   * @returns {ActionResult}
+   */
   KE.upgradeEquipment = function (G, b, k) {
     const eq = MODE(G).equipment[k];
     const next = eq && eq.levels[b.equipment[k] + 1];
@@ -244,8 +281,18 @@
     if (k === 'service') KE.syncTables(G, b);
     return { ok: true, msg: `${next.name} kuruldu. Dükkân değişti!`, cost };
   };
-  /* Dekor al; konsept açıldıysa haber ver */
+  /** Dekor al; konsept açıldıysa haber ver
+   * @param {Game} G
+   * @param {{ cost: number }} it KE.DECOR öğesi
+   * @returns {number}
+   */
   KE.decorCost = (G, it) => it.cost * G.priceIndex;
+  /**
+   * @param {Game} G
+   * @param {Branch} b
+   * @param {string} id KE.DECOR kimliği
+   * @returns {ActionResult} concept: açılan konsept (varsa)
+   */
   KE.buyDecor = function (G, b, id) {
     const it = KE.DECOR.find((x) => x.id === id);
     if (!it) return { ok: false };
@@ -258,8 +305,16 @@
     const goals = KE.checkGoals(G);
     return { ok: true, msg: concept ? `Konsept açıldı: ${concept.name}!` : `${it.name} yerleştirildi.`, concept, cost, goals };
   };
-  /* Belediye: hijyen eğitimi ve derin temizlik (temizlik +30) */
+  /** Belediye: hijyen eğitimi ve derin temizlik (temizlik +30)
+   * @param {Game} G
+   * @returns {number}
+   */
   KE.hygieneCost = (G) => 12000 * G.priceIndex;
+  /**
+   * @param {Game} G
+   * @param {Branch} b
+   * @returns {ActionResult}
+   */
   KE.deepClean = function (G, b) {
     if (!b) return { ok: false };
     const c = KE.hygieneCost(G);
@@ -268,8 +323,18 @@
     b.cleanliness = clamp(b.cleanliness + 30, 0, 100);
     return { ok: true, msg: 'Dükkân pırıl pırıl.', cost: c };
   };
-  /* Reklam kampanyası (KE.CAMPAIGNS); tabela şubede kalıcıdır */
+  /** Reklam kampanyası (KE.CAMPAIGNS); tabela şubede kalıcıdır
+   * @param {Game} G
+   * @param {{ cost: number }} c KE.CAMPAIGNS öğesi
+   * @returns {number}
+   */
   KE.campaignCost = (G, c) => Math.round(c.cost * G.priceIndex);
+  /**
+   * @param {Game} G
+   * @param {Branch} b
+   * @param {string} id KE.CAMPAIGNS kimliği
+   * @returns {ActionResult}
+   */
   KE.startCampaign = function (G, b, id) {
     const c = KE.CAMPAIGNS.find((x) => x.id === id);
     if (!c || !b) return { ok: false };
@@ -282,8 +347,15 @@
     if (c.rep) { const best = Math.max(...MODE(G).products.map((p) => KE.bestStar(G, b, p.id))); G.reputation = clamp(G.reputation + (best >= 4 ? 4 : 1), 0, 100); }
     return { ok: true, msg: `${c.name} başladı.`, cost };
   };
-  /* Merkezi mutfak: malzeme maliyeti şubelerde düşer */
+  /** Merkezi mutfak: malzeme maliyeti şubelerde düşer
+   * @param {Game} G
+   * @returns {number}
+   */
   KE.centralCost = (G) => 450000 * G.priceIndex;
+  /**
+   * @param {Game} G
+   * @returns {ActionResult}
+   */
   KE.buildCentralKitchen = function (G) {
     if (G.centralKitchen) return { ok: false };
     const c = KE.centralCost(G);
@@ -292,7 +364,10 @@
     G.centralKitchen = true;
     return { ok: true, msg: 'Merkezi mutfak kuruldu.', cost: c };
   };
-  /* Geç oyun: bütün semtlerde şube açıldıktan sonra haftayı tek tuşla geç */
+  /** Geç oyun: bütün semtlerde şube açıldıktan sonra haftayı tek tuşla geç
+   * @param {Game} G
+   * @returns {boolean}
+   */
   KE.quickWeekOpen = (G) => G.branches.length >= KE.DISTRICTS.length;
 
   /* ---------- Vakıf ve sponsorluk ---------- */

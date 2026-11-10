@@ -86,7 +86,11 @@
     return Math.round((26000 + eq.cook * 7500 + eq.cold * 3500 + eq.service * 2500 + (b.decor.includes('klima') ? 2500 : 0)) * G.priceIndex);
   };
 
-  /* Ay sonu kapanışı. Nakitten düşer, ay raporunu döndürür. */
+  /** Ay sonu kapanışı. Nakitten düşer, ay raporunu döndürür.
+   * @param {Game} G
+   * @param {number} day ayın son günü
+   * @returns {any} ay raporu (G.ledger.months'a da eklenir)
+   */
   KE.closeMonth = function (G, day) {
     const key = KE.monthKey(day);
     const monthNo = KE.dateOf(day).getUTCMonth() + 1;
@@ -137,18 +141,34 @@
 
   KE.addExtra = (G, key, amt) => { G.monthExtras = G.monthExtras || {}; G.monthExtras[key] = (G.monthExtras[key] || 0) + amt; };
 
-  /* Kredi: anüite */
+  /** Kredi: anüite
+   * @param {number} amount
+   * @param {number} months
+   * @param {number} rate aylık faiz
+   * @returns {LoanOffer}
+   */
   KE.loanOffer = (amount, months, rate) => {
     const m = amount * rate / (1 - Math.pow(1 + rate, -months));
     return { amount, months, rate, monthly: Math.round(m), total: Math.round(m * months) };
   };
-  /* Bankanın bugünkü kredi teklifleri (arayüz ve sunucu doğrulaması aynı listeyi kullanır) */
   KE.LOAN_RATE = 0.034;
+  /** Bankanın bugünkü kredi teklifleri (arayüz ve sunucu doğrulaması aynı listeyi kullanır)
+   * @param {Game} G
+   * @returns {LoanOffer[]} bugünkü teklifler (fiyat endeksine göre)
+   */
   KE.loanOffers = (G) => [[300000, 12], [750000, 24], [1500000, 36]].map(([a, m]) => KE.loanOffer(Math.round(a * G.priceIndex / 1000) * 1000, m, KE.LOAN_RATE));
   KE.LOAN_MAX = 3;
-  /* Krediyi erken kapatma bedeli: kalan taksitlerin %93'ü (arayüz, motor ve sunucu zinciri aynı formülü kullanır) */
+  /** Krediyi erken kapatma bedeli: kalan taksitlerin %93'ü (arayüz, motor ve sunucu zinciri aynı formülü kullanır)
+   * @param {Loan} l
+   * @returns {number} erken kapatma bedeli (₺)
+   */
   KE.payoffCost = (l) => Math.round(l.monthly * l.remaining * 0.93);
-  /* Bankanın bugünkü tekliflerinden birini kullan (en fazla 3 kredi) */
+  /** Bankanın bugünkü tekliflerinden birini kullan (en fazla 3 kredi)
+   * @param {Game} G
+   * @param {number} amount bugünkü tekliflerden birinin tutarı
+   * @param {number} months o teklifin vadesi
+   * @returns {ActionResult}
+   */
   KE.takeLoan = function (G, amount, months) {
     const o = KE.loanOffers(G).find((x) => x.amount === amount && x.months === months);
     if (!o) return { ok: false };
@@ -157,7 +177,11 @@
     G.cash += o.amount;
     return { ok: true, msg: `${KE.tl(o.amount)} hesabına geçti.`, amount: o.amount };
   };
-  /* Krediyi erken kapat: bedel kasadan düşer, kredi listeden çıkar */
+  /** Krediyi erken kapat: bedel kasadan düşer, kredi listeden çıkar
+   * @param {Game} G
+   * @param {number} i G.loans dizini
+   * @returns {ActionResult} cost: ödenen bedel
+   */
   KE.payoffLoan = function (G, i) {
     const l = G.loans[i];
     if (!l) return { ok: false };
