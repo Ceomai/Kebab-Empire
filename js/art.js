@@ -8,7 +8,6 @@
   const id = (p) => (p || 'k') + (++uid);
   const INK = '#3b2417';
   const OL = `stroke="${INK}" stroke-opacity=".55" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"`;
-  A.OL = OL;
   const svg = (vb, body, cls, label) => `<svg class="${cls || ''}" viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision"${label ? ` role="img" aria-label="${label}"` : ' aria-hidden="true"'}>${body}</svg>`;
 
   /* ---------------- Yemekler (64×64) ---------------- */
@@ -103,7 +102,6 @@
       <ellipse cx="60" cy="25" rx="40" ry="10" fill="none" stroke="#fff" stroke-opacity=".15" stroke-width="2"/>
       ${dirty ? `<ellipse cx="40" cy="26" rx="10" ry="4" fill="#f4f1ea" ${OL}/><ellipse cx="74" cy="28" rx="9" ry="3.6" fill="#f4f1ea" ${OL}/><circle cx="44" cy="25" r="1.4" fill="#a0522d"/><circle cx="72" cy="27" r="1.2" fill="#c0392b"/><path d="M84 22 l8 -3" stroke="#95a5a6" stroke-width="2"/>` : ''}`, 'art-table');
   };
-  A.chair = (c) => svg('0 0 40 60', `<rect x="6" y="2" width="28" height="30" rx="6" fill="${c || '#b5651d'}" ${OL}/><rect x="4" y="30" width="32" height="8" rx="3" fill="${c || '#b5651d'}" ${OL}/><path d="M8 38 v20 M32 38 v20" stroke="#5b3a22" stroke-width="3"/>`, 'art-chair');
   A.register = () => svg('0 0 80 60', `<rect x="6" y="30" width="68" height="26" rx="5" fill="#34495e" ${OL}/><rect x="14" y="6" width="40" height="26" rx="4" fill="#2c3e50" ${OL}/><rect x="18" y="10" width="32" height="14" rx="2" fill="#7bed9f"/><text x="34" y="21" text-anchor="middle" font-size="9" font-family="monospace" fill="#145a32">₺</text><g fill="#bdc3c7"><rect x="14" y="36" width="8" height="5" rx="1"/><rect x="26" y="36" width="8" height="5" rx="1"/><rect x="38" y="36" width="8" height="5" rx="1"/><rect x="14" y="44" width="8" height="5" rx="1"/><rect x="26" y="44" width="8" height="5" rx="1"/><rect x="38" y="44" width="8" height="5" rx="1"/></g><rect x="54" y="36" width="14" height="14" rx="2" fill="#d7263d"/>`, 'art-register');
   A.door = () => svg('0 0 60 120', `<rect x="2" y="2" width="56" height="116" rx="4" fill="#6e4a2f" ${OL}/><rect x="8" y="8" width="44" height="58" rx="3" fill="#bde3f7" ${OL}/><path d="M12 14 l14 0 M12 20 l8 0" stroke="#fff" stroke-width="2" opacity=".7"/><circle cx="46" cy="74" r="3" fill="#f1c40f"/><rect x="14" y="84" width="32" height="10" rx="2" fill="#d7263d"/><text x="30" y="92" text-anchor="middle" font-size="7" font-weight="800" fill="#fff" font-family="sans-serif">AÇIK</text>`, 'art-door');
   A.lamp = () => svg('0 0 40 60', `<path d="M20 0 v22" stroke="#2c3e50" stroke-width="2"/><path d="M6 36 q14 -22 28 0z" fill="#d35400" ${OL}/><ellipse cx="20" cy="37" rx="8" ry="3" fill="#fff6c8"/><ellipse cx="20" cy="50" rx="18" ry="10" fill="#ffe08a" opacity=".25"/>`, 'art-lamp');

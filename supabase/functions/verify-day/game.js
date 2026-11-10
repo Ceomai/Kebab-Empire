@@ -603,7 +603,6 @@ window.KE = window.KE || {};
     r = Math.max(0, Math.min(255, r)); g = Math.max(0, Math.min(255, g)); b = Math.max(0, Math.min(255, b));
     return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   };
-  KE.shade = shade;
   const INK = '#3b2417';
   const OL = `stroke="${INK}" stroke-opacity=".5" stroke-width="1.5" stroke-linejoin="round"`;
 
@@ -2076,20 +2075,20 @@ KE.huyOf = function (s) {
      istasyonda yapılır; istasyona dokunmak, o istasyonu sıradaki adım olarak bekleyen siparişi (önce seçili olanı)
      ilerletir. Ateş istasyonu süreli: et ateşe konur, pişince alınır; geç kalınırsa yanar. Hatasız ve hızlı
      siparişler kombo yapar. Bütün süreler oyun dakikasıyla ölçülür, böylece günlük yeniden oynatılabilir. */
-  const pslots = (P) => P.slots || (P.slots = []);
+  const slotsOf = (P) => P.slots || (P.slots = []);
   KE.playerCap = (G, b) => (b.equipment.prep >= 2 ? 3 : 2);
   /* oyuncu bu kadar dakika hiçbir istasyona dokunmazsa elindeki (dokunulmamış) fişler ustalara döner ve oyuncu,
      bir istasyona dokunana dek yeni fiş almaz. Çalışan oyuncunun bekleyen ikinci fişi geri alınmaz. */
   KE.PLAYER_IDLE = 12;
   /* slot görünümü eski alanlara yansır (tid/step/errors): sahne, testler ve eski günlükler bunlara bakar */
-  function pmirror(P) {
-    const sl = pslots(P);
+  function syncSelectedSlot(P) {
+    const sl = slotsOf(P);
     if (P.sel == null || P.sel >= sl.length) P.sel = 0;
     const s = sl[P.sel];
     P.tid = s ? s.tid : null; P.step = s ? s.step : 0; P.errors = s ? s.errors : 0; P.start = s ? s.start : 0;
   }
   /* fişi ustalara geri ver; hiç dokunulmamışsa malzemesi depoya döner (çifte harcama olmasın) */
-  function prelease(G, b, L, sl) {
+  function releaseSlot(G, b, L, sl) {
     const t = L.tickets.find((x) => x.id === sl.tid);
     if (t && t.state === 'cook' && t.cook === 'player') {
       t.state = 'wait'; t.cook = null;
@@ -2104,17 +2103,17 @@ KE.huyOf = function (s) {
     const P = L.player;
     on = !!on;
     if (on === !!P.active) return;
-    if (!on) pslots(P).slice().forEach((sl) => prelease(G, b, L, sl));
+    if (!on) slotsOf(P).slice().forEach((sl) => releaseSlot(G, b, L, sl));
     Object.assign(P, { active: on, slots: [], sel: 0, combo: on ? P.combo || 0 : 0, tap: L.minute, afk: false });
     if (on && !P.quest && (P.questsDone || 0) < KE.QUESTS_PER_DAY && b.id === KE.mainBranchId(G)) newQuest(G, b, P);
-    pmirror(P);
+    syncSelectedSlot(P);
   };
   KE.playerTake = function (G) {
     const b = G.branches.find((x) => x.id === G.activeBranch);
     const L = G.live[b.id];
     const P = L.player;
     /* eli boşsa hemen fiş gelir; ikinci/üçüncü fiş yalnızca son 2 dakikada istasyona dokunan (hızlı çalışan) oyuncuya */
-    if (!P.active || pslots(P).length >= KE.playerCap(G, b) || P.afk || (pslots(P).length && L.minute - (P.tap || 0) > 2)) return null;
+    if (!P.active || slotsOf(P).length >= KE.playerCap(G, b) || P.afk || (slotsOf(P).length && L.minute - (P.tap || 0) > 2)) return null;
     const t = L.tickets.find((x) => x.state === 'wait' && !x.noPlayer);
     if (!t) return null;
     const p = prodOf(G, t.pid);
@@ -2124,13 +2123,13 @@ KE.huyOf = function (s) {
     flagTicket(G, L, t);
     if (t.firstTake == null) t.firstTake = L.minute;
     P.slots.push({ tid: t.id, step: 0, errors: 0, start: L.minute, fire: null, fst: null, burnt: 0, touch: L.minute });
-    pmirror(P);
+    syncSelectedSlot(P);
     return t;
   };
   KE.playerSelect = function (G, i) {
     const P = G.live[G.activeBranch].player;
-    if (Number.isInteger(i) && i >= 0 && i < pslots(P).length) P.sel = i;
-    pmirror(P);
+    if (Number.isInteger(i) && i >= 0 && i < slotsOf(P).length) P.sel = i;
+    syncSelectedSlot(P);
   };
   /* Pişme süreleri (dakika): ürünün hazırlık süresinin yarısı, en az 2; pişince 5 dakika içinde alınmalı */
   KE.fireTimes = (p) => ({ cook: Math.max(2, Math.round(p.prep * 0.5)), grace: 5 });
@@ -2167,8 +2166,7 @@ KE.huyOf = function (s) {
     const need = 3 + (n % 3);
     P.quest = { need, done: 0, reward: Math.round((avg * need * 0.4) / 5) * 5 };
   }
-  KE.playerQuestNew = newQuest;
-  function pfinish(G, b, L, sl, p, t) {
+  function finishSlot(G, b, L, sl, p, t) {
     const P = L.player;
     const took = L.minute - sl.start;
     const par = p.prep + (t.menu ? 3 : 0);
@@ -2205,12 +2203,12 @@ KE.huyOf = function (s) {
     const b = G.branches.find((x) => x.id === G.activeBranch);
     const L = G.live[b.id];
     const P = L.player;
-    const sl = pslots(P);
+    const sl = slotsOf(P);
     if (!P.active || !KE.STATIONS.some((x) => x.id === st)) return { ok: false, none: true };
     /* herhangi bir dokunuş oyuncunun başında olduğunu gösterir: boşta işareti kalkar, eli boşsa hemen fiş alır */
     P.tap = L.minute;
-    if (P.afk) { P.afk = false; while (KE.playerTake(G)); pmirror(P); return { ok: true, woke: true }; }
-    if (!sl.length) { pmirror(P); return { ok: false, none: true }; }
+    if (P.afk) { P.afk = false; while (KE.playerTake(G)); syncSelectedSlot(P); return { ok: true, woke: true }; }
+    if (!sl.length) { syncSelectedSlot(P); return { ok: false, none: true }; }
     const order = sl.map((_, i) => (i + (P.sel || 0)) % sl.length);
     let res = null;
     /* süreli istasyonda (ateş, fritöz) önce pişmiş olanı al */
@@ -2224,8 +2222,8 @@ KE.huyOf = function (s) {
       if (burnt) s.burnt++;
       s.fire = null; s.fst = null; s.step++; s.touch = L.minute;
       P.sel = i;
-      if (t && s.step >= KE.ticketSteps(G, t).length) { pfinish(G, b, L, s, p, t); pmirror(P); return { ok: true, done: true, burnt }; }
-      pmirror(P);
+      if (t && s.step >= KE.ticketSteps(G, t).length) { finishSlot(G, b, L, s, p, t); syncSelectedSlot(P); return { ok: true, done: true, burnt }; }
+      syncSelectedSlot(P);
       return { ok: true, burnt };
     }
     for (const i of order) {
@@ -2236,10 +2234,10 @@ KE.huyOf = function (s) {
       const p = prodOf(G, t.pid), steps = KE.ticketSteps(G, t);
       if (KE.stepStation(steps[s.step]) !== st) continue;
       P.sel = i; s.touch = L.minute;
-      if (KE.TIMED[st]) { s.fst = st; s.fire = L.minute + KE.TIMED[st](p).cook; pmirror(P); return { ok: true, fire: true }; }
+      if (KE.TIMED[st]) { s.fst = st; s.fire = L.minute + KE.TIMED[st](p).cook; syncSelectedSlot(P); return { ok: true, fire: true }; }
       s.step++;
-      if (s.step >= steps.length) { pfinish(G, b, L, s, p, t); pmirror(P); return { ok: true, done: true }; }
-      pmirror(P);
+      if (s.step >= steps.length) { finishSlot(G, b, L, s, p, t); syncSelectedSlot(P); return { ok: true, done: true }; }
+      syncSelectedSlot(P);
       return { ok: true };
     }
     if (res) return res;
@@ -2247,7 +2245,7 @@ KE.huyOf = function (s) {
     if (s) s.errors++;
     P.combo = 0;
     if (P.quest) P.quest.done = 0;
-    pmirror(P);
+    syncSelectedSlot(P);
     return { ok: false };
   };
   /* eski hamle: adım adı → istasyonu */
@@ -2263,8 +2261,8 @@ KE.huyOf = function (s) {
       /* el sürülmeyen fiş ustalara döner: başlanmamışsa 4 dakika, yarım kalmışsa 20 dakika sonra (paket de dahil) */
       /* başlanmamış fişin müşterisi sabırsızlanıyorsa ustalara devret (yavaş oyuncu müşteri kaçırmasın) */
       const cu = t.cid != null ? L.custs[t.cid] : null;
-      if (s.fire == null && cu && s.step === 0 && cu.wait > cu.patience * 1.2) { prelease(G, b, L, s); t.noPlayer = true; return; }
-      if (s.fire == null && L.minute - (P.tap || 0) >= KE.PLAYER_IDLE && L.minute - s.touch >= (s.step === 0 ? KE.PLAYER_IDLE : KE.PLAYER_IDLE * 3)) { prelease(G, b, L, s); P.afk = true; return; }
+      if (s.fire == null && cu && s.step === 0 && cu.wait > cu.patience * 1.2) { releaseSlot(G, b, L, s); t.noPlayer = true; return; }
+      if (s.fire == null && L.minute - (P.tap || 0) >= KE.PLAYER_IDLE && L.minute - s.touch >= (s.step === 0 ? KE.PLAYER_IDLE : KE.PLAYER_IDLE * 3)) { releaseSlot(G, b, L, s); P.afk = true; return; }
       if (s.fire != null && L.minute > s.fire + timedOf(s, p).grace + 4) {
         /* kömür oldu: malzeme gitti, sipariş baştan ustaya döner */
         P.slots.splice(P.slots.indexOf(s), 1);
@@ -2272,7 +2270,7 @@ KE.huyOf = function (s) {
         L.fx.push({ t: 'bad', sid: 'player', text: 'Yandı!' });
       }
     });
-    pmirror(P);
+    syncSelectedSlot(P);
   }
   KE.playerTick = playerTick;
 })();

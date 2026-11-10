@@ -267,7 +267,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .btn.block { width: 100%; }
 .btn.green { --bg: color-mix(in srgb, var(--nane) 78%, var(--black)); --fg: var(--white); --edge: color-mix(in srgb, var(--nane-deep) 80%, var(--black)); }
 .btn.red { --bg: var(--biber); --fg: var(--white); --edge: var(--biber-deep); }
-.btn.blue { --bg: var(--cini-light); --fg: var(--white); --edge: #1c4a7e; }
 .btn.gold { --bg: var(--altin); --fg: var(--murekkep); --edge: var(--altin-deep); }
 .btn.ghost { --bg: var(--kagit-2); --fg: var(--murekkep); --edge: var(--kagit-3); }
 
@@ -289,7 +288,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .grid.g2 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
 .grid.g3 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
 .grid.g4 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); }
-.grid.g5 { grid-template-columns: repeat(auto-fill, minmax(min(100%, 180px), 1fr)); }
 .cols2 { display: grid; gap: var(--sp-16); grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: start; }
 @media (max-width: 900px) { .cols2 { grid-template-columns: minmax(0, 1fr); } }
 .row { display: flex; gap: var(--sp-10); align-items: center; flex-wrap: wrap; }
@@ -311,7 +309,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .kpi small { font-size: var(--fs-2xs-p); letter-spacing: .8px; text-transform: uppercase; font-weight: 800; color: var(--murekkep-2); }
 .kpi b { font-family: var(--f-display); font-size: var(--fs-display-3); line-height: 1.15; overflow-wrap: anywhere; }
 .kpi em { font-style: normal; color: var(--murekkep-2); }
-.kpi.tall { padding-top: var(--sp-14); }
 .kpi .switch.lbl { margin-left: -36px; }
 
 /* Etiketler, göstergeler */
@@ -434,22 +431,8 @@ table.fin tr.click { cursor: pointer; }
 
 /* ---------- Açılış ---------- */
 .title { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: center; gap: var(--sp-24); max-width: 1280px; margin: 0 auto; width: 100%; padding-block: 40px; padding-left: max(var(--sp-16), env(safe-area-inset-left, 0px)); padding-right: max(var(--sp-16), env(safe-area-inset-right, 0px)); }
-@media (max-width: 860px) { .title { grid-template-columns: minmax(0, 1fr); } .title-art { order: -1; } }
-.title-copy { color: var(--white); display: flex; flex-direction: column; gap: var(--sp-16); }
-.title-copy .kicker { color: var(--altin); }
-.title-copy h1 { font-size: clamp(56px, 9vw, 112px); line-height: .88; color: var(--altin); text-shadow: 0 5px 0 var(--sumak), 0 12px 24px var(--shadow-35); animation: pop .7s cubic-bezier(.3, 1.6, .5, 1) both; }
-.title-copy h1 em { display: block; font-style: normal; color: var(--white); }
-.title-copy p { font-size: var(--fs-2xl); color: #dbe6f6; max-width: 46ch; }
-.title-copy small { color: #9fb4d4; }
+@media (max-width: 860px) { .title { grid-template-columns: minmax(0, 1fr); } }
 @keyframes pop { from { transform: scale(.7) rotate(-3deg); opacity: 0; } to { transform: none; opacity: 1; } }
-.title-art { position: relative; aspect-ratio: 1.15; max-width: 640px; width: 100%; justify-self: center; }
-.ta-sun { position: absolute; inset: 6% 6% 18%; border-radius: var(--r-circle); background: radial-gradient(circle at 50% 60%, rgba(255, 201, 60, .45), rgba(242, 140, 40, .15) 50%, transparent 70%); }
-.ta-store { position: absolute; left: 14%; right: 14%; top: 12%; filter: drop-shadow(0 18px 24px var(--shadow-35)); }
-.ta-doner { position: absolute; left: 2%; width: 20%; bottom: 10%; animation: float 5s ease-in-out infinite; }
-.ta-fig { position: absolute; bottom: 4%; width: 21%; filter: drop-shadow(0 10px 12px var(--shadow-35)); }
-.ta-fig.f1 { left: 22%; } .ta-fig.f2 { right: 8%; }
-.ta-dish { position: absolute; width: 14%; filter: drop-shadow(0 8px 10px var(--shadow-30)); animation: float 6s ease-in-out infinite; }
-.ta-dish.d1 { left: 46%; bottom: 2%; animation-delay: -1s; } .ta-dish.d2 { right: 2%; top: 4%; animation-delay: -3s; } .ta-dish.d3 { left: 4%; top: 6%; animation-delay: -2s; }
 @keyframes float { 50% { transform: translateY(-8px) rotate(2deg); } }
 
 /* Adımlar ve kurulum */
@@ -493,18 +476,14 @@ table.fin tr.click { cursor: pointer; }
 .dl b { font-family: var(--f-display); font-size: var(--fs-lg); } .dl small { color: var(--murekkep-2); font-size: var(--fs-xs-p); }
 
 /* ---------- Harita ---------- */
-.mapscreen { flex: 1; display: flex; flex-direction: column; position: relative; }
 .mapframe { border-radius: var(--r-18); overflow: hidden; box-shadow: var(--sh); }
 .mapframe.big { border-radius: 0; box-shadow: none; flex: 1; display: flex; }
 .mapframe svg { display: block; width: 100%; height: auto; }
 .mapframe.big svg { height: calc(100vh - 130px); min-height: 560px; width: 100%; object-fit: cover; }
 @media (max-width: 760px) { .mapframe.big svg { height: auto; min-height: 0; } } .citymap .win.dim { fill: #8bb7d6; }
-.citymap .lights .win { fill: #ffd36b; filter: drop-shadow(0 0 2px #ffcf5a); }
 .citymap .dlbl { font: 800 var(--fs-lg) var(--f-display); fill: var(--murekkep); }
 .citymap .dlbl.on { fill: var(--white); }
 .citymap .side { font: 800 var(--fs-base) var(--f-display); letter-spacing: 4px; }
-.citymap .sea { font: italic 700 var(--fs-display-2) Georgia, "Times New Roman", serif; fill: var(--white); opacity: .7; }
-.citymap .sea.small { font-size: var(--fs-sm); }
 .citymap .place { cursor: pointer; outline: none; }
 .citymap .lift { transition: transform .18s; }
 .citymap .place:focus-visible rect { stroke-opacity: .9; } @media (hover: hover) { .citymap .place:hover rect { stroke-opacity: .9; } }
@@ -512,19 +491,9 @@ table.fin tr.click { cursor: pointer; }
 .citymap .dpick .hl { transition: opacity .2s; }
 @media (hover: hover) { .citymap .dpick:hover .hl { opacity: .3; } }
 .citymap .district.muted { pointer-events: none; }
-.citymap .chim-smoke circle { fill: var(--white); opacity: .55; animation: chim 3s ease-out infinite; transform-box: fill-box; }
-.citymap .chim-smoke circle:nth-child(2) { animation-delay: -1s; } .citymap .chim-smoke circle:nth-child(3) { animation-delay: -2s; }
 @keyframes chim { from { transform: translateY(0) scale(.6); opacity: .7; } to { transform: translateY(-22px) scale(1.6); opacity: 0; } }
 .citymap .cloud { animation: drift linear infinite; }
 @keyframes drift { from { transform: translateX(-200px); } to { transform: translateX(1600px); } }
-.citymap .gulls { animation: gull 22s linear infinite; }
-@keyframes gull { from { transform: translate(-80px, 240px); } 50% { transform: translate(700px, 180px); } to { transform: translate(1480px, 230px); } }
-.citymap .map-cow { animation: graze 6s ease-in-out infinite alternate; }
-.citymap .map-cow.c2 { animation-duration: 8s; }
-@keyframes graze { to { transform: translateX(14px); } }
-.mapbar { position: absolute; left: 50%; bottom: max(16px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; align-items: center; gap: var(--sp-12); background: var(--kagit); border-radius: var(--r-18); padding: var(--sp-8) var(--sp-8) var(--sp-8) var(--sp-10); box-shadow: 0 12px 30px -10px var(--shadow-55); font-weight: 700; width: max-content; max-width: calc(100% - 32px); }
-.mapbar > span:not(.avatar) { min-width: 0; }
-@media (max-width: 640px) { .mapbar { position: static; transform: none; margin: var(--sp-12) var(--sp-16); width: auto; flex-wrap: wrap; } }
 
 /* ---------- Sabah ---------- */
 .dishgrid { display: grid; gap: var(--sp-12); grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
@@ -793,7 +762,6 @@ table.fin tr.click { cursor: pointer; }
 .goal span { display: flex; flex-direction: column; line-height: 1.25; } .goal small { color: var(--murekkep-2); font-size: var(--fs-xs-p); }
 .goal em { font-style: normal; font-weight: 800; font-size: var(--fs-xs-p); color: var(--murekkep-2); white-space: nowrap; }
 .goal.done { background: #f2fbf6; border-color: #a9dfc4; } .goal.done i { background: var(--nane); color: var(--white); }
-.rumors { margin: 0; padding-left: var(--sp-18); display: grid; gap: var(--sp-6); font-weight: 600; }
 .card.branch .br-art { width: 120px; }
 .card.branch.new { background: linear-gradient(180deg, var(--white), #fbf4e7); }
 
@@ -920,23 +888,13 @@ table.fin tr.click { cursor: pointer; }
 
 /* ---------- Harita: canlı merkez ---------- */
 .mapframe { background: #2aa3df; }
-.citymap .poi { animation: poi 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
-.citymap .poi.big { animation-duration: 3s; }
-@keyframes poi { 50% { transform: translateY(-7px); } }
-.citymap .poi-shadow { animation: poish 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-@keyframes poish { 50% { transform: scale(.75); opacity: .1; } }
-.citymap .place.fac:focus-visible .poi { animation: none; transform: translateY(-10px) scale(1.12); transition: transform .2s; } @media (hover: hover) { .citymap .place.fac:hover .poi { animation: none; transform: translateY(-10px) scale(1.12); transition: transform .2s; } }
 @media (hover: hover) { .citymap .place.fac:hover .plbl { fill: var(--biber); } }
 .citymap .plbl { letter-spacing: .2px; }
 @keyframes halo { 50% { transform: scale(1.25); opacity: .15; } }
 .citymap .tr { transform-box: fill-box; transform-origin: 50% 100%; animation: sway 4s ease-in-out infinite alternate; }
 .citymap .tr:nth-of-type(3n) { animation-duration: 5.2s; }
 @keyframes sway { from { transform: rotate(-2.5deg); } to { transform: rotate(2.5deg); } }
-.citymap .foam { animation: foam 6s linear infinite; }
 @keyframes foam { to { stroke-dashoffset: -64; } }
-.citymap .blimp { animation: blimp 70s linear infinite; }
-@keyframes blimp { from { transform: translate(-160px, 0); } 50% { transform: translate(700px, 26px); } to { transform: translate(1580px, 0); } }
-.citymap .blimp-t { font: 800 var(--fs-2xs) var(--f-display); fill: var(--white); letter-spacing: 1px; }
 .citymap .side { fill: #4f7a2c; opacity: .55; }
 .citymap .dlbl.mute { fill: #4f6b3c; opacity: .7; font-size: var(--fs-md); }
 
@@ -1191,7 +1149,6 @@ body::before { background: var(--kart); }
 /* Ramazan */
 .hchip.iftar { background: #2b2f63; color: var(--white); } .hchip.iftar .ic { background: var(--altin); color: #2b2f63; } .hchip.iftar em { color: #c9c3ff; }
 .hchip.iftar.on { background: var(--nane); } .hchip.iftar.on em { color: #e5fff2; }
-.iftarwait { position: absolute; left: 50%; bottom: 112%; transform: translateX(-50%); white-space: nowrap; background: #2b2f63; color: #ffe39a; font-size: .85cqw; font-weight: 800; border-radius: var(--r-pill); padding: .05cqw .55cqw; z-index: 4; }
 .stack .row { display: flex; gap: var(--sp-8); } .stack .row .grow { flex: 1; }
 
 /* ---------- Katmanlı harita ve telefon düzeni ---------- */
@@ -1249,7 +1206,7 @@ body.zoomed #app, body.zoomed :is(.modal-bg, .modal-out), body.zoomed .tut { zoo
 body.calm *, body.calm *::before, body.calm *::after { animation-duration: 1ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
 body.calm .citymap * { animation: none !important; }
 /* harita bir süredir boşta (UI.mapIdle): yalnızca süsleme döngüleri durur */
-.mapframe.idle :is(.cloud, .gulls, .map-cow, .chim-smoke circle, .tr, .foam, .blimp, .cl, .wv, .smk circle, .gl, .blink, .poi, .poi-shadow) { animation-play-state: paused; }
+.mapframe.idle :is(.cloud, .tr, .cl, .wv, .smk circle, .gl, .blink) { animation-play-state: paused; }
 body.calm .st-banner { animation: calmBanner 3.2s linear both !important; transform: translate(-50%, -50%) rotate(-2deg); }
 @keyframes calmBanner { 0% { opacity: 0; } 6%, 85% { opacity: 1; } 100% { opacity: 0; } }
 body.calm .fx { animation: calmFx 1.6s linear both !important; }
