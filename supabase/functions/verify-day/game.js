@@ -1495,13 +1495,15 @@ KE.huyOf = function (s) {
      Ürün karışımı son 7 günün gerçek satışına göre düzeltilir (yoksa dün, o da yoksa yalnızca model).
      Her malzeme, onu kullanan bütün ürünlerin reçetesinden (p.ing) toplanır; ayran gibi içecek de eklenir.
      Birikmiş ihtiyaç × güvenlik payı stoğu aştığı saat bitiş saatidir; pay akşama doğru büyür (geç bitişler daha çok kaçıyordu). */
-  /* Paylar 6 tohum × 2 mod × 1/3 şube, 3240 şube-günü ölçümüyle seçildi (iki modda da biten günlerin ≥%85'i uyarılsın, yanlış alarm en az).
-     Akşam payı olmadan aynı ayar biten günlerin ~%80'ini yakalıyor; kaçanlar çoğunlukla akşam biten tek ürünler. */
+  /* Paylar: "Dengeli" ayar (kullanıcı seçimi; hedef: biten günlerin ~%75'i uyarılsın, stok bitmeyen günlerde yanlış alarm ~%40).
+     6 tohum × 2 mod × 1/3 şube, 3240 şube-günü; 3/7/11 tohumlarında tarandı, 19/23/31'de doğrulandı.
+     Ölçülen (6 tohum): biten günlerde uyarı %76,1 (döner %71,3, kebap %80,5; 17:00 sonrası bitişler %75,3),
+     bitmeyen günlerde yanlış alarm %40,9, doğru malzeme %62,2 (held-out 19/23/31: %76,3 / %42,1). Önceki ayar (akşam 0,07, Z 1,75) %87,3 yakalıyor ama yanlış alarm %54,3'tü. */
   KE.STOCK_SAFETY = 1.0;
-  KE.STOCK_EVENING = 0.07; // kapanışa doğru eklenen pay (15:00'ten 23:00'e doğrusal)
+  KE.STOCK_EVENING = 0.11; // kapanışa doğru eklenen pay (15:00'ten 23:00'e doğrusal)
   KE.STOCK_EVENING_FROM = 15;
   KE.STOCK_HIST_DAYS = 7;
-  KE.STOCK_Z = 1.75; // Poisson sapması katsayısı
+  KE.STOCK_Z = 1.25; // Poisson sapması katsayısı (az satılan malzemede güvenlik payı)
   KE.STOCK_CONV = 0.8; // geçmiş yoksa gelenin yiyen payı (ölçülen ortalama)
   KE.stockForecast = function (G, b) {
     const M = MODE(G), C = KE.HOUR_CURVE;
