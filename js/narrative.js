@@ -540,7 +540,9 @@
     let card;
     try { card = e.build(G); } catch (err) { card = null; }
     let msg = '';
-    if (card && card.choices[idx]) msg = card.choices[idx].run(G, pe.ctx) || '';
+    // kartın andığı personel artık yoksa (ör. kart beklerken işten çıkarıldı) seçim uygulanmaz, kart kapanır
+    const gone = !!(pe.ctx && pe.ctx.sid != null && !G.staff.some((s) => s.id === pe.ctx.sid));
+    if (card && card.choices[idx] && !gone) msg = card.choices[idx].run(G, pe.ctx) || '';
     G.pendingEvent = null;
     return msg;
   };
