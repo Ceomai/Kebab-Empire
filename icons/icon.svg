@@ -1,0 +1,3 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" role="img" aria-label="Kebab Empire"><circle cx="32" cy="32" r="30" fill="#7a1f3d"/><circle cx="32" cy="32" r="26" fill="none" stroke="#ffc93c" stroke-width="2" stroke-dasharray="3 3"/>
+    <path d="M32 10 v42" stroke="#cfd6dc" stroke-width="3" stroke-linecap="round"/><path d="M20 16 L44 16 L38 46 L26 46 Z" fill="#b5541f" stroke="#3b2417" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M22 22 h20 M23 28 h18 M24 34 h16 M25 40 h14" stroke="#7a3a18" stroke-width="2"/><path d="M48 18 v28" stroke="#ff9a3c" stroke-width="4" stroke-linecap="round"/></svg>
