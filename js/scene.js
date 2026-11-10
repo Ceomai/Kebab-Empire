@@ -2,8 +2,7 @@
    16:9 sahne; bütün konumlar sahne genişliğine göre yüzde. Varlıklar (müşteri, personel, tabak) anahtarlı DOM öğeleri;
    simülasyon her dakika konumları günceller, CSS geçişleri yürüyüşü yumuşatır. */
 (function () {
-  /** @type {any} */
-  const S = KE.SCENE = {};
+  const S = KE.SCENE = /** @type {KE_SCENE} */ ({});
   const A = () => KE.ART;
   const { clamp } = KE.U;
   /* İki yerleşim: geniş ekran (16:9) ve dikey telefon (3:4). Dikeyde mutfak üstte tam genişlikte,
@@ -221,6 +220,7 @@
 
     /* ustalar */
     const cookList = st.filter(KE.isCook);
+    /** @type {any[]} */
     const shown = cooking.slice();
     if (L.player.active) shown.push({ id: 'player' });
     shown.forEach((s, i) => {
@@ -350,13 +350,13 @@
     const dirty = L.tables.filter((t) => t.dirty).length, occ = L.tables.filter((t) => t.occ != null).length;
     const lvl = (v, a, c) => v >= c ? 'crit' : v >= a ? 'warn' : 'ok';
     const hud = document.getElementById('st-hud');
-    if (hud) KE.UI.patch(hud, [
+    if (hud) KE.UI.patch(hud, /** @type {[string, string, number | string, string][]} */ ([
       ['queue', 'Kuyruk', L.queue.length, lvl(L.queue.length, 3, 6)],
       ['fire', 'Mutfakta', waitT, lvl(waitT, 3, 6)],
       ['tray', 'Bekleyen tabak', readyT, lvl(readyT, 2, 4)],
       ['table', 'Masa', `${occ}/${L.tables.length}`, lvl(occ / Math.max(1, L.tables.length), 0.75, 1)],
       ['broom', 'Kirli', dirty, lvl(dirty, 2, 3)]
-    ].map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join(''));
+    ]).map(([ic, l, v, c]) => `<span class="hchip ${c}" title="${l}">${KE.ART.icon(ic)}<b>${v}</b><em>${l}</em></span>`).join(''));
   };
 
   let lastCoin = 0;

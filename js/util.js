@@ -3,7 +3,7 @@
    DİKKAT — rastgelelik kaynağı: KE.U.rnd ve KE.U.pick oyunun tohumlu akışından (KE.rand, js/sim/rng.js) çeker;
    oyun sonucunu etkileyen her karar bunlarla verilir. Yalnızca görünüşü etkileyen seçimler (kıyafet, saç rengi…)
    tohumsuz Math.random kullanır (bkz. characters.js pickCosmetic), yoksa yeniden oynatma bozulur. */
-window.KE = window.KE || {};
+window.KE = window.KE || /** @type {KENamespace} */ ({});
 (function () {
   /** v değerini [a, b] aralığına sıkıştırır
    * @param {number} v

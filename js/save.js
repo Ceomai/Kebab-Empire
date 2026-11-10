@@ -2,8 +2,7 @@
    Zarf: { v, app, savedAt, day, sum, game }. Eski kayıtlar sürüm sürüm göç ettirilir.
    Ana kayıt bozulursa son sağlam yedekten açılır. Dosyaya dışa/içe aktarma ve bulut kaydı aynı zarfı kullanır. */
 (function () {
-  /** @type {any} */
-  const S = KE.SAVE = {};
+  const S = KE.SAVE = /** @type {KE_SAVE} */ ({});
   S.KEY = 'kebab-empire-save-v2';
   S.BACKUP = 'kebab-empire-save-backup';
   S.RACE_KEY = 'kebab-empire-race';

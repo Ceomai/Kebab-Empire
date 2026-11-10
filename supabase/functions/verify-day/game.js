@@ -6,7 +6,7 @@ globalThis.window = globalThis;
 /* Kebab Empire — oyun verisi
    Bütün içerik (ürünler, ustalar, semtler, ekipman, dekor, ekonomi ayarları) burada durur.
    Mod'a özel her şey KE.MODES[mod] altındadır; motor tek, veri ikidir. */
-window.KE = window.KE || {};
+window.KE = window.KE || /** @type {KENamespace} */ ({});
 
 /* ---------- Ekonomi ayar tablosu (Türkiye'ye yakın, yuvarlanmış) ----------
    Not: 2026 değerleri tahminidir. Güncel resmi oranlar çıktığında yalnızca bu tablo güncellenir. */
@@ -458,7 +458,7 @@ KE.stepStation = (label) => KE.STEP_STATION[label] || 'servis';
    DİKKAT — rastgelelik kaynağı: KE.U.rnd ve KE.U.pick oyunun tohumlu akışından (KE.rand, js/sim/rng.js) çeker;
    oyun sonucunu etkileyen her karar bunlarla verilir. Yalnızca görünüşü etkileyen seçimler (kıyafet, saç rengi…)
    tohumsuz Math.random kullanır (bkz. characters.js pickCosmetic), yoksa yeniden oynatma bozulur. */
-window.KE = window.KE || {};
+window.KE = window.KE || /** @type {KENamespace} */ ({});
 (function () {
   /** v değerini [a, b] aralığına sıkıştırır
    * @param {number} v
@@ -507,8 +507,7 @@ window.KE = window.KE || {};
    İstanbul'un gün batımından hesaplanır. Diyanet'in ilan ettiği tarihlerle bir gün kayma olabilecek
    yıllar için KE.CAL.OVERRIDES kullanılır (uzaktan ayarla da güncellenebilir). */
 (function () {
-  /** @type {any} */
-  const C = KE.CAL = {};
+  const C = KE.CAL = /** @type {KE_CAL} */ ({});
   const DAY = 86400000;
   const iso = (t) => new Date(t).toISOString().slice(0, 10);
 
@@ -1867,7 +1866,7 @@ KE.huyOf = function (s) {
 
   /* Hız: çalışanın bir dakikada yaptığı iş */
   KE.staffRate = function (G, b, s) {
-    const tr = KE.TRAITS[s.trait] || {};
+    const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
     const e = s.energy;
     const energyMul = e >= 45 ? 1 : 0.62 + e / 45 * 0.38;
     const mgr = KE.branchStaff(G, b).find((x) => x.role === 'mudur' && x.pos === 'yonetim');
@@ -1884,7 +1883,7 @@ KE.huyOf = function (s) {
 
   function cookQuality(G, b, s, pid) {
     const tier = KE.TIERS[b.tier], prep = KE.equip(G, b, 'prep');
-    const tr = KE.TRAITS[s.trait] || {};
+    const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
     const star = Math.max(1, s.spec[pid] || 0);
     let q = star + tier.quality + (prep.quality || 0) + (tr.quality || 0) + (1 - s.consistency) * rnd(-2, 0.6) + (s.quality - 0.8);
     if (tr.grumpy && s.morale < 40) q -= 1.2;
@@ -1969,7 +1968,7 @@ KE.huyOf = function (s) {
       const t = L.tickets.find((x) => x.id === task.ref);
       if (!t) return;
       t.state = 'ready'; t.readyAt = L.minute; t.q = cookQuality(G, b, s, t.pid); t.cookName = s.name; t.cookId = s.id;
-      const tr = KE.TRAITS[s.trait] || {};
+      const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
       const p = prodOf(G, t.pid);
       KE.gainXp(s, t.pid, t.count * (1 + (tr.xp || 0)) * (p.requiresSpec && !s.spec[t.pid] ? 0 : 1));
       s.servedToday += t.count; s.servedTotal += t.count;
@@ -2073,8 +2072,8 @@ KE.huyOf = function (s) {
     const sat = c.sat || 0;
     const satMul = sat < 50 ? 0 : sat < 68 ? 0.45 : sat < 84 ? 1 : 1.7;
     let mul = satMul * (c.match ? 1.4 : 1);
-    if (server) { const tr = KE.TRAITS[server.trait] || {}; mul *= (1 + (tr.tip || 0)) * (0.7 + server.friendly * 0.6) * (0.8 + server.morale / 250); }
-    if (cook) { const tr = KE.TRAITS[cook.trait] || {}; mul *= 1 + (tr.tip || 0) * 0.5; if (cook.costume === 'yoresel' && c.match) mul *= 1.12; }
+    if (server) { const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[server.trait] || {}); mul *= (1 + (tr.tip || 0)) * (0.7 + server.friendly * 0.6) * (0.8 + server.morale / 250); }
+    if (cook) { const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[cook.trait] || {}); mul *= 1 + (tr.tip || 0) * 0.5; if (cook.costume === 'yoresel' && c.match) mul *= 1.12; }
     if (c.cookId === 'player') mul *= 1.25;
     if (L.special && L.special.tip) mul *= L.special.tip;
     if (c.regular) mul *= 1.3;
@@ -2461,10 +2460,10 @@ KE.huyOf = function (s) {
   };
   KE.tipShares = function (G, b, rule, jar) {
     const st = KE.branchStaff(G, b);
-    if (rule === 'kasa' || !st.length) return st.map((s) => [s, 0]);
-    const w = st.map((s) => [s, rule === 'usta' ? (s.role === 'usta' ? 2 : 1) : rule === 'performans' ? Math.max(0.2, s.servedToday) : 1]);
+    if (rule === 'kasa' || !st.length) return st.map((s) => /** @type {[Staff, number]} */ ([s, 0]));
+    const w = st.map((s) => /** @type {[Staff, number]} */ ([s, rule === 'usta' ? (s.role === 'usta' ? 2 : 1) : rule === 'performans' ? Math.max(0.2, s.servedToday) : 1]));
     const tot = w.reduce((a, x) => a + x[1], 0);
-    return w.map(([s, v]) => [s, jar * v / tot]);
+    return w.map(([s, v]) => /** @type {[Staff, number]} */ ([s, jar * v / tot]));
   };
   /* ---------- Gün kapanışı: KE.finalizeDay ----------
      Alt adımlar aşağıda tanımlı sırayla çağrılır. Sıra önemlidir: tohumlu akış ('close') bu sırayla tüketilir
@@ -2513,7 +2512,7 @@ KE.huyOf = function (s) {
     const amb = KE.ambience(G, b);
     const limit = G.mode === 'doner' ? 70 : 60;
     st.forEach((s) => {
-      const tr = KE.TRAITS[s.trait] || {};
+      const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
       const before = s.morale;
       let dm = (62 - s.morale) * 0.1;
       const share = shares[s.id] || 0;
@@ -2543,7 +2542,7 @@ KE.huyOf = function (s) {
     st.filter((s) => s.mentorId).forEach((c) => {
       const m = st.find((x) => x.id === c.mentorId);
       if (!m) { c.mentorId = null; return; }
-      const tm = KE.TRAITS[m.trait] || {}, tc = KE.TRAITS[c.trait] || {};
+      const tm = /** @type {Partial<Trait>} */ (KE.TRAITS[m.trait] || {}), tc = /** @type {Partial<Trait>} */ (KE.TRAITS[c.trait] || {});
       Object.entries(m.spec).forEach(([pid, star]) => {
         if ((c.spec[pid] || 0) >= star - 1) return;
         if (KE.gainXp(c, pid, m.teach * 4 * (1 + (tm.teachBonus || 0)) * (1 + (tc.xp || 0)) * (rule === 'usta' ? 1.3 : 1))) out.levelUps.push({ name: c.name, pid, star: c.spec[pid], mentor: m.name });
@@ -2910,6 +2909,7 @@ KE.huyOf = function (s) {
   KE.empireStatus = function (G) {
     const E = KE.EMPIRE, price = KE.empirePrice(G);
     const crowns = G.branches.filter((b) => (b.champions || 0) > 0).length;
+    /** @type {EmpireReq[]} */
     const req = [
       { id: 'branches', label: 'Her semtte bir dükkân', have: G.branches.length, need: E.branches },
       { id: 'crowns', label: 'Semt şampiyonluğu tacı', have: crowns, need: E.crowns },
@@ -3943,8 +3943,7 @@ KE.huyOf = function (s) {
    Zarf: { v, app, savedAt, day, sum, game }. Eski kayıtlar sürüm sürüm göç ettirilir.
    Ana kayıt bozulursa son sağlam yedekten açılır. Dosyaya dışa/içe aktarma ve bulut kaydı aynı zarfı kullanır. */
 (function () {
-  /** @type {any} */
-  const S = KE.SAVE = {};
+  const S = KE.SAVE = /** @type {KE_SAVE} */ ({});
   S.KEY = 'kebab-empire-save-v2';
   S.BACKUP = 'kebab-empire-save-backup';
   S.RACE_KEY = 'kebab-empire-race';

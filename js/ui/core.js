@@ -1,8 +1,7 @@
 /* Kebab Empire — arayüz: çekirdek: durum, kayıt, rehber, bildirim, modal, yönlendirme, üst çubuk, ortak parçalar, grafikler.
    Diğer arayüz dosyaları paylaşılan parçalara KE.UI.H üzerinden erişir. */
 (function () {
-  /** @type {any} */
-  const UI = KE.UI = {};
+  const UI = KE.UI = /** @type {KE_UI} */ ({});
   /** @type {any} */
   const H = UI.H = {};
   /** @type {any} */

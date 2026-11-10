@@ -2,8 +2,7 @@
    Bütün sesler tarayıcıda sentezlenir (dosya yok). Kasa, zil, eşleşme arpeji, tezgâh, hedef fanfarı
    ve hicaz makamında hafif bir saz ezgisi. Ses ancak oyuncu düğmeye bastıktan sonra başlar. */
 (function () {
-  /** @type {any} */
-  const S = KE.SND = { on: false };
+  const S = KE.SND = /** @type {KE_SND} */ ({ on: false });
   let ctx = null, master = null, musicGain = null, musicTimer = null, nextNote = 0, step = 0;
   const last = {};
   try { S.on = localStorage.getItem('kebab-empire-sound') === '1'; } catch (e) { S.on = false; }

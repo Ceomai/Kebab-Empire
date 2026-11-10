@@ -45,10 +45,10 @@
   };
   KE.tipShares = function (G, b, rule, jar) {
     const st = KE.branchStaff(G, b);
-    if (rule === 'kasa' || !st.length) return st.map((s) => [s, 0]);
-    const w = st.map((s) => [s, rule === 'usta' ? (s.role === 'usta' ? 2 : 1) : rule === 'performans' ? Math.max(0.2, s.servedToday) : 1]);
+    if (rule === 'kasa' || !st.length) return st.map((s) => /** @type {[Staff, number]} */ ([s, 0]));
+    const w = st.map((s) => /** @type {[Staff, number]} */ ([s, rule === 'usta' ? (s.role === 'usta' ? 2 : 1) : rule === 'performans' ? Math.max(0.2, s.servedToday) : 1]));
     const tot = w.reduce((a, x) => a + x[1], 0);
-    return w.map(([s, v]) => [s, jar * v / tot]);
+    return w.map(([s, v]) => /** @type {[Staff, number]} */ ([s, jar * v / tot]));
   };
   /* ---------- Gün kapanışı: KE.finalizeDay ----------
      Alt adımlar aşağıda tanımlı sırayla çağrılır. Sıra önemlidir: tohumlu akış ('close') bu sırayla tüketilir
@@ -97,7 +97,7 @@
     const amb = KE.ambience(G, b);
     const limit = G.mode === 'doner' ? 70 : 60;
     st.forEach((s) => {
-      const tr = KE.TRAITS[s.trait] || {};
+      const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
       const before = s.morale;
       let dm = (62 - s.morale) * 0.1;
       const share = shares[s.id] || 0;
@@ -127,7 +127,7 @@
     st.filter((s) => s.mentorId).forEach((c) => {
       const m = st.find((x) => x.id === c.mentorId);
       if (!m) { c.mentorId = null; return; }
-      const tm = KE.TRAITS[m.trait] || {}, tc = KE.TRAITS[c.trait] || {};
+      const tm = /** @type {Partial<Trait>} */ (KE.TRAITS[m.trait] || {}), tc = /** @type {Partial<Trait>} */ (KE.TRAITS[c.trait] || {});
       Object.entries(m.spec).forEach(([pid, star]) => {
         if ((c.spec[pid] || 0) >= star - 1) return;
         if (KE.gainXp(c, pid, m.teach * 4 * (1 + (tm.teachBonus || 0)) * (1 + (tc.xp || 0)) * (rule === 'usta' ? 1.3 : 1))) out.levelUps.push({ name: c.name, pid, star: c.spec[pid], mentor: m.name });

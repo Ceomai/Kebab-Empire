@@ -3,8 +3,7 @@
    config.json (yayınla birlikte gelir) ve varsa Supabase'deki remote_config satırı uygulanır.
    Yalnızca beyaz listedeki anahtarlar kabul edilir; bilinmeyen anahtar yok sayılır. */
 (function () {
-  /** @type {any} */
-  const CFG = KE.CONFIG = { applied: null, version: 0 };
+  const CFG = KE.CONFIG = /** @type {KE_CONFIG} */ ({ applied: null, version: 0 });
   const CACHE = 'kebab-empire-config';
   const isObj = (o) => o && typeof o === 'object' && !Array.isArray(o);
   const num = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;

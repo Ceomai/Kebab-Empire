@@ -9,14 +9,13 @@ const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const APP_VERSION = import.meta.env.VITE_APP_VERSION || 'dev';
 const CONSENT_KEY = 'kebab-empire-consent';
 
-/** @type {any} */
-const C = (window.KE.CLOUD = {
+const C = (window.KE.CLOUD = /** @type {KE_CLOUD} */ ({
   enabled: !!(URL && KEY),
   ready: false,
   user: null,
   appVersion: APP_VERSION,
   lastError: null
-});
+}));
 let sb = null;
 const session = Math.random().toString(36).slice(2, 12);
 

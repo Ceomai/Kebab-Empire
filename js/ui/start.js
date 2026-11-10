@@ -114,6 +114,7 @@
     const ng = UI.ng;
     if (!ng.masters) {
       const t = KE.MASTER_TEMPLATES[ng.mode].filter((x) => x.role !== 'cirak').slice().sort(() => Math.random() - 0.5).slice(0, 3);
+      /** @type {any} makeStaff için yalnızca nextId, day, mode gerekir */
       const fakeG = { nextId: 900, day: 1, mode: ng.mode };
       ng.masters = t.map((x) => Object.assign(KE.makeStaff(fakeG, Object.assign({}, x, { role: 'usta' })), { tmpl: x }));
       /* yeni nesil: ustalar ailenin ocak bilgisini devralır */

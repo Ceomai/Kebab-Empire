@@ -4,8 +4,7 @@
    sözlükte aranır, yer tutucular çevrilmiş hâlleriyle geri konur. Sözlükte olmayan metin Türkçe kalır.
    Böylece "12 müşteri" ile "40 müşteri" tek bir kalıptan ("{0} müşteri") çevrilir. */
 (function () {
-  /** @type {any} */
-  const I = KE.I18N = { lang: 'tr', dict: {}, langs: { tr: 'Türkçe', en: 'English', de: 'Deutsch' }, collect: null };
+  const I = KE.I18N = /** @type {KE_I18N} */ ({ lang: 'tr', dict: {}, langs: { tr: 'Türkçe', en: 'English', de: 'Deutsch' }, collect: null });
   const LANG_KEY = 'kebab-empire-lang';
   const NUM = /[−-]?\d[\d.,]*(?:\s?[₺%])?|%\s?\d[\d.,]*/g;
   const TR = /[A-Za-zÇĞİÖŞÜçğıöşü]/;

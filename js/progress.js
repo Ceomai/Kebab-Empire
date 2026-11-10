@@ -10,6 +10,7 @@
   KE.empireStatus = function (G) {
     const E = KE.EMPIRE, price = KE.empirePrice(G);
     const crowns = G.branches.filter((b) => (b.champions || 0) > 0).length;
+    /** @type {EmpireReq[]} */
     const req = [
       { id: 'branches', label: 'Her semtte bir dükkân', have: G.branches.length, need: E.branches },
       { id: 'crowns', label: 'Semt şampiyonluğu tacı', have: crowns, need: E.crowns },

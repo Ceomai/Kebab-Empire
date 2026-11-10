@@ -78,7 +78,7 @@
     const short = open.map((b) => [b, KE.shortfall(G, b)]).filter(([, x]) => x.items.length);
     const cost = short.reduce((a, [, x]) => a + x.cost, 0);
     /* sabah siparişi tamamsa bile gerçekçi tahmin (saatlik müşteri tipi karışımı, son 7 günün satışı, malzeme bazında ihtiyaç, akşam payı) */
-    const fc = short.length ? null : open.map((b) => [b, KE.stockForecast(G, b)]).find(([, f]) => !f.ok);
+    const fc = short.length ? null : open.map((b) => /** @type {[Branch, ReturnType<KENamespace['stockForecast']>]} */ ([b, KE.stockForecast(G, b)])).find(([, f]) => !f.ok);
     const ing = (k) => (MODE().ingredients[k] || { name: k }).name;
     if (short.length) out.push({ id: 'stok', ic: 'cart', ok: false, label: 'Stok bugüne yetmez', bad: `${short.reduce((a, [, x]) => a + x.items.length, 0)} malzeme eksik`, btn: [`Tamamla · ${KE.tl(cost)}`, 'data-a="topUpAll"'] });
     else if (fc) {

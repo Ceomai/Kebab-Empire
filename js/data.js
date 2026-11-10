@@ -1,7 +1,7 @@
 /* Kebab Empire — oyun verisi
    Bütün içerik (ürünler, ustalar, semtler, ekipman, dekor, ekonomi ayarları) burada durur.
    Mod'a özel her şey KE.MODES[mod] altındadır; motor tek, veri ikidir. */
-window.KE = window.KE || {};
+window.KE = window.KE || /** @type {KENamespace} */ ({});
 
 /* ---------- Ekonomi ayar tablosu (Türkiye'ye yakın, yuvarlanmış) ----------
    Not: 2026 değerleri tahminidir. Güncel resmi oranlar çıktığında yalnızca bu tablo güncellenir. */

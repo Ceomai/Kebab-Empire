@@ -3,8 +3,7 @@
    Adalar, köprüler ve simge yapılar. Zemin bir kez üretilip saklanır; tesis rozetleri,
    dükkânlar, iş etiketleri ve rota her çizimde üstüne eklenir. */
 (function () {
-  /** @type {any} */
-  const M = KE.MAP = {};
+  const M = KE.MAP = /** @type {KE_MAP} */ ({});
   const f1 = (n) => Math.round(n * 10) / 10;
 
   /* Dükkân konumları (1400×860) */

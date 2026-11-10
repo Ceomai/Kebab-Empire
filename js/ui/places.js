@@ -213,7 +213,7 @@
   /* Oyun sonu: imparatorluk yolu */
   /* Rakip: düello karnesi ve sıradaki hamle */
   function rivalPanel() {
-    const G = KE.G, R = G.rival || {};
+    const G = KE.G, R = /** @type {Game['rival']} */ (G.rival || {});
     if (G.flags.empire) return '';
     const nx = KE.rivalNext(G);
     const steps = KE.RIVAL_ARC.map((a, i) => `<i class="${i < (R.stage || 0) ? 'on' : ''}"></i>`).join('');

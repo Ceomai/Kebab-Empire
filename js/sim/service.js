@@ -180,7 +180,7 @@
 
   /* Hız: çalışanın bir dakikada yaptığı iş */
   KE.staffRate = function (G, b, s) {
-    const tr = KE.TRAITS[s.trait] || {};
+    const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
     const e = s.energy;
     const energyMul = e >= 45 ? 1 : 0.62 + e / 45 * 0.38;
     const mgr = KE.branchStaff(G, b).find((x) => x.role === 'mudur' && x.pos === 'yonetim');
@@ -197,7 +197,7 @@
 
   function cookQuality(G, b, s, pid) {
     const tier = KE.TIERS[b.tier], prep = KE.equip(G, b, 'prep');
-    const tr = KE.TRAITS[s.trait] || {};
+    const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
     const star = Math.max(1, s.spec[pid] || 0);
     let q = star + tier.quality + (prep.quality || 0) + (tr.quality || 0) + (1 - s.consistency) * rnd(-2, 0.6) + (s.quality - 0.8);
     if (tr.grumpy && s.morale < 40) q -= 1.2;
@@ -282,7 +282,7 @@
       const t = L.tickets.find((x) => x.id === task.ref);
       if (!t) return;
       t.state = 'ready'; t.readyAt = L.minute; t.q = cookQuality(G, b, s, t.pid); t.cookName = s.name; t.cookId = s.id;
-      const tr = KE.TRAITS[s.trait] || {};
+      const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
       const p = prodOf(G, t.pid);
       KE.gainXp(s, t.pid, t.count * (1 + (tr.xp || 0)) * (p.requiresSpec && !s.spec[t.pid] ? 0 : 1));
       s.servedToday += t.count; s.servedTotal += t.count;
@@ -386,8 +386,8 @@
     const sat = c.sat || 0;
     const satMul = sat < 50 ? 0 : sat < 68 ? 0.45 : sat < 84 ? 1 : 1.7;
     let mul = satMul * (c.match ? 1.4 : 1);
-    if (server) { const tr = KE.TRAITS[server.trait] || {}; mul *= (1 + (tr.tip || 0)) * (0.7 + server.friendly * 0.6) * (0.8 + server.morale / 250); }
-    if (cook) { const tr = KE.TRAITS[cook.trait] || {}; mul *= 1 + (tr.tip || 0) * 0.5; if (cook.costume === 'yoresel' && c.match) mul *= 1.12; }
+    if (server) { const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[server.trait] || {}); mul *= (1 + (tr.tip || 0)) * (0.7 + server.friendly * 0.6) * (0.8 + server.morale / 250); }
+    if (cook) { const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[cook.trait] || {}); mul *= 1 + (tr.tip || 0) * 0.5; if (cook.costume === 'yoresel' && c.match) mul *= 1.12; }
     if (c.cookId === 'player') mul *= 1.25;
     if (L.special && L.special.tip) mul *= L.special.tip;
     if (c.regular) mul *= 1.3;

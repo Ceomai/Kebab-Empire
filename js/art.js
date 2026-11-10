@@ -2,8 +2,7 @@
    Bütün görseller SVG: yemekler, ocaklar, sahne mobilyası, çiftlik hayvanları, harita binaları, arayüz ikonları.
    Tek çizgi dili: koyu kahve, yarı saydam kontur; yumuşak gölge; sıcak ışık. */
 (function () {
-  /** @type {any} */
-  const A = KE.ART = {};
+  const A = KE.ART = /** @type {KE_ART} */ ({});
   let uid = 0;
   const id = (p) => (p || 'k') + (++uid);
   const INK = '#3b2417';
