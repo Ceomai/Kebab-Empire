@@ -9990,5 +9990,13 @@
  "Tezgâh dokunuşları, biten sipariş, hedef ve alışverişte kısa titreşim": {
   "en": "Short vibration for counter taps, finished orders, goals and purchases",
   "de": "Kurze Vibration bei Tresen-Tipps, fertigen Bestellungen, Zielen und Einkäufen"
+ },
+ "Kasada yeterli para yok.": {
+  "en": "Not enough cash in the till.",
+  "de": "Nicht genug Geld in der Kasse."
+ },
+ "Bu şubede zaten var.": {
+  "en": "This branch already has it.",
+  "de": "Diese Filiale hat das schon."
  }
 }

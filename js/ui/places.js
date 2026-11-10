@@ -150,7 +150,7 @@
     const offers = KE.loanOffers(KE.G);
     return `<main class="screen">${head('Banka', 'Esnaf kredisi · aylık %3,4 faiz, eşit taksit', null, 'banker')}
       <section class="panel"><div class="sechead"><h2>Kredi teklifleri</h2></div><div class="grid g3">${offers.map((o) => `<article class="card loan"><small class="muted">${o.months} ay vade</small><b class="big">${KE.tl(o.amount)}</b><div class="statl"><span>Taksit</span><b>${KE.tl(o.monthly)}</b></div><div class="statl"><span>Toplam</span><b>${KE.tl(o.total)}</b></div><button class="btn sm green block" data-a="loan" data-amt="${o.amount}" data-m="${o.months}" ${KE.G.loans.length >= 3 ? 'disabled' : ''}>Kullan</button></article>`).join('')}</div>${KE.G.loans.length >= 3 ? '<p class="small neg">En fazla 3 kredi kullanabilirsin.</p>' : ''}</section>
-      <section class="panel"><div class="sechead"><h2>Kredilerim</h2></div><div class="grid g3">${KE.G.loans.map((l, i) => { const pay = Math.round(l.monthly * l.remaining * 0.93); return `<article class="card loan"><b class="big">${KE.tl(l.amount)}</b><div class="statl"><span>Taksit</span><b>${KE.tl(l.monthly)}</b></div><div class="statl"><span>Kalan</span><b>${l.remaining} ay</b></div><button class="btn sm ghost block" data-a="payoff" data-i="${i}" ${KE.G.cash < pay ? 'disabled' : ''}>Erken kapat · ${KE.tl(pay)}</button></article>`; }).join('') || '<p class="muted">Kredi yok.</p>'}</div></section></main>`;
+      <section class="panel"><div class="sechead"><h2>Kredilerim</h2></div><div class="grid g3">${KE.G.loans.map((l, i) => { const pay = KE.payoffCost(l); return `<article class="card loan"><b class="big">${KE.tl(l.amount)}</b><div class="statl"><span>Taksit</span><b>${KE.tl(l.monthly)}</b></div><div class="statl"><span>Kalan</span><b>${l.remaining} ay</b></div><button class="btn sm ghost block" data-a="payoff" data-i="${i}" ${KE.G.cash < pay ? 'disabled' : ''}>Erken kapat · ${KE.tl(pay)}</button></article>`; }).join('') || '<p class="muted">Kredi yok.</p>'}</div></section></main>`;
   };
 
   /* ---------- Belediye ---------- */
@@ -159,19 +159,11 @@
     return `<main class="screen">${head('Belediye', 'Ruhsat, hijyen ve denetim', null, 'bulent')}
       <div class="grid g3">${KE.G.branches.map((b) => `<article class="card"><h3>${esc(b.name)}</h3><div class="statl"><span>Temizlik</span>${bar(b.cleanliness, b.cleanliness < 40 ? 'crit' : b.cleanliness < 60 ? 'warn' : 'ok')}<b>${Math.round(b.cleanliness)}</b></div>
         <p class="small muted">${b.cleanliness < (KE.G.flags.muhtar ? 45 : 55) ? 'Denetim gelirse ceza yersin.' : 'Denetimden rahat geçer.'}</p>
-        <div class="pc-foot"><span class="small">Hijyen eğitimi ve derin temizlik</span><button class="btn sm green" data-a="hygiene" data-id="${b.id}">${KE.tl(12000 * KE.G.priceIndex)}</button></div></article>`).join('')}</div>
+        <div class="pc-foot"><span class="small">Hijyen eğitimi ve derin temizlik</span><button class="btn sm green" data-a="hygiene" data-id="${b.id}">${KE.tl(KE.hygieneCost(KE.G))}</button></div></article>`).join('')}</div>
       <div class="note">${IC('broom')}<span>Temizlik her müşteriyle düşer; masa toplamak ve temizlik görevlisi yükseltir. Denetimde ${KE.G.flags.muhtar ? 45 : 55}'in altı cezadır${KE.G.flags.muhtar ? ' (Muhtar Kemal Bey sayesinde)' : ''}. Bugüne kadar ödenen ceza: ${KE.tl(fines)}</span></div></main>`;
   };
 
   /* ---------- Reklam ajansı ---------- */
-  const CAMPAIGNS = [
-    { id: 'ilan', name: 'El ilanı dağıtımı', cost: 6000, days: 4, icon: 'map', desc: 'Sanayi ve konut sokaklarına ilan. Müşteri +%12, işçi ve aile +%30.', mods: [['traffic', 1.12], ['type:isci', 1.3], ['type:aile', 1.3]] },
-    { id: 'sosyal', name: 'Sosyal medya kampanyası', cost: 14000, days: 7, icon: 'heart', desc: 'Kısa videolar ve fenomen paylaşımları. Müşteri +%18, öğrenci ve gece +%50.', mods: [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]] },
-    { id: 'radyo', name: 'Radyo reklamı', cost: 24000, days: 7, icon: 'bolt', desc: 'Sabah trafiğinde jingle. Bütün şubelerde müşteri +%10, beyaz yaka +%30.', mods: [['traffic', 1.1], ['type:beyaz', 1.3]] },
-    { id: 'blog', name: 'Gurme blog daveti', cost: 10000, days: 5, icon: 'star', desc: 'Yemek yazarlarına tadım. Gurme +%60. Usta ★4 ve üstüyse itibar +4.', mods: [['type:gurme', 1.6]], rep: true },
-    { id: 'tadim', name: 'Tadım menüsü', cost: 12000, days: 7, icon: 'chef', mode: 'kebap', desc: 'Meze, ara sıcak ve tatlı eşliğinde tadım tabağı. Hesap ortalaması +%12, gurme +%30. Müşteri sayısını artırmaz; dolu dükkânda da kazandırır.', mods: [['spend', 1.12], ['type:gurme', 1.3]] },
-    { id: 'tabela', name: 'Işıklı tabela yenileme', cost: 20000, days: 0, icon: 'store', desc: 'Seçili şubede kalıcı olarak müşteri +%6. Şube başına bir kez.', sign: true }
-  ];
   /* Kampanyanın beklenen getirisi: dünkü kapasite kaybı ve hesap ortalamasıyla kaba tahmin */
   function campEstimate(c, b, cost, capLost, ys) {
     if (!ys || !ys.served) return { cls: '', text: 'Bir gün çalıştıktan sonra getiri tahmini burada görünür.' };
@@ -198,7 +190,7 @@
     const capLost = ys && ys.arrivals > 20 ? (ys.lostWait + ys.lostFull + ys.lostFood) / ys.arrivals : 0;
     return `<main class="screen">${head('Reklam Ajansı', 'Doğru semte doğru kampanya', null, 'ajans')}
       ${capLost >= 0.12 ? `<div class="alert warn">${IC('queue')}<span><b>Dükkân zaten dolu:</b> dün gelenlerin %${KE.ekSayi(String(Math.round(capLost * 100)), 'i')} kapasite yetmediği için gitti. Reklamın getireceği müşterilerin çoğu da kapıdan dönecek; önce ekibi ya da salonu büyüt.</span></div>` : ''}
-      <div class="grid g3">${CAMPAIGNS.filter((c) => !c.mode || c.mode === KE.G.mode).map((c) => { const cost = Math.round(c.cost * KE.G.priceIndex); const done = c.sign && b.signBoost; const run = active.find((m) => m.camp === c.id); const est = campEstimate(c, b, cost, capLost, ys); return `<article class="card"><span class="kicker">${IC(c.icon)}${c.days ? c.days + ' gün' : 'Kalıcı'}</span><h3>${c.name}</h3><p class="small">${c.desc}</p>${est && !done && !run ? `<p class="campest ${est.cls}">${IC(est.cls === 'gr' ? 'check' : est.cls === 'rd' ? 'bolt' : 'chart')}<span>${est.text}</span></p>` : ''}<div class="pc-foot">${done ? `<span class="chip gr">${IC('check')}Yapıldı</span>` : run ? `<span class="chip bl">Sürüyor · ${run.days} gün</span>` : `<b>${KE.tl(cost)}</b><button class="btn sm green" data-a="campaign" data-id="${c.id}" ${KE.G.cash < cost ? 'disabled' : ''}>Başlat</button>`}</div></article>`; }).join('')}</div></main>`;
+      <div class="grid g3">${KE.CAMPAIGNS.filter((c) => !c.mode || c.mode === KE.G.mode).map((c) => { const cost = Math.round(c.cost * KE.G.priceIndex); const done = c.sign && b.signBoost; const run = active.find((m) => m.camp === c.id); const est = campEstimate(c, b, cost, capLost, ys); return `<article class="card"><span class="kicker">${IC(c.icon)}${c.days ? c.days + ' gün' : 'Kalıcı'}</span><h3>${c.name}</h3><p class="small">${c.desc}</p>${est && !done && !run ? `<p class="campest ${est.cls}">${IC(est.cls === 'gr' ? 'check' : est.cls === 'rd' ? 'bolt' : 'chart')}<span>${est.text}</span></p>` : ''}<div class="pc-foot">${done ? `<span class="chip gr">${IC('check')}Yapıldı</span>` : run ? `<span class="chip bl">Sürüyor · ${run.days} gün</span>` : `<b>${KE.tl(cost)}</b><button class="btn sm green" data-a="campaign" data-id="${c.id}" ${KE.G.cash < cost ? 'disabled' : ''}>Başlat</button>`}</div></article>`; }).join('')}</div></main>`;
   };
 
   /* ---------- Mahalle kahvesi ---------- */
@@ -294,7 +286,7 @@
       ${investPanel()}
       ${charityPanel()}
       <div class="note">${IC('users')}<span>Yeni şubeye Usta Pazarı'ndan bir usta, Eleman Bürosu'ndan kasiyer ve komi/garson al. Müdür, ekibi yoğunluğa göre kendisi yönetir. Ustasız şube kepenk açamaz.</span></div>
-      ${KE.G.branches.length >= 3 ? `<section class="panel row between"><div><h2>Merkezi mutfak</h2><p class="small muted">Döner ve kıyma merkezde hazırlanıp şubelere dağıtılır. Malzeme maliyeti %12 düşer.</p></div>${KE.G.centralKitchen ? `<span class="chip gr">${IC('check')}Kuruldu</span>` : `<button class="btn green" data-a="central" ${KE.G.cash < 450000 * KE.G.priceIndex ? 'disabled' : ''}>${KE.tl(450000 * KE.G.priceIndex)}</button>`}</section>` : ''}
+      ${KE.G.branches.length >= 3 ? `<section class="panel row between"><div><h2>Merkezi mutfak</h2><p class="small muted">Döner ve kıyma merkezde hazırlanıp şubelere dağıtılır. Malzeme maliyeti %12 düşer.</p></div>${KE.G.centralKitchen ? `<span class="chip gr">${IC('check')}Kuruldu</span>` : `<button class="btn green" data-a="central" ${KE.G.cash < KE.centralCost(KE.G) ? 'disabled' : ''}>${KE.tl(KE.centralCost(KE.G))}</button>`}</section>` : ''}
       <div class="grid g3">${cards}</div>
       ${CL() ? `<section class="panel" id="cityrank"><div class="sechead"><h2>Şehir sıralaması</h2><span class="muted small">Bu ay, doğrulanmış günlere göre bütün oyuncular</span></div><p class="small muted rankmsg">Yükleniyor…</p></section>` : ''}</main>`;
   };
@@ -378,5 +370,4 @@
       }).join('')}</div></main>`;
   };
 
-  Object.assign(H, { CAMPAIGNS });
 })();

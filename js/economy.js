@@ -146,4 +146,26 @@
   /* Bankanın bugünkü kredi teklifleri (arayüz ve sunucu doğrulaması aynı listeyi kullanır) */
   KE.LOAN_RATE = 0.034;
   KE.loanOffers = (G) => [[300000, 12], [750000, 24], [1500000, 36]].map(([a, m]) => KE.loanOffer(Math.round(a * G.priceIndex / 1000) * 1000, m, KE.LOAN_RATE));
+  KE.LOAN_MAX = 3;
+  /* Krediyi erken kapatma bedeli: kalan taksitlerin %93'ü (arayüz, motor ve sunucu zinciri aynı formülü kullanır) */
+  KE.payoffCost = (l) => Math.round(l.monthly * l.remaining * 0.93);
+  /* Bankanın bugünkü tekliflerinden birini kullan (en fazla 3 kredi) */
+  KE.takeLoan = function (G, amount, months) {
+    const o = KE.loanOffers(G).find((x) => x.amount === amount && x.months === months);
+    if (!o) return { ok: false };
+    if (G.loans.length >= KE.LOAN_MAX) return { ok: false, msg: 'En fazla 3 kredi kullanabilirsin.' };
+    G.loans.push({ amount: o.amount, monthly: o.monthly, remaining: o.months });
+    G.cash += o.amount;
+    return { ok: true, msg: `${KE.tl(o.amount)} hesabına geçti.`, amount: o.amount };
+  };
+  /* Krediyi erken kapat: bedel kasadan düşer, kredi listeden çıkar */
+  KE.payoffLoan = function (G, i) {
+    const l = G.loans[i];
+    if (!l) return { ok: false };
+    const pay = KE.payoffCost(l);
+    if (G.cash < pay) return { ok: false, msg: 'Kasada yeterli para yok.' };
+    G.cash -= pay; KE.addExtra(G, 'other', pay);
+    G.loans.splice(i, 1);
+    return { ok: true, msg: 'Kredi kapatıldı.', cost: pay };
+  };
 })();

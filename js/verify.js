@@ -2,11 +2,12 @@
    Sabah durumu + oyuncu hamleleri + bahşiş kuralı ile günü yeniden oynatır ve iddia edilen
    sonucu karşılaştırır. Rastgelelik tohumlu olduğundan sonuç birebir aynı çıkmalıdır. */
 (function () {
-  KE.verifyDay = function (morningEnvelope, log, todayRule, claim) {
+  /* Günü yeniden oynatır; sonuçla birlikte gün sonu durumunu (G) da döndürür (verifyChain ikinci kez oynatmasın) */
+  function replayDay(morningEnvelope, log, todayRule, claim) {
     let G;
-    try { G = KE.SAVE.open(morningEnvelope); } catch (e) { return { ok: false, note: 'sabah kaydı açılamadı: ' + e.message }; }
-    if (G.phase !== 'morning') return { ok: false, note: 'kayıt sabah evresinde değil' };
-    if (claim.day != null && claim.day !== G.day) return { ok: false, note: 'gün uyuşmuyor' };
+    try { G = KE.SAVE.open(morningEnvelope); } catch (e) { return { r: { ok: false, note: 'sabah kaydı açılamadı: ' + e.message } }; }
+    if (G.phase !== 'morning') return { r: { ok: false, note: 'kayıt sabah evresinde değil' } };
+    if (claim.day != null && claim.day !== G.day) return { r: { ok: false, note: 'gün uyuşmuyor' } };
     const S = KE.replayService(G, log || []);
     KE.finalizeDay(G, todayRule || G.tipRule);
     const got = { served: 0, revenue: 0 };
@@ -14,14 +15,14 @@
     got.revenue = Math.round(got.revenue);
     got.reputation = Math.round(G.reputation * 10) / 10;
     const same = got.served === claim.served && Math.abs(got.revenue - Math.round(claim.revenue)) <= 1 && Math.abs(got.reputation - Math.round(claim.reputation * 10) / 10) <= 0.1;
-    return { ok: same, got, note: same ? 'doğrulandı' : `uyuşmadı: sunucu ${JSON.stringify(got)}` };
-  };
+    return { r: { ok: same, got, note: same ? 'doğrulandı' : `uyuşmadı: sunucu ${JSON.stringify(got)}` }, G };
+  }
+  KE.verifyDay = (morningEnvelope, log, todayRule, claim) => replayDay(morningEnvelope, log, todayRule, claim).r;
   /* ---------- Zincir: sabah kaydı bir önceki doğrulanmış günün sonundan mı türedi? ----------
      Sabah oyuncunun yapabildikleri: harcamak, kredi çekmek, olay kartını çözmek, hedef ödülü almak,
      işe almak/çıkarmak, fiyat ve menü ayarı. Bunların hiçbiri kasayı ya da itibarı aşağıdaki
      sınırların üstüne çıkaramaz; ustaların yıldızı ve deneyimi sabah artamaz; geçmiş değişemez. */
   const clone = (o) => JSON.parse(JSON.stringify(o));
-  KE.FRESH = { cash: 450000, reputation: 30 };
   KE.chainCheck = function (prevEnv, curEnv) {
     let P, Cu;
     try { Cu = KE.SAVE.open(clone(curEnv)); } catch (e) { return { ok: false, note: 'sabah kaydı açılamadı' }; }
@@ -45,7 +46,6 @@
     const okul = ((Cu.charity || {}).okul || 0) - ((P.charity || {}).okul || 0);
     if (Object.entries(P.charity || {}).some(([k, v]) => ((Cu.charity || {})[k] || 0) < v)) return bad('bağış geri alınmış');
     if (okul > 0) maxRep += 3 * okul;
-    if ((Cu.loans || []).length < (P.loans || []).length) return bad('kredi silinmiş');
     // yeni krediler (öncekilerle eşleşmeyenler) bankanın o günkü tekliflerinden biri olmalı
     const oldLoans = (P.loans || []).slice(), offers = KE.loanOffers(P);
     const same = (a, b) => a.amount === b.amount && a.monthly === b.monthly && a.remaining === b.remaining;
@@ -56,8 +56,12 @@
       if (!offers.some((o) => o.amount === l.amount && o.monthly === l.monthly && o.months === l.remaining)) return bad('kredi teklifle uyuşmuyor');
       newLoans += l.amount;
     }
+    // listeden çıkan krediler: vadesi bitmiş (kalan 0) ya da erken kapatılmış olmalı; kapatma bedeli kasadan düşmüş olmalı
+    const paidOff = oldLoans.reduce((a, l) => a + (l.remaining > 0 ? KE.payoffCost(l) : 0), 0);
     const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + KE.goalReward(Cu, KE.GOALS.find((g) => g.id === k) || {}), 0);
-    if (Cu.cash > maxCash + newLoans + goalCash + 1) return bad('kasa açıklanamayan biçimde arttı');
+    const cashCap = maxCash + newLoans + goalCash + 1;
+    if (Cu.cash > cashCap) return bad('kasa açıklanamayan biçimde arttı');
+    if (Cu.cash > cashCap - paidOff) return bad('kredi silinmiş');
     if (Cu.reputation > maxRep + 0.6) return bad('itibar artmış');
     if (Cu.contract && JSON.stringify(Cu.contract) !== JSON.stringify(P.contract)) {
       const o = KE.contractOffers(P).find((x) => x.id === Cu.contract.id);
@@ -104,12 +108,9 @@
     if (!rc.ok) return rc;
     const c = KE.chainCheck(prevEnd, morningEnv);
     if (!c.ok) return c;
-    const G = KE.SAVE.open(clone(morningEnv));
-    const r = KE.verifyDay(morningEnv, log, todayRule, claim);
+    const { r, G } = replayDay(clone(morningEnv), log, todayRule, claim);
     if (!r.ok) return r;
-    // gün sonu durumu (ertesi sabah, oyuncu müdahalesinden önce)
-    const S = KE.replayService(G, log || []); void S;
-    KE.finalizeDay(G, todayRule || G.tipRule);
+    // gün sonu durumu (ertesi sabah, oyuncu müdahalesinden önce): doğrulamada oynatılan günün kendisi
     return Object.assign(r, { end: KE.SAVE.envelope(G) });
   };
 })();

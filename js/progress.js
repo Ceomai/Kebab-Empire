@@ -183,6 +183,121 @@
     G.weekly = { start: G.day, kind: k.kind, target, text: k.text.replace('{t}', k.kind === 'tips' ? KE.tl(target) : String(target)), reward, value: 0, done: false, acc: { served: 0, match: 0, player: 0, tips: 0, satS: 0, satN: 0 } };
   };
 
+  /* ---------- Sabah ekonomisi: işe alma, kıyafet, ekipman, dekor, hijyen, reklam, merkezi mutfak ----------
+     Hepsi { ok, msg, ... } döndürür; arayüz yalnızca çağırır, mesajı gösterir ve yeniden çizer. */
+  const NO_CASH = 'Kasada yeterli para yok.';
+  /* Servisin ortasında masa sayısı arttıysa (salon yükseltmesi, dış masalar) canlı salona yeni masaları ekle */
+  KE.syncTables = function (G, b) {
+    const L = G.live && G.live[b.id];
+    if (!L) return;
+    while (L.tables.length < KE.tableCount(G, b)) L.tables.push({ id: L.tables.length, occ: null, dirty: false, by: null });
+  };
+  /* Usta pazarından işe al (transfer ücreti kasadan) */
+  KE.hireMaster = function (G, b, id) {
+    const s = G.market.find((x) => x.id === id);
+    if (!s) return { ok: false };
+    const ch = KE.canHire(G, b, s.role || 'usta');
+    if (!ch.ok) return { ok: false, msg: `Mutfak kadrosu dolu: ${ch.used}/${ch.cap}`, hint: ch.hint };
+    if (G.cash < (s.fee || 0)) return { ok: false, msg: NO_CASH };
+    G.cash -= s.fee || 0; if (s.fee) KE.addExtra(G, 'other', s.fee);
+    s.branchId = b.id; s.hiredDay = G.day; delete s.fee;
+    G.staff.push(s); G.market = G.market.filter((x) => x.id !== s.id);
+    return { ok: true, msg: `${s.name} ekibe katıldı!`, staff: s };
+  };
+  /* İş ilanlarından işe al (ücretsiz) */
+  KE.hireWorker = function (G, b, id) {
+    const s = G.workers.find((x) => x.id === id);
+    if (!s) return { ok: false };
+    const ch = KE.canHire(G, b, s.role);
+    if (!ch.ok) return { ok: false, msg: `${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu: ${ch.used}/${ch.cap}`, hint: ch.hint };
+    s.branchId = b.id; s.hiredDay = G.day;
+    G.staff.push(s); G.workers = G.workers.filter((x) => x.id !== s.id);
+    return { ok: true, msg: `${s.name} işe başladı.`, staff: s };
+  };
+  /* İşten çıkarma: iki haftalık brüt ücret tazminat (yasal yükümlülük: kasa eksiye düşse de ödenir); şubedeki ekibin morali −4 */
+  KE.severance = (s) => s.wage / 2;
+  KE.fireStaff = function (G, id) {
+    const s = G.staff.find((x) => x.id === id);
+    if (!s) return { ok: false };
+    const pay = KE.severance(s);
+    G.cash -= pay; KE.addExtra(G, 'other', pay);
+    G.staff = G.staff.filter((x) => x.id !== s.id);
+    G.staff.forEach((x) => { if (x.mentorId === s.id) x.mentorId = null; if (x.branchId === s.branchId) x.morale = clamp(x.morale - 4, 0, 100); });
+    return { ok: true, msg: `${s.name} ayrıldı.`, cost: pay };
+  };
+  /* Kıyafet: moral artar, kostüm hedefi kontrol edilir */
+  KE.buyCostume = function (G, sid, cid) {
+    const s = G.staff.find((x) => x.id === sid), c = KE.COSTUMES.find((x) => x.id === cid);
+    if (!s || !c) return { ok: false };
+    if (c.cost && G.cash < c.cost) return { ok: false, msg: NO_CASH };
+    G.cash -= c.cost; if (c.cost) KE.addExtra(G, 'capex', c.cost);
+    s.costume = c.id; s.morale = clamp(s.morale + c.morale, 0, 100);
+    const goals = KE.checkGoals(G);
+    return { ok: true, msg: `${s.name} yeni kıyafetine bayıldı!`, cost: c.cost, goals };
+  };
+  /* Ekipmanı bir seviye yükselt */
+  KE.upgradeCost = (G, b, k) => { const next = MODE(G).equipment[k].levels[b.equipment[k] + 1]; return next ? next.cost * G.priceIndex : null; };
+  KE.upgradeEquipment = function (G, b, k) {
+    const eq = MODE(G).equipment[k];
+    const next = eq && eq.levels[b.equipment[k] + 1];
+    if (!next) return { ok: false };
+    const cost = next.cost * G.priceIndex;
+    if (G.cash < cost) return { ok: false, msg: NO_CASH };
+    G.cash -= cost; KE.addExtra(G, 'capex', cost); b.equipment[k] += 1;
+    if (k === 'service') KE.syncTables(G, b);
+    return { ok: true, msg: `${next.name} kuruldu. Dükkân değişti!`, cost };
+  };
+  /* Dekor al; konsept açıldıysa haber ver */
+  KE.decorCost = (G, it) => it.cost * G.priceIndex;
+  KE.buyDecor = function (G, b, id) {
+    const it = KE.DECOR.find((x) => x.id === id);
+    if (!it) return { ok: false };
+    if (b.decor.includes(it.id)) return { ok: false, msg: 'Bu şubede zaten var.' };
+    const cost = KE.decorCost(G, it);
+    if (G.cash < cost) return { ok: false, msg: NO_CASH };
+    G.cash -= cost; KE.addExtra(G, 'capex', cost); b.decor.push(it.id);
+    if (it.id === 'dismasa') KE.syncTables(G, b);
+    const concept = KE.ambience(G, b).concept;
+    const goals = KE.checkGoals(G);
+    return { ok: true, msg: concept ? `Konsept açıldı: ${concept.name}!` : `${it.name} yerleştirildi.`, concept, cost, goals };
+  };
+  /* Belediye: hijyen eğitimi ve derin temizlik (temizlik +30) */
+  KE.hygieneCost = (G) => 12000 * G.priceIndex;
+  KE.deepClean = function (G, b) {
+    if (!b) return { ok: false };
+    const c = KE.hygieneCost(G);
+    if (G.cash < c) return { ok: false, msg: NO_CASH };
+    G.cash -= c; KE.addExtra(G, 'other', c);
+    b.cleanliness = clamp(b.cleanliness + 30, 0, 100);
+    return { ok: true, msg: 'Dükkân pırıl pırıl.', cost: c };
+  };
+  /* Reklam kampanyası (KE.CAMPAIGNS); tabela şubede kalıcıdır */
+  KE.campaignCost = (G, c) => Math.round(c.cost * G.priceIndex);
+  KE.startCampaign = function (G, b, id) {
+    const c = KE.CAMPAIGNS.find((x) => x.id === id);
+    if (!c || !b) return { ok: false };
+    if (c.sign && b.signBoost) return { ok: false, msg: 'Bu şubede zaten var.' };
+    const cost = KE.campaignCost(G, c);
+    if (G.cash < cost) return { ok: false, msg: NO_CASH };
+    G.cash -= cost; KE.addExtra(G, 'ads', cost);
+    if (c.sign) { b.signBoost = 1.06; return { ok: true, msg: 'Yeni tabela gece gündüz parlıyor.', cost }; }
+    c.mods.forEach(([k, m]) => G.mods.push({ key: k, mult: m, days: c.days, label: c.name, camp: c.id }));
+    if (c.rep) { const best = Math.max(...MODE(G).products.map((p) => KE.bestStar(G, b, p.id))); G.reputation = clamp(G.reputation + (best >= 4 ? 4 : 1), 0, 100); }
+    return { ok: true, msg: `${c.name} başladı.`, cost };
+  };
+  /* Merkezi mutfak: malzeme maliyeti şubelerde düşer */
+  KE.centralCost = (G) => 450000 * G.priceIndex;
+  KE.buildCentralKitchen = function (G) {
+    if (G.centralKitchen) return { ok: false };
+    const c = KE.centralCost(G);
+    if (G.cash < c) return { ok: false, msg: NO_CASH };
+    G.cash -= c; KE.addExtra(G, 'capex', c);
+    G.centralKitchen = true;
+    return { ok: true, msg: 'Merkezi mutfak kuruldu.', cost: c };
+  };
+  /* Geç oyun: bütün semtlerde şube açıldıktan sonra haftayı tek tuşla geç */
+  KE.quickWeekOpen = (G) => G.branches.length >= KE.DISTRICTS.length;
+
   /* ---------- Vakıf ve sponsorluk ---------- */
   KE.charityCost = (G, id) => { const c = KE.CHARITY.find((x) => x.id === id), lv = KE.charityLv(G, id); return lv >= c.cost.length ? null : Math.round(c.cost.at(lv) * G.priceIndex / 10000) * 10000; };
   KE.donate = function (G, id) {

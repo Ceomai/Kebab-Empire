@@ -109,6 +109,19 @@ KE.DECOR = [
   { id: 'klima',     name: 'Mutfak kliması',      style: 'personel',   cost: 24000, ambience: 1, morale: 1.5, desc: 'Sıcak mutfakta yorgunluğu azaltır.' }
 ];
 
+/* ---------- Reklam kampanyaları (Reklam Ajansı) ---------- */
+KE.CAMPAIGNS = [
+  { id: 'ilan', name: 'El ilanı dağıtımı', cost: 6000, days: 4, icon: 'map', desc: 'Sanayi ve konut sokaklarına ilan. Müşteri +%12, işçi ve aile +%30.', mods: [['traffic', 1.12], ['type:isci', 1.3], ['type:aile', 1.3]] },
+  { id: 'sosyal', name: 'Sosyal medya kampanyası', cost: 14000, days: 7, icon: 'heart', desc: 'Kısa videolar ve fenomen paylaşımları. Müşteri +%18, öğrenci ve gece +%50.', mods: [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]] },
+  { id: 'radyo', name: 'Radyo reklamı', cost: 24000, days: 7, icon: 'bolt', desc: 'Sabah trafiğinde jingle. Bütün şubelerde müşteri +%10, beyaz yaka +%30.', mods: [['traffic', 1.1], ['type:beyaz', 1.3]] },
+  { id: 'blog', name: 'Gurme blog daveti', cost: 10000, days: 5, icon: 'star', desc: 'Yemek yazarlarına tadım. Gurme +%60. Usta ★4 ve üstüyse itibar +4.', mods: [['type:gurme', 1.6]], rep: true },
+  { id: 'tadim', name: 'Tadım menüsü', cost: 12000, days: 7, icon: 'chef', mode: 'kebap', desc: 'Meze, ara sıcak ve tatlı eşliğinde tadım tabağı. Hesap ortalaması +%12, gurme +%30. Müşteri sayısını artırmaz; dolu dükkânda da kazandırır.', mods: [['spend', 1.12], ['type:gurme', 1.3]] },
+  { id: 'tabela', name: 'Işıklı tabela yenileme', cost: 20000, days: 0, icon: 'store', desc: 'Seçili şubede kalıcı olarak müşteri +%6. Şube başına bir kez.', sign: true }
+];
+
+/* ---------- Yeni oyunun başlangıç kasası ve itibarı (newGame ve sunucu zinciri aynı değeri kullanır) ---------- */
+KE.FRESH = { cash: 450000, reputation: 30 };
+
 /* ---------- Mod tanımları ---------- */
 KE.MODES = {
   doner: {

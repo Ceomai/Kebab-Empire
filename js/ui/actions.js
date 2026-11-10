@@ -245,26 +245,19 @@
     UI.modal(`<h2>${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu (${ch.used}/${ch.cap})</h2><p>${ch.hint}</p><div class="row end"><button class="btn ghost" data-a="closeModal">Tamam</button>${KE.STAFF_GROUPS[ch.group].up ? '<button class="btn gold" data-a="goSheet" data-s="dekor">Mobilya ve Dekor</button>' : ''}<button class="btn red" data-a="goKadro" data-g="${ch.group}">Kadroya git</button></div>`);
   };
   A.goKadro = (d) => { UI.closeModal(); if (d.g === 'mutfak') UI.go('lonca', { tab: 'kadro' }); else { UI.go('buro'); setTimeout(() => { const e = document.getElementById('kadro'); if (e) e.scrollIntoView({ behavior: 'smooth' }); }, 60); } };
+  /* sabah ekonomisi: motor işi yapar ({ ok, msg }), arayüz yalnızca bildirir ve yeniden çizer */
+  const refused = (r) => { if (r.msg) UI.toast(r.msg, 'bad'); if (r.hint) UI.toast(r.hint); };
   A.hireMaster = (d) => {
-    const s = KE.G.market.find((x) => x.id === d.id);
-    if (!s) return;
-    const ch = KE.canHire(KE.G, B(), s.role || 'usta');
-    if (!ch.ok) { UI.toast(`Mutfak kadrosu dolu: ${ch.used}/${ch.cap}`, 'bad'); UI.toast(ch.hint); return; }
-    KE.G.cash -= s.fee || 0; if (s.fee) KE.addExtra(KE.G, 'other', s.fee);
-    s.branchId = KE.G.activeBranch; s.hiredDay = KE.G.day; delete s.fee;
-    KE.G.staff.push(s); KE.G.market = KE.G.market.filter((x) => x.id !== s.id);
+    const r = KE.hireMaster(KE.G, B(), d.id);
+    if (!r.ok) { refused(r); return; }
     KE.haptic('light');
-    UI.toast(`${s.name} ekibe katıldı!`, 'good'); UI.render();
+    UI.toast(r.msg, 'good'); UI.render();
   };
   A.hireWorker = (d) => {
-    const s = KE.G.workers.find((x) => x.id === d.id);
-    if (!s) return;
-    const ch = KE.canHire(KE.G, B(), s.role);
-    if (!ch.ok) { UI.toast(`${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu: ${ch.used}/${ch.cap}`, 'bad'); UI.toast(ch.hint); return; }
-    s.branchId = KE.G.activeBranch; s.hiredDay = KE.G.day;
-    KE.G.staff.push(s); KE.G.workers = KE.G.workers.filter((x) => x.id !== s.id);
+    const r = KE.hireWorker(KE.G, B(), d.id);
+    if (!r.ok) { refused(r); return; }
     KE.haptic('light');
-    UI.toast(`${s.name} işe başladı.`, 'good'); UI.render();
+    UI.toast(r.msg, 'good'); UI.render();
   };
   A.raise = (d) => { const r = KE.raiseStaff(KE.G, KE.G.staff.find((x) => x.id === d.id)); UI.toast(r.msg, r.ok ? 'good' : 'bad'); if (r.ok) UI.render(); };
   A.promote = (d) => { KE.G.flags.promoted = true; const s = KE.G.staff.find((x) => x.id === d.id); s.role = 'usta'; s.pos = 'ocak'; s.name = s.name.replace(/^Çırak /, '') + (s.name.includes('Usta') ? '' : ' Usta'); s.wage = Math.max(s.wage, KE.wageFor(s.spec, 'usta')); s.morale = clamp(s.morale + 25, 0, 100); s.mentorId = null; KE.checkGoals(KE.G).forEach((g) => UI.toast('Hedef tamamlandı: ' + g.name, 'gold')); UI.toast(`${s.name} artık usta!`, 'gold'); UI.render(); };
@@ -285,51 +278,36 @@
   };
   A.fire = (d) => {
     const s = KE.G.staff.find((x) => x.id === d.id);
-    UI.modal(`<div class="mhead"><h2>${esc(s.name)} işten çıkarılsın mı?</h2><p>İki haftalık brüt ücret ödenir: <b>${KE.tl(s.wage / 2)}</b>. Ekibin geri kalanının morali biraz düşer.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doFire" data-id="${s.id}">İşten çıkar</button></div>`, { confirm: true });
+    UI.modal(`<div class="mhead"><h2>${esc(s.name)} işten çıkarılsın mı?</h2><p>İki haftalık brüt ücret ödenir: <b>${KE.tl(KE.severance(s))}</b>. Ekibin geri kalanının morali biraz düşer.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doFire" data-id="${s.id}">İşten çıkar</button></div>`, { confirm: true });
   };
   A.doFire = (d) => {
-    const s = KE.G.staff.find((x) => x.id === d.id);
-    KE.G.cash -= s.wage / 2; KE.addExtra(KE.G, 'other', s.wage / 2);
-    KE.G.staff = KE.G.staff.filter((x) => x.id !== s.id);
-    KE.G.staff.forEach((x) => { if (x.mentorId === s.id) x.mentorId = null; if (x.branchId === s.branchId) x.morale = clamp(x.morale - 4, 0, 100); });
-    UI.closeModal(); UI.toast(`${s.name} ayrıldı.`); UI.render();
+    const r = KE.fireStaff(KE.G, d.id);
+    UI.closeModal(); if (!r.ok) return;
+    UI.toast(r.msg); UI.render();
   };
   A.costume = (d) => {
-    const s = KE.G.staff.find((x) => x.id === d.id); const c = KE.COSTUMES.find((x) => x.id === d.c);
-    KE.G.cash -= c.cost; if (c.cost) KE.addExtra(KE.G, 'capex', c.cost);
-    s.costume = c.id; s.morale = clamp(s.morale + c.morale, 0, 100);
-    UI.toast(`${s.name} yeni kıyafetine bayıldı!`, 'good'); KE.checkGoals(KE.G); UI.render();
+    const r = KE.buyCostume(KE.G, d.id, d.c);
+    if (!r.ok) { refused(r); return; }
+    UI.toast(r.msg, 'good'); UI.render();
   };
   A.upgrade = (d) => {
-    const b = B(); const eq = MODE().equipment[d.k]; const next = eq.levels[b.equipment[d.k] + 1];
-    const cost = next.cost * KE.G.priceIndex;
-    KE.G.cash -= cost; KE.addExtra(KE.G, 'capex', cost); b.equipment[d.k] += 1;
+    const r = KE.upgradeEquipment(KE.G, B(), d.k);
+    if (!r.ok) { refused(r); return; }
     KE.haptic('light');
-    if (KE.G.live && KE.G.live[b.id] && d.k === 'service') { const L = KE.G.live[b.id]; while (L.tables.length < KE.tableCount(KE.G, b)) L.tables.push({ id: L.tables.length, occ: null, dirty: false, by: null }); }
-    UI.toast(`${next.name} kuruldu. Dükkân değişti!`, 'gold'); UI.render();
+    UI.toast(r.msg, 'gold'); UI.render();
   };
   A.buyDecor = (d) => {
-    const b = B(); const it = KE.DECOR.find((x) => x.id === d.id); const cost = it.cost * KE.G.priceIndex;
-    KE.G.cash -= cost; KE.addExtra(KE.G, 'capex', cost); b.decor.push(it.id);
+    const r = KE.buyDecor(KE.G, B(), d.id);
+    if (!r.ok) { refused(r); return; }
     KE.haptic('light');
-    if (it.id === 'dismasa' && KE.G.live && KE.G.live[b.id]) { const L = KE.G.live[b.id]; while (L.tables.length < KE.tableCount(KE.G, b)) L.tables.push({ id: L.tables.length, occ: null, dirty: false, by: null }); }
-    const amb = KE.ambience(KE.G, b);
-    UI.toast(amb.concept ? `Konsept açıldı: ${amb.concept.name}!` : `${it.name} yerleştirildi.`, amb.concept ? 'gold' : 'good');
-    KE.checkGoals(KE.G); UI.render();
+    UI.toast(r.msg, r.concept ? 'gold' : 'good'); UI.render();
   };
-  A.loan = (d) => { const o = KE.loanOffers(KE.G).find((x) => x.amount === +d.amt && x.months === +d.m); if (!o || KE.G.loans.length >= 3) return; KE.G.loans.push({ amount: o.amount, monthly: o.monthly, remaining: o.months }); KE.G.cash += o.amount; UI.toast(`${KE.tl(o.amount)} hesabına geçti.`, 'good'); UI.render(); };
-  A.payoff = (d) => { const l = KE.G.loans[+d.i]; const pay = Math.round(l.monthly * l.remaining * 0.93); KE.G.cash -= pay; KE.addExtra(KE.G, 'other', pay); KE.G.loans.splice(+d.i, 1); UI.toast('Kredi kapatıldı.', 'good'); UI.render(); };
-  A.hygiene = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); const c = 12000 * KE.G.priceIndex; KE.G.cash -= c; KE.addExtra(KE.G, 'other', c); b.cleanliness = clamp(b.cleanliness + 30, 0, 100); UI.toast('Dükkân pırıl pırıl.', 'good'); UI.render(); };
-  A.campaign = (d) => {
-    const c = H.CAMPAIGNS.find((x) => x.id === d.id); const b = B(); const cost = Math.round(c.cost * KE.G.priceIndex);
-    KE.G.cash -= cost; KE.addExtra(KE.G, 'ads', cost);
-    if (c.sign) { b.signBoost = 1.06; UI.toast('Yeni tabela gece gündüz parlıyor.', 'good'); UI.render(); return; }
-    c.mods.forEach(([k, m]) => KE.G.mods.push({ key: k, mult: m, days: c.days, label: c.name, camp: c.id }));
-    if (c.rep) { const best = Math.max(...MODE().products.map((p) => KE.bestStar(KE.G, b, p.id))); KE.G.reputation = clamp(KE.G.reputation + (best >= 4 ? 4 : 1), 0, 100); }
-    UI.toast(`${c.name} başladı.`, 'good'); UI.render();
-  };
+  A.loan = (d) => { const r = KE.takeLoan(KE.G, +d.amt, +d.m); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
+  A.payoff = (d) => { const r = KE.payoffLoan(KE.G, +d.i); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
+  A.hygiene = (d) => { const r = KE.deepClean(KE.G, KE.G.branches.find((x) => x.id === d.id)); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
+  A.campaign = (d) => { const r = KE.startCampaign(KE.G, B(), d.id); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
   A.openBranch = (d) => { const b = KE.openBranch(KE.G, d.d); KE.haptic('light'); track('branch_open', { district: d.d, day: KE.G.day }); KE.G.activeBranch = b.id; KE.checkGoals(KE.G); UI.toast(`${b.name} açıldı! Şimdi usta ve ekip al.`, 'gold'); UI.render(); };
-  A.central = () => { const c = 450000 * KE.G.priceIndex; KE.G.cash -= c; KE.addExtra(KE.G, 'capex', c); KE.G.centralKitchen = true; UI.toast('Merkezi mutfak kuruldu.', 'gold'); UI.render(); };
+  A.central = () => { const r = KE.buildCentralKitchen(KE.G); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'gold'); UI.render(); };
   A.tipRule = (d) => { KE.G.tipRule = d.r; UI.todayRule = null; if (KE.G.phase === 'closing' && document.querySelector('.tipbox')) H.showClosing(); else UI.render(); };
   A.buyFarm = () => { KE.buyFarm(KE.G); track('farm_buy', { day: KE.G.day }); KE.checkGoals(KE.G); UI.toast('Besi çiftliği artık senin!', 'gold'); UI.render(); };
   A.buyAnimal = (d) => { const c = KE.buyAnimals(KE.G, d.k); KE.haptic('light'); UI.toast(`${KE.FARM[d.k].name} alındı · ${KE.tl(c)}`, 'good'); UI.render(); };
@@ -488,8 +466,7 @@
     UI.go('shop');
     H.showClosing();
   };
-  /* Geç oyun: bütün semtlerde şube açıldıktan sonra haftayı tek tuşla geç; önemli bir şey olursa durur */
-  KE.quickWeekOpen = (G) => G.branches.length >= KE.DISTRICTS.length;
+  /* Geç oyun: bütün semtlerde şube açıldıktan sonra haftayı tek tuşla geç (KE.quickWeekOpen); önemli bir şey olursa durur */
   /* günler arasında tarayıcıya nefes aldır: telefonda yedi şubeli hafta ekranı dondurmasın */
   const nextFrame = () => new Promise((r) => setTimeout(r, 0));
   A.quickWeek = async () => {

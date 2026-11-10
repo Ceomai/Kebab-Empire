@@ -114,6 +114,19 @@ KE.DECOR = [
   { id: 'klima',     name: 'Mutfak kliması',      style: 'personel',   cost: 24000, ambience: 1, morale: 1.5, desc: 'Sıcak mutfakta yorgunluğu azaltır.' }
 ];
 
+/* ---------- Reklam kampanyaları (Reklam Ajansı) ---------- */
+KE.CAMPAIGNS = [
+  { id: 'ilan', name: 'El ilanı dağıtımı', cost: 6000, days: 4, icon: 'map', desc: 'Sanayi ve konut sokaklarına ilan. Müşteri +%12, işçi ve aile +%30.', mods: [['traffic', 1.12], ['type:isci', 1.3], ['type:aile', 1.3]] },
+  { id: 'sosyal', name: 'Sosyal medya kampanyası', cost: 14000, days: 7, icon: 'heart', desc: 'Kısa videolar ve fenomen paylaşımları. Müşteri +%18, öğrenci ve gece +%50.', mods: [['traffic', 1.18], ['type:ogrenci', 1.5], ['type:gece', 1.5]] },
+  { id: 'radyo', name: 'Radyo reklamı', cost: 24000, days: 7, icon: 'bolt', desc: 'Sabah trafiğinde jingle. Bütün şubelerde müşteri +%10, beyaz yaka +%30.', mods: [['traffic', 1.1], ['type:beyaz', 1.3]] },
+  { id: 'blog', name: 'Gurme blog daveti', cost: 10000, days: 5, icon: 'star', desc: 'Yemek yazarlarına tadım. Gurme +%60. Usta ★4 ve üstüyse itibar +4.', mods: [['type:gurme', 1.6]], rep: true },
+  { id: 'tadim', name: 'Tadım menüsü', cost: 12000, days: 7, icon: 'chef', mode: 'kebap', desc: 'Meze, ara sıcak ve tatlı eşliğinde tadım tabağı. Hesap ortalaması +%12, gurme +%30. Müşteri sayısını artırmaz; dolu dükkânda da kazandırır.', mods: [['spend', 1.12], ['type:gurme', 1.3]] },
+  { id: 'tabela', name: 'Işıklı tabela yenileme', cost: 20000, days: 0, icon: 'store', desc: 'Seçili şubede kalıcı olarak müşteri +%6. Şube başına bir kez.', sign: true }
+];
+
+/* ---------- Yeni oyunun başlangıç kasası ve itibarı (newGame ve sunucu zinciri aynı değeri kullanır) ---------- */
+KE.FRESH = { cash: 450000, reputation: 30 };
+
 /* ---------- Mod tanımları ---------- */
 KE.MODES = {
   doner: {
@@ -1020,6 +1033,28 @@ KE.huyOf = function (s) {
   /* Bankanın bugünkü kredi teklifleri (arayüz ve sunucu doğrulaması aynı listeyi kullanır) */
   KE.LOAN_RATE = 0.034;
   KE.loanOffers = (G) => [[300000, 12], [750000, 24], [1500000, 36]].map(([a, m]) => KE.loanOffer(Math.round(a * G.priceIndex / 1000) * 1000, m, KE.LOAN_RATE));
+  KE.LOAN_MAX = 3;
+  /* Krediyi erken kapatma bedeli: kalan taksitlerin %93'ü (arayüz, motor ve sunucu zinciri aynı formülü kullanır) */
+  KE.payoffCost = (l) => Math.round(l.monthly * l.remaining * 0.93);
+  /* Bankanın bugünkü tekliflerinden birini kullan (en fazla 3 kredi) */
+  KE.takeLoan = function (G, amount, months) {
+    const o = KE.loanOffers(G).find((x) => x.amount === amount && x.months === months);
+    if (!o) return { ok: false };
+    if (G.loans.length >= KE.LOAN_MAX) return { ok: false, msg: 'En fazla 3 kredi kullanabilirsin.' };
+    G.loans.push({ amount: o.amount, monthly: o.monthly, remaining: o.months });
+    G.cash += o.amount;
+    return { ok: true, msg: `${KE.tl(o.amount)} hesabına geçti.`, amount: o.amount };
+  };
+  /* Krediyi erken kapat: bedel kasadan düşer, kredi listeden çıkar */
+  KE.payoffLoan = function (G, i) {
+    const l = G.loans[i];
+    if (!l) return { ok: false };
+    const pay = KE.payoffCost(l);
+    if (G.cash < pay) return { ok: false, msg: 'Kasada yeterli para yok.' };
+    G.cash -= pay; KE.addExtra(G, 'other', pay);
+    G.loans.splice(i, 1);
+    return { ok: true, msg: 'Kredi kapatıldı.', cost: pay };
+  };
 })();
 
 
@@ -1243,7 +1278,7 @@ KE.huyOf = function (s) {
     const seed0 = opts.seed || (Math.floor(Math.random() * 2147483646) + 1);
     KE.RNG.raw(seed0);
     const G = {
-      v: 3, seed: seed0, actionLog: [], saveId: 'g' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36), mode: opts.mode, owner: opts.owner || 'Patron', shopName: opts.shopName, day: 1, cash: 450000, reputation: 30,
+      v: 3, seed: seed0, actionLog: [], saveId: 'g' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36), mode: opts.mode, owner: opts.owner || 'Patron', shopName: opts.shopName, day: 1, cash: KE.FRESH.cash, reputation: KE.FRESH.reputation,
       priceIndex: 1, nextId: 1, staff: [], branches: [], activeBranch: null, loans: [], mods: [], tipRule: 'esit',
       ledger: { days: [], months: [] }, monthExtras: { ads: 0, capex: 0, fines: 0, other: 0, farm: 0 }, journal: [], news: [], goals: {},
       phase: 'morning', rival: { power: 20, district: null }, market: [], workers: [], flags: {}, centralKitchen: false,
@@ -2779,6 +2814,121 @@ KE.huyOf = function (s) {
     G.weekly = { start: G.day, kind: k.kind, target, text: k.text.replace('{t}', k.kind === 'tips' ? KE.tl(target) : String(target)), reward, value: 0, done: false, acc: { served: 0, match: 0, player: 0, tips: 0, satS: 0, satN: 0 } };
   };
 
+  /* ---------- Sabah ekonomisi: işe alma, kıyafet, ekipman, dekor, hijyen, reklam, merkezi mutfak ----------
+     Hepsi { ok, msg, ... } döndürür; arayüz yalnızca çağırır, mesajı gösterir ve yeniden çizer. */
+  const NO_CASH = 'Kasada yeterli para yok.';
+  /* Servisin ortasında masa sayısı arttıysa (salon yükseltmesi, dış masalar) canlı salona yeni masaları ekle */
+  KE.syncTables = function (G, b) {
+    const L = G.live && G.live[b.id];
+    if (!L) return;
+    while (L.tables.length < KE.tableCount(G, b)) L.tables.push({ id: L.tables.length, occ: null, dirty: false, by: null });
+  };
+  /* Usta pazarından işe al (transfer ücreti kasadan) */
+  KE.hireMaster = function (G, b, id) {
+    const s = G.market.find((x) => x.id === id);
+    if (!s) return { ok: false };
+    const ch = KE.canHire(G, b, s.role || 'usta');
+    if (!ch.ok) return { ok: false, msg: `Mutfak kadrosu dolu: ${ch.used}/${ch.cap}`, hint: ch.hint };
+    if (G.cash < (s.fee || 0)) return { ok: false, msg: NO_CASH };
+    G.cash -= s.fee || 0; if (s.fee) KE.addExtra(G, 'other', s.fee);
+    s.branchId = b.id; s.hiredDay = G.day; delete s.fee;
+    G.staff.push(s); G.market = G.market.filter((x) => x.id !== s.id);
+    return { ok: true, msg: `${s.name} ekibe katıldı!`, staff: s };
+  };
+  /* İş ilanlarından işe al (ücretsiz) */
+  KE.hireWorker = function (G, b, id) {
+    const s = G.workers.find((x) => x.id === id);
+    if (!s) return { ok: false };
+    const ch = KE.canHire(G, b, s.role);
+    if (!ch.ok) return { ok: false, msg: `${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu: ${ch.used}/${ch.cap}`, hint: ch.hint };
+    s.branchId = b.id; s.hiredDay = G.day;
+    G.staff.push(s); G.workers = G.workers.filter((x) => x.id !== s.id);
+    return { ok: true, msg: `${s.name} işe başladı.`, staff: s };
+  };
+  /* İşten çıkarma: iki haftalık brüt ücret tazminat (yasal yükümlülük: kasa eksiye düşse de ödenir); şubedeki ekibin morali −4 */
+  KE.severance = (s) => s.wage / 2;
+  KE.fireStaff = function (G, id) {
+    const s = G.staff.find((x) => x.id === id);
+    if (!s) return { ok: false };
+    const pay = KE.severance(s);
+    G.cash -= pay; KE.addExtra(G, 'other', pay);
+    G.staff = G.staff.filter((x) => x.id !== s.id);
+    G.staff.forEach((x) => { if (x.mentorId === s.id) x.mentorId = null; if (x.branchId === s.branchId) x.morale = clamp(x.morale - 4, 0, 100); });
+    return { ok: true, msg: `${s.name} ayrıldı.`, cost: pay };
+  };
+  /* Kıyafet: moral artar, kostüm hedefi kontrol edilir */
+  KE.buyCostume = function (G, sid, cid) {
+    const s = G.staff.find((x) => x.id === sid), c = KE.COSTUMES.find((x) => x.id === cid);
+    if (!s || !c) return { ok: false };
+    if (c.cost && G.cash < c.cost) return { ok: false, msg: NO_CASH };
+    G.cash -= c.cost; if (c.cost) KE.addExtra(G, 'capex', c.cost);
+    s.costume = c.id; s.morale = clamp(s.morale + c.morale, 0, 100);
+    const goals = KE.checkGoals(G);
+    return { ok: true, msg: `${s.name} yeni kıyafetine bayıldı!`, cost: c.cost, goals };
+  };
+  /* Ekipmanı bir seviye yükselt */
+  KE.upgradeCost = (G, b, k) => { const next = MODE(G).equipment[k].levels[b.equipment[k] + 1]; return next ? next.cost * G.priceIndex : null; };
+  KE.upgradeEquipment = function (G, b, k) {
+    const eq = MODE(G).equipment[k];
+    const next = eq && eq.levels[b.equipment[k] + 1];
+    if (!next) return { ok: false };
+    const cost = next.cost * G.priceIndex;
+    if (G.cash < cost) return { ok: false, msg: NO_CASH };
+    G.cash -= cost; KE.addExtra(G, 'capex', cost); b.equipment[k] += 1;
+    if (k === 'service') KE.syncTables(G, b);
+    return { ok: true, msg: `${next.name} kuruldu. Dükkân değişti!`, cost };
+  };
+  /* Dekor al; konsept açıldıysa haber ver */
+  KE.decorCost = (G, it) => it.cost * G.priceIndex;
+  KE.buyDecor = function (G, b, id) {
+    const it = KE.DECOR.find((x) => x.id === id);
+    if (!it) return { ok: false };
+    if (b.decor.includes(it.id)) return { ok: false, msg: 'Bu şubede zaten var.' };
+    const cost = KE.decorCost(G, it);
+    if (G.cash < cost) return { ok: false, msg: NO_CASH };
+    G.cash -= cost; KE.addExtra(G, 'capex', cost); b.decor.push(it.id);
+    if (it.id === 'dismasa') KE.syncTables(G, b);
+    const concept = KE.ambience(G, b).concept;
+    const goals = KE.checkGoals(G);
+    return { ok: true, msg: concept ? `Konsept açıldı: ${concept.name}!` : `${it.name} yerleştirildi.`, concept, cost, goals };
+  };
+  /* Belediye: hijyen eğitimi ve derin temizlik (temizlik +30) */
+  KE.hygieneCost = (G) => 12000 * G.priceIndex;
+  KE.deepClean = function (G, b) {
+    if (!b) return { ok: false };
+    const c = KE.hygieneCost(G);
+    if (G.cash < c) return { ok: false, msg: NO_CASH };
+    G.cash -= c; KE.addExtra(G, 'other', c);
+    b.cleanliness = clamp(b.cleanliness + 30, 0, 100);
+    return { ok: true, msg: 'Dükkân pırıl pırıl.', cost: c };
+  };
+  /* Reklam kampanyası (KE.CAMPAIGNS); tabela şubede kalıcıdır */
+  KE.campaignCost = (G, c) => Math.round(c.cost * G.priceIndex);
+  KE.startCampaign = function (G, b, id) {
+    const c = KE.CAMPAIGNS.find((x) => x.id === id);
+    if (!c || !b) return { ok: false };
+    if (c.sign && b.signBoost) return { ok: false, msg: 'Bu şubede zaten var.' };
+    const cost = KE.campaignCost(G, c);
+    if (G.cash < cost) return { ok: false, msg: NO_CASH };
+    G.cash -= cost; KE.addExtra(G, 'ads', cost);
+    if (c.sign) { b.signBoost = 1.06; return { ok: true, msg: 'Yeni tabela gece gündüz parlıyor.', cost }; }
+    c.mods.forEach(([k, m]) => G.mods.push({ key: k, mult: m, days: c.days, label: c.name, camp: c.id }));
+    if (c.rep) { const best = Math.max(...MODE(G).products.map((p) => KE.bestStar(G, b, p.id))); G.reputation = clamp(G.reputation + (best >= 4 ? 4 : 1), 0, 100); }
+    return { ok: true, msg: `${c.name} başladı.`, cost };
+  };
+  /* Merkezi mutfak: malzeme maliyeti şubelerde düşer */
+  KE.centralCost = (G) => 450000 * G.priceIndex;
+  KE.buildCentralKitchen = function (G) {
+    if (G.centralKitchen) return { ok: false };
+    const c = KE.centralCost(G);
+    if (G.cash < c) return { ok: false, msg: NO_CASH };
+    G.cash -= c; KE.addExtra(G, 'capex', c);
+    G.centralKitchen = true;
+    return { ok: true, msg: 'Merkezi mutfak kuruldu.', cost: c };
+  };
+  /* Geç oyun: bütün semtlerde şube açıldıktan sonra haftayı tek tuşla geç */
+  KE.quickWeekOpen = (G) => G.branches.length >= KE.DISTRICTS.length;
+
   /* ---------- Vakıf ve sponsorluk ---------- */
   KE.charityCost = (G, id) => { const c = KE.CHARITY.find((x) => x.id === id), lv = KE.charityLv(G, id); return lv >= c.cost.length ? null : Math.round(c.cost.at(lv) * G.priceIndex / 10000) * 10000; };
   KE.donate = function (G, id) {
@@ -3628,11 +3778,12 @@ KE.huyOf = function (s) {
    Sabah durumu + oyuncu hamleleri + bahşiş kuralı ile günü yeniden oynatır ve iddia edilen
    sonucu karşılaştırır. Rastgelelik tohumlu olduğundan sonuç birebir aynı çıkmalıdır. */
 (function () {
-  KE.verifyDay = function (morningEnvelope, log, todayRule, claim) {
+  /* Günü yeniden oynatır; sonuçla birlikte gün sonu durumunu (G) da döndürür (verifyChain ikinci kez oynatmasın) */
+  function replayDay(morningEnvelope, log, todayRule, claim) {
     let G;
-    try { G = KE.SAVE.open(morningEnvelope); } catch (e) { return { ok: false, note: 'sabah kaydı açılamadı: ' + e.message }; }
-    if (G.phase !== 'morning') return { ok: false, note: 'kayıt sabah evresinde değil' };
-    if (claim.day != null && claim.day !== G.day) return { ok: false, note: 'gün uyuşmuyor' };
+    try { G = KE.SAVE.open(morningEnvelope); } catch (e) { return { r: { ok: false, note: 'sabah kaydı açılamadı: ' + e.message } }; }
+    if (G.phase !== 'morning') return { r: { ok: false, note: 'kayıt sabah evresinde değil' } };
+    if (claim.day != null && claim.day !== G.day) return { r: { ok: false, note: 'gün uyuşmuyor' } };
     const S = KE.replayService(G, log || []);
     KE.finalizeDay(G, todayRule || G.tipRule);
     const got = { served: 0, revenue: 0 };
@@ -3640,14 +3791,14 @@ KE.huyOf = function (s) {
     got.revenue = Math.round(got.revenue);
     got.reputation = Math.round(G.reputation * 10) / 10;
     const same = got.served === claim.served && Math.abs(got.revenue - Math.round(claim.revenue)) <= 1 && Math.abs(got.reputation - Math.round(claim.reputation * 10) / 10) <= 0.1;
-    return { ok: same, got, note: same ? 'doğrulandı' : `uyuşmadı: sunucu ${JSON.stringify(got)}` };
-  };
+    return { r: { ok: same, got, note: same ? 'doğrulandı' : `uyuşmadı: sunucu ${JSON.stringify(got)}` }, G };
+  }
+  KE.verifyDay = (morningEnvelope, log, todayRule, claim) => replayDay(morningEnvelope, log, todayRule, claim).r;
   /* ---------- Zincir: sabah kaydı bir önceki doğrulanmış günün sonundan mı türedi? ----------
      Sabah oyuncunun yapabildikleri: harcamak, kredi çekmek, olay kartını çözmek, hedef ödülü almak,
      işe almak/çıkarmak, fiyat ve menü ayarı. Bunların hiçbiri kasayı ya da itibarı aşağıdaki
      sınırların üstüne çıkaramaz; ustaların yıldızı ve deneyimi sabah artamaz; geçmiş değişemez. */
   const clone = (o) => JSON.parse(JSON.stringify(o));
-  KE.FRESH = { cash: 450000, reputation: 30 };
   KE.chainCheck = function (prevEnv, curEnv) {
     let P, Cu;
     try { Cu = KE.SAVE.open(clone(curEnv)); } catch (e) { return { ok: false, note: 'sabah kaydı açılamadı' }; }
@@ -3671,7 +3822,6 @@ KE.huyOf = function (s) {
     const okul = ((Cu.charity || {}).okul || 0) - ((P.charity || {}).okul || 0);
     if (Object.entries(P.charity || {}).some(([k, v]) => ((Cu.charity || {})[k] || 0) < v)) return bad('bağış geri alınmış');
     if (okul > 0) maxRep += 3 * okul;
-    if ((Cu.loans || []).length < (P.loans || []).length) return bad('kredi silinmiş');
     // yeni krediler (öncekilerle eşleşmeyenler) bankanın o günkü tekliflerinden biri olmalı
     const oldLoans = (P.loans || []).slice(), offers = KE.loanOffers(P);
     const same = (a, b) => a.amount === b.amount && a.monthly === b.monthly && a.remaining === b.remaining;
@@ -3682,8 +3832,12 @@ KE.huyOf = function (s) {
       if (!offers.some((o) => o.amount === l.amount && o.monthly === l.monthly && o.months === l.remaining)) return bad('kredi teklifle uyuşmuyor');
       newLoans += l.amount;
     }
+    // listeden çıkan krediler: vadesi bitmiş (kalan 0) ya da erken kapatılmış olmalı; kapatma bedeli kasadan düşmüş olmalı
+    const paidOff = oldLoans.reduce((a, l) => a + (l.remaining > 0 ? KE.payoffCost(l) : 0), 0);
     const goalCash = Object.keys(Cu.goals || {}).filter((k) => !(P.goals || {})[k]).reduce((a, k) => a + KE.goalReward(Cu, KE.GOALS.find((g) => g.id === k) || {}), 0);
-    if (Cu.cash > maxCash + newLoans + goalCash + 1) return bad('kasa açıklanamayan biçimde arttı');
+    const cashCap = maxCash + newLoans + goalCash + 1;
+    if (Cu.cash > cashCap) return bad('kasa açıklanamayan biçimde arttı');
+    if (Cu.cash > cashCap - paidOff) return bad('kredi silinmiş');
     if (Cu.reputation > maxRep + 0.6) return bad('itibar artmış');
     if (Cu.contract && JSON.stringify(Cu.contract) !== JSON.stringify(P.contract)) {
       const o = KE.contractOffers(P).find((x) => x.id === Cu.contract.id);
@@ -3730,12 +3884,9 @@ KE.huyOf = function (s) {
     if (!rc.ok) return rc;
     const c = KE.chainCheck(prevEnd, morningEnv);
     if (!c.ok) return c;
-    const G = KE.SAVE.open(clone(morningEnv));
-    const r = KE.verifyDay(morningEnv, log, todayRule, claim);
+    const { r, G } = replayDay(clone(morningEnv), log, todayRule, claim);
     if (!r.ok) return r;
-    // gün sonu durumu (ertesi sabah, oyuncu müdahalesinden önce)
-    const S = KE.replayService(G, log || []); void S;
-    KE.finalizeDay(G, todayRule || G.tipRule);
+    // gün sonu durumu (ertesi sabah, oyuncu müdahalesinden önce): doğrulamada oynatılan günün kendisi
     return Object.assign(r, { end: KE.SAVE.envelope(G) });
   };
 })();
