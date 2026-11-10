@@ -35,22 +35,29 @@
 
   function availableProducts(G, b) { return MODE(G).products.filter((p) => KE.canMake(G, b, p)); }
 
-  function chooseType(G, b, hour) {
+  /* Saat başına müşteri tipi ağırlıkları (zar atmaz). Servis bunu kullanır; sabah stok tahmini de aynısını okur.
+     day verilirse o günün hafta sonu/özel gün etkisiyle hesaplanır (varsayılan bugün). */
+  KE.typeWeights = function (G, b, hour, day) {
     const d = KE.district(b);
     const mode = MODE(G);
+    const D = day == null ? G.day : day;
+    const sp = KE.specialDay(D), wkEnd = KE.isWeekend(D);
     const weights = [];
     Object.entries(KE.CUSTOMER_TYPES).forEach(([t, ct]) => {
       let w = (d.mix[t] || 0.1) * ((ct.hours && ct.hours[hour]) || 1);
-      if (KE.isWeekend(G.day) && ct.weekend) w *= ct.weekend;
+      if (wkEnd && ct.weekend) w *= ct.weekend;
       let best = 0;
       (mode.favorites[t] || []).forEach((pid) => { const p = prodOf(G, pid); if (p && KE.canMake(G, b, p)) best = Math.max(best, Math.max(1, KE.bestStar(G, b, pid))); });
       w *= Math.max(0.6, 1 + 0.15 * (best - 2));
       if (t === 'gurme') w *= best >= 5 ? 1.6 : best >= 4 ? 1 : 0.25;
       w *= KE.modVal(G, 'type:' + t);
-      const sp = KE.specialDay(G.day);
       if (sp && sp.types[t]) w *= sp.types[t];
       weights.push([t, w]);
     });
+    return weights;
+  };
+  function chooseType(G, b, hour) {
+    const weights = KE.typeWeights(G, b, hour);
     let r = KE.rand() * weights.reduce((a, x) => a + x[1], 0);
     for (const [t, w] of weights) { if ((r -= w) <= 0) return t; }
     return weights[0][0];
@@ -72,6 +79,26 @@
     }
     return { p };
   }
+  /* chooseProduct'ın beklenen ürün olasılıkları (zar atmaz, stok yeterli varsayılır): favori %72, imza tarif, kalanı eşit.
+     Sabah stok tahmini bunu okur; chooseProduct değişirse bu da birlikte güncellenmeli. */
+  KE.productOdds = function (G, b, type) {
+    const avail = availableProducts(G, b), out = {};
+    if (!avail.length) return out;
+    avail.forEach((p) => { out[p.id] = 0; });
+    const favs = (MODE(G).favorites[type] || []).map((id) => avail.find((p) => p.id === id)).filter(Boolean);
+    let rest = 1;
+    if (favs.length) {
+      const w = favs.map((_, i) => 3 - i), ws = w.reduce((a, x) => a + x, 0);
+      favs.forEach((p, i) => { out[p.id] += 0.72 * w[i] / ws; });
+      rest = 0.28;
+    }
+    const sig = G.signature && avail.find((x) => x.id === G.signature.pid);
+    if (sig) { const q = Math.min(1, 0.08 * G.signature.level); out[sig.id] += rest * q; rest *= 1 - q; }
+    avail.forEach((p) => { out[p.id] += rest / avail.length; });
+    return out;
+  };
+  /* bir müşteri grubunun ortalama kişi sayısı (spawn: grup tipinde %55 ihtimalle [a,b] aralığında yuvarlanmış) */
+  KE.groupMean = (type) => { const g = KE.CUSTOMER_TYPES[type].group; return g ? 0.45 + 0.55 * (g[0] + g[1]) / 2 : 1; };
   function lose(L, c, reason, text) {
     L.stats.lost += c.count; L.stats[reason] += c.count;
     if (c.regular && KE.G && KE.G.regulars) { const r = KE.G.regulars[c.regular]; r.loyalty = Math.max(0, r.loyalty - 2); (L.stats.regulars = L.stats.regulars || []).push({ id: c.regular, gain: -2 }); }

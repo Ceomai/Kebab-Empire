@@ -62,14 +62,22 @@
   }
 
   /* ---------- Sabah kontrol listesi: dört madde yeşilse kepenk hazır ---------- */
+  /* aynı çizimde iki kez istenir (kepenk düğmesi + liste): stok tahmini bir kez hesaplansın */
+  let checksMemo = null;
   function checks() {
+    if (checksMemo) return checksMemo;
+    checksMemo = checksNow();
+    queueMicrotask(() => { checksMemo = null; });
+    return checksMemo;
+  }
+  function checksNow() {
     const G = KE.G, out = [];
     const open = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
     const crewBad = G.branches.filter((b) => { const st = KE.branchStaff(G, b); return !st.some(KE.isCook) || !st.some((s) => s.pos === 'kasa') || (st.filter((s) => !KE.isCook(s)).length > 1 && !st.some((s) => s.pos === 'servis')); });
     out.push({ id: 'ekip', ic: 'users', ok: !crewBad.length, label: crewBad.length ? 'Ekip eksik' : 'Ekip yerinde', bad: crewBad.length ? (G.branches.length > 1 ? crewBad.map((b) => b.name).join(', ') + ': ' : '') + 'usta, kasa ya da servis boş' : '', btn: crewBad.length ? ['Ekibe git', `data-a="viewBranch" data-id="${crewBad[0].id}"`] : null });
     const short = open.map((b) => [b, KE.shortfall(G, b)]).filter(([, x]) => x.items.length);
     const cost = short.reduce((a, [, x]) => a + x.cost, 0);
-    /* sabah siparişi tamamsa bile gerçekçi tahmin (müşteri tahmini + gelen fazlası, dünkü en çok satan, yoğun saat) */
+    /* sabah siparişi tamamsa bile gerçekçi tahmin (saatlik müşteri tipi karışımı, son 7 günün satışı, malzeme bazında ihtiyaç, akşam payı) */
     const fc = short.length ? null : open.map((b) => [b, KE.stockForecast(G, b)]).find(([, f]) => !f.ok);
     const ing = (k) => (MODE().ingredients[k] || { name: k }).name;
     if (short.length) out.push({ id: 'stok', ic: 'cart', ok: false, label: 'Stok bugüne yetmez', bad: `${short.reduce((a, [, x]) => a + x.items.length, 0)} malzeme eksik`, btn: [`Tamamla · ${KE.tl(cost)}`, 'data-a="topUpAll"'] });

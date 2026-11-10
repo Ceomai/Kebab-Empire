@@ -64,35 +64,97 @@
     Object.keys(b.usage).forEach((k) => { const q = KE.stockNeed(G, b, k, f) - (b.stock[k] || 0); if (q > 0.01) { items.push(k); cost += q * KE.ingPrice(G, b, k); } });
     return { cost, items, factor: f };
   };
-  /* Sabah kontrol listesi için gerçekçi stok tahmini (motoru değiştirmez, yalnızca okur):
-     bugünkü müşteri tahmini × gelen kapıdaki fazlalık payı × dünkü ürün karışımı (en çok satan ağır basar).
-     Her malzeme için saatlik yoğunluk eğrisine göre bitiş saati hesaplanır; kapanıştan önce bitecekse eksiktir. */
-  KE.STOCK_SAFETY = 1.15;
+  /* Sabah kontrol listesi için gerçekçi stok tahmini (motoru değiştirmez, zar atmaz; yalnızca okur).
+     Saat saat: gelen grup sayısı (servisin geliş hızı, özel günün saatleri) × o saatin müşteri tipleri (KE.typeWeights:
+     hafta sonu, özel gün, kampanya/olay çarpanları) × tiplerin ürün olasılığı (KE.productOdds) × grup büyüklüğü.
+     Ürün karışımı son 7 günün gerçek satışına göre düzeltilir (yoksa dün, o da yoksa yalnızca model).
+     Her malzeme, onu kullanan bütün ürünlerin reçetesinden (p.ing) toplanır; ayran gibi içecek de eklenir.
+     Birikmiş ihtiyaç × güvenlik payı stoğu aştığı saat bitiş saatidir; pay akşama doğru büyür (geç bitişler daha çok kaçıyordu). */
+  /* Paylar 6 tohum × 2 mod × 1/3 şube, 3240 şube-günü ölçümüyle seçildi (iki modda da biten günlerin ≥%85'i uyarılsın, yanlış alarm en az).
+     Akşam payı olmadan aynı ayar biten günlerin ~%80'ini yakalıyor; kaçanlar çoğunlukla akşam biten tek ürünler. */
+  KE.STOCK_SAFETY = 1.0;
+  KE.STOCK_EVENING = 0.07; // kapanışa doğru eklenen pay (15:00'ten 23:00'e doğrusal)
+  KE.STOCK_EVENING_FROM = 15;
+  KE.STOCK_HIST_DAYS = 7;
+  KE.STOCK_Z = 1.75; // Poisson sapması katsayısı
+  KE.STOCK_CONV = 0.8; // geçmiş yoksa gelenin yiyen payı (ölçülen ortalama)
   KE.stockForecast = function (G, b) {
-    const M = MODE(G), sp = KE.specialDay(G.day), C = KE.HOUR_CURVE;
-    const on = M.products.filter((p) => b.menu[p.id] && !(KE.isLocked && KE.isLocked(G, p)));
-    const cust = KE.forecastCustomers(G, b) * KE.STOCK_SAFETY;
-    const sum = G.lastSummary && G.lastSummary.branches && G.lastSummary.branches[b.id];
-    const by = (sum && sum.stats.byProduct) || {};
-    const tot = on.reduce((a, p) => a + (by[p.id] || 0), 0);
-    const share = {};
-    on.forEach((p) => { share[p.id] = tot >= 20 ? (by[p.id] || 0) / tot : 1 / (on.length || 1); });
-    const top = on.slice().sort((a, c) => share[c.id] - share[a.id])[0];
+    const M = MODE(G), C = KE.HOUR_CURVE;
+    const on = M.products.filter((p) => KE.canMake(G, b, p));
     const hours = Object.keys(C).map(Number).sort((a, c) => a - c);
-    const w = hours.map((h) => C[h] * (sp && sp.hours ? (sp.hours[h] || 1) : 1));
-    const wSum = w.reduce((a, x) => a + x, 0) || 1;
+    const cSum = Object.values(C).reduce((a, v) => a + v, 0);
+    const types = Object.keys(KE.CUSTOMER_TYPES);
+    const odds = {}; types.forEach((t) => { odds[t] = KE.productOdds(G, b, t); });
+    /* bir gün için saat saat ürün başına porsiyon (grup başına değil, gelen müşteri hızı × karışım) */
+    /* saat başına grup başı porsiyon karışımı; yalnızca hafta sonu ve özel güne bağlı olduğundan önbelleklenir */
+    const memo = {};
+    const mixAt = (h, day, sp) => {
+      const key = h + '|' + KE.isWeekend(day) + '|' + (sp ? sp.id : '');
+      if (memo[key]) return memo[key];
+      const tw = KE.typeWeights(G, b, h, day), tot = tw.reduce((a, x) => a + x[1], 0) || 1, out = {};
+      on.forEach((p) => { out[p.id] = 0; });
+      tw.forEach(([t, w]) => { const n = w / tot * KE.groupMean(t); on.forEach((p) => { out[p.id] += n * (odds[t][p.id] || 0); }); });
+      return (memo[key] = out);
+    };
+    const model = (day, groups) => {
+      const sp = KE.specialDay(day);
+      return hours.map((h) => {
+        const g = groups * C[h] * (sp && sp.hours && sp.hours[h] ? sp.hours[h] : 1) / cSum, mx = mixAt(h, day, sp), out = {};
+        on.forEach((p) => { out[p.id] = g * mx[p.id]; });
+        return out;
+      });
+    };
+    const share = (rows) => { const s = {}; let t = 0; on.forEach((p) => { s[p.id] = rows.reduce((a, r) => a + (r[p.id] || 0), 0); t += s[p.id]; }); on.forEach((p) => { s[p.id] = t ? s[p.id] / t : 0; }); return { s, t }; };
+    /* son 7 günün satışları (gün satırları şube başına; ayrıntısı arşive katlanmış satır varsa atlanır) */
+    const rows = G.ledger.days.filter((d) => d.branchId === b.id && d.day < G.day && d.day >= G.day - KE.STOCK_HIST_DAYS && d.byProduct);
+    let hist = share(rows.map((d) => d.byProduct)), ref = null;
+    if (hist.t >= 20) ref = share(rows.map((d) => share(model(d.day, 1)).s));
+    else {
+      const sum = G.lastSummary && G.lastSummary.branches && G.lastSummary.branches[b.id];
+      hist = share([(sum && sum.stats && sum.stats.byProduct) || {}]);
+      if (hist.t >= 20) ref = share([share(model(G.day - 1, 1)).s]);
+    }
+    const res = KE.resOn && KE.resOn(b) ? 0.97 : 1;
+    const today = model(G.day, KE.expectedCustomers(G, b) * res);
+    /* geçmiş karışım / modelin o günler için beklediği karışım: modelin göremediği tercihleri (fiyat, alışkanlık) taşır */
+    const adj = {};
+    on.forEach((p) => { adj[p.id] = ref && ref.s[p.id] > 0 ? Math.max(0.4, Math.min(2.5, hist.s[p.id] / ref.s[p.id])) : 1; });
+    /* düzeltme yalnızca karışımı değiştirir, toplam porsiyonu değil */
+    const ts = share(today).s, norm = on.reduce((a, p) => a + ts[p.id] * adj[p.id], 0) || 1;
+    on.forEach((p) => { adj[p.id] /= norm; });
+    /* gelenin ne kadarı gerçekten yiyor (fiyat, kuyruk, dolu masa kaçırır): stok bitmeyen son günlerin servis/geliş oranı */
+    const clean = rows.filter((d) => d.arrivals > 0 && !Object.keys(d.stockouts || {}).length);
+    const arr = clean.reduce((a, d) => a + d.arrivals, 0);
+    const conv = arr >= 30 ? Math.max(0.5, Math.min(1, clean.reduce((a, d) => a + d.served, 0) / arr)) : KE.STOCK_CONV;
+    /* paket siparişi: kuryeli şubede gün boyu eşit dağılan ürünler */
+    const kur = KE.branchStaff(G, b).filter((s) => s.role === 'kurye').length;
+    const paket = kur ? KE.expectedCustomers(G, b) * 0.16 * (0.6 + G.reputation / 100) * Math.min(1.6, 0.8 + kur * 0.4) : 0;
+    const byHour = today.map((o, i) => {
+      const r = {}; let n = 0;
+      on.forEach((p) => { const w = o[p.id] * adj[p.id] * conv; r[p.id] = w + paket * C[hours[i]] / cSum / (on.length || 1); n += w; });
+      return { r, drinks: n * M.drinkRate };
+    });
+    const tot = {}; on.forEach((p) => { tot[p.id] = byHour.reduce((a, x) => a + x.r[p.id], 0); });
+    const top = on.slice().sort((a, c) => tot[c.id] - tot[a.id])[0];
     const items = [];
     Object.keys(b.usage).forEach((k) => {
-      let per = (M.drink.ing[k] || 0) * M.drinkRate;
-      on.forEach((p) => { per += share[p.id] * (p.ing[k] || 0); });
-      const need = cust * per, have = b.stock[k] || 0;
+      const have = b.stock[k] || 0;
+      const per = byHour.map((x) => on.reduce((a, p) => a + x.r[p.id] * (p.ing[k] || 0), 0) + x.drinks * (M.drink.ing[k] || 0));
+      /* sayım belirsizliği: az satılan malzemede göreli sapma büyük (porsiyon sayısı ~ Poisson) */
+      const vr = byHour.map((x) => on.reduce((a, p) => a + x.r[p.id] * (p.ing[k] || 0) ** 2, 0) + x.drinks * (M.drink.ing[k] || 0) ** 2);
+      const need = per.reduce((a, x) => a + x, 0);
       if (need <= 0) return;
-      let acc = 0, outHour = null;
-      for (let i = 0; i < hours.length; i++) { acc += need * w[i] / wSum; if (acc > have + 1e-9) { outHour = hours[i]; break; } }
-      items.push({ k, need, have, outHour });
+      let acc = 0, av = 0, outHour = null, risk = 0;
+      for (let i = 0; i < hours.length; i++) {
+        acc += per[i]; av += vr[i];
+        const m = KE.STOCK_SAFETY * (1 + KE.STOCK_EVENING * Math.max(0, (hours[i] + 1 - KE.STOCK_EVENING_FROM) / (KE.CLOSE_HOUR - KE.STOCK_EVENING_FROM)));
+        const want = acc * m + KE.STOCK_Z * Math.sqrt(av);
+        if (want > have + 1e-9) { outHour = hours[i]; risk = want / (have || 1e-9); break; }
+      }
+      items.push({ k, need, have, outHour, risk, hourly: per, hourlyVar: vr });
     });
-    const short = items.filter((x) => x.outHour != null).sort((a, c) => a.outHour - c.outHour);
-    return { customers: cust, top: top ? top.id : null, items, short, ok: !short.length };
+    const short = items.filter((x) => x.outHour != null).sort((a, c) => a.outHour - c.outHour || c.risk - a.risk);
+    return { customers: KE.forecastCustomers(G, b), top: top ? top.id : null, products: tot, drinks: byHour.reduce((a, x) => a + x.drinks, 0), items, short, ok: !short.length };
   };
   KE.topUpToday = function (G, b) {
     if (G.phase !== 'morning') return 0;
