@@ -166,7 +166,7 @@
     const b = B();
     const closing = KE.G.phase === 'closing';
     const L = KE.G.live && KE.G.live[b.id];
-    return `<main class="screen wide">
+    return `<main class="screen wide svc">
       <div class="servgrid">
         <div class="stagewrap">${KE.SCENE.html(KE.G, b)}<div id="tezgah"></div></div>
         <section class="panel crewcell"><div class="sechead"><h2>Ekip</h2></div><div id="crew">${crewPanel(b, true)}</div></section>
@@ -296,7 +296,95 @@
     if (h && Math.abs(h - (UI.tzh || 0)) > 2) { UI.tzh = h; document.documentElement.style.setProperty('--tzh', Math.round(h) + 'px'); }
   };
   let tzObserved = null;
-  const tzRO = typeof ResizeObserver === 'function' ? new ResizeObserver((list) => { const e = list[list.length - 1]; const bb = e.borderBoxSize && e.borderBoxSize[0]; tzHeight(e.target, bb ? bb.blockSize : e.target.getBoundingClientRect().height); }) : null;
+  const tzRO = typeof ResizeObserver === 'function' ? new ResizeObserver((list) => { const e = list[list.length - 1]; const bb = e.borderBoxSize && e.borderBoxSize[0]; tzHeight(e.target, bb ? bb.blockSize : e.target.getBoundingClientRect().height); tzHide.layout(); }) : null;
+
+  /* Tezgâh açıkken sayfa düzeni sınıflarla seçilir: main.tzm (servis ekranı), body.tzpg (bildirimler). Eskiden
+     main:has(.stagewrap.tzon) / body:has(...) idi; :has() her oyun dakikasındaki yüzlerce DOM değişikliğinde body ve
+     main için yeniden denetleniyor, main'in bütün alt ağacının stilini yeniden hesaplatıyordu. */
+  function tzMark(wrap, on) {
+    wrap.classList.toggle('tzon', on);
+    const main = wrap.closest('main');
+    if (main) main.classList.toggle('tzm', on);
+    document.body.classList.toggle('tzpg', on);
+    tzHide.set(on ? wrap : null);
+  }
+  /* yeniden çizimde (ekran değişti) servis ekranı kalktıysa sayfa sınıfı ve duraklatmalar da kalkar */
+  UI.tzSync = function () {
+    if (document.querySelector('main.tzm')) return;
+    document.body.classList.remove('tzpg');
+    tzHide.set(null);
+  };
+
+  /* Tezgâh açıkken görünmeyen parçaların süsleme animasyonları durur. Panelin örttüğü ya da kırpılarak dışarıda kalan
+     öğe çizilmez ama animasyonu her karede çalışmaya (stil, birleştirme, kare üretimi) devam ederdi. Adaylar: sahnenin
+     sabit parçaları (ocaklar, tabela, pencere, süs), ustaların gözleri (dikey kırpmada baş görünmeyebilir) ve sahnenin
+     altındaki yan paneller (telefonda panelin altında kalır). Görünürlüğü IntersectionObserver hesaplar: kök, görüntü
+     alanından sabit panelin kapladığı kenar şeridi çıkarılmış alandır (panel boyu değişince, ResizeObserver'dan, bir kez
+     yeniden kurulur); kırpma (sahne penceresi) ve kaydırma tarayıcının kendi yerleşiminden gelir, her karede ölçüm yok.
+     Tamamen görünmeyen öğe data-tzh alır: CSS animasyonları duraklar, geçişler anlık olur, SVG saati durur. Görünür
+     olunca ya da panel kapanınca hemen kalkar; görünen hiçbir şey değişmez. */
+  const tzHide = (() => {
+    const IO = /** @type {any} */ (window).IntersectionObserver;
+    let wrap = null, io = null, margin = '', seen = new WeakSet();
+    const SEL = '.st-equip > *, .st-sign, .st-window, .st-bunting, #st-cooks .ke-eye, .servgrid > .crewcell, .servgrid > .side > *';
+    /* göz bir figürün parçası: duraklatma figürün (varlığın) kendisine yazılır, figür her dakika yamalansa da kalır */
+    const owner = (el) => el.closest('.ent') || el;
+    const svgs = (el) => el.querySelectorAll('svg');
+    function hide(el, on) {
+      const o = owner(el);
+      if (on === o.hasAttribute('data-tzh')) return;
+      if (on) o.setAttribute('data-tzh', ''); else o.removeAttribute('data-tzh');
+      /* SMIL (ör. mangal kömürü) CSS ile durmaz; hareketi azaltta zaten duruktur, o zaman dokunulmaz */
+      if (!UI.calm()) svgs(o).forEach((s) => { const v = /** @type {any} */ (s); if (!v.pauseAnimations || !s.querySelector('animate, animateTransform, animateMotion')) return; if (on) v.pauseAnimations(); else v.unpauseAnimations(); });
+    }
+    function onSeen(list) {
+      list.forEach((e) => {
+        /* kaldırılan figürün gözü: gözlemden çıkar */
+        if (!e.target.isConnected) { io.unobserve(e.target); seen.delete(e.target); return; }
+        hide(e.target, !e.isIntersecting);
+      });
+    }
+    /* sabit panelin kapladığı kenar şeridi: altta tam genişlik (dikey telefon) ya da sağda tam yükseklik (yatay) */
+    function band() {
+      const tz = wrap && wrap.querySelector('.tz2');
+      if (!tz || getComputedStyle(tz).position !== 'fixed') return '0px';
+      const r = tz.getBoundingClientRect(), W = innerWidth, Hh = innerHeight;
+      /* altındaki alt sekme de sabit: şerit panelin üst kenarından ekranın altına kadar */
+      if (r.left <= 1 && r.right >= W - 1 && r.top > Hh / 2) return `0px 0px ${-Math.round(Hh - r.top)}px 0px`;
+      if (r.top <= 1 && r.bottom >= Hh - 1 && r.right >= W - 1) return `0px ${-Math.max(0, Math.round(W - r.left))}px 0px 0px`;
+      return '0px';
+    }
+    /* all: bütün adaylar (açılışta / kök değişince); yoksa yalnızca usta gözleri (oyuncu ustası tezgâhla gelir,
+       figürler her dakika güncellenir; sahnenin sabit parçaları ve paneller yeniden çizime kadar aynı düğümlerdir) */
+    function observe(all) {
+      if (!io || !wrap) return;
+      (all ? (wrap.closest('main') || wrap) : wrap).querySelectorAll(all ? SEL : '#st-cooks .ke-eye').forEach((el) => { if (!seen.has(el)) { seen.add(el); io.observe(el); } });
+    }
+    function rebuild() {
+      if (io) io.disconnect();
+      seen = new WeakSet();
+      io = new IO(onSeen, { rootMargin: margin });
+      observe(true);
+    }
+    function clear() {
+      if (io) { io.disconnect(); io = null; }
+      document.querySelectorAll('[data-tzh]').forEach((el) => hide(el, false));
+    }
+    return {
+      set(w) {
+        if (!IO) return;
+        if (!w) { wrap = null; clear(); return; }
+        if (w !== wrap) { clear(); wrap = w; margin = band(); rebuild(); } else observe();
+      },
+      /* panel boyu / ekran değişti: kök şeridi bir kez yeniden hesapla */
+      layout() {
+        if (!io || !wrap) return;
+        const m = band();
+        if (m !== margin) { margin = m; rebuild(); }
+      }
+    };
+  })();
+  addEventListener('resize', () => tzHide.layout());
   function renderTezgah() {
     const box = document.getElementById('tezgah');
     const wrap = document.querySelector('.stagewrap');
@@ -304,7 +392,7 @@
     const G = KE.G, L = G.live[G.activeBranch];
     if (!L) return;
     const P = L.player;
-    if (wrap) wrap.classList.toggle('tzon', !!P.active);
+    if (wrap) tzMark(wrap, !!P.active);
     if (!P.active) { box.innerHTML = ''; tzBorn = {}; return; }
     const b = B(), cap = KE.playerCap(G, b), slots = P.slots || [];
     const need = {}, want = {};

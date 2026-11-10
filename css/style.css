@@ -588,6 +588,15 @@ table.fin tr.click { cursor: pointer; }
 .st-back { position: absolute; left: 0; width: 74%; top: 44%; height: 6%; background: linear-gradient(180deg, #c3ccd3, #8e9aa4); border-top: .3cqw solid #e8edf0; }
 .st-equip { position: absolute; inset: 0; pointer-events: none; }
 .eq-doner { position: absolute; top: 19%; width: 8.4%; }
+/* döner ocağı: dönen et dokusu ve ısıtıcı ışığı CSS animasyonu (eskiden SMIL). SMIL her karede ana iş parçacığında
+   öznitelik yazar, bütün sayfa yeniden boyanırdı; transform / opacity animasyonu birleştiricide oynar. Değerler ve
+   süreler SMIL'dekiyle aynı (doğrusal, eşit aralıklı ara kareler); başlangıç değerleri SVG özniteliklerinde. */
+.art-doner .dn-meat { animation: dnMeat 1.8s linear infinite; }
+.art-doner .dn-heat { animation: dnHeat 1.6s linear infinite; }
+.art-doner .dn-glow { animation: dnGlow 1.6s linear infinite; }
+@keyframes dnMeat { from { transform: translateX(0); } to { transform: translateX(16px); } }
+@keyframes dnHeat { 0%, 100% { opacity: .8; } 25%, 75% { opacity: 1; } 50% { opacity: .85; } }
+@keyframes dnGlow { 0%, 100% { opacity: .12; } 50% { opacity: .25; } }
 .eq-mangal { position: absolute; left: 6%; width: 42%; top: 9%; }
 .eq-mangal .smoke { bottom: 70%; }
 .st-floor { position: absolute; left: 0; right: 0; top: 60%; bottom: 0; background:
@@ -1754,8 +1763,12 @@ html { overflow-x: clip; }
 .tz-fly svg { width: 18px; height: 18px; color: var(--murekkep); }
 
 /* ---------- Bildirimler: tezgâh açıkken üstte, istasyonların üstüne binmez, dokunuşu engellemez ---------- */
-body:has(.stagewrap.tzon) #toasts { top: calc(env(safe-area-inset-top, 0px) + var(--sp-8)); bottom: auto; pointer-events: none; }
-body:has(.stagewrap.tzon) .toast { pointer-events: none; }
+/* tezgâh açıkken tamamen görünmeyen parça (panelin altında ya da kırpılmış; bkz. shop.js tzHide): süsleme döngüleri
+   durur, geçişler anlık; görünür olunca kaldığı yerden sürer */
+[data-tzh], [data-tzh] *, [data-tzh] *::before, [data-tzh] *::after { animation-play-state: paused !important; }
+[data-tzh] * { transition: none !important; }
+body.tzpg #toasts { top: calc(env(safe-area-inset-top, 0px) + var(--sp-8)); bottom: auto; pointer-events: none; }
+body.tzpg .toast { pointer-events: none; }
 
 /* ---------- Geniş ekran (tablet, masaüstü): tezgâh sahnenin altında; sahne kırpılır ama kasa ve kuyruk görünür,
    sahne + tezgâh sayfa kaydırmadan ekrana sığar ---------- */
@@ -1786,7 +1799,7 @@ body:has(.stagewrap.tzon) .toast { pointer-events: none; }
 /* ---------- Dikey telefon: panel altta sabit; sahne kasa ve kuyruğun önü görünecek biçimde kırpılır ---------- */
 @media (max-width: 760px) and (orientation: portrait), (max-width: 760px) and (min-height: 521px) {
   .stagewrap.tzon #tezgah .tz2 { left: 0; right: 0; bottom: var(--tabh, 0px); gap: var(--sp-8); padding: var(--sp-8) var(--sp-10) max(var(--sp-8), env(safe-area-inset-bottom, 0px)); border-radius: var(--r-16) var(--r-16) 0 0; }
-  main:has(.stagewrap.tzon) { padding-bottom: calc(var(--tzh, 240px) + var(--sp-16)); }
+  main.screen.tzm { padding-bottom: calc(var(--tzh, 240px) + var(--sp-16)); }
   .stagewrap.tzon { --tzvis: max(140px, min(100vw, calc(100dvh - var(--tbh, 90px) - var(--tabh, 0px) - var(--tzh, 240px) - 14px))); }
   .stagewrap.tzon .st-virt.on, .stagewrap.tzon .st-virt:not(.on) { max-height: var(--tzvis); overflow: hidden; }
   /* dikey sahne (3:4) yüksekliği 83,33cqw (.st-virt.on kabına göre); pencerenin altı yüksekliğin %62'sine oturur:
@@ -1801,7 +1814,7 @@ body:has(.stagewrap.tzon) .toast { pointer-events: none; }
   .tz-qbar em { width: 8px; }
   .tz-quest b { display: none; }
   /* bildirimler sahnenin üstünde (soldaki şeridin yanında); sağdaki tezgâh başlığını kapatmaz */
-  body:has(.stagewrap.tzon) #toasts { right: auto; left: calc(72px + env(safe-area-inset-left, 0px) + var(--sp-8)); max-width: calc(100vw - var(--tzw) - 72px - var(--sp-24)); }
+  body.tzpg #toasts { right: auto; left: calc(72px + env(safe-area-inset-left, 0px) + var(--sp-8)); max-width: calc(100vw - var(--tzw) - 72px - var(--sp-24)); }
 }
 @media (max-width: 380px) {
   .tz-rec { gap: 3px; }
@@ -1812,9 +1825,9 @@ body:has(.stagewrap.tzon) .toast { pointer-events: none; }
 /* ---------- Yatay telefon: sahne solda (kuyruk görünür), fişler ve istasyonlar sağda ---------- */
 @media (max-height: 520px) and (orientation: landscape) {
   .stagewrap.tzon #tezgah .tz2 { top: 0; right: 0; bottom: 0; left: auto; width: var(--tzw); overflow-y: auto; overscroll-behavior: contain; gap: var(--sp-8); padding: max(var(--sp-8), env(safe-area-inset-top, 0px)) max(var(--sp-10), env(safe-area-inset-right, 0px)) max(var(--sp-8), env(safe-area-inset-bottom, 0px)) var(--sp-10); border-top: 0; border-left: 4px solid var(--altin); border-radius: var(--r-16) 0 0 var(--r-16); box-shadow: -10px 0 24px -10px var(--shadow-55); }
-  main:has(.stagewrap.tzon) { padding-right: calc(var(--tzw) + var(--sp-8)); }
-  main:has(.stagewrap.tzon) .servgrid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "side" "crew"; }
-  main:has(.stagewrap.tzon) .servgrid > .side { position: static; max-height: none; }
+  main.screen.tzm { padding-right: calc(var(--tzw) + var(--sp-8)); }
+  main.screen.tzm .servgrid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "side" "crew"; }
+  main.screen.tzm .servgrid > .side { position: static; max-height: none; }
   .stagewrap.tzon .st-virt:not(.on) { max-height: none; }
   .stagewrap.tzon .st-virt:not(.on) > .stage { margin-top: 0; }
   .tz-rail { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
@@ -1955,8 +1968,8 @@ html, body { overscroll-behavior-y: none; }
 /* dikey telefon: hız çubuğu alt sekmenin hemen üstünde sabit (servis sahnesi ekranı doldurunca da görünür) */
 @media (max-width: 760px) and (orientation: portrait), (max-width: 760px) and (min-height: 521px) {
   .servgrid .clockpanel { position: fixed; z-index: 29; left: 0; right: 0; bottom: var(--tabh, 0px); margin: 0; border-radius: var(--r-16) var(--r-16) 0 0; padding: var(--sp-8) max(var(--sp-12), env(safe-area-inset-right, 0px)) var(--sp-8) max(var(--sp-12), env(safe-area-inset-left, 0px)); box-shadow: 0 -8px 20px -12px var(--shadow-warm-60); }
-  main:has(.servgrid .clockpanel) { padding-bottom: calc(var(--tap) + var(--sp-16) + var(--sp-16)); }
-  main:has(.stagewrap.tzon) .clockpanel { display: none; }
+  main.screen.svc { padding-bottom: calc(var(--tap) + var(--sp-16) + var(--sp-16)); }
+  main.screen.tzm .clockpanel { display: none; }
 }
 
 /* ---------- Üst çubuk ---------- */

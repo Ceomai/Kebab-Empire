@@ -433,6 +433,7 @@
     if (UI.screen === 'subeler') UI.fillRanking();
     if (KE.G && UI.lastTracked !== UI.screen) { UI.lastTracked = UI.screen; track('screen', { s: UI.screen, day: KE.G.day }); }
     if (UI.screen === 'shop' && KE.G && KE.G.phase !== 'morning') { KE.SCENE.reset(); if (KE.G.live) UI.sceneTick(true); H.renderTezgah(); }
+    if (UI.tzSync) UI.tzSync();
     if (KE.G && KE.G.phase !== 'service') UI.saveSoon();
     if (inGame) setTimeout(UI.tutor, 60);
     if (inGame && !UI.holdEvent && KE.G.pendingEvent && KE.G.phase === 'morning' && !document.querySelector('.modal-bg')) H.showEvent();

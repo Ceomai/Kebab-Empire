@@ -60,20 +60,20 @@
 
   /* ---------------- Döner ocağı ---------------- */
   A.doner = function (kind) {
-    const g = id('dg'), c = id('dc');
+    const g = id('dg'), c = id('dc'), k = id('dk');
     const meat = kind === 'tavuk' ? ['#c98b3a', '#e7b261', '#b77a2c'] : ['#7a3a18', '#a1552a', '#5f2c12'];
     return svg('0 0 120 190', `<defs>
       <linearGradient id="${g}" x1="0" x2="1"><stop offset="0" stop-color="${meat[2]}"/><stop offset=".45" stop-color="${meat[1]}"/><stop offset="1" stop-color="${meat[2]}"/></linearGradient>
-      <pattern id="${c}" width="16" height="10" patternUnits="userSpaceOnUse"><rect width="16" height="10" fill="url(#${g})"/><path d="M0 5 q4 -3 8 0 t8 0" stroke="${meat[0]}" stroke-width="2" fill="none" opacity=".7"/>
-        <animateTransform attributeName="patternTransform" type="translate" from="0 0" to="16 0" dur="1.8s" repeatCount="indefinite"/></pattern>
+      <pattern id="${c}" width="16" height="10" patternUnits="userSpaceOnUse"><rect width="16" height="10" fill="url(#${g})"/><path d="M0 5 q4 -3 8 0 t8 0" stroke="${meat[0]}" stroke-width="2" fill="none" opacity=".7"/></pattern>
+      <clipPath id="${k}"><path d="M30 26 L86 26 L72 150 L44 150 Z"/></clipPath>
       <linearGradient id="${g}h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a3c"/><stop offset=".5" stop-color="#ffd34d"/><stop offset="1" stop-color="#ff7a2c"/></linearGradient></defs>
       <rect x="24" y="174" width="72" height="10" rx="3" fill="#7f8c8d" ${OL}/><rect x="28" y="160" width="64" height="16" rx="4" fill="#b2bec3" ${OL}/>
       <path d="M58 8 v162" stroke="#95a5a6" stroke-width="5" stroke-linecap="round"/><circle cx="58" cy="10" r="5" fill="#bdc3c7" ${OL}/>
-      <path d="M30 26 L86 26 L72 150 L44 150 Z" fill="url(#${c})" ${OL}/>
+      <g clip-path="url(#${k})"><rect class="dn-meat" x="10" y="20" width="80" height="136" fill="url(#${c})"/></g><path d="M30 26 L86 26 L72 150 L44 150 Z" fill="none" ${OL}/>
       <path d="M34 30 L42 146" stroke="#fff" stroke-width="3" opacity=".18" stroke-linecap="round"/>
       <rect x="96" y="30" width="16" height="118" rx="5" fill="#2d3436" ${OL}/>
-      <rect x="99" y="36" width="10" height="106" rx="4" fill="url(#${g}h)"><animate attributeName="opacity" values=".8;1;.85;1;.8" dur="1.6s" repeatCount="indefinite"/></rect>
-      <ellipse cx="92" cy="90" rx="10" ry="60" fill="#ff8a3a" opacity=".18"><animate attributeName="opacity" values=".12;.25;.12" dur="1.6s" repeatCount="indefinite"/></ellipse>`, 'art-doner');
+      <rect class="dn-heat" x="99" y="36" width="10" height="106" rx="4" fill="url(#${g}h)" opacity=".8"/>
+      <ellipse class="dn-glow" cx="92" cy="90" rx="10" ry="60" fill="#ff8a3a" opacity=".12"/>`, 'art-doner');
   };
   /* ---------------- Mangal ---------------- */
   A.mangal = function (n) {
