@@ -19,12 +19,13 @@
   };
 
   /* Göçler: MIGRATIONS[n] oyunu n. sürümden n+1'e taşır */
+  /** @type {Record<number, (g: any) => any>} */
   const MIGRATIONS = {
     /* 1 → 2: zarfsız eski kayıtlar; eksik alanları tamamla */
     1: (g) => {
       if (g.tut == null) g.tut = 99;
       if (!g.regulars) { g.regulars = {}; KE.REGULARS.forEach((r) => { g.regulars[r.id] = { loyalty: 0, visits: 0 }; }); }
-      (g.staff || []).forEach((s) => { if (s.energy == null) s.energy = 100; if (!s.pos) s.pos = KE.POSITIONS[s.role][0]; });
+      (g.staff || []).forEach((/** @type {Staff} */ s) => { if (s.energy == null) s.energy = 100; if (!s.pos) s.pos = KE.POSITIONS[s.role][0]; });
       return g;
     },
     /* 2 → 3: tohumlu rastgelelik ve eylem günlüğü */
@@ -55,7 +56,7 @@
     if (g.phase === 'service') g.phase = 'morning';
     if (g.phase === 'closing' && !g.lastSummary) g.phase = 'morning';
     g.live = null;
-    (g.staff || []).forEach((s) => { s.task = null; if (s.energy == null) s.energy = 100; if (!s.pos) s.pos = KE.POSITIONS[s.role][0]; });
+    (g.staff || []).forEach((/** @type {Staff} */ s) => { s.task = null; if (s.energy == null) s.energy = 100; if (!s.pos) s.pos = KE.POSITIONS[s.role][0]; });
     /* Dönemlerden önce başlamış oyunlar (dönem kaydı yok): imza tarif şartı o sistemden önce
        ilerlemiş zincirlere sayılmaz; oyun ulaştığı döneme yerleşir, imparatorluk kurulmuşsa son dönemdedir. */
     if (g.flags && !g.eraLog) {
@@ -65,7 +66,7 @@
       if (KE.advanceEra) { try { KE.advanceEra(g); } catch (e) { /* eksik veri */ } }
     }
     if (g.flags && g.flags.empire && (g.era || 1) < 4) g.era = 4;
-    (g.branches || []).forEach((b) => { if (b.stockLevel < 1.15) b.stockLevel = 1.15; });
+    (g.branches || []).forEach((/** @type {Branch} */ b) => { if (b.stockLevel < 1.15) b.stockLevel = 1.15; });
     return g;
   };
   S.valid = (g) => !!(g && typeof g === 'object' && Array.isArray(g.branches) && g.branches.length && Array.isArray(g.staff) && typeof g.day === 'number' && g.mode && KE.MODES[g.mode]);
@@ -92,14 +93,15 @@
   };
 
   const store = {
-    get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
-    set: (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
-    del: (k) => { try { localStorage.removeItem(k); } catch (e) { /* yok say */ } }
+    get: (/** @type {string} */ k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: (/** @type {string} */ k, /** @type {string} */ v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+    del: (/** @type {string} */ k) => { try { localStorage.removeItem(k); } catch (e) { /* yok say */ } }
   };
   S.lastError = null;
 
   /* Son yazdığımız kaydın metni ve künyesi: bir sonraki yazışta eski kaydı yeniden ayrıştırmamak için.
      Yuvadaki metin bununla birebir aynı değilse (başka sekme, elle değişiklik) eskisi gibi ayrıştırılır. */
+  /** @type {{ txt: string; p: any } | null} */
   let last = null;
   S.write = function (G) {
     /* zarf, JSON.stringify(S.envelope(G)) ile bayt bayt aynıdır; oyun gövdesi bir kez dizgeye çevrilir */

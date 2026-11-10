@@ -80,17 +80,56 @@ interface Live {
   minute: number;
   custs: Record<string, any>;
   queue: any[];
-  tickets: any[];
+  tickets: Ticket[];
   tables: any[];
   /** günün sayaçları: arrivals, served, lost, revenue, tips, satSum, byProduct… */
   stats: Record<string, any>;
   /** sahneye giden görsel olaylar */
   fx: any[];
   /** oyuncunun tezgâh durumu (KE.playerStation) */
-  player: { active: boolean; slots: any[]; sel: number; combo: number; [k: string]: any };
+  player: PlayerState;
   done: boolean;
   [k: string]: any;
 }
+
+/** Mutfak fişi (L.tickets): bir müşterinin bir ürün siparişi */
+interface Ticket {
+  id: number;
+  /** ürün kimliği */
+  pid: string;
+  count: number;
+  /** 'wait' | 'cook' | 'ready' | … */
+  state: string;
+  /** pişiren çalışanın kimliği ya da 'player' */
+  cook?: any;
+  menu?: boolean;
+  rush?: boolean;
+  paket?: boolean;
+  [k: string]: any;
+}
+
+/** Servisteki müşteri (L.custs): tip, sipariş, masa, sabır… */
+type Customer = Record<string, any>;
+
+/** Çalışanın servis sırasındaki işi (s.task) */
+interface StaffTask { type: string; ref: any; remain: number; total: number }
+
+/** Oyuncunun tezgâhta tuttuğu fiş (L.player.slots) */
+interface PlayerSlot {
+  /** fiş kimliği */
+  tid: number | null;
+  /** sıradaki tarif adımı */
+  step: number;
+  errors: number;
+  start: number;
+  burnt?: number;
+  /** süreli istasyon ('ates' | 'fritoz') */
+  fst?: string;
+  [k: string]: any;
+}
+
+/** Oyuncunun tezgâh durumu (KE.playerStation) */
+interface PlayerState { active: boolean; slots: PlayerSlot[]; sel: number; combo: number; [k: string]: any }
 
 /** Bütün oyun durumu (kodda G); KE.newGame üretir, KE.SAVE yazar/okur */
 interface Game {
@@ -127,13 +166,72 @@ interface Game {
   rival: { power: number; district: string | null; stage?: number; [k: string]: any };
   flags: Record<string, any>;
   /** besi çiftliği (KE.buyFarm) ya da null */
-  farm: any;
+  farm: FarmState | null;
   /** servis sırasında şube kimliği → canlı durum; kayıtta null */
   live?: Record<string, Live> | null;
   era: number;
   gen: number;
+  /** sıradaki kimlik sayacı (çalışan, şube) */
+  nextId: number;
+  /** süreli etkiler: kampanya, olay, zam… (key: 'traffic' | 'ing' | 'type:…' …) */
+  mods: Mod[];
+  /** müdavim kimliği → gönül durumu */
+  regulars: Record<string, RegularState>;
+  /** usta pazarı ve eleman bürosu adayları */
+  market: Staff[];
+  workers: Staff[];
+  journal: any[];
+  news: any[];
+  goals: Record<string, any>;
+  eventLog: string[];
+  pendingEvent: any;
+  payLate: boolean;
+  centralKitchen: boolean;
+  lastSummary: any;
+  weekly: any;
+  stories: Record<string, any>;
+  /** imza tarif (yoksa null/undefined) */
+  signature?: { pid: string; level: number; family?: boolean; [k: string]: any } | null;
+  /** servis hamleleri günlüğü (KE.act) */
+  dayLog?: { m: number; a: string; x: any[] }[];
+  /** bugünkü müdavim ziyaretleri */
+  regularVisits?: any[];
+  /** öğle olayı */
+  mid?: any;
+  charity?: Record<string, number>;
+  stars?: number;
   [k: string]: any;
 }
+
+/** Besi çiftliği (G.farm) */
+interface FarmState {
+  /** hayvan türü → ağıl */
+  pens: Record<string, Pen>;
+  /** malzeme → çiftlik deposundaki et (kg) */
+  store: Record<string, number>;
+  [k: string]: any;
+}
+/** Ağıl: seviye ve yetişmekte olan partiler */
+interface Pen { level: number; batches: { count: number; age: number; [k: string]: any }[] }
+
+/** Bir şubenin gün sayaçları (L.stats): arrivals, served, lost…, revenue, tips, byProduct, stockouts… */
+type DayStats = Record<string, any>;
+
+/** Gün özeti (KE.finishService → G.lastSummary) */
+interface DaySummary {
+  day: number;
+  branches: Record<string, { name: string; stats: DayStats; sat: number; [k: string]: any }>;
+  [k: string]: any;
+}
+
+/** Gün kapanışının sonucu (KE.finalizeDay): arayüzün kapanış ekranı bunu gösterir */
+interface DayResult { levelUps: any[]; quits: any[]; branches: Record<string, any>; [k: string]: any }
+
+/** Süreli etki (G.mods): KE.modVal anahtarın çarpanlarını çarpar */
+interface Mod { key: string; mult: number; days?: number; label?: string; [k: string]: any }
+
+/** Müdavimin gönül durumu (G.regulars) */
+interface RegularState { loyalty: number; visits: number; [k: string]: any }
 
 /** Bankanın kredi teklifi (KE.loanOffer / KE.loanOffers) */
 interface LoanOffer {

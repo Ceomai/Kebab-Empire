@@ -10,6 +10,7 @@
   KE.finishService = function (G) {
     KE.fastForward(G);
     G.phase = 'closing';
+    /** @type {DaySummary} */
     const summary = { day: G.day, branches: {} };
     G.branches.forEach((b) => {
       const L = G.live[b.id];
@@ -24,6 +25,7 @@
         wasteVal += lost * KE.ingPrice(G, b, k);
         b.stock[k] -= lost;
       });
+      /** @type {Record<string, number>} */
       const usedToday = {};
       Object.keys(b.usage).forEach((k) => { usedToday[k] = 0; });
       Object.entries(S.byProduct).forEach(([pid, n]) => { const p = prodOf(G, pid); if (p) Object.entries(p.ing).forEach(([k, q]) => { usedToday[k] += q * n; }); });
@@ -61,17 +63,18 @@
        midday.js    → KE.lostShare
        farm.js      → KE.farmDay  (İSTEĞE BAĞLI: çiftlik dosyası yüklenmemişse adım atlanır)
      Zorunlu olanlar eksikse oyun yüklenişi hatalıdır; KE.closeDeps() hangilerinin eksik olduğunu söyler. */
+  /** @type {Record<string, string>} */
   const LATE = { writeJournal: 'narrative', writeNews: 'narrative', rollEvent: 'narrative', checkGoals: 'progress', advanceEra: 'progress', lostShare: 'midday' };
-  KE.closeDeps = () => Object.keys(LATE).filter((k) => typeof KE[k] !== 'function').map((k) => 'KE.' + k + ' (' + LATE[k] + '.js)');
+  KE.closeDeps = () => /** @type {(keyof KENamespace)[]} */ (Object.keys(LATE)).filter((k) => typeof KE[k] !== 'function').map((k) => 'KE.' + k + ' (' + LATE[k] + '.js)');
 
   /* 1. Günün hamle günlüğünü sakla, kapanış akışını tohumla */
-  function beginClose(G) {
+  function beginClose(/** @type {Game} */ G) {
     KE.RNG.seed(G, 'close');
     G.actionLog = (G.actionLog || []).concat([{ day: G.day, log: G.dayLog || [] }]).slice(-7);
     G.dayLog = [];
   }
   /* 2. Rehber müfettişinin kararı (yıldız ya da itibar kaybı) */
-  function inspectorVerdict(G, S0, out) {
+  function inspectorVerdict(/** @type {Game} */ G, /** @type {DaySummary} */ S0, /** @type {DayResult} */ out) {
     if (!(G.inspect && S0.branches[G.inspect.bid])) return;
     const sm = S0.branches[G.inspect.bid], st = sm.stats, b = G.branches.find((x) => x.id === G.inspect.bid);
     const lost = st.arrivals ? KE.lostShare(st) : 1;
@@ -81,7 +84,7 @@
     G.inspect = null;
   }
   /* 3. Ekibin bahşiş isteği: hafta sonunda günlerin yarısında bile karşılanmadıysa ekip küser */
-  function tallyTipWish(G, rule, out) {
+  function tallyTipWish(/** @type {Game} */ G, /** @type {string} */ rule, /** @type {DayResult} */ out) {
     const TW = G.tipWish;
     if (!TW) return;
     TW.days = (TW.days || 0) + 1; if (rule === TW.rule) TW.hits = (TW.hits || 0) + 1;
@@ -89,8 +92,9 @@
     if (G.day >= TW.until) out.tipWishEnd = { rule: TW.rule, hits: TW.hits, days: TW.days, missed: TW.missed };
   }
   /* 4a. Bahşiş paylaşımı ve günlük moral değişimi */
-  function tipsAndMorale(G, b, st, S, rule, out) {
+  function tipsAndMorale(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Staff[]} */ st, /** @type {DayStats} */ S, /** @type {string} */ rule, /** @type {DayResult} */ out) {
     if (rule === 'kasa') G.cash += S.tips;
+    /** @type {Record<string, number>} */
     const shares = {};
     KE.tipShares(G, b, rule, S.tips).forEach(([s, v]) => { shares[s.id] = v; });
     const perf = st.slice().sort((a, c) => c.servedToday - a.servedToday);
@@ -119,11 +123,11 @@
       if (dm < 0 && KE.huyOf(s) === 'sadik') dm *= 0.7;
       s.morale = clamp(s.morale + dm, 0, 100);
       s.moraleDelta = s.morale - before;
-      if (s.levelUps && s.levelUps.length) { s.levelUps.forEach((u) => out.levelUps.push({ name: s.name, pid: u.pid, star: u.star })); s.levelUps = []; }
+      if (s.levelUps && s.levelUps.length) { s.levelUps.forEach((/** @type {{ pid: string; star: number }} */ u) => out.levelUps.push({ name: s.name, pid: u.pid, star: u.star })); s.levelUps = []; }
     });
   }
   /* 4b. Çıraklar mentor ustalarından öğrenir */
-  function mentorApprentices(st, rule, out) {
+  function mentorApprentices(/** @type {Staff[]} */ st, /** @type {string} */ rule, /** @type {DayResult} */ out) {
     st.filter((s) => s.mentorId).forEach((c) => {
       const m = st.find((x) => x.id === c.mentorId);
       if (!m) { c.mentorId = null; return; }
@@ -135,11 +139,11 @@
     });
   }
   /* 4c. Morali dibe vuran istifa eder (tohumlu zar) */
-  function rollQuits(b, st, out) {
+  function rollQuits(/** @type {Branch} */ b, /** @type {Staff[]} */ st, /** @type {DayResult} */ out) {
     st.forEach((s) => { if (s.morale < 18 && KE.rand() < 0.3) { out.quits.push({ name: s.name, role: s.role, branch: b.name }); s.quit = true; } });
   }
   /* 4d. Kasa ve defter: ciro, sarf, sabit giderin günlük payı, şube geçmişi */
-  function bookDay(G, b, st, sum, rule, out) {
+  function bookDay(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Staff[]} */ st, /** @type {DaySummary["branches"][string]} */ sum, /** @type {string} */ rule, /** @type {DayResult} */ out) {
     const S = sum.stats;
     const fixed = (b.rent + KE.utilities(G, b) + st.reduce((a, s) => a + s.wage * (1 + KE.ECON.fazlaMesaiOrani) * 1.2 + KE.ECON.yolYardimiAylik, 0)) / 30;
     const sarf = S.revenue * KE.ECON.sarfOrani;
@@ -157,7 +161,7 @@
     out.branches[b.id] = entry;
   }
   /* 4. Her şube sırayla kapanır */
-  function closeBranch(G, b, S0, rule, out) {
+  function closeBranch(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {DaySummary} */ S0, /** @type {string} */ rule, /** @type {DayResult} */ out) {
     const sum = S0.branches[b.id];
     const st = KE.branchStaff(G, b);
     tipsAndMorale(G, b, st, sum.stats, rule, out);
@@ -167,7 +171,7 @@
     bookDay(G, b, st, sum, rule, out);
   }
   /* 5. İstifa edenler ayrılır, günün itibar değişimi uygulanır */
-  function applyReputation(G, S0) {
+  function applyReputation(/** @type {Game} */ G, /** @type {DaySummary} */ S0) {
     G.staff = G.staff.filter((s) => !s.quit);
     const totalRep = G.branches.reduce((a, b) => a + S0.branches[b.id].stats.repDelta, 0);
     let dRep = clamp(totalRep, -2, 1.5);
@@ -177,27 +181,27 @@
     if (G.reputation > 70) G.reputation = clamp(G.reputation - (G.reputation - 70) * (G.reputation - 70) / 600 * (1 - 0.25 * KE.charityLv(G, 'asevi')), 0, 100);
   }
   /* 6. Gün sonu günlüğü (narrative.js) */
-  function journal(G, S0, out) {
+  function journal(/** @type {Game} */ G, /** @type {DaySummary} */ S0, /** @type {DayResult} */ out) {
     out.journal = KE.writeJournal(G, S0, out);
     G.journal.unshift({ day: G.day, date: KE.dateStr(G.day), text: out.journal });
     if (G.journal.length > 60) G.journal.length = 60;
   }
   /* 7. Günlük işler: geçici etkiler, çiftlik, günün hedefleri, yeni tarifler, müdavimler */
-  function dailyTicks(G, S0, out) {
+  function dailyTicks(/** @type {Game} */ G, /** @type {DaySummary} */ S0, /** @type {DayResult} */ out) {
     G.mods.forEach((m) => { m.days -= 1; }); G.mods = G.mods.filter((m) => m.days > 0);
     if (KE.farmDay) out.farm = KE.farmDay(G); /* isteğe bağlı: farm.js yüklüyse */
     out.daily = KE.dailyProgress(G, true);
-    out.daily.forEach((g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + (G.reputation > 70 ? 0.05 : 0.4), 0, 100); } });
+    out.daily.forEach((/** @type {any} */ g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + (G.reputation > 70 ? 0.05 : 0.4), 0, 100); } });
     out.unlocks = [];
     KE.MODES[G.mode].products.filter((p) => p.unlock && !G.flags['tarif_' + p.id] && G.reputation >= p.unlock).forEach((p) => {
       G.flags['tarif_' + p.id] = true; out.unlocks.push(p);
       G.branches.forEach((b) => { b.menu[p.id] = true; b.prices[p.id] = KE.marketPrice(G, p); Object.entries(p.ing).forEach(([k, q]) => { b.usage[k] = Math.max(b.usage[k] || 0, KE.expectedCustomers(G, b) * 0.1 * q); }); });
     });
     out.regulars = [];
-    G.branches.forEach((b) => (S0.branches[b.id].stats.regulars || []).forEach((x) => out.regulars.push(x)));
+    G.branches.forEach((b) => (S0.branches[b.id].stats.regulars || []).forEach((/** @type {any} */ x) => out.regulars.push(x)));
   }
   /* 8. Toplu sipariş teslimi ve imza tarifin bitmesi */
-  function deliveries(G, out) {
+  function deliveries(/** @type {Game} */ G, /** @type {DayResult} */ out) {
     if (G.contract && G.contract.day === G.day) {
       const c = G.contract, net = c.pay - c.cost;
       G.cash += net; KE.addExtra(G, 'other', -net);
@@ -210,7 +214,7 @@
     if (G.sigWork && G.day >= G.sigWork.ready) { G.signature = { pid: G.sigWork.pid, level: G.sigWork.level }; out.signature = G.signature; G.sigWork = null; }
   }
   /* 9. Haftalık meydan okuma */
-  function weeklyChallenge(G, S0, out) {
+  function weeklyChallenge(/** @type {Game} */ G, /** @type {DaySummary} */ S0, /** @type {DayResult} */ out) {
     if (!G.weekly) return;
     const W = G.weekly, a = W.acc;
     G.branches.forEach((b) => { const S = S0.branches[b.id].stats; a.served += S.served; a.match += S.matches; a.player += S.playerServed || 0; a.tips += S.tips; a.satS += S.satSum; a.satN += S.satN; });
@@ -221,7 +225,7 @@
     if (end) { out.weeklyEnd = Object.assign({}, W); G.weekly = null; }
   }
   /* 10. Dönem işleri: kârlı hafta, ay sonu şampiyonluğu, hedefler, dönemler, ay kapanışı, hafta sonu gazetesi ve pazar */
-  function periodTicks(G, out) {
+  function periodTicks(/** @type {Game} */ G, /** @type {DayResult} */ out) {
     if (G.day >= 7 && G.ledger.days.filter((d) => d.day > G.day - 7).reduce((x, d) => x + d.net, 0) > 0) G.flags.profitWeek = G.flags.profitWeek || G.day;
     if (KE.isMonthEnd(G.day)) out.champions = KE.championship(G);
     out.goals = KE.checkGoals(G);
@@ -230,7 +234,7 @@
     if (KE.isWeekEnd(G.day)) { out.news = KE.writeNews(G); G.news.unshift(out.news); KE.refreshMarket(G); KE.refreshWorkers(G); if (!G.flags.empire) G.rival.power += 3; }
   }
   /* 11. Ertesi güne geç: kayıt sıkıştırma, yeni gün, olay kartı, sabah */
-  function nextMorning(G) {
+  function nextMorning(/** @type {Game} */ G) {
     if (G.tipWish && G.tipWish.missed) G.tipWish.missed = false;
     KE.compactLedger(G);
     G.payLate = G.cash < 0;
@@ -242,6 +246,7 @@
   KE.finalizeDay = function (G, todayRule) {
     beginClose(G);
     const S0 = G.lastSummary;
+    /** @type {DayResult} */
     const out = { levelUps: [], quits: [], branches: {} };
     const rule = todayRule || G.tipRule;
     inspectorVerdict(G, S0, out);
@@ -263,7 +268,7 @@
   KE.LEDGER_KEEP = 84;
   KE.compactLedger = function (G) {
     const cut = G.day - KE.LEDGER_KEEP, cur = KE.monthKey(G.day);
-    const old = (d) => d.day <= cut && d.month !== cur;
+    const old = (/** @type {any} */ d) => d.day <= cut && d.month !== cur;
     if (G.ledger.days.length && old(G.ledger.days[0])) {
       const A = G.ledger.archive = G.ledger.archive || { days: 0, revenue: 0, served: 0, tips: 0, byProduct: {} };
       G.ledger.days.filter(old).forEach((d) => { A.days++; A.revenue += d.revenue || 0; A.served += d.served || 0; A.tips += d.tips || 0; Object.entries(d.byProduct || {}).forEach(([k, v]) => { A.byProduct[k] = (A.byProduct[k] || 0) + v; }); });

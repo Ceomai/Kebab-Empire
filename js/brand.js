@@ -13,8 +13,7 @@
   /* derleme sırasında Vite __BRAND__ sabitini koyar; testlerde ve sunucuda yoktur */
   // eslint-disable-next-line no-undef
   const injected = typeof __BRAND__ !== 'undefined' ? __BRAND__ : null;
-  /** @type {any} */
-  const B = KE.BRAND = Object.assign({}, D, injected || {});
+  const B = KE.BRAND = /** @type {KE_BRAND} */ (Object.assign({}, D, injected || {}));
   if (!Array.isArray(B.nameParts) || !B.nameParts.length) B.nameParts = [B.gameName];
   B.isDefault = B.id === 'default';
 
@@ -29,10 +28,11 @@
      Adın ardından gelen ek (tırnaktan ya da kesme işaretinden sonra) yeni ada göre yeniden kurulur. */
   /** @type {Array<[RegExp, string]>} */
   const EK = [[/^n?[ıiuü]n$/, 'in'], [/^[ny]?[ıiuü]$/, 'i'], [/^n?[dt][ae]n$/, 'den'], [/^n?[dt][ae]$/, 'de'], [/^[yn]?[ae]$/, 'e'], [/^y?l[ae]$/, 'le']];
-  const reEsc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const reEsc = (/** @type {string} */ x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   /* tek geçiş: her ad bir kez değişir (yeni ad eskisini içerse bile ikinci kez değişmez) */
   B.swaps.forEach((sw) => { sw.push(new RegExp(reEsc(sw[0]) + '(?:(["”]?)([\'’]?)([a-zçğıöşü]{1,4})(?![a-zçğıöşüA-ZÇĞİÖŞÜ]))?', 'g')); });
-  const reSuffix = (b, q, ap, suf) => {
+  /** b: yeni ad; q, ap, suf: addan sonra gelen tırnak, kesme işareti ve ek */
+  const reSuffix = (/** @type {string} */ b, /** @type {string} */ q, /** @type {string} */ ap, /** @type {string} */ suf) => {
     if (!suf) return b + (q || '') + (ap || '');
     const k = (EK.find(([re]) => re.test(suf)) || [])[1];
     if (!k || (!q && !ap) || !KE.ek) return b + q + ap + suf;
@@ -41,7 +41,7 @@
   };
   B.swap = (s) => {
     if (!B.swaps.length || !s) return s;
-    for (const [a, b, re] of B.swaps) if (s.indexOf(a) >= 0) s = s.replace(re, (m, q, ap, suf) => reSuffix(b, q, ap, suf));
+    for (const [a, b, re] of B.swaps) if (s.indexOf(a) >= 0) s = s.replace(re, (/** @type {string} */ m, /** @type {string} */ q, /** @type {string} */ ap, /** @type {string} */ suf) => reSuffix(b, q, ap, suf));
     return s;
   };
   /* metin alanları tek dil ("...") ya da dile göre ({ tr, en, de }) yazılabilir */
@@ -57,6 +57,7 @@
   B.branchName = (districtName, fallback) => (B.shopName ? `${B.shopName} ${districtName}` : fallback);
 
   /* renkler: CSS değişkenleri (style.css :root) üzerine yazılır */
+  /** @type {Record<string, string>} */
   const CSS_VARS = { flame: '--kor', primary: '--biber', primaryDeep: '--biber-deep', accent: '--altin', accentDeep: '--altin-deep', wine: '--sumak', mint: '--nane', mintDeep: '--nane-deep', paper: '--kagit', ink: '--murekkep' };
   B.applyColors = () => {
     if (typeof document === 'undefined') return;

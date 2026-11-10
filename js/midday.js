@@ -9,7 +9,7 @@
      Servisin ortasında küçük bir olay: oyuncu seçer ya da süre dolunca güvenli seçenek uygulanır.
      Seçim eylem günlüğüne yazılır, sunucu aynı dakikada aynı seçimi yeniden oynatır. */
   KE.MID_WAIT = 40;
-  const frontOf = (G, b) => KE.branchStaff(G, b).filter((s) => ['kasiyer', 'garson'].includes(s.role));
+  const frontOf = (/** @type {Game} */ G, /** @type {Branch} */ b) => KE.branchStaff(G, b).filter((s) => ['kasiyer', 'garson'].includes(s.role));
   KE.MIDS = [
     { id: 'otobus', def: 1, mgr: 0, ic: 'users', title: 'Turist otobüsü kapıda',
       text: (G, b) => `Bir rehber, ${b.name} önünde durdu: "Kırk kişilik grubum aç, alabilir misiniz?"`,
@@ -42,7 +42,7 @@
     if (!M || M.choice != null || !L) return null;
     M.choice = i; M.at = L.minute;
     const b = G.branches.find((x) => x.id === M.bid);
-    const pay = (c) => { G.cash -= c; KE.addExtra(G, 'other', c); };
+    const pay = (/** @type {number} */ c) => { G.cash -= c; KE.addExtra(G, 'other', c); };
     if (M.id === 'otobus' && i === 0) L.boost = { until: L.minute + 30, mult: 2.2 };
     if (M.id === 'ariza') {
       if (i === 0) { pay(KE.midCost(G, 'ariza')); if (KE.rand() < 0.3) { M.late = true; L.stationDown = 1; L.stationDownUntil = L.minute + 60; } }
@@ -67,14 +67,14 @@
   };
   /* Acil kurye: gün ortasında biten malzemeyi 1,5 katı fiyatına getirir (günde bir kez) */
   /* günün kalanında beklenen talebin payı (saatlik eğriye göre) */
-  const restShare = (L) => {
+  const restShare = (/** @type {Live | null | undefined} */ L) => {
     const C = KE.HOUR_CURVE, sum = Object.values(C).reduce((a, v) => a + v, 0);
     const h = KE.OPEN_HOUR + (L ? L.minute : 0) / 60;
     return Object.keys(C).reduce((a, k) => a + C[k] * Math.max(0, Math.min(1, +k + 1 - h)), 0) / sum;
   };
   KE.courierMul = (G) => G.mode === 'doner' ? 1.3 : 1.5;
   KE.courierNeed = function (G, b) {
-    let cost = 0; const items = {};
+    let cost = 0; const items = /** @type {Record<string, number>} */ ({});
     const L = G.live && G.live[b.id], rest = restShare(L), f = KE.demandFactor(G, b);
     Object.keys(b.usage).forEach((k) => {
       const want = b.usage[k] * f * rest * 1.1, have = b.stock[k] || 0;

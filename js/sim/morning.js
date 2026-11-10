@@ -5,7 +5,7 @@
   /* ---------- Sabah: çiftlikten sevkiyat ve stok tamamlama ---------- */
   /* Müdürlü şube kendi sabah ayarını yapar: stok seviyesi dünkü bitenlere ve fireye, fiyatlar haftada bir piyasaya göre */
   KE.isManaged = (G, b) => b.managed !== false && KE.branchStaff(G, b).some((s) => s.role === 'mudur');
-  function manage(G, b) {
+  function manage(/** @type {Game} */ G, /** @type {Branch} */ b) {
     const sum = G.lastSummary && G.lastSummary.day === G.day - 1 && G.lastSummary.branches[b.id];
     const notes = [];
     if (sum) {
@@ -38,13 +38,14 @@
     return KE.expectedCustomers(G, b) * h;
   };
   KE.demandFactor = function (G, b) {
+    /** @type {number[]} */
     const h = (b.expHist || []).slice(0, -1);
     if (h.length < 2) return 1;
     const avg = h.reduce((a, x) => a + x, 0) / h.length;
     return avg > 0 ? Math.round(Math.max(0.85, Math.min(1.6, KE.forecastCustomers(G, b) / avg)) * 100) / 100 : 1;
   };
   KE.stockNeed = (G, b, k, f) => (b.usage[k] || 0) * b.stockLevel * (f == null ? KE.demandFactor(G, b) : f);
-  function fillStock(G, b, f) {
+  function fillStock(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {number | undefined} */ f) {
     let cost = 0, farm = 0;
     Object.keys(b.usage).forEach((k) => {
       let need = Math.max(0, KE.stockNeed(G, b, k, f) - (b.stock[k] || 0));
@@ -60,7 +61,7 @@
   /* Sabah, kepenk açılmadan: bugünün ihtiyacına göre eksikleri tamamla (kampanya, stok ayarı sonrası) */
   KE.shortfall = function (G, b) {
     const f = KE.demandFactor(G, b);
-    let cost = 0; const items = [];
+    let cost = 0; const items = /** @type {string[]} */ ([]);
     Object.keys(b.usage).forEach((k) => { const q = KE.stockNeed(G, b, k, f) - (b.stock[k] || 0); if (q > 0.01) { items.push(k); cost += q * KE.ingPrice(G, b, k); } });
     return { cost, items, factor: f };
   };
@@ -86,30 +87,31 @@
     const hours = Object.keys(C).map(Number).sort((a, c) => a - c);
     const cSum = Object.values(C).reduce((a, v) => a + v, 0);
     const types = Object.keys(KE.CUSTOMER_TYPES);
-    const odds = {}; types.forEach((t) => { odds[t] = KE.productOdds(G, b, t); });
+    const odds = /** @type {Record<string, NumMap>} */ ({}); types.forEach((t) => { odds[t] = KE.productOdds(G, b, t); });
     /* bir gün için saat saat ürün başına porsiyon (grup başına değil, gelen müşteri hızı × karışım) */
     /* saat başına grup başı porsiyon karışımı; yalnızca hafta sonu ve özel güne bağlı olduğundan önbelleklenir */
+    /** @type {Record<string, NumMap>} */
     const memo = {};
-    const mixAt = (h, day, sp) => {
+    const mixAt = (/** @type {number} */ h, /** @type {number} */ day, /** @type {SpecialDay | null} */ sp) => {
       const key = h + '|' + KE.isWeekend(day) + '|' + (sp ? sp.id : '');
       if (memo[key]) return memo[key];
-      const tw = KE.typeWeights(G, b, h, day), tot = tw.reduce((a, x) => a + x[1], 0) || 1, out = {};
+      const tw = KE.typeWeights(G, b, h, day), tot = tw.reduce((a, x) => a + x[1], 0) || 1, out = /** @type {NumMap} */ ({});
       on.forEach((p) => { out[p.id] = 0; });
       tw.forEach(([t, w]) => { const n = w / tot * KE.groupMean(t); on.forEach((p) => { out[p.id] += n * (odds[t][p.id] || 0); }); });
       return (memo[key] = out);
     };
-    const model = (day, groups) => {
+    const model = (/** @type {number} */ day, /** @type {number} */ groups) => {
       const sp = KE.specialDay(day);
       return hours.map((h) => {
-        const g = groups * C[h] * (sp && sp.hours && sp.hours[h] ? sp.hours[h] : 1) / cSum, mx = mixAt(h, day, sp), out = {};
+        const g = groups * C[h] * (sp && sp.hours && sp.hours[h] ? sp.hours[h] : 1) / cSum, mx = mixAt(h, day, sp), out = /** @type {NumMap} */ ({});
         on.forEach((p) => { out[p.id] = g * mx[p.id]; });
         return out;
       });
     };
-    const share = (rows) => { const s = {}; let t = 0; on.forEach((p) => { s[p.id] = rows.reduce((a, r) => a + (r[p.id] || 0), 0); t += s[p.id]; }); on.forEach((p) => { s[p.id] = t ? s[p.id] / t : 0; }); return { s, t }; };
+    const share = (/** @type {NumMap[]} */ rows) => { const s = /** @type {NumMap} */ ({}); let t = 0; on.forEach((p) => { s[p.id] = rows.reduce((a, r) => a + (r[p.id] || 0), 0); t += s[p.id]; }); on.forEach((p) => { s[p.id] = t ? s[p.id] / t : 0; }); return { s, t }; };
     /* son 7 günün satışları (gün satırları şube başına; ayrıntısı arşive katlanmış satır varsa atlanır) */
     const rows = G.ledger.days.filter((d) => d.branchId === b.id && d.day < G.day && d.day >= G.day - KE.STOCK_HIST_DAYS && d.byProduct);
-    let hist = share(rows.map((d) => d.byProduct)), ref = null;
+    let hist = share(rows.map((d) => d.byProduct)), ref = /** @type {{ s: NumMap; t: number } | null} */ (null);
     if (hist.t >= 20) ref = share(rows.map((d) => share(model(d.day, 1)).s));
     else {
       const sum = G.lastSummary && G.lastSummary.branches && G.lastSummary.branches[b.id];
@@ -119,6 +121,7 @@
     const res = KE.resOn && KE.resOn(b) ? 0.97 : 1;
     const today = model(G.day, KE.expectedCustomers(G, b) * res);
     /* geçmiş karışım / modelin o günler için beklediği karışım: modelin göremediği tercihleri (fiyat, alışkanlık) taşır */
+    /** @type {NumMap} */
     const adj = {};
     on.forEach((p) => { adj[p.id] = ref && ref.s[p.id] > 0 ? Math.max(0.4, Math.min(2.5, hist.s[p.id] / ref.s[p.id])) : 1; });
     /* düzeltme yalnızca karışımı değiştirir, toplam porsiyonu değil */
@@ -132,12 +135,13 @@
     const kur = KE.branchStaff(G, b).filter((s) => s.role === 'kurye').length;
     const paket = kur ? KE.expectedCustomers(G, b) * 0.16 * (0.6 + G.reputation / 100) * Math.min(1.6, 0.8 + kur * 0.4) : 0;
     const byHour = today.map((o, i) => {
-      const r = {}; let n = 0;
+      const r = /** @type {NumMap} */ ({}); let n = 0;
       on.forEach((p) => { const w = o[p.id] * adj[p.id] * conv; r[p.id] = w + paket * C[hours[i]] / cSum / (on.length || 1); n += w; });
       return { r, drinks: n * M.drinkRate };
     });
-    const tot = {}; on.forEach((p) => { tot[p.id] = byHour.reduce((a, x) => a + x.r[p.id], 0); });
+    const tot = /** @type {NumMap} */ ({}); on.forEach((p) => { tot[p.id] = byHour.reduce((a, x) => a + x.r[p.id], 0); });
     const top = on.slice().sort((a, c) => tot[c.id] - tot[a.id])[0];
+    /** @type {{ k: string; need: number; have: number; outHour: number | null; risk: number; hourly: number[]; hourlyVar: number[] }[]} */
     const items = [];
     Object.keys(b.usage).forEach((k) => {
       const have = b.stock[k] || 0;
@@ -218,6 +222,7 @@
     const exp = open.reduce((a, b) => a + KE.expectedCustomers(G, b), 0);
     if (!exp) { G.daily = []; return; }
     const reward = Math.round(5000 * G.priceIndex * (1 + 0.6 * (open.length - 1)) / 500) * 500;
+    /** @type {{ kind: string; target: number; text: (t: number) => string }[]} */
     const pool = [
       { kind: 'served', target: Math.max(20, Math.round(exp * 0.92 / 5) * 5), text: (t) => `${t} müşteriye servis yap` },
       { kind: 'sat', target: 78, text: (t) => `Ortalama memnuniyet %${t} ve üstü` },
@@ -231,7 +236,7 @@
     /* bonus: tezgâha geçip kendin hazırla (isteğe bağlı) */
     G.daily.push({ kind: 'player', target: 6, text: 'Bonus: tezgâhta kendin 6 sipariş hazırla', reward: reward * 2, bonus: true });
   };
-  function dailyTotals(G) {
+  function dailyTotals(/** @type {Game} */ G) {
     const t = { served: 0, satS: 0, satN: 0, cold: 0, lost: 0, tips: 0, match: 0, player: 0 };
     G.branches.forEach((b) => {
       const S = G.live && G.live[b.id] ? G.live[b.id].stats : (G.lastSummary && G.lastSummary.branches[b.id] ? G.lastSummary.branches[b.id].stats : null);
@@ -243,7 +248,7 @@
   /* Her hedef için: değer, ilerleme (0–1) ve durum (açık, tamam, kaçtı) */
   KE.dailyProgress = function (G, final) {
     const t = dailyTotals(G);
-    return (G.daily || []).map((g) => {
+    return (G.daily || []).map((/** @type {any} */ g) => {
       let v, p, state;
       if (g.kind === 'served') { v = t.served; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }
       else if (g.kind === 'tips') { v = t.tips; p = v / g.target; state = v >= g.target ? 'done' : 'open'; }

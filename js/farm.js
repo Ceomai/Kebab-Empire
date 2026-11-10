@@ -29,6 +29,7 @@
   };
   KE.batchYield = function (G, kind, count) {
     const y = KE.FARM[kind].yield[G.mode] || {};
+    /** @type {Record<string, number>} */
     const out = {};
     Object.entries(y).forEach(([k, v]) => { out[k] = v * count; });
     return out;
@@ -38,6 +39,7 @@
     const F = KE.FARM[kind];
     const ready = pen.batches.filter((x) => x.age >= F.days);
     let heads = 0;
+    /** @type {Record<string, number>} */
     const got = {};
     ready.forEach((x) => {
       heads += x.count;
@@ -50,6 +52,7 @@
   KE.farmDay = function (G) {
     if (!G.farm) return null;
     let feed = 0;
+    /** @type {any[]} */
     const done = [];
     KE.farmKinds(G).forEach((kind) => {
       const pen = G.farm.pens[kind], F = KE.FARM[kind];

@@ -1,0 +1,11 @@
+{
+  "extends": "./jsconfig.json",
+  "compilerOptions": {
+    "noImplicitAny": true
+  },
+  "include": [
+    "js/data.js", "js/util.js", "js/brand.js", "js/calendar.js", "js/characters.js", "js/economy.js",
+    "js/sim/*.js", "js/midday.js", "js/progress.js", "js/farm.js", "js/narrative.js", "js/save.js", "js/verify.js",
+    "types/**/*.d.ts"
+  ]
+}

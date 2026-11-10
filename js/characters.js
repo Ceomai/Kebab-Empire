@@ -5,8 +5,8 @@
 (function () {
   let uid = 0;
   /* görünüş seçimi: tohumsuz Math.random (oyun sonucunu etkilemez, yeniden oynatmaya girmez) */
-  const pickCosmetic = (a) => a[Math.floor(Math.random() * a.length)];
-  const shade = (hex, amt) => {
+  const pickCosmetic = (/** @type {any[]} */ a) => a[Math.floor(Math.random() * a.length)];
+  const shade = (/** @type {string} */ hex, /** @type {number} */ amt) => {
     const n = parseInt(hex.slice(1), 16);
     let r = (n >> 16) + amt, g = ((n >> 8) & 255) + amt, b = (n & 255) + amt;
     r = Math.max(0, Math.min(255, r)); g = Math.max(0, Math.min(255, g)); b = Math.max(0, Math.min(255, b));
@@ -15,19 +15,19 @@
   const INK = '#3b2417';
   const OL = `stroke="${INK}" stroke-opacity=".5" stroke-width="1.5" stroke-linejoin="round"`;
 
-  function hairBack(l) {
+  function hairBack(/** @type {Look} */ l) {
     const c = l.hairColor;
     if (l.head === 'basortusu') return '';
     if (l.hair === 'uzun') return `<path d="M33 52 Q29 22 60 20 Q91 22 87 52 L91 102 Q60 112 29 102 Z" fill="${shade(c, -12)}" ${OL}/>`;
     if (l.hair === 'topuz') return `<circle cx="60" cy="21" r="10.5" fill="${c}" ${OL}/><path d="M54 17 q6 -4 12 0" stroke="${shade(c, 45)}" stroke-width="2" fill="none" opacity=".7"/>`;
     return '';
   }
-  function hairFront(l) {
+  function hairFront(/** @type {Look} */ l) {
     const c = l.hairColor, hl = shade(c, 50);
     if (['basortusu', 'pusi', 'kalpak', 'kask', 'sefsapka', 'baret'].includes(l.head) && l.hair !== 'uzun') {
       return l.head === 'sefsapka' || l.head === 'kalpak' ? `<path d="M36 53 Q37 44 42 42 L42 53Z M84 53 Q83 44 78 42 L78 53Z" fill="${c}"/>` : '';
     }
-    const shine = (d) => `<path d="${d}" stroke="${hl}" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".55"/>`;
+    const shine = (/** @type {string} */ d) => `<path d="${d}" stroke="${hl}" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".55"/>`;
     switch (l.hair) {
       case 'kel': return `<path d="M35 57 Q34 46 39 41 L42 59Z M85 57 Q86 46 81 41 L78 59Z" fill="${c}" ${OL}/><ellipse cx="52" cy="34" rx="7" ry="3" fill="#fff" opacity=".22"/>`;
       case 'dalgali': return `<path d="M34 55 Q28 29 50 25 Q60 19 72 25 Q92 29 86 55 Q83 42 76 40 Q72 47 64 41 Q58 47 50 41 Q44 47 38 43 Z" fill="${c}" ${OL}/>` + shine('M48 29 q8 -4 16 0');
@@ -37,7 +37,7 @@
       default: return `<path d="M35 53 Q34 27 60 26 Q86 27 85 53 Q81 37 60 35 Q39 37 35 53Z" fill="${c}" ${OL}/>` + shine('M46 31 q12 -5 26 0');
     }
   }
-  function headwear(l, id) {
+  function headwear(/** @type {Look} */ l, /** @type {number} */ id) {
     const a = l.accent || '#c0392b';
     switch (l.head) {
       case 'sefsapka':
@@ -62,7 +62,7 @@
       default: return '';
     }
   }
-  function face(l, mood, gid) {
+  function face(/** @type {Look} */ l, /** @type {string} */ mood, /** @type {string} */ gid) {
     const dark = '#2a1a12';
     const browY = l.head === 'basortusu' ? 47 : 46;
     let brows, mouth, extra = '';
@@ -96,7 +96,7 @@
       `<path d="M60 58 Q56.5 65.5 59 67.5 Q62 68.6 64 66.6" fill="none" stroke="${shade(l.skin, -55)}" stroke-width="1.7" stroke-linecap="round"/>` +
       extra + wr + fh + mouth + glasses;
   }
-  function headGroup(l, id, mood) {
+  function headGroup(/** @type {Look} */ l, /** @type {number} */ id, /** @type {string} */ mood) {
     const skin = l.skin, gid = 'sk' + id;
     return `<defs><radialGradient id="${gid}" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="${shade(skin, 14)}"/><stop offset=".75" stop-color="${skin}"/><stop offset="1" stop-color="${shade(skin, -22)}"/></radialGradient></defs>` +
       `<ellipse cx="35.5" cy="58" rx="5.2" ry="7.2" fill="${shade(skin, -12)}" ${OL}/><ellipse cx="84.5" cy="58" rx="5.2" ry="7.2" fill="${shade(skin, -12)}" ${OL}/><path d="M35 55 q2 3 0 6 M85 55 q-2 3 0 6" stroke="${shade(skin, -45)}" stroke-width="1.2" fill="none"/>` +
@@ -105,10 +105,10 @@
   }
 
   /* ---------- Göğüs portresi: kıyafet ---------- */
-  function outfit(l) {
+  function outfit(/** @type {Look} */ l) {
     const o = l.outfit, c = l.outfitColor || '#c0392b', a = l.accent || '#f4d03f';
-    const torso = (fill) => `<path d="M8 132 Q10 100 40 92 L80 92 Q110 100 112 132 Z" fill="${fill}" ${OL}/><path d="M20 132 Q22 108 38 100" stroke="#000" stroke-opacity=".08" stroke-width="8" fill="none"/>`;
-    const collar = (fill) => `<path d="M47 92 L60 106 L73 92 L68 90 L60 99 L52 90Z" fill="${fill}" ${OL}/>`;
+    const torso = (/** @type {string} */ fill) => `<path d="M8 132 Q10 100 40 92 L80 92 Q110 100 112 132 Z" fill="${fill}" ${OL}/><path d="M20 132 Q22 108 38 100" stroke="#000" stroke-opacity=".08" stroke-width="8" fill="none"/>`;
+    const collar = (/** @type {string} */ fill) => `<path d="M47 92 L60 106 L73 92 L68 90 L60 99 L52 90Z" fill="${fill}" ${OL}/>`;
     switch (o) {
       case 'onluk':
         return torso(l.shirt || '#ecf0f1') + collar(shade(l.shirt || '#ecf0f1', -25)) +
@@ -164,7 +164,7 @@
   };
 
   /* ---------- Tam boy figür ---------- */
-  function bodyOutfit(l, pose) {
+  function bodyOutfit(/** @type {Look} */ l, /** @type {string} */ pose) {
     const o = l.outfit, c = l.outfitColor || '#c0392b', a = l.accent || '#f4d03f';
     const pants = o === 'salvar' ? '#1c2833' : o === 'takim' ? shade(c, -10) : o === 'reflektif' ? '#34495e' : l.pants || '#3d4b5c';
     const shirt = ['onluk', 'yelek', 'salvar'].includes(o) ? (l.shirt || '#f4f6f6') : o === 'sef' || o === 'beyazceket' ? '#fbfcfc' : o === 'reflektif' ? '#5d6d7e' : c;
@@ -203,6 +203,7 @@
     const mood = opts.mood || 'neutral';
     const pose = opts.pose || 'stand';
     const B = bodyOutfit(l, pose);
+    /** @param {string} side 'L' | 'R' @param {boolean} [up] tepsi taşıyan kol */
     const arm = (side, up) => {
       const sx = side === 'L' ? 30 : 90;
       const ex = side === 'L' ? 22 : 98;
@@ -224,6 +225,7 @@
   /* Görünüm üreticiler */
   KE.randomLook = function (gender, age, extra) {
     const male = gender === 'e';
+    /** @type {Look} */
     const l = {
       gender, age,
       skin: pickCosmetic(KE.SKINS),
@@ -301,7 +303,7 @@
     lonca: { name: 'Lonca Şeyhi Rauf Usta', role: 'Usta pazarı', look: { gender: 'e', age: 'yasli', skin: '#d9a273', hairColor: '#d0d0d0', hair: 'kel', facial: 'sakal', glasses: false, head: 'takke', accent: '#7d6608', outfit: 'yelek', outfitColor: '#4a235a' } }
   };
   /* Aynı görünüş + aynı ayarlar için çizimi bir kez üret (sahne her dakika yeniden sorar) */
-  const memo = (fn) => { const cache = new Map(); return function (l, opts) { const k = JSON.stringify([l, opts || null]); let v = cache.get(k); if (v === undefined) { v = fn(l, opts); if (cache.size > 400) cache.clear(); cache.set(k, v); } return v; }; };
+  const memo = (/** @type {(l: Look, opts?: any) => string} */ fn) => { const cache = new Map(); return function (/** @type {Look} */ l, /** @type {any} */ opts) { const k = JSON.stringify([l, opts || null]); let v = cache.get(k); if (v === undefined) { v = fn(l, opts); if (cache.size > 400) cache.clear(); cache.set(k, v); } return v; }; };
   KE.portrait = memo(KE.portrait);
   KE.figure = memo(KE.figure);
 })();

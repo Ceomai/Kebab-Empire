@@ -1,5 +1,8 @@
 /* Oyun verisi tabloları (js/data.js ve motor dosyalarındaki sabit tablolar) — KE ad alanında kullanılır (types/ke.d.ts). */
 
+/** anahtar → sayı tablosu (malzeme miktarları, ürün porsiyonları…) */
+type NumMap = Record<string, number>;
+
 /** Semt (KE.DISTRICTS) */
 interface District {
   id: string;
@@ -26,7 +29,7 @@ interface CustomerType {
   priceSens: number;
   tip: number;
   /** saat → yoğunluk çarpanı */
-  hours: Record<number, number>;
+  hours: Record<string, number>;
   weekend?: number;
   /** grup büyüklüğü [en az, en çok] */
   group?: [number, number] | number[];
@@ -45,7 +48,7 @@ interface DecorItem { id: string; name: string; style: string; cost: number; amb
 interface Campaign {
   id: string; name: string; cost: number; days: number; icon: string; desc: string;
   /** [değişken anahtarı, çarpan] çiftleri */
-  mods?: [string, number][] | (string | number)[][];
+  mods?: [string, number][];
   mode?: string; rep?: boolean; sign?: boolean; [k: string]: any;
 }
 
@@ -91,7 +94,7 @@ interface ModeData {
 interface Regular { id: string; name: string; type: string; fav: Record<string, string>; cast?: string; look?: any; says: string[]; [k: string]: any }
 
 /** Özel gün (KE.SPECIAL; KE.specialDay id ekler) */
-interface SpecialDay { id?: string; name: string; desc: string; hours: Record<number, number>; types: Record<string, number>; tip?: number; theme: string | null }
+interface SpecialDay { id?: string; name: string; desc: string; hours: Record<string, number>; types: Record<string, number>; tip?: number; theme: string | null }
 
 /** Besi hayvanı türü (KE.FARM) */
 interface FarmKind {
@@ -148,8 +151,24 @@ interface MidEvent {
   [k: string]: any;
 }
 
-/** Sabah/akşam olayı (KE.EVENTS) — narrative.js'te tanımlanır, alanları olaya göre değişir */
-type GameEvent = Record<string, any>;
+/** Olay kartı seçeneği: run seçimi uygular, oyuncuya gösterilecek metni döndürür; c: kartın ctx'i */
+interface EventChoice { label: string; desc: string; run: (G: Game, c: any) => string | void; [k: string]: any }
+/** Olay kartı (GameEvent.build) */
+interface EventCard { title: string; text: string; ctx?: any; who?: Staff | null; choices: EventChoice[]; [k: string]: any }
+/** Sabah olayı (KE.EVENTS) — narrative.js'te tanımlanır */
+interface GameEvent {
+  id: string;
+  /** konuşan karakter (KE.CAST anahtarı) */
+  who: string | null;
+  /** seçilme ağırlığı */
+  w: number | ((G: Game) => number);
+  when?: (G: Game) => boolean;
+  build: (G: Game) => EventCard;
+  mode?: string; arc?: boolean;
+  /** müdavim hikâyesi: müdavim kimliği ve adım */
+  story?: string; step?: number;
+  [k: string]: any;
+}
 
 /** Bahşiş kuralı (KE.TIP_RULES) */
 interface TipRule { name: string; desc: string }

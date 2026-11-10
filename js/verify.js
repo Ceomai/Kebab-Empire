@@ -3,6 +3,7 @@
    sonucu karşılaştırır. Rastgelelik tohumlu olduğundan sonuç birebir aynı çıkmalıdır. */
 (function () {
   /* Günü yeniden oynatır; sonuçla birlikte gün sonu durumunu (G) da döndürür (verifyChain ikinci kez oynatmasın) */
+  /** @param {any} morningEnvelope @param {any[]} log @param {string | null | undefined} todayRule @param {any} claim */
   function replayDay(morningEnvelope, log, todayRule, claim) {
     let G;
     try { G = KE.SAVE.open(morningEnvelope); } catch (e) { return { r: { ok: false, note: 'sabah kaydı açılamadı: ' + e.message } }; }
@@ -10,7 +11,7 @@
     if (claim.day != null && claim.day !== G.day) return { r: { ok: false, note: 'gün uyuşmuyor' } };
     const S = KE.replayService(G, log || []);
     KE.finalizeDay(G, todayRule || G.tipRule);
-    const got = { served: 0, revenue: 0 };
+    const got = /** @type {{ served: number; revenue: number; reputation: number }} */ ({ served: 0, revenue: 0 });
     Object.values(S.branches).forEach((b) => { got.served += b.stats.served; got.revenue += b.stats.revenue; });
     got.revenue = Math.round(got.revenue);
     got.reputation = Math.round(G.reputation * 10) / 10;
@@ -22,7 +23,7 @@
      Sabah oyuncunun yapabildikleri: harcamak, kredi çekmek, olay kartını çözmek, hedef ödülü almak,
      işe almak/çıkarmak, fiyat ve menü ayarı. Bunların hiçbiri kasayı ya da itibarı aşağıdaki
      sınırların üstüne çıkaramaz; ustaların yıldızı ve deneyimi sabah artamaz; geçmiş değişemez. */
-  const clone = (o) => JSON.parse(JSON.stringify(o));
+  const clone = (/** @type {any} */ o) => JSON.parse(JSON.stringify(o));
   KE.chainCheck = function (prevEnv, curEnv) {
     let P, Cu;
     try { Cu = KE.SAVE.open(clone(curEnv)); } catch (e) { return { ok: false, note: 'sabah kaydı açılamadı' }; }
@@ -33,13 +34,13 @@
       return { ok: true };
     }
     try { P = KE.SAVE.open(clone(prevEnv)); } catch (e) { return { ok: false, note: 'önceki gün açılamadı' }; }
-    const bad = (n) => ({ ok: false, note: 'zincir kırık: ' + n });
+    const bad = (/** @type {string} */ n) => ({ ok: false, note: 'zincir kırık: ' + n });
     if (P.seed !== Cu.seed || P.saveId !== Cu.saveId || P.mode !== Cu.mode) return bad('farklı oyun');
     if (P.day !== Cu.day) return bad('gün atlanmış');
     // olay kartı en iyi seçenekle ne kadar kazandırabilirdi?
     let maxCash = P.cash, maxRep = P.reputation;
     if (P.pendingEvent) {
-      P.pendingEvent.choices.forEach((_, i) => { const g = KE.SAVE.open(clone(prevEnv)); try { KE.resolveEvent(g, i); } catch (e) { /* yok */ } maxCash = Math.max(maxCash, g.cash); maxRep = Math.max(maxRep, g.reputation); });
+      P.pendingEvent.choices.forEach((/** @type {any} */ _, /** @type {number} */ i) => { const g = KE.SAVE.open(clone(prevEnv)); try { KE.resolveEvent(g, i); } catch (e) { /* yok */ } maxCash = Math.max(maxCash, g.cash); maxRep = Math.max(maxRep, g.reputation); });
     }
     if (Cu.flags && Cu.flags.empire && !(P.flags && P.flags.empire)) maxRep += 5; // imparatorluk satın alımı
     // okul bağışı sabah itibar verir (seviye başına +3); bağış seviyesi geri gidemez
@@ -48,7 +49,7 @@
     if (okul > 0) maxRep += 3 * okul;
     // yeni krediler (öncekilerle eşleşmeyenler) bankanın o günkü tekliflerinden biri olmalı
     const oldLoans = (P.loans || []).slice(), offers = KE.loanOffers(P);
-    const same = (a, b) => a.amount === b.amount && a.monthly === b.monthly && a.remaining === b.remaining;
+    const same = (/** @type {Loan} */ a, /** @type {Loan} */ b) => a.amount === b.amount && a.monthly === b.monthly && a.remaining === b.remaining;
     let newLoans = 0;
     for (const l of Cu.loans || []) {
       const i = oldLoans.findIndex((o) => same(o, l));

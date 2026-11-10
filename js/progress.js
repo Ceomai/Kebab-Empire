@@ -24,6 +24,7 @@
   /* Bütün oyun boyunca toplamlar (bitiş ekranı için) */
   KE.lifetime = function (G) {
     const days = G.ledger.days, A = G.ledger.archive || { revenue: 0, served: 0, tips: 0, byProduct: {} };
+    /** @type {Record<string, number>} */
     const byProduct = Object.assign({}, A.byProduct);
     days.forEach((d) => Object.entries(d.byProduct || {}).forEach(([k, v]) => { byProduct[k] = (byProduct[k] || 0) + v; }));
     const best = Object.entries(byProduct).sort((a, c) => c[1] - a[1])[0];
@@ -45,7 +46,9 @@
   /* Hedef ödülü enflasyonla ve zincirin büyüklüğüyle büyür */
   KE.goalReward = (G, g) => Math.round((g.reward || 0) * G.priceIndex * (1 + 0.5 * (G.branches.length - 1)) / 1000) * 1000;
   KE.checkGoals = function (G) {
+    /** @type {Goal[]} */
     const done = [];
+    /** @type {Record<string, () => boolean>} */
     const test = {
       ilkhafta: () => G.day >= 7 && G.ledger.days.filter((d) => d.day <= 7).reduce((a, d) => a + d.net, 0) > 0,
       itibar50: () => G.reputation >= 50,
@@ -81,6 +84,7 @@
   };
   KE.branchCost = (G, d) => Math.round((d.rent * 3 + 350000) * G.priceIndex / 1000) * 1000;
   /* ---------- Dönemler ---------- */
+  /** @type {Record<string, (G: Game) => boolean>} */
   const ERA_TEST = {
     hafta: (G) => !!(G.flags.profitWeek || (G.goals && G.goals.ilkhafta)),
     ay1: (G) => G.ledger.months.some((m) => m.net > 0),
@@ -106,6 +110,7 @@
     return { era: n, cur, next: KE.ERAS[n] || null, req, ready: req.length > 0 && req.every((r) => r.ok) };
   };
   KE.advanceEra = function (G) {
+    /** @type {Era[]} */
     const out = [];
     while ((G.era || 1) < KE.ERAS.length && KE.eraStatus(G).ready) { G.era = (G.era || 1) + 1; (G.eraLog = G.eraLog || {})[G.era] = G.day; out.push(KE.ERAS[G.era - 1]); }
     return out;
@@ -140,10 +145,11 @@
     return { ok: true };
   };
   /* Haftalık toplu sipariş teklifleri: oyunun tohumundan ve haftasından türetilir (her yerde aynı) */
-  const weekOf = (G) => Math.floor((G.day - 1) / 7);
+  const weekOf = (/** @type {Game} */ G) => Math.floor((G.day - 1) / 7);
   KE.contractOffers = function (G) {
     if ((G.era || 1) < 3 || !G.branches.length) return [];
     const wk = weekOf(G), prods = MODE(G).products.filter((p) => !KE.isLocked(G, p)), b0 = G.branches[0];
+    /** @type {Record<string, number>} */
     const seen = {};
     return [0, 1, 2, 3].map((i) => {
       const h = mix(G.seed, wk, 'ct', i);
@@ -262,14 +268,14 @@
   /** Ekipmanı bir seviye yükselt
    * @param {Game} G
    * @param {Branch} b
-   * @param {string} k ekipman anahtarı
+   * @param {EquipKey} k ekipman anahtarı
    * @returns {number|null} bir sonraki seviyenin bedeli; son seviyedeyse null
    */
   KE.upgradeCost = (G, b, k) => { const next = MODE(G).equipment[k].levels[b.equipment[k] + 1]; return next ? next.cost * G.priceIndex : null; };
   /**
    * @param {Game} G
    * @param {Branch} b
-   * @param {string} k ekipman anahtarı
+   * @param {EquipKey} k ekipman anahtarı
    * @returns {ActionResult}
    */
   KE.upgradeEquipment = function (G, b, k) {

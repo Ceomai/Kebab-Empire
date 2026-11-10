@@ -25,6 +25,7 @@
     const id = 's' + (G.nextId++);
     const gender = o.gender || (KE.rand() < 0.8 ? 'e' : 'k');
     const age = o.age || pick(['genc', 'orta', 'orta', 'yasli']);
+    /** @type {Staff} */
     const s = {
       id, name: o.name, role: o.role, region: o.region || pick(Object.keys(KE.REGIONS)), gender, age,
       spec: Object.assign({}, o.spec || {}), xp: {}, speed: o.speed || 1, quality: o.quality || 0.8, consistency: o.consistency || 0.8,
@@ -76,6 +77,7 @@
     const mode = MODE(G);
     const prods = mode.products.map((p) => p.id);
     const n = pick([1, 1, 2, 2, 2, 3]);
+    /** @type {Record<string, number>} */
     const spec = {};
     const lvl = KE.rand();
     for (let i = 0; i < n; i++) {

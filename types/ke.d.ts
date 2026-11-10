@@ -33,13 +33,22 @@ interface KE_RNG {
   raw: (n: number) => void;
 }
 
+/** Bir yılın bayram ve tatil tablosu (KE.CAL.year); tarih anahtarı 'YYYY-AA-GG' */
+interface CalYear {
+  holidays: Record<string, string>;
+  religious: Record<string, string>;
+  ramazans: { start: string; end: string }[];
+  /** o yılın ramazanı */
+  ramazan?: { start: string; end: string } | null;
+}
+
 interface KE_CAL {
   hijriToUtc: (y: number, m: number, d: number) => number;
   utcToHijri: (ms: number) => { y: number; m: number; d: number };
   hijriToJd: (y: number, m: number, d: number) => number;
   OVERRIDES: Record<string, any>;
   monthStart: (hy: number, hm: number) => number;
-  year: (gy: number) => { holidays: Record<string, string>; religious: Record<string, string>; [k: string]: any };
+  year: (gy: number) => CalYear;
   holidayOn: (t: number) => string | null;
   religiousOn: (t: number) => string | null;
   ramazanOn: (t: number) => any;
@@ -99,7 +108,8 @@ interface KE_I18N {
 interface KE_BRAND {
   id: string; gameName: string; nameParts: string[]; rival: string;
   isDefault: boolean;
-  swaps: [string, string][];
+  /** [varsayılan ad, marka adı, ekleriyle eşleyen düzenli ifade] */
+  swaps: [string, string, RegExp?][];
   swap: (s: string) => string;
   text: (v: any) => any;
   hasOrderLabel: boolean;
@@ -229,7 +239,8 @@ interface KENamespace {
   ECON: KE_ECON;
   DISTRICTS: District[];
   CUSTOMER_TYPES: Record<string, CustomerType>;
-  HOUR_CURVE: Record<number, number>;
+  /** saat (10–22) → yoğunluk */
+  HOUR_CURVE: Record<string, number>;
   OPEN_HOUR: number;
   CLOSE_HOUR: number;
   REGIONS: Record<string, Region>;
@@ -426,8 +437,8 @@ interface KENamespace {
   tipShares: (G: Game, b: Branch, rule: string, jar: number) => [Staff, number][];
   closeDeps: () => string[];
   fastForward: (G: Game) => void;
-  finishService: (G: Game) => any;
-  finalizeDay: (G: Game, todayRule?: string | null) => any;
+  finishService: (G: Game) => DaySummary;
+  finalizeDay: (G: Game, todayRule?: string | null) => DayResult;
   LEDGER_KEEP: number;
   compactLedger: (G: Game) => void;
   championship: (G: Game) => any;
@@ -469,7 +480,8 @@ interface KENamespace {
   openBranch: (G: Game, districtId: string) => Branch;
   branchCost: (G: Game, d: District) => number;
   eraStatus: (G: Game) => { era: number; cur: Era; next: Era | undefined; req: any[]; ready: boolean };
-  advanceEra: (G: Game) => string[];
+  /** geçilen dönemler */
+  advanceEra: (G: Game) => Era[];
   placeOpen: (G: Game, id: string) => boolean;
   placesOfEra: (n: number) => string[];
   signatureCost: (G: Game) => number;
@@ -504,8 +516,8 @@ interface KENamespace {
   farmKinds: (G: Game) => string[];
   farmCost: (G: Game) => number;
   buyFarm: (G: Game) => void;
-  penHeads: (pen: any) => number;
-  penCap: (kind: string, pen: any) => number;
+  penHeads: (pen: Pen) => number;
+  penCap: (kind: string, pen: Pen) => number;
   animalPrice: (G: Game, kind: string) => number;
   buyAnimals: (G: Game, kind: string) => number;
   upgradePen: (G: Game, kind: string) => void;
@@ -522,7 +534,7 @@ interface KENamespace {
   raiseBlock: (G: Game, s: Staff) => string;
   raiseStaff: (G: Game, s: Staff) => ActionResult;
   RIVAL_ARC: [string, number, number][];
-  rivalNext: (G: Game) => { id: string; step: number; of: number; due: number; day: number; era: number } | null;
+  rivalNext: (G: Game) => { id: string; step: number; of: number; due: boolean; day: number; era: number } | null;
   EVENTS: GameEvent[];
   rollEvent: (G: Game) => any;
   resolveEvent: (G: Game, idx: number) => string;

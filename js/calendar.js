@@ -5,12 +5,12 @@
 (function () {
   const C = KE.CAL = /** @type {KE_CAL} */ ({});
   const DAY = 86400000;
-  const iso = (t) => new Date(t).toISOString().slice(0, 10);
+  const iso = (/** @type {number} */ t) => new Date(t).toISOString().slice(0, 10);
 
   /* ---------- Hicri ↔ Miladi (tablo usulü, 30 yıllık döngü) ---------- */
   const EPOCH = 1948439.5; // 1 Muharrem 1 (Julyen gün sayısı)
-  const jdToMs = (jd) => (jd - 2440587.5) * DAY;
-  const msToJd = (ms) => ms / DAY + 2440587.5;
+  const jdToMs = (/** @type {number} */ jd) => (jd - 2440587.5) * DAY;
+  const msToJd = (/** @type {number} */ ms) => ms / DAY + 2440587.5;
   C.hijriToUtc = (y, m, d) => jdToMs(d + Math.ceil(29.5 * (m - 1)) + (y - 1) * 354 + Math.floor((3 + 11 * y) / 30) + EPOCH - 1);
   C.utcToHijri = function (ms) {
     const jd = Math.floor(msToJd(ms)) + 0.5;
@@ -34,9 +34,11 @@
 
   /* ---------- Bir yılın bayram ve tatil tablosu (önbellekli) ---------- */
   const NATIONAL = [['01-01', 'Yılbaşı'], ['04-23', 'Ulusal Egemenlik ve Çocuk Bayramı'], ['05-01', 'Emek ve Dayanışma Günü'], ['05-19', 'Gençlik ve Spor Bayramı'], ['07-15', 'Demokrasi ve Millî Birlik Günü'], ['08-30', 'Zafer Bayramı'], ['10-29', 'Cumhuriyet Bayramı']];
+  /** @type {Record<number, CalYear>} */
   const cache = {};
   C.year = function (gy) {
     if (cache[gy]) return cache[gy];
+    /** @type {CalYear} */
     const out = { holidays: {}, religious: {}, ramazans: [] };
     NATIONAL.forEach(([md, n]) => { out.holidays[gy + '-' + md] = n; });
     const lo = Date.UTC(gy, 0, 1), hi = Date.UTC(gy + 1, 0, 1);

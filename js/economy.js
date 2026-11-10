@@ -2,13 +2,16 @@
 (function () {
   const E = () => KE.ECON;
   /* Sayı ve para biçimi seçili dile göre (para birimi her dilde TL) */
+  /** @type {Record<string, string>} */
   const LOC = { tr: 'tr-TR', en: 'en-GB', de: 'de-DE' };
   KE.locale = () => LOC[(KE.I18N && KE.I18N.lang) || 'tr'] || 'tr-TR';
+  /** @type {Record<string, Intl.NumberFormat>} */
   const fmts = {};
-  const fmt = (d) => { const k = KE.locale() + d; return fmts[k] || (fmts[k] = new Intl.NumberFormat(KE.locale(), { maximumFractionDigits: d, minimumFractionDigits: d })); };
+  const fmt = (/** @type {number} */ d) => { const k = KE.locale() + d; return fmts[k] || (fmts[k] = new Intl.NumberFormat(KE.locale(), { maximumFractionDigits: d, minimumFractionDigits: d })); };
   KE.tl = (v) => (v < 0 ? '−' : '') + fmt(0).format(Math.round(Math.abs(v))) + ' ₺';
   KE.num = (v, d) => fmt(d || 0).format(v);
   /* yüzde, dile göre: TR "%74", EN "74%", DE "74 %"; v yüzde değeri (74), sign: işaretli (+12%) */
+  /** @type {Record<string, Intl.NumberFormat>} */
   const pfmts = {};
   KE.pct = (v, sign, d) => { const k = KE.locale() + (sign ? 's' : '') + (d || 0); const f = pfmts[k] || (pfmts[k] = new Intl.NumberFormat(KE.locale(), { style: 'percent', maximumFractionDigits: d || 0, minimumFractionDigits: d || 0, signDisplay: sign ? 'exceptZero' : 'auto' })); return f.format((+v || 0) / 100); };
 
@@ -45,7 +48,7 @@
   KE.marketPrice = (G, p) => Math.round(p.base * G.priceIndex / 5) * 5;
 
   /* ---------- Gelir vergisi ---------- */
-  function taxOn(cum) {
+  function taxOn(/** @type {number} */ cum) {
     let tax = 0, prev = 0;
     for (const [lim, rate] of E().gvDilim) {
       if (cum <= prev) break;
@@ -96,7 +99,7 @@
     const monthNo = KE.dateOf(day).getUTCMonth() + 1;
     const bonus = !!KE.bonusMonths[key];
     const days = G.ledger.days.filter((d) => d.month === key);
-    const sum = (f) => days.reduce((a, d) => a + (f(d) || 0), 0);
+    const sum = (/** @type {(d: any) => number} */ f) => days.reduce((a, d) => a + (f(d) || 0), 0);
     const revenue = sum((d) => d.revenue), purchases = sum((d) => d.purchases), tips = sum((d) => d.tips);
     const extras = G.monthExtras || {};
     const kdvOut = revenue * E().kdvRestoran / (1 + E().kdvRestoran);
@@ -106,7 +109,7 @@
     const personnel = payroll.reduce((a, p) => a + p.total, 0);
     const branches = G.branches.map((b) => {
       const bd = days.filter((d) => d.branchId === b.id);
-      const bs = (f) => bd.reduce((a, d) => a + (f(d) || 0), 0);
+      const bs = (/** @type {(d: any) => number} */ f) => bd.reduce((a, d) => a + (f(d) || 0), 0);
       const staffCost = payroll.filter((p) => G.staff.find((s) => s.id === p.id).branchId === b.id).reduce((a, p) => a + p.total, 0);
       const rent = b.rent;
       const util = KE.utilities(G, b);

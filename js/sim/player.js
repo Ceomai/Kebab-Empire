@@ -6,20 +6,20 @@
      istasyonda yapılır; istasyona dokunmak, o istasyonu sıradaki adım olarak bekleyen siparişi (önce seçili olanı)
      ilerletir. Ateş istasyonu süreli: et ateşe konur, pişince alınır; geç kalınırsa yanar. Hatasız ve hızlı
      siparişler kombo yapar. Bütün süreler oyun dakikasıyla ölçülür, böylece günlük yeniden oynatılabilir. */
-  const slotsOf = (P) => P.slots || (P.slots = []);
+  const slotsOf = (/** @type {PlayerState} */ P) => P.slots || (P.slots = []);
   KE.playerCap = (G, b) => (b.equipment.prep >= 2 ? 3 : 2);
   /* oyuncu bu kadar dakika hiçbir istasyona dokunmazsa elindeki (dokunulmamış) fişler ustalara döner ve oyuncu,
      bir istasyona dokunana dek yeni fiş almaz. Çalışan oyuncunun bekleyen ikinci fişi geri alınmaz. */
   KE.PLAYER_IDLE = 12;
   /* slot görünümü eski alanlara yansır (tid/step/errors): sahne, testler ve eski günlükler bunlara bakar */
-  function syncSelectedSlot(P) {
+  function syncSelectedSlot(/** @type {PlayerState} */ P) {
     const sl = slotsOf(P);
     if (P.sel == null || P.sel >= sl.length) P.sel = 0;
     const s = sl[P.sel];
     P.tid = s ? s.tid : null; P.step = s ? s.step : 0; P.errors = s ? s.errors : 0; P.start = s ? s.start : 0;
   }
   /* fişi ustalara geri ver; hiç dokunulmamışsa malzemesi depoya döner (çifte harcama olmasın) */
-  function releaseSlot(G, b, L, sl) {
+  function releaseSlot(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {PlayerSlot} */ sl) {
     const t = L.tickets.find((x) => x.id === sl.tid);
     if (t && t.state === 'cook' && t.cook === 'player') {
       t.state = 'wait'; t.cook = null;
@@ -34,7 +34,7 @@
     const P = L.player;
     on = !!on;
     if (on === !!P.active) return;
-    if (!on) slotsOf(P).slice().forEach((sl) => releaseSlot(G, b, L, sl));
+    if (!on) slotsOf(P).slice().forEach((/** @type {PlayerSlot} */ sl) => releaseSlot(G, b, L, sl));
     Object.assign(P, { active: on, slots: [], sel: 0, combo: on ? P.combo || 0 : 0, tap: L.minute, afk: false });
     if (on && !P.quest && (P.questsDone || 0) < KE.QUESTS_PER_DAY && b.id === KE.mainBranchId(G)) newQuest(G, b, P);
     syncSelectedSlot(P);
@@ -66,12 +66,12 @@
   KE.fireTimes = (p) => ({ cook: Math.max(2, Math.round(p.prep * 0.5)), grace: 5 });
   /* süreli istasyonlar: ateş (ürüne göre) ve fritöz (patates hep 3 dk, 4 dk içinde alınmalı) */
   KE.TIMED = { ates: (p) => KE.fireTimes(p), fritoz: () => ({ cook: 3, grace: 4 }) };
-  const timedOf = (sl, p) => KE.TIMED[sl.fst || 'ates'](p || { prep: 4 });
+  const timedOf = (/** @type {PlayerSlot} */ sl, /** @type {Product | undefined} */ p) => KE.TIMED[sl.fst || 'ates'](p || { prep: 4 });
   /* menü siparişinde ürünün tarifine "Patates" (fritöz) eklenir */
   KE.ticketSteps = (G, t) => { const p = prodOf(G, t.pid); return t.menu ? p.steps.concat(['Patates']) : p.steps; };
   /* Özel fişler oyuncunun aldığı anda belirlenir (fiş numarası ve güne göre, rastgelelik yok: yeniden oynatılır).
      Menü: + patates, bitince menü bahşişi. Acele: hızlı biterse acele bahşişi. Gurme müşteri: hatasız biterse itibar. */
-  function flagTicket(G, L, t) {
+  function flagTicket(/** @type {Game} */ G, /** @type {Live} */ L, /** @type {Ticket} */ t) {
     if (t.flagged) return;
     t.flagged = true;
     t.menu = (t.id * 7 + G.day * 3) % 4 === 0;
@@ -88,7 +88,7 @@
     G.mainBranch = bid;
     return true;
   };
-  function newQuest(G, b, P) {
+  function newQuest(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {PlayerState} */ P) {
     /* günde en fazla 3 görev ve yalnızca ana şubede: tezgâh ödülü sınırsız büyümesin */
     if ((P.questsDone || 0) >= KE.QUESTS_PER_DAY || b.id !== KE.mainBranchId(G)) { P.quest = null; return; }
     const n = (P.questN = (P.questN || 0) + 1);
@@ -97,7 +97,7 @@
     const need = 3 + (n % 3);
     P.quest = { need, done: 0, reward: Math.round((avg * need * 0.4) / 5) * 5 };
   }
-  function finishSlot(G, b, L, sl, p, t) {
+  function finishSlot(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {PlayerSlot} */ sl, /** @type {Product} */ p, /** @type {Ticket} */ t) {
     const P = L.player;
     const took = L.minute - sl.start;
     const par = p.prep + (t.menu ? 3 : 0);
@@ -111,7 +111,7 @@
     if (combo >= 2) L.fx.push({ t: 'combo', sid: 'player', text: 'Kombo ×' + combo });
     /* özel fiş ödülleri */
     const price = (b.prices[t.pid] || p.base) * t.count, S = L.stats;
-    const bonus = (f, text) => { const v = Math.round((price * f) / 5) * 5; if (v > 0) { S.tips += v; S.tezgahBonus = (S.tezgahBonus || 0) + v; L.fx.push({ t: 'tip', sid: 'player', text: text + ' +' + KE.tl(v) }); } };
+    const bonus = (/** @type {number} */ f, /** @type {string} */ text) => { const v = Math.round((price * f) / 5) * 5; if (v > 0) { S.tips += v; S.tezgahBonus = (S.tezgahBonus || 0) + v; L.fx.push({ t: 'tip', sid: 'player', text: text + ' +' + KE.tl(v) }); } };
     if (t.menu) bonus(0.25, 'Menü');
     if (t.rush && L.minute - (t.firstTake != null ? t.firstTake : sl.start) <= par * 1.25 && !sl.errors) bonus(0.3, 'Acele');
     if (t.gurme) {
@@ -182,7 +182,7 @@
   /* eski hamle: adım adı → istasyonu */
   KE.playerStep = (G, label) => KE.playerStation(G, KE.stepStation(label));
   /* her dakika: ateşte unutulan yanar, bekleyen müşteri giderse sipariş düşer */
-  function playerTick(G, b, L) {
+  function playerTick(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L) {
     const P = L.player;
     if (!P.active || !P.slots || !P.slots.length) return;
     P.slots.slice().forEach((s) => {

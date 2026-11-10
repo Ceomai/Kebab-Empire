@@ -1,8 +1,8 @@
 /* Kebab Empire — anlatı: gün sonu günlüğü, mahalle gazetesi, olay kartları, karakter repliği */
 (function () {
   const { clamp, pick } = KE.U;
-  const pname = (G, pid) => { const m = KE.MODES[G.mode]; const p = m.products.find((x) => x.id === pid); return p ? p.name : m.drink.name; };
-  const clock = (min) => { const h = KE.OPEN_HOUR + Math.floor(min / 60), m = min % 60; return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
+  const pname = (/** @type {Game} */ G, /** @type {string} */ pid) => { const m = KE.MODES[G.mode]; const p = m.products.find((x) => x.id === pid); return p ? p.name : m.drink.name; };
+  const clock = (/** @type {number} */ min) => { const h = KE.OPEN_HOUR + Math.floor(min / 60), m = min % 60; return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
   KE.clock = clock;
 
   /* ---------- Gün sonu günlüğü ---------- */
@@ -91,13 +91,15 @@
   };
 
   /* ---------- Olay kartları ---------- */
+  /** @type {GameEvent[]} */
   const ev = [];
-  const branch = (G) => G.branches.find((x) => x.id === G.activeBranch);
-  const staffOf = (G) => KE.branchStaff(G, branch(G));
+  const branch = (/** @type {Game} */ G) => G.branches.find((x) => x.id === G.activeBranch);
+  const staffOf = (/** @type {Game} */ G) => KE.branchStaff(G, branch(G));
   /* Zam: kişi başı 60 günde bir, rol tavanını aşmadan */
+  /** @type {Record<string, number>} */
   const RAISE_CAP = { usta: 3.0, mudur: 2.4, cirak: 1.35, kasiyer: 1.6, garson: 1.6, temizlik: 1.45, kurye: 1.55 };
-  const canRaise = (G, s) => G.day - (s.raisedDay || s.hiredDay || 0) >= 60 && s.wage < KE.ECON.asgariBrut * (RAISE_CAP[s.role] || 1.6) * G.priceIndex;
-  const raise = (G, x, k) => { x.wage = Math.min(Math.round(x.wage * k / 100) * 100, Math.round(KE.ECON.asgariBrut * (RAISE_CAP[x.role] || 1.6) * G.priceIndex / 100) * 100); x.raisedDay = G.day; };
+  const canRaise = (/** @type {Game} */ G, /** @type {Staff} */ s) => G.day - (s.raisedDay || s.hiredDay || 0) >= 60 && s.wage < KE.ECON.asgariBrut * (RAISE_CAP[s.role] || 1.6) * G.priceIndex;
+  const raise = (/** @type {Game} */ G, /** @type {Staff} */ x, /** @type {number} */ k) => { x.wage = Math.min(Math.round(x.wage * k / 100) * 100, Math.round(KE.ECON.asgariBrut * (RAISE_CAP[x.role] || 1.6) * G.priceIndex / 100) * 100); x.raisedDay = G.day; };
   KE.canRaise = canRaise;
   /* Zam neden verilemiyor? null: verilebilir */
   KE.raiseBlock = function (G, s) {
@@ -192,7 +194,7 @@
           { label: 'Çırağı başka ustaya ver', desc: 'Mentor bırakılır, çırak +6', run: (G, ctx) => { const c = G.staff.find((y) => y.id === ctx.sid); if (c) { c.mentorId = null; c.morale = clamp(c.morale + 6, 0, 100); } return 'Çırak artık mentorsuz. Usta Pazarı\'ndaki Kadrom sekmesinden yeni bir mentor seçebilirsin.'; } }
         ] }; } });
   /* sadık usta başka yere bakmaz; hırslı usta teklifleri dinler */
-  const tempted = (G) => staffOf(G).filter((s) => s.role === 'usta' && KE.huyOf(s) !== 'sadik' && Math.max(...Object.values(s.spec)) >= 4);
+  const tempted = (/** @type {Game} */ G) => staffOf(G).filter((s) => s.role === 'usta' && KE.huyOf(s) !== 'sadik' && Math.max(...Object.values(s.spec)) >= 4);
   ev.push({ id: 'ustaTeklif', who: null, w: (G) => tempted(G).some((s) => KE.huyOf(s) === 'hirsli') ? 1.8 : 1.0,
     when: (G) => tempted(G).length > 0,
     build: (G) => { const u = tempted(G).sort((a, c) => Number(KE.huyOf(c) === 'hirsli') - Number(KE.huyOf(a) === 'hirsli') || Math.max(...Object.values(c.spec)) - Math.max(...Object.values(a.spec)))[0];
@@ -250,14 +252,14 @@
       ] }) });
 
   /* ---------- Ek olaylar ---------- */
-  const pay = (G, amt) => { G.cash -= amt; KE.addExtra(G, 'other', amt); };
-  const earn = (G, amt) => { G.cash += amt; KE.addExtra(G, 'other', -amt); };
-  const moraleAll = (G, d) => staffOf(G).forEach((s) => { s.morale = clamp(s.morale + d, 0, 100); });
-  const rep = (G, d) => { G.reputation = clamp(G.reputation + d, 0, 100); };
-  const P = (G, v) => Math.round(v * G.priceIndex / 100) * 100;
+  const pay = (/** @type {Game} */ G, /** @type {number} */ amt) => { G.cash -= amt; KE.addExtra(G, 'other', amt); };
+  const earn = (/** @type {Game} */ G, /** @type {number} */ amt) => { G.cash += amt; KE.addExtra(G, 'other', -amt); };
+  const moraleAll = (/** @type {Game} */ G, /** @type {number} */ d) => staffOf(G).forEach((s) => { s.morale = clamp(s.morale + d, 0, 100); });
+  const rep = (/** @type {Game} */ G, /** @type {number} */ d) => { G.reputation = clamp(G.reputation + d, 0, 100); };
+  const P = (/** @type {Game} */ G, /** @type {number} */ v) => Math.round(v * G.priceIndex / 100) * 100;
   /* Avukat Selin'in hikâyesi bitince cezalar yarıya iner; Muhtar Kemal Bey denetimde eşiği düşürür */
-  const fineOf = (G, v) => (G.flags && G.flags.lawyer ? Math.round(v / 2 / 100) * 100 : v);
-  const cleanBar = (G) => (G.flags && G.flags.muhtar ? 45 : 55);
+  const fineOf = (/** @type {Game} */ G, /** @type {number} */ v) => (G.flags && G.flags.lawyer ? Math.round(v / 2 / 100) * 100 : v);
+  const cleanBar = (/** @type {Game} */ G) => (G.flags && G.flags.muhtar ? 45 : 55);
 
   ev.push({ id: 'elektrik', who: 'emre', w: 0.7,
     build: (G) => ({ title: 'Elektrik kesintisi', text: 'Sokakta trafo arızası var; elektrik akşama kadar gelmeyebilir. Emre bir jeneratörcünün numarasını buldu.', ctx: {},
@@ -400,8 +402,8 @@
   /* ---------- Rakip hikâyesi: "Lüks Kebap" sırayla hamle yapar ----------
      Her hamle bir olay kartıdır; seçimin "düello" sonucunu (kazandın / kaybettin) ve rakibin gücünü değiştirir.
      Rakip gücü semt şampiyonluğu çıtasını yükseltir; rakibin yerleştiği semtte müşteri azalır. */
-  const duel = (G, won, power) => { const R = G.rival; if (won) R.wins = (R.wins || 0) + 1; else R.losses = (R.losses || 0) + 1; R.power = Math.max(0, R.power + (power || 0)); };
-  const bestCook = (G) => G.staff.filter((s) => s.role === 'usta').sort((a, c) => Object.values(c.spec).reduce((x, y) => x + y, 0) - Object.values(a.spec).reduce((x, y) => x + y, 0))[0];
+  const duel = (/** @type {Game} */ G, /** @type {boolean} */ won, /** @type {number} */ power) => { const R = G.rival; if (won) R.wins = (R.wins || 0) + 1; else R.losses = (R.losses || 0) + 1; R.power = Math.max(0, R.power + (power || 0)); };
+  const bestCook = (/** @type {Game} */ G) => G.staff.filter((s) => s.role === 'usta').sort((a, c) => Object.values(c.spec).reduce((x, y) => x + y, 0) - Object.values(a.spec).reduce((x, y) => x + y, 0))[0];
 
   ev.push({ id: 'rk_fiyat', who: 'rakip', w: 0, arc: true,
     build: (G) => ({ title: 'Fiyat savaşı başladı', text: 'Cüneyt Bey bütün şubelerinde fiyatları %20 indirdi. Vitrinine kocaman "Şehrin en ucuzu" yazdırmış. Müşterilerin bir kısmı şimdiden karşıya bakıyor.', ctx: {},
@@ -455,11 +457,11 @@
   };
 
   /* ---------- Müdavim hikâyeleri: gönül arttıkça bölüm bölüm ilerler ---------- */
-  const story = (rid, n, minLoyal, build) => ev.push({ id: `st_${rid}_${n}`, who: null, w: 2.2, story: rid, step: n,
+  const story = (/** @type {string} */ rid, /** @type {number} */ n, /** @type {number} */ minLoyal, /** @type {GameEvent['build']} */ build) => ev.push({ id: `st_${rid}_${n}`, who: null, w: 2.2, story: rid, step: n,
     when: (G) => G.regulars && G.regulars[rid] && G.regulars[rid].loyalty >= minLoyal && ((G.stories || {})[rid] || 0) === n - 1 && G.day - ((G.stories || {})[rid + '_d'] || 0) >= 8,
     build });
-  const loyal = (G, rid, d) => { const r = G.regulars[rid]; r.loyalty = clamp(r.loyalty + d, 0, 10); };
-  const done = (G, rid, n) => { G.stories = G.stories || {}; G.stories[rid] = n; G.stories[rid + '_d'] = G.day; };
+  const loyal = (/** @type {Game} */ G, /** @type {string} */ rid, /** @type {number} */ d) => { const r = G.regulars[rid]; r.loyalty = clamp(r.loyalty + d, 0, 10); };
+  const done = (/** @type {Game} */ G, /** @type {string} */ rid, /** @type {number} */ n) => { G.stories = G.stories || {}; G.stories[rid] = n; G.stories[rid + '_d'] = G.day; };
 
   story('selin', 1, 3, (G) => ({ title: 'Avukat Selin\'in zor davası (1/3)', text: 'Avukat Selin her zamanki dürümünü yerken dosyalara gömülmüş: "Mahallenin eski fırıncısını tahliye etmek istiyorlar. Gece gündüz çalışıyorum."', ctx: {},
     choices: [
@@ -521,7 +523,7 @@
     const arc = ARC_IDS();
     const pool = ev.filter((e) => !e.arc && arc.indexOf(e.id) === -1 && (!e.mode || e.mode === G.mode) && (!e.when || e.when(G)) && G.eventLog.slice(-4).indexOf(e.id) === -1);
     if (!pool.length) return null;
-    const wOf = (x) => typeof x.w === 'function' ? x.w(G) : x.w;
+    const wOf = (/** @type {GameEvent} */ x) => typeof x.w === 'function' ? x.w(G) : x.w;
     let tot = pool.reduce((a, e) => a + wOf(e), 0), r = KE.rand() * tot;
     let e = pool[0];
     for (const x of pool) { if ((r -= wOf(x)) <= 0) { e = x; break; } }

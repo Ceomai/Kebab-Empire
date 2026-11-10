@@ -33,7 +33,7 @@
     };
   };
 
-  function availableProducts(G, b) { return MODE(G).products.filter((p) => KE.canMake(G, b, p)); }
+  function availableProducts(/** @type {Game} */ G, /** @type {Branch} */ b) { return MODE(G).products.filter((p) => KE.canMake(G, b, p)); }
 
   /* Saat başına müşteri tipi ağırlıkları (zar atmaz). Servis bunu kullanır; sabah stok tahmini de aynısını okur.
      day verilirse o günün hafta sonu/özel gün etkisiyle hesaplanır (varsayılan bugün). */
@@ -42,6 +42,7 @@
     const mode = MODE(G);
     const D = day == null ? G.day : day;
     const sp = KE.specialDay(D), wkEnd = KE.isWeekend(D);
+    /** @type {[string, number][]} */
     const weights = [];
     Object.entries(KE.CUSTOMER_TYPES).forEach(([t, ct]) => {
       let w = (d.mix[t] || 0.1) * ((ct.hours && ct.hours[hour]) || 1);
@@ -56,13 +57,13 @@
     });
     return weights;
   };
-  function chooseType(G, b, hour) {
+  function chooseType(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {number} */ hour) {
     const weights = KE.typeWeights(G, b, hour);
     let r = KE.rand() * weights.reduce((a, x) => a + x[1], 0);
     for (const [t, w] of weights) { if ((r -= w) <= 0) return t; }
     return weights[0][0];
   }
-  function chooseProduct(G, b, type, count) {
+  function chooseProduct(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {string} */ type, /** @type {number} */ count) {
     const avail = availableProducts(G, b);
     if (!avail.length) return { p: null };
     const favs = (MODE(G).favorites[type] || []).map((id) => avail.find((p) => p.id === id)).filter(Boolean);
@@ -82,7 +83,7 @@
   /* chooseProduct'ın beklenen ürün olasılıkları (zar atmaz, stok yeterli varsayılır): favori %72, imza tarif, kalanı eşit.
      Sabah stok tahmini bunu okur; chooseProduct değişirse bu da birlikte güncellenmeli. */
   KE.productOdds = function (G, b, type) {
-    const avail = availableProducts(G, b), out = {};
+    const avail = availableProducts(G, b), out = /** @type {NumMap} */ ({});
     if (!avail.length) return out;
     avail.forEach((p) => { out[p.id] = 0; });
     const favs = (MODE(G).favorites[type] || []).map((id) => avail.find((p) => p.id === id)).filter(Boolean);
@@ -99,13 +100,13 @@
   };
   /* bir müşteri grubunun ortalama kişi sayısı (spawn: grup tipinde %55 ihtimalle [a,b] aralığında yuvarlanmış) */
   KE.groupMean = (type) => { const g = KE.CUSTOMER_TYPES[type].group; return g ? 0.45 + 0.55 * (g[0] + g[1]) / 2 : 1; };
-  function lose(L, c, reason, text) {
+  function lose(/** @type {Live} */ L, /** @type {Customer} */ c, /** @type {string} */ reason, /** @type {string} */ text) {
     L.stats.lost += c.count; L.stats[reason] += c.count;
     if (c.regular && KE.G && KE.G.regulars) { const r = KE.G.regulars[c.regular]; r.loyalty = Math.max(0, r.loyalty - 2); (L.stats.regulars = L.stats.regulars || []).push({ id: c.regular, gain: -2 }); }
     if (text) L.fx.push({ t: 'bad', cid: c.id, text });
   }
 
-  function spawn(G, b, L) {
+  function spawn(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L) {
     const hour = KE.OPEN_HOUR + Math.floor(L.minute / 60);
     const spH = L.special && L.special.hours[hour] ? L.special.hours[hour] : 1;
     const burst = (L.boost && L.minute < L.boost.until ? L.boost.mult : 1) * (L.rain && L.minute < L.rain.until ? L.rain.mult : 1);
@@ -146,7 +147,7 @@
       L.custs[id] = c; L.queue.push(id);
     }
   }
-  function spawnRegular(G, b, L, rid) {
+  function spawnRegular(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {string} */ rid) {
     const R = KE.REGULARS.find((x) => x.id === rid);
     const st = G.regulars[rid];
     const ct = KE.CUSTOMER_TYPES[R.type];
@@ -164,7 +165,7 @@
     L.queue.push(id);
     L.fx.push({ t: 'regular', cid: id, text: R.name + ' geldi!' });
   }
-  function spawnPaket(G, b, L) {
+  function spawnPaket(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L) {
     const kuryes = KE.branchStaff(G, b).filter((s) => s.role === 'kurye').length;
     if (!kuryes || L.minute > KE.MINUTES - 30) return;
     const hour = KE.OPEN_HOUR + Math.floor(L.minute / 60);
@@ -195,7 +196,7 @@
     return KE.branchStaff(G, b).filter((s) => KE.isCook(s) && s.pos === 'ocak').slice(0, stations);
   };
 
-  function cookQuality(G, b, s, pid) {
+  function cookQuality(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Staff} */ s, /** @type {string} */ pid) {
     const tier = KE.TIERS[b.tier], prep = KE.equip(G, b, 'prep');
     const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
     const star = Math.max(1, s.spec[pid] || 0);
@@ -207,14 +208,15 @@
     return clamp(q, 0, 6);
   }
 
-  function findTask(G, b, L, s, cooking) {
-    const T = (type, ref, work) => ({ type, ref, remain: work, total: work });
+  function findTask(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {Staff} */ s, /** @type {Staff[]} */ cooking) {
+    /** @returns {StaffTask} */
+    const T = (/** @type {string} */ type, /** @type {any} */ ref, /** @type {number} */ work) => ({ type, ref, remain: work, total: work });
     if (s.pos === 'ocak') {
       if (!cooking.includes(s)) return null;
       /* oyuncu tezgâhtaysa ve elinde boş yer varsa yeni fiş önce ona düşer */
       const pfree = L.player.active && !L.player.afk && (!(L.player.slots || []).length || L.minute - (L.player.tap || 0) <= 2) && (L.player.slots || []).length < KE.playerCap(G, b);
       const waiting = L.tickets.filter((t) => t.state === 'wait' && !(pfree && L.minute - t.created < 2));
-      let best = null, score = -1e9;
+      let best = /** @type {Ticket | null} */ (null), score = -1e9;
       waiting.slice(0, 5).forEach((t, i) => {
         const p = prodOf(G, t.pid), star = s.spec[t.pid] || 0;
         if (p.requiresSpec && star < 1) return;
@@ -259,23 +261,23 @@
     return null;
   }
 
-  function cancelTicket(G, b, L, t, text) {
+  function cancelTicket(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {Ticket} */ t, /** @type {string} */ text) {
     L.tickets.splice(L.tickets.indexOf(t), 1);
     if (t.cid != null) {
       const c = L.custs[t.cid];
       if (c) { refund(L, c); lose(L, c, 'lostStock', text); removeCust(L, c, false); }
     }
   }
-  function refund(L, c) {
+  function refund(/** @type {Live} */ L, /** @type {Customer} */ c) {
     if (c.paid) { L.stats.revenue -= c.paid; L.stats.card -= c.paid; const h = Math.min(13, Math.floor(c.orderedAt / 60)); L.stats.hourly[h] -= c.paid; c.paid = 0; }
   }
-  function removeCust(L, c, dirty) {
+  function removeCust(/** @type {Live} */ L, /** @type {Customer} */ c, /** @type {boolean} */ dirty) {
     if (c.table != null) { const t = L.tables[c.table]; if (t) { t.occ = null; t.dirty = !!dirty; t.by = null; } }
     const qi = L.queue.indexOf(c.id); if (qi > -1) L.queue.splice(qi, 1);
     delete L.custs[c.id];
   }
 
-  function finishTask(G, b, L, s, task) {
+  function finishTask(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {Staff} */ s, /** @type {StaffTask} */ task) {
     const S = L.stats;
     s.tasksToday++;
     if (task.type === 'cook') {
@@ -337,7 +339,7 @@
   }
 
   /* Müşteriye yemeği ver: memnuniyet ve itibar */
-  function serveCustomer(G, b, L, c, t, server) {
+  function serveCustomer(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {Customer} */ c, /** @type {Ticket} */ t, /** @type {Staff | null | undefined} */ server) {
     const mode = MODE(G);
     const ct = KE.CUSTOMER_TYPES[c.type];
     const S = L.stats;
@@ -353,7 +355,7 @@
     /* müşterinin katlandığı prim (itibar, imza, amiral) memnuniyeti düşürmez */
     const er = c.ratio - (KE.priceTolerance(G, b) - 1.02);
     const pricePen = er > 1 ? (er - 1) * 70 * ct.priceSens : -(1 - er) * 25 * ct.priceSens;
-    const star = t.cookId === 'player' ? 4 : ((st.find((x) => x.id === t.cookId) || { spec: {} }).spec[c.pid] || 1);
+    const star = t.cookId === 'player' ? 4 : (/** @type {NumMap} */ ((st.find((x) => x.id === t.cookId) || { spec: {} }).spec)[c.pid] || 1);
     const match = (mode.favorites[c.type] || []).includes(c.pid) && star >= 4 && q >= 4;
     let sat = 35 + q * 8.5 + speedScore + Math.min(10, amb.score / 5) + (amb.concept ? 4 * amb.concept.power : 0) + friendly * 7 + (b.cleanliness - 50) / 10 - pricePen + (match ? 8 : 0);
     sat = clamp(sat, 0, 100);
@@ -378,7 +380,7 @@
     if (c.takeaway) { leave(G, b, L, c); }
     else { c.state = 'eat'; c.eatLeft = c.eat; }
   }
-  function leave(G, b, L, c) {
+  function leave(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {Customer} */ c) {
     const ct = KE.CUSTOMER_TYPES[c.type];
     const st = KE.branchStaff(G, b);
     const server = st.find((x) => x.id === c.server);
@@ -406,7 +408,7 @@
     if (L && s.task) releaseTask(L, s);
     s.pos = pos;
   };
-  function releaseTask(L, s) {
+  function releaseTask(/** @type {Live} */ L, /** @type {Staff} */ s) {
     const t = s.task;
     s.task = null;
     if (!t) return;
@@ -417,7 +419,7 @@
   }
 
   /* Otomatik ekip yönetimi: müdür varsa sık ve akıllı, yoksa yalnızca yorgunluğa bakar */
-  function autoStaff(G, b, L) {
+  function autoStaff(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L) {
     const st = KE.branchStaff(G, b);
     const mgr = st.find((s) => s.role === 'mudur');
     const every = mgr ? 8 : 30;
@@ -427,7 +429,7 @@
     const cooks = st.filter(KE.isCook);
     const pending = L.tickets.filter((t) => t.state === 'wait').length;
     /* aynı işi yapan başka biri çalışıyorsa molaya gönder (müdürsüz şubede de bir görev hiç boş kalmaz) */
-    const sameJob = (s, x) => (KE.isCook(s) ? KE.isCook(x) : x.role === s.role);
+    const sameJob = (/** @type {Staff} */ s, /** @type {Staff} */ x) => (KE.isCook(s) ? KE.isCook(x) : x.role === s.role);
     st.forEach((s) => { if (s.energy < (mgr ? 22 : 12) && s.pos !== 'mola') { const same = st.filter((x) => sameJob(s, x) && x !== s && x.pos !== 'mola'); if (same.length || (mgr && !peak)) KE.setPos(G, s, 'mola'); } });
     st.forEach((s) => { if (s.pos === 'mola' && !s.home && s.energy >= (mgr ? 85 : 80)) KE.setPos(G, s, KE.POSITIONS[s.role][0]); });
     /* müdür olmasa da: kasada iki kişi varken servis boş kalmaz, kasa boşken servisteki biri kasaya geçer */
