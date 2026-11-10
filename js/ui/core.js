@@ -90,7 +90,12 @@
     const doc = /** @type {any} */ (document);
     if (UI.calm()) { fn(); return; }
     if (typeof doc.startViewTransition === 'function' && !document.querySelector('.modal-bg')) {
-      try { doc.startViewTransition(fn); return; } catch (e) { /* aşağıda düz çizim */ }
+      try {
+        const vt = doc.startViewTransition(fn);
+        // yeni geçiş eskisini atlatınca vaatler reddedilir: yakalanmazsa hata raporuna düşer
+        [vt.ready, vt.finished, vt.updateCallbackDone].forEach((p) => p && p.catch(() => {}));
+        return;
+      } catch (e) { /* aşağıda düz çizim */ }
     }
     fn();
     const main = app() && /** @type {HTMLElement} */ (app().querySelector(':scope > main, :scope > section, :scope > div:not(.topbar)'));

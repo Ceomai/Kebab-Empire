@@ -103,7 +103,7 @@ describe('sabah ekonomisi: işe alma ve çıkarma', () => {
 });
 
 describe('sabah ekonomisi: kıyafet, ekipman, dekor', () => {
-  it('kıyafet: kasa, capex, moral; para yetmezse olmaz, ücretsiz önlük her zaman', () => {
+  it('kıyafet: kasa, capex, moral; kasa denetimi yok (önceki davranış), ücretsiz önlük her zaman', () => {
     const { KE, G } = fresh();
     const s = G.staff[0]; s.morale = 60;
     const c = KE.COSTUMES.find((x) => x.id === 'sef');
@@ -113,8 +113,9 @@ describe('sabah ekonomisi: kıyafet, ekipman, dekor', () => {
     expect(G.cash).toBe(cash - c.cost); expect(extras(G).capex).toBe(capex + c.cost);
     expect(s.costume).toBe('sef'); expect(s.morale).toBe(60 + c.morale);
     G.cash = 10;
-    expect(KE.buyCostume(G, s.id, 'yoresel')).toMatchObject({ ok: false, msg: NO_CASH });
-    expect(s.costume).toBe('sef');
+    const y = KE.COSTUMES.find((x) => x.id === 'yoresel');
+    expect(KE.buyCostume(G, s.id, 'yoresel').ok).toBe(true);
+    expect(s.costume).toBe('yoresel'); expect(G.cash).toBe(10 - y.cost);
     G.cash = -500;
     expect(KE.buyCostume(G, s.id, 'temel').ok).toBe(true);
     expect(G.cash).toBe(-500);
@@ -199,9 +200,9 @@ describe('sabah ekonomisi: belediye, ajans, merkezi mutfak', () => {
     expect(KE.deepClean(G, b)).toMatchObject({ ok: true, msg: 'Dükkân pırıl pırıl.' });
     expect(b.cleanliness).toBe(80); expect(G.cash).toBe(cash - 12000); expect(extras(G).other).toBe(other + 12000);
     KE.deepClean(G, b); expect(b.cleanliness).toBe(100);
-    G.cash = 11999;
-    expect(KE.deepClean(G, b)).toMatchObject({ ok: false, msg: NO_CASH });
-    expect(G.cash).toBe(11999);
+    G.cash = 11999; b.cleanliness = 50;
+    expect(KE.deepClean(G, b).ok).toBe(true);
+    expect(G.cash).toBe(-1); expect(b.cleanliness).toBe(80);
   });
   it('kampanya: reklam gideri, etkiler, tabela kalıcı ve bir kez; blog itibarı', () => {
     const { KE, G, b } = fresh();

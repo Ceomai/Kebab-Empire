@@ -203,6 +203,7 @@
   }
   A.finalize = () => {
     const out = closeDayCore();
+    UI.save(); // yeni gün hemen yazılır: çökmede biten gün kaybolmasın
     KE.haptic('medium');
     document.querySelectorAll('.modal-bg').forEach((m) => m.remove());
     UI.holdEvent = true;
@@ -500,7 +501,8 @@
       if (KE.isWeekEnd(G.day - 1)) break;
     }
     track('quick_week', { day: G.day, n });
-    UI.weekRunning = false; UI.closeModal();
+    UI.weekRunning = false; UI.save(); // geçen günler hemen yazılır
+    UI.closeModal();
     UI.holdEvent = true;
     UI.go('shop');
     H.afterDay(out);

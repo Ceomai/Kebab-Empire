@@ -3061,7 +3061,7 @@ KE.huyOf = function (s) {
   KE.buyCostume = function (G, sid, cid) {
     const s = G.staff.find((x) => x.id === sid), c = KE.COSTUMES.find((x) => x.id === cid);
     if (!s || !c) return { ok: false };
-    if (c.cost && G.cash < c.cost) return { ok: false, msg: NO_CASH };
+    // önceki davranış korunur: kıyafet için kasa denetimi yoktu (kasa eksiye düşebilir)
     G.cash -= c.cost; if (c.cost) KE.addExtra(G, 'capex', c.cost);
     s.costume = c.id; s.morale = clamp(s.morale + c.morale, 0, 100);
     const goals = KE.checkGoals(G);
@@ -3127,7 +3127,7 @@ KE.huyOf = function (s) {
   KE.deepClean = function (G, b) {
     if (!b) return { ok: false };
     const c = KE.hygieneCost(G);
-    if (G.cash < c) return { ok: false, msg: NO_CASH };
+    // önceki davranış korunur: hijyen için kasa denetimi yoktu (kirli dükkân eksi kasada da temizletilebilir)
     G.cash -= c; KE.addExtra(G, 'other', c);
     b.cleanliness = clamp(b.cleanliness + 30, 0, 100);
     return { ok: true, msg: 'Dükkân pırıl pırıl.', cost: c };
