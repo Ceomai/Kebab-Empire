@@ -22,7 +22,7 @@ npm run e2e          # derlenmiş oyunu Chromium'da baştan sona oynar (önce: n
 | Katman | Dosyalar | Not |
 |---|---|---|
 | Veri | `js/data.js`, `js/calendar.js` | Ürünler, semtler, ustalar; hicri takvimden Ramazan/bayram, İstanbul iftar saati, yıllık asgari ücret ve vergi dilimleri |
-| Motor | `js/economy.js`, `js/sim.js`, `js/farm.js`, `js/narrative.js` | DOM'suz; tohumlu rastgelelik (`KE.rand`), oyuncu hamle günlüğü ve birebir yeniden oynatma (`KE.replayService`) |
+| Motor | `js/economy.js`, `js/sim/*.js`, `js/farm.js`, `js/narrative.js` | DOM'suz; tohumlu rastgelelik (`KE.rand`), oyuncu hamle günlüğü ve birebir yeniden oynatma (`KE.replayService`) |
 | Kayıt ve ayar | `js/save.js`, `js/config.js` | Sürümlü kayıt + göçler, günlük yedek, dosyaya dışa/içe aktarma; uzaktan denge ayarı (`public/config.json`, Supabase `remote_config`) |
 | Arayüz | `js/ui/*.js`, `js/map.js`, `js/scene.js`, `js/art.js`, `js/characters.js` | Katmanlı şehir haritası (zemin bir kez çizilir), sahne, ekranlar |
 | Çok dil | `js/i18n.js`, `public/locales/`, `locales_src/` | Türkçe asıl; İngilizce ve Almanca. Ekrana gelen metin kalıp sözlüğünden geçer |
@@ -79,7 +79,7 @@ js/map.js           İzometrik şehir haritası
 js/scene.js         Dükkân iç mekânı ve canlı servis sahnesi
 js/farm.js          Besi çiftliği
 js/economy.js       Para biçimi, takvim, fiyatlar, bordro, aylık kapanış, kredi
-js/sim.js           Eşzamanlı şube simülasyonu, görevler ve enerji, gün kapanışı, bahşiş/moral, hedefler
+js/sim/*.js         Eşzamanlı şube simülasyonu (rng, staff, branch, morning, service, player, close, replay)
 js/narrative.js     Günlük, gazete, olay kartları, replikler
 js/ui.js            Ekranlar, harita, dükkân sahnesi, modallar
 js/main.js          Açılış

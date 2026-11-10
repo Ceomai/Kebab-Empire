@@ -1,5 +1,5 @@
 /* Kebab Empire — servisin içindeki kararlar ve hizmetler: gün ortası olayları, acil kurye,
-   rezervasyon defteri ve haftalık yarış. Motor (sim.js) bunları KE üzerinden çağırır. */
+   rezervasyon defteri ve haftalık yarış. Motor (js/sim/) bunları KE üzerinden çağırır. */
 (function () {
   const KE = window.KE;
   const { clamp, rnd, pick, mode: MODE } = KE.U;

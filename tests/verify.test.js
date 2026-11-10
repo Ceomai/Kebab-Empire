@@ -3,7 +3,7 @@ import { loadGame, newGame, playDays } from './load.js';
 
 describe('sunucu doğrulaması', () => {
   it('dürüst sonucu doğrular, şişirilmiş sonucu reddeder', () => {
-    const { KE } = loadGame(['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify']);
+    const { KE } = loadGame(['data', 'util', 'calendar', 'characters', 'economy', 'sim/rng', 'sim/staff', 'sim/branch', 'sim/morning', 'sim/service', 'sim/player', 'sim/close', 'sim/replay', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify']);
     const G = playDays(KE, newGame(KE), 2);
     if (G.pendingEvent) KE.resolveEvent(G, 0);
     const env = JSON.parse(JSON.stringify(KE.SAVE.envelope(G)));
@@ -15,7 +15,7 @@ describe('sunucu doğrulaması', () => {
     const S = G.lastSummary;
     const claim = { day: env.day, served: 0, revenue: 0, reputation: G.reputation };
     Object.values(S.branches).forEach((b) => { claim.served += b.stats.served; claim.revenue += b.stats.revenue; });
-    const { KE: SRV } = loadGame(['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify']);
+    const { KE: SRV } = loadGame(['data', 'util', 'calendar', 'characters', 'economy', 'sim/rng', 'sim/staff', 'sim/branch', 'sim/morning', 'sim/service', 'sim/player', 'sim/close', 'sim/replay', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify']);
     expect(SRV.verifyDay(env, log, 'esit', claim).ok).toBe(true);
     expect(SRV.verifyDay(env, log, 'esit', Object.assign({}, claim, { revenue: claim.revenue * 3 })).ok).toBe(false);
     expect(SRV.verifyDay(env, log, 'esit', Object.assign({}, claim, { day: claim.day + 1 })).ok).toBe(false);
@@ -27,7 +27,7 @@ describe('sunucu doğrulaması', () => {
 });
 
 describe('sıralama zinciri', () => {
-  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim/rng', 'sim/staff', 'sim/branch', 'sim/morning', 'sim/service', 'sim/player', 'sim/close', 'sim/replay', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
   const dayRun = (KE, G) => { KE.startService(G); let n = 0; while (!KE.allDone(G) && n++ < 2000) KE.tickAll(G); KE.finishService(G); const log = G.dayLog.slice(); KE.finalizeDay(G, 'esit'); const c = { day: G.day - 1, served: 0, revenue: 0, reputation: G.reputation }; Object.values(G.lastSummary.branches).forEach((b) => { c.served += b.stats.served; c.revenue += b.stats.revenue; }); return { log, claim: c }; };
   const env = (KE, G) => JSON.parse(JSON.stringify(KE.SAVE.envelope(G)));
   it('dürüst ardışık günler zinciri geçer, sonraki halka sunucunun ürettiği durumdan devam eder', () => {

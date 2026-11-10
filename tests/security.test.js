@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { loadGame, newGame, playDays } from './load.js';
 
-const FILES = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+const FILES = ['data', 'util', 'calendar', 'characters', 'economy', 'sim/rng', 'sim/staff', 'sim/branch', 'sim/morning', 'sim/service', 'sim/player', 'sim/close', 'sim/replay', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
 const day = (KE, G) => { KE.startService(G); KE.finishService(G); const S = G.lastSummary.branches[G.branches[0].id].stats; KE.finalizeDay(G, 'esit'); return S; };
 
 describe('güvenlik ve hile açıkları (regresyon)', () => {

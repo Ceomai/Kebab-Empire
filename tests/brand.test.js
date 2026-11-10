@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import { loadGame, playDays } from './load.js';
 const { validateBrand } = createRequire(import.meta.url)('../scripts/brand-validate.cjs');
 
-const FILES = ['data', 'util', 'brand', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+const FILES = ['data', 'util', 'brand', 'calendar', 'characters', 'economy', 'sim/rng', 'sim/staff', 'sim/branch', 'sim/morning', 'sim/service', 'sim/player', 'sim/close', 'sim/replay', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
 const demo = JSON.parse(fs.readFileSync(new URL('../brands/usta-durum.json', import.meta.url), 'utf8'));
 
 describe('marka ayarı', () => {

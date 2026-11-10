@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { loadGame, newGame } from './load.js';
 
 describe('kadro sınırı dükkânla büyür', () => {
-  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim/rng', 'sim/staff', 'sim/branch', 'sim/morning', 'sim/service', 'sim/player', 'sim/close', 'sim/replay', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
   it('başlangıç kadrosu sınırın içinde, salon dolu', () => {
     const { KE } = loadGame(files);
     const G = newGame(KE);

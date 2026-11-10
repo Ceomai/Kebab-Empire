@@ -1085,8 +1085,9 @@ KE.huyOf = function (s) {
 })();
 
 
-// ---- js/sim.js ----
-/* Kebab Empire — simülasyon motoru
+// ---- js/sim/rng.js ----
+/* Kebab Empire — simülasyon motoru (1/8): tohumlu rastgelelik
+   Motor dosyaları sırayla yüklenir: rng → staff → branch → morning → service → player → close → replay.
    Bütün şubeler aynı anda, dakika dakika çalışır.
    Akış: müşteri gelir → kasada sipariş verir (kasiyer/garson) → usta pişirir → komi/garson masaya götürür
    → müşteri yer, bahşiş bırakır ve çıkar → masa toplanır. Ustalar yalnızca pişirir. */
@@ -1100,10 +1101,15 @@ KE.huyOf = function (s) {
   let stream = mulberry32(1);
   KE.RNG = { seed: (G, tag) => { stream = mulberry32(mix(G.seed || 1, G.day, tag)); }, raw: (n) => { stream = mulberry32(n); } };
   KE.rand = () => stream();
-  const { clamp, rnd, pick, mode: MODE, prod: prodOf } = KE.U;
+})();
+
+
+// ---- js/sim/staff.js ----
+/* Kebab Empire — simülasyon motoru (2/8): personel
+   Pozisyonlar, çalışan üretimi, kadro sınırı, usta/eleman pazarı ve tecrübe (yıldız) kazanımı. */
+(function () {
+  const { clamp, rnd, pick, mode: MODE } = KE.U;
   KE.STAR_NEED = [0, 40, 120, 300, 650, 1300];
-  KE.MINUTES = (KE.CLOSE_HOUR - KE.OPEN_HOUR) * 60;
-  KE.MINUTE_MS = 400; // 1× hızda bir oyun dakikası
 
   /* ---------- Görevler ve pozisyonlar ---------- */
   KE.POSITIONS = {
@@ -1210,6 +1216,41 @@ KE.huyOf = function (s) {
     return s;
   };
 
+  KE.refreshMarket = function (G) {
+    const used = new Set(G.staff.map((s) => s.name));
+    const tmpl = KE.MASTER_TEMPLATES[G.mode].filter((t) => !used.has(t.name) && t.role !== 'cirak');
+    G.market = [];
+    if (tmpl.length && KE.rand() < 0.7) {
+      const t = pick(tmpl);
+      const s = KE.makeStaff(G, Object.assign({}, t, { role: 'usta' }));
+      const max = Math.max(...Object.values(s.spec));
+      s.fee = Math.round(s.wage * (0.3 + max * 0.18) / 500) * 500;
+      G.market.push(s);
+    }
+    while (G.market.length < 5) G.market.push(KE.randomMaster(G));
+  };
+  KE.refreshWorkers = function (G) {
+    G.workers = [];
+    ['kasiyer', 'garson', 'garson', 'kurye', 'temizlik', 'mudur', 'kasiyer', 'kurye'].forEach((r) => G.workers.push(KE.randomWorker(G, r)));
+  };
+
+  KE.gainXp = function (s, pid, amt) {
+    if (!amt) return false;
+    const cur = s.spec[pid] || 0;
+    if (cur >= 5) return false;
+    s.xp[pid] = (s.xp[pid] || 0) + amt;
+    const need = KE.STAR_NEED[cur + 1];
+    if (s.xp[pid] >= need) { s.xp[pid] -= need; s.spec[pid] = cur + 1; s.levelUps = (s.levelUps || []).concat([{ pid, star: cur + 1 }]); return true; }
+    return false;
+  };
+})();
+
+
+// ---- js/sim/branch.js ----
+/* Kebab Empire — simülasyon motoru (3/8): şube ve yeni oyun
+   Şube kurulumu, ekipman/masa/ocak, ortam (dekor konsepti), menü, fiyat toleransı ve beklenen müşteri. */
+(function () {
+  const MODE = KE.U.mode;
   /* ---------- Şube ---------- */
   KE.makeBranch = function (G, districtId) {
     const d = KE.DISTRICTS.find((x) => x.id === districtId);
@@ -1333,25 +1374,14 @@ KE.huyOf = function (s) {
     KE.morning(G);
     return G;
   };
+})();
 
-  KE.refreshMarket = function (G) {
-    const used = new Set(G.staff.map((s) => s.name));
-    const tmpl = KE.MASTER_TEMPLATES[G.mode].filter((t) => !used.has(t.name) && t.role !== 'cirak');
-    G.market = [];
-    if (tmpl.length && KE.rand() < 0.7) {
-      const t = pick(tmpl);
-      const s = KE.makeStaff(G, Object.assign({}, t, { role: 'usta' }));
-      const max = Math.max(...Object.values(s.spec));
-      s.fee = Math.round(s.wage * (0.3 + max * 0.18) / 500) * 500;
-      G.market.push(s);
-    }
-    while (G.market.length < 5) G.market.push(KE.randomMaster(G));
-  };
-  KE.refreshWorkers = function (G) {
-    G.workers = [];
-    ['kasiyer', 'garson', 'garson', 'kurye', 'temizlik', 'mudur', 'kasiyer', 'kurye'].forEach((r) => G.workers.push(KE.randomWorker(G, r)));
-  };
 
+// ---- js/sim/morning.js ----
+/* Kebab Empire — simülasyon motoru (4/8): sabah
+   Müdürlü şubenin sabah ayarı, talep tahmini, stok tamamlama (çiftlik sevkiyatı dahil), sabah hazırlığı ve günün hedefleri. */
+(function () {
+  const MODE = KE.U.mode;
   /* ---------- Sabah: çiftlikten sevkiyat ve stok tamamlama ---------- */
   /* Müdürlü şube kendi sabah ayarını yapar: stok seviyesi dünkü bitenlere ve fireye, fiyatlar haftada bir piyasaya göre */
   KE.isManaged = (G, b) => b.managed !== false && KE.branchStaff(G, b).some((s) => s.role === 'mudur');
@@ -1542,6 +1572,16 @@ KE.huyOf = function (s) {
       return Object.assign({}, g, { value: v, p: Math.max(0, Math.min(1, p)), state });
     });
   };
+})();
+
+
+// ---- js/sim/service.js ----
+/* Kebab Empire — simülasyon motoru (5/8): servis
+   Müşteri gelişi, sipariş seçimi, çalışanların görevleri, memnuniyet/bahşiş, otomatik ekip ve dakikalık adım. */
+(function () {
+  const { clamp, rnd, pick, mode: MODE, prod: prodOf } = KE.U;
+  KE.MINUTES = (KE.CLOSE_HOUR - KE.OPEN_HOUR) * 60;
+  KE.MINUTE_MS = 400; // 1× hızda bir oyun dakikası
 
   /* ---------- Servis ---------- */
   KE.startService = function (G) {
@@ -1998,7 +2038,7 @@ KE.huyOf = function (s) {
         if (c.eatLeft <= 0) leave(G, b, L, c);
       }
     });
-    playerTick(G, b, L);
+    KE.playerTick(G, b, L);
     L.minute += 1;
     const busy = L.queue.length || Object.values(L.custs).some((c) => c.state !== 'eat') || L.tickets.some((t) => !t.paket || t.by);
     if (L.minute >= KE.MINUTES && !busy) {
@@ -2024,7 +2064,13 @@ KE.huyOf = function (s) {
     G.branches.forEach((b) => { const L = G.live[b.id]; if (L) KE.tick(G, b, L); });
   };
   KE.allDone = (G) => G.branches.every((b) => !G.live[b.id] || G.live[b.id].done);
+})();
 
+
+// ---- js/sim/player.js ----
+/* Kebab Empire — simülasyon motoru (6/8): oyuncu tezgâhta */
+(function () {
+  const { clamp, mode: MODE, prod: prodOf } = KE.U;
   /* ---------- Oyuncu tezgâhta ----------
      Overcooked usulü: oyuncu aynı anda 2 (hazırlık ekipmanı 2+ ise 3) sipariş tutar. Her tarif adımı bir
      istasyonda yapılır; istasyona dokunmak, o istasyonu sıradaki adım olarak bekleyen siparişi (önce seçili olanı)
@@ -2229,8 +2275,14 @@ KE.huyOf = function (s) {
     pmirror(P);
   }
   KE.playerTick = playerTick;
+})();
 
-  /* ---------- Gün kapanışı ---------- */
+
+// ---- js/sim/close.js ----
+/* Kebab Empire — simülasyon motoru (7/8): servis sonu ve gün kapanışı */
+(function () {
+  const { clamp, mode: MODE, prod: prodOf } = KE.U;
+  /* ---------- Servis sonu: kalan dakikaları hızla oynat, fire ve tüketimi hesapla ---------- */
   KE.fastForward = function (G) {
     if (G.live[G.activeBranch] && G.live[G.activeBranch].player.active) KE.playerToggle(G, false);
     let guard = 0;
@@ -2279,89 +2331,124 @@ KE.huyOf = function (s) {
     const tot = w.reduce((a, x) => a + x[1], 0);
     return w.map(([s, v]) => [s, jar * v / tot]);
   };
-  KE.finalizeDay = function (G, todayRule) {
+  /* ---------- Gün kapanışı: KE.finalizeDay ----------
+     Alt adımlar aşağıda tanımlı sırayla çağrılır. Sıra önemlidir: tohumlu akış ('close') bu sırayla tüketilir
+     (ör. istifa zarları şube sırasıyla atılır) ve sunucu aynı sırayla yeniden oynatır; adımların yeri değişmemeli.
+
+     Geç bağlanan bağımlılıklar: aşağıdakiler motor dosyalarından SONRA yüklenen dosyalarda tanımlıdır ve
+     yalnızca gün kapanışında çağrılır (yüklenirken değil), bu yüzden doğrudan KE üzerinden okunur:
+       narrative.js → KE.writeJournal, KE.writeNews, KE.rollEvent
+       progress.js  → KE.checkGoals, KE.advanceEra
+       midday.js    → KE.lostShare
+       farm.js      → KE.farmDay  (İSTEĞE BAĞLI: çiftlik dosyası yüklenmemişse adım atlanır)
+     Zorunlu olanlar eksikse oyun yüklenişi hatalıdır; KE.closeDeps() hangilerinin eksik olduğunu söyler. */
+  const LATE = { writeJournal: 'narrative', writeNews: 'narrative', rollEvent: 'narrative', checkGoals: 'progress', advanceEra: 'progress', lostShare: 'midday' };
+  KE.closeDeps = () => Object.keys(LATE).filter((k) => typeof KE[k] !== 'function').map((k) => 'KE.' + k + ' (' + LATE[k] + '.js)');
+
+  /* 1. Günün hamle günlüğünü sakla, kapanış akışını tohumla */
+  function beginClose(G) {
     KE.RNG.seed(G, 'close');
     G.actionLog = (G.actionLog || []).concat([{ day: G.day, log: G.dayLog || [] }]).slice(-7);
     G.dayLog = [];
-    const S0 = G.lastSummary;
-    const out = { levelUps: [], quits: [], branches: {} };
-    if (G.inspect && S0.branches[G.inspect.bid]) {
-      const sm = S0.branches[G.inspect.bid], st = sm.stats, b = G.branches.find((x) => x.id === G.inspect.bid);
-      const lost = st.arrivals ? KE.lostShare(st) : 1;
-      const pass = sm.sat >= KE.INSPECT.sat && lost < KE.INSPECT.lost;
-      if (pass) { G.stars = (G.stars || 0) + 1; G.reputation = Math.min(100, G.reputation + 3); } else G.reputation = Math.max(0, G.reputation - 5);
-      out.inspect = { pass, stars: G.stars || 0, branch: b ? b.name : '', sat: Math.round(sm.sat), lost: Math.round(lost * 100) };
-      G.inspect = null;
-    }
-    /* ekibin bahşiş isteği: hafta sonunda günlerin yarısında bile karşılanmadıysa ekip küser */
+  }
+  /* 2. Rehber müfettişinin kararı (yıldız ya da itibar kaybı) */
+  function inspectorVerdict(G, S0, out) {
+    if (!(G.inspect && S0.branches[G.inspect.bid])) return;
+    const sm = S0.branches[G.inspect.bid], st = sm.stats, b = G.branches.find((x) => x.id === G.inspect.bid);
+    const lost = st.arrivals ? KE.lostShare(st) : 1;
+    const pass = sm.sat >= KE.INSPECT.sat && lost < KE.INSPECT.lost;
+    if (pass) { G.stars = (G.stars || 0) + 1; G.reputation = Math.min(100, G.reputation + 3); } else G.reputation = Math.max(0, G.reputation - 5);
+    out.inspect = { pass, stars: G.stars || 0, branch: b ? b.name : '', sat: Math.round(sm.sat), lost: Math.round(lost * 100) };
+    G.inspect = null;
+  }
+  /* 3. Ekibin bahşiş isteği: hafta sonunda günlerin yarısında bile karşılanmadıysa ekip küser */
+  function tallyTipWish(G, rule, out) {
     const TW = G.tipWish;
-    if (TW) {
-      TW.days = (TW.days || 0) + 1; if ((todayRule || G.tipRule) === TW.rule) TW.hits = (TW.hits || 0) + 1;
-      TW.missed = G.day >= TW.until && TW.hits * 2 < TW.days;
-      if (G.day >= TW.until) out.tipWishEnd = { rule: TW.rule, hits: TW.hits, days: TW.days, missed: TW.missed };
-    }
-    G.branches.forEach((b) => {
-      const sum = S0.branches[b.id];
-      const S = sum.stats;
-      const st = KE.branchStaff(G, b);
-      const rule = todayRule || G.tipRule;
-      if (rule === 'kasa') G.cash += S.tips;
-      const shares = {};
-      KE.tipShares(G, b, rule, S.tips).forEach(([s, v]) => { shares[s.id] = v; });
-      const perf = st.slice().sort((a, c) => c.servedToday - a.servedToday);
-      const amb = KE.ambience(G, b);
-      const limit = G.mode === 'doner' ? 70 : 60;
-      st.forEach((s) => {
-        const tr = KE.TRAITS[s.trait] || {};
-        const before = s.morale;
-        let dm = (62 - s.morale) * 0.1;
-        const share = shares[s.id] || 0;
-        s.tipsMonth += share; s.tipsTotal += share; s.tipsToday = share;
-        dm += Math.min(5, share / (s.wage / 30) * 6);
-        /* kasaya alınan bahşiş: ekip payını görmez ama ay sonu primi sözüyle moralin bir kısmı korunur */
-        if (rule === 'kasa') dm += Math.min(5, (S.tips / Math.max(1, st.length)) / (s.wage / 30) * 6) * 0.6 - 0.5;
-        if (rule === 'usta') dm += s.role === 'usta' ? 3 : -1;
-        if (rule === 'performans') dm += s === perf[0] ? 4 : s === perf[perf.length - 1] ? -2.5 : 0.5;
-        if (G.tipWish && rule === G.tipWish.rule) dm += 1.5;
-        if (G.tipWish && G.tipWish.missed) dm -= 2;
-        if (s.servedToday > limit * 1.6) dm -= 5; else if (s.servedToday > limit) dm -= 2;
-        if (s.minEnergy < 10) dm -= 6; else if (s.minEnergy < 25) dm -= 3; else if (s.minEnergy > 55) dm += 1;
-        b.decor.forEach((id) => { const d = KE.DECOR.find((x) => x.id === id); if (d && d.morale) dm += d.morale * 0.5; });
-        dm += KE.COSTUMES.find((x) => x.id === s.costume).morale * 0.06;
-        if (amb.concept && s.costume !== 'temel') dm += 0.6;
-        if (G.payLate) dm -= 3;
-        if (dm < 0 && tr.moraleStable) dm *= 1 - tr.moraleStable;
-        if (dm < 0 && KE.huyOf(s) === 'sadik') dm *= 0.7;
-        s.morale = clamp(s.morale + dm, 0, 100);
-        s.moraleDelta = s.morale - before;
-        if (s.levelUps && s.levelUps.length) { s.levelUps.forEach((u) => out.levelUps.push({ name: s.name, pid: u.pid, star: u.star })); s.levelUps = []; }
-      });
-      st.filter((s) => s.mentorId).forEach((c) => {
-        const m = st.find((x) => x.id === c.mentorId);
-        if (!m) { c.mentorId = null; return; }
-        const tm = KE.TRAITS[m.trait] || {}, tc = KE.TRAITS[c.trait] || {};
-        Object.entries(m.spec).forEach(([pid, star]) => {
-          if ((c.spec[pid] || 0) >= star - 1) return;
-          if (KE.gainXp(c, pid, m.teach * 4 * (1 + (tm.teachBonus || 0)) * (1 + (tc.xp || 0)) * (rule === 'usta' ? 1.3 : 1))) out.levelUps.push({ name: c.name, pid, star: c.spec[pid], mentor: m.name });
-        });
-      });
-      st.forEach((s) => { if (s.morale < 18 && KE.rand() < 0.3) { out.quits.push({ name: s.name, role: s.role, branch: b.name }); s.quit = true; } });
-      b.cleanliness = clamp(b.cleanliness - 3, 5, 100);
-      const fixed = (b.rent + KE.utilities(G, b) + st.reduce((a, s) => a + s.wage * (1 + KE.ECON.fazlaMesaiOrani) * 1.2 + KE.ECON.yolYardimiAylik, 0)) / 30;
-      const sarf = S.revenue * KE.ECON.sarfOrani;
-      G.cash -= sarf;
-      const purchases = sum.purchases + sarf;
-      G.cash += S.revenue;
-      const entry = {
-        day: G.day, date: KE.dateStr(G.day), month: KE.monthKey(G.day), branchId: b.id, revenue: S.revenue, card: S.card, cash: S.cash,
-        purchases, sarf, waste: sum.wasteVal, tips: S.tips, tipRule: rule, served: S.served, lost: S.lost, arrivals: S.arrivals, sat: sum.sat,
-        byProduct: S.byProduct, hourly: S.hourly, hourlyCust: S.hourlyCust, paket: S.paket, paketRev: S.paketRev, fixed, farmKg: G.today[b.id].farmKg || 0,
-        net: S.revenue / (1 + KE.ECON.kdvRestoran) - purchases - fixed, stockouts: S.stockouts
-      };
-      G.ledger.days.push(entry);
-      b.history.push({ day: G.day, revenue: S.revenue, net: entry.net, sat: sum.sat });
-      out.branches[b.id] = entry;
+    if (!TW) return;
+    TW.days = (TW.days || 0) + 1; if (rule === TW.rule) TW.hits = (TW.hits || 0) + 1;
+    TW.missed = G.day >= TW.until && TW.hits * 2 < TW.days;
+    if (G.day >= TW.until) out.tipWishEnd = { rule: TW.rule, hits: TW.hits, days: TW.days, missed: TW.missed };
+  }
+  /* 4a. Bahşiş paylaşımı ve günlük moral değişimi */
+  function tipsAndMorale(G, b, st, S, rule, out) {
+    if (rule === 'kasa') G.cash += S.tips;
+    const shares = {};
+    KE.tipShares(G, b, rule, S.tips).forEach(([s, v]) => { shares[s.id] = v; });
+    const perf = st.slice().sort((a, c) => c.servedToday - a.servedToday);
+    const amb = KE.ambience(G, b);
+    const limit = G.mode === 'doner' ? 70 : 60;
+    st.forEach((s) => {
+      const tr = KE.TRAITS[s.trait] || {};
+      const before = s.morale;
+      let dm = (62 - s.morale) * 0.1;
+      const share = shares[s.id] || 0;
+      s.tipsMonth += share; s.tipsTotal += share; s.tipsToday = share;
+      dm += Math.min(5, share / (s.wage / 30) * 6);
+      /* kasaya alınan bahşiş: ekip payını görmez ama ay sonu primi sözüyle moralin bir kısmı korunur */
+      if (rule === 'kasa') dm += Math.min(5, (S.tips / Math.max(1, st.length)) / (s.wage / 30) * 6) * 0.6 - 0.5;
+      if (rule === 'usta') dm += s.role === 'usta' ? 3 : -1;
+      if (rule === 'performans') dm += s === perf[0] ? 4 : s === perf[perf.length - 1] ? -2.5 : 0.5;
+      if (G.tipWish && rule === G.tipWish.rule) dm += 1.5;
+      if (G.tipWish && G.tipWish.missed) dm -= 2;
+      if (s.servedToday > limit * 1.6) dm -= 5; else if (s.servedToday > limit) dm -= 2;
+      if (s.minEnergy < 10) dm -= 6; else if (s.minEnergy < 25) dm -= 3; else if (s.minEnergy > 55) dm += 1;
+      b.decor.forEach((id) => { const d = KE.DECOR.find((x) => x.id === id); if (d && d.morale) dm += d.morale * 0.5; });
+      dm += KE.COSTUMES.find((x) => x.id === s.costume).morale * 0.06;
+      if (amb.concept && s.costume !== 'temel') dm += 0.6;
+      if (G.payLate) dm -= 3;
+      if (dm < 0 && tr.moraleStable) dm *= 1 - tr.moraleStable;
+      if (dm < 0 && KE.huyOf(s) === 'sadik') dm *= 0.7;
+      s.morale = clamp(s.morale + dm, 0, 100);
+      s.moraleDelta = s.morale - before;
+      if (s.levelUps && s.levelUps.length) { s.levelUps.forEach((u) => out.levelUps.push({ name: s.name, pid: u.pid, star: u.star })); s.levelUps = []; }
     });
+  }
+  /* 4b. Çıraklar mentor ustalarından öğrenir */
+  function mentorApprentices(st, rule, out) {
+    st.filter((s) => s.mentorId).forEach((c) => {
+      const m = st.find((x) => x.id === c.mentorId);
+      if (!m) { c.mentorId = null; return; }
+      const tm = KE.TRAITS[m.trait] || {}, tc = KE.TRAITS[c.trait] || {};
+      Object.entries(m.spec).forEach(([pid, star]) => {
+        if ((c.spec[pid] || 0) >= star - 1) return;
+        if (KE.gainXp(c, pid, m.teach * 4 * (1 + (tm.teachBonus || 0)) * (1 + (tc.xp || 0)) * (rule === 'usta' ? 1.3 : 1))) out.levelUps.push({ name: c.name, pid, star: c.spec[pid], mentor: m.name });
+      });
+    });
+  }
+  /* 4c. Morali dibe vuran istifa eder (tohumlu zar) */
+  function rollQuits(b, st, out) {
+    st.forEach((s) => { if (s.morale < 18 && KE.rand() < 0.3) { out.quits.push({ name: s.name, role: s.role, branch: b.name }); s.quit = true; } });
+  }
+  /* 4d. Kasa ve defter: ciro, sarf, sabit giderin günlük payı, şube geçmişi */
+  function bookDay(G, b, st, sum, rule, out) {
+    const S = sum.stats;
+    const fixed = (b.rent + KE.utilities(G, b) + st.reduce((a, s) => a + s.wage * (1 + KE.ECON.fazlaMesaiOrani) * 1.2 + KE.ECON.yolYardimiAylik, 0)) / 30;
+    const sarf = S.revenue * KE.ECON.sarfOrani;
+    G.cash -= sarf;
+    const purchases = sum.purchases + sarf;
+    G.cash += S.revenue;
+    const entry = {
+      day: G.day, date: KE.dateStr(G.day), month: KE.monthKey(G.day), branchId: b.id, revenue: S.revenue, card: S.card, cash: S.cash,
+      purchases, sarf, waste: sum.wasteVal, tips: S.tips, tipRule: rule, served: S.served, lost: S.lost, arrivals: S.arrivals, sat: sum.sat,
+      byProduct: S.byProduct, hourly: S.hourly, hourlyCust: S.hourlyCust, paket: S.paket, paketRev: S.paketRev, fixed, farmKg: G.today[b.id].farmKg || 0,
+      net: S.revenue / (1 + KE.ECON.kdvRestoran) - purchases - fixed, stockouts: S.stockouts
+    };
+    G.ledger.days.push(entry);
+    b.history.push({ day: G.day, revenue: S.revenue, net: entry.net, sat: sum.sat });
+    out.branches[b.id] = entry;
+  }
+  /* 4. Her şube sırayla kapanır */
+  function closeBranch(G, b, S0, rule, out) {
+    const sum = S0.branches[b.id];
+    const st = KE.branchStaff(G, b);
+    tipsAndMorale(G, b, st, sum.stats, rule, out);
+    mentorApprentices(st, rule, out);
+    rollQuits(b, st, out);
+    b.cleanliness = clamp(b.cleanliness - 3, 5, 100);
+    bookDay(G, b, st, sum, rule, out);
+  }
+  /* 5. İstifa edenler ayrılır, günün itibar değişimi uygulanır */
+  function applyReputation(G, S0) {
     G.staff = G.staff.filter((s) => !s.quit);
     const totalRep = G.branches.reduce((a, b) => a + S0.branches[b.id].stats.repDelta, 0);
     let dRep = clamp(totalRep, -2, 1.5);
@@ -2369,11 +2456,17 @@ KE.huyOf = function (s) {
     G.reputation = clamp(G.reputation + dRep, 0, 100);
     /* tepede kalmak emek ister: 70'in üstünde itibar her gün biraz aşınır */
     if (G.reputation > 70) G.reputation = clamp(G.reputation - (G.reputation - 70) * (G.reputation - 70) / 600 * (1 - 0.25 * KE.charityLv(G, 'asevi')), 0, 100);
+  }
+  /* 6. Gün sonu günlüğü (narrative.js) */
+  function journal(G, S0, out) {
     out.journal = KE.writeJournal(G, S0, out);
     G.journal.unshift({ day: G.day, date: KE.dateStr(G.day), text: out.journal });
     if (G.journal.length > 60) G.journal.length = 60;
+  }
+  /* 7. Günlük işler: geçici etkiler, çiftlik, günün hedefleri, yeni tarifler, müdavimler */
+  function dailyTicks(G, S0, out) {
     G.mods.forEach((m) => { m.days -= 1; }); G.mods = G.mods.filter((m) => m.days > 0);
-    if (KE.farmDay) out.farm = KE.farmDay(G);
+    if (KE.farmDay) out.farm = KE.farmDay(G); /* isteğe bağlı: farm.js yüklüyse */
     out.daily = KE.dailyProgress(G, true);
     out.daily.forEach((g) => { if (g.state === 'done') { G.cash += g.reward; G.reputation = clamp(G.reputation + (G.reputation > 70 ? 0.05 : 0.4), 0, 100); } });
     out.unlocks = [];
@@ -2383,7 +2476,9 @@ KE.huyOf = function (s) {
     });
     out.regulars = [];
     G.branches.forEach((b) => (S0.branches[b.id].stats.regulars || []).forEach((x) => out.regulars.push(x)));
-    /* toplu sipariş teslimi, imza tarifin bitmesi, haftalık meydan okuma */
+  }
+  /* 8. Toplu sipariş teslimi ve imza tarifin bitmesi */
+  function deliveries(G, out) {
     if (G.contract && G.contract.day === G.day) {
       const c = G.contract, net = c.pay - c.cost;
       G.cash += net; KE.addExtra(G, 'other', -net);
@@ -2394,21 +2489,29 @@ KE.huyOf = function (s) {
       out.contract = Object.assign({ net }, c); G.contract = null;
     }
     if (G.sigWork && G.day >= G.sigWork.ready) { G.signature = { pid: G.sigWork.pid, level: G.sigWork.level }; out.signature = G.signature; G.sigWork = null; }
-    if (G.weekly) {
-      const W = G.weekly, a = W.acc;
-      G.branches.forEach((b) => { const S = S0.branches[b.id].stats; a.served += S.served; a.match += S.matches; a.player += S.playerServed || 0; a.tips += S.tips; a.satS += S.satSum; a.satN += S.satN; });
-      const val = W.kind === 'sat' ? (a.satN ? a.satS / a.satN : 0) : a[W.kind];
-      W.value = val;
-      const end = KE.isWeekEnd(G.day);
-      if (!W.done && val >= W.target && (W.kind !== 'sat' || end)) { W.done = true; G.cash += W.reward; G.reputation = clamp(G.reputation + 1, 0, 100); out.weeklyDone = Object.assign({}, W); }
-      if (end) { out.weeklyEnd = Object.assign({}, W); G.weekly = null; }
-    }
+  }
+  /* 9. Haftalık meydan okuma */
+  function weeklyChallenge(G, S0, out) {
+    if (!G.weekly) return;
+    const W = G.weekly, a = W.acc;
+    G.branches.forEach((b) => { const S = S0.branches[b.id].stats; a.served += S.served; a.match += S.matches; a.player += S.playerServed || 0; a.tips += S.tips; a.satS += S.satSum; a.satN += S.satN; });
+    const val = W.kind === 'sat' ? (a.satN ? a.satS / a.satN : 0) : a[W.kind];
+    W.value = val;
+    const end = KE.isWeekEnd(G.day);
+    if (!W.done && val >= W.target && (W.kind !== 'sat' || end)) { W.done = true; G.cash += W.reward; G.reputation = clamp(G.reputation + 1, 0, 100); out.weeklyDone = Object.assign({}, W); }
+    if (end) { out.weeklyEnd = Object.assign({}, W); G.weekly = null; }
+  }
+  /* 10. Dönem işleri: kârlı hafta, ay sonu şampiyonluğu, hedefler, dönemler, ay kapanışı, hafta sonu gazetesi ve pazar */
+  function periodTicks(G, out) {
     if (G.day >= 7 && G.ledger.days.filter((d) => d.day > G.day - 7).reduce((x, d) => x + d.net, 0) > 0) G.flags.profitWeek = G.flags.profitWeek || G.day;
     if (KE.isMonthEnd(G.day)) out.champions = KE.championship(G);
     out.goals = KE.checkGoals(G);
     out.eras = KE.advanceEra(G);
     if (KE.isMonthEnd(G.day)) out.month = KE.closeMonth(G, G.day);
     if (KE.isWeekEnd(G.day)) { out.news = KE.writeNews(G); G.news.unshift(out.news); KE.refreshMarket(G); KE.refreshWorkers(G); if (!G.flags.empire) G.rival.power += 3; }
+  }
+  /* 11. Ertesi güne geç: kayıt sıkıştırma, yeni gün, olay kartı, sabah */
+  function nextMorning(G) {
     if (G.tipWish && G.tipWish.missed) G.tipWish.missed = false;
     KE.compactLedger(G);
     G.payLate = G.cash < 0;
@@ -2416,6 +2519,22 @@ KE.huyOf = function (s) {
     G.pendingEvent = KE.rollEvent(G);
     G.live = null;
     KE.morning(G);
+  }
+  KE.finalizeDay = function (G, todayRule) {
+    beginClose(G);
+    const S0 = G.lastSummary;
+    const out = { levelUps: [], quits: [], branches: {} };
+    const rule = todayRule || G.tipRule;
+    inspectorVerdict(G, S0, out);
+    tallyTipWish(G, rule, out);
+    G.branches.forEach((b) => closeBranch(G, b, S0, rule, out));
+    applyReputation(G, S0);
+    journal(G, S0, out);
+    dailyTicks(G, S0, out);
+    deliveries(G, out);
+    weeklyChallenge(G, S0, out);
+    periodTicks(G, out);
+    nextMorning(G);
     return out;
   };
 
@@ -2436,16 +2555,6 @@ KE.huyOf = function (s) {
     if (G.eventLog && G.eventLog.length > 400) G.eventLog = G.eventLog.slice(-400);
   };
 
-  KE.gainXp = function (s, pid, amt) {
-    if (!amt) return false;
-    const cur = s.spec[pid] || 0;
-    if (cur >= 5) return false;
-    s.xp[pid] = (s.xp[pid] || 0) + amt;
-    const need = KE.STAR_NEED[cur + 1];
-    if (s.xp[pid] >= need) { s.xp[pid] -= need; s.spec[pid] = cur + 1; s.levelUps = (s.levelUps || []).concat([{ pid, star: cur + 1 }]); return true; }
-    return false;
-  };
-
   /* Ay sonu semt şampiyonluğu: şubenin ay ortalaması memnuniyeti "Lüks Kebap"ın semtteki çıtasını geçerse */
   KE.championship = function (G) {
     const key = KE.monthKey(G.day);
@@ -2460,7 +2569,12 @@ KE.huyOf = function (s) {
       return { id: b.id, name: b.name, district: KE.district(b).name, sat, bar, won, served };
     });
   };
+})();
 
+
+// ---- js/sim/replay.js ----
+/* Kebab Empire — simülasyon motoru (8/8): oyuncu hamlelerinin kaydı ve yeniden oynatma */
+(function () {
   /* ---------- Oyuncu hamleleri: kayıt ve yeniden oynatma ----------
      Servis sırasında sonucu etkileyen her oyuncu hamlesi { m: dakika, a: ad, x: argümanlar } olarak
      günlüğe yazılır. Sabah durumu + tohum + günlük ile gün birebir yeniden oynatılabilir. */
@@ -2505,7 +2619,7 @@ KE.huyOf = function (s) {
 
 // ---- js/midday.js ----
 /* Kebab Empire — servisin içindeki kararlar ve hizmetler: gün ortası olayları, acil kurye,
-   rezervasyon defteri ve haftalık yarış. Motor (sim.js) bunları KE üzerinden çağırır. */
+   rezervasyon defteri ve haftalık yarış. Motor (js/sim/) bunları KE üzerinden çağırır. */
 (function () {
   const KE = window.KE;
   const { clamp, rnd, pick, mode: MODE } = KE.U;
