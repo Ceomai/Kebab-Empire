@@ -23,6 +23,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Biçim kontrolü (Prettier)
+        run: npm run format:check
       - name: Tip kontrolü
         run: npm run typecheck
       - name: Birim, denge ve determinizm testleri

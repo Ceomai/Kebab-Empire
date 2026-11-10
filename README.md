@@ -13,9 +13,12 @@ npm install
 npm run dev          # http://localhost:5173
 npm test             # birim, denge, determinizm, kayıt, takvim, çeviri, bulut testleri
 npm run typecheck    # JSDoc / checkJs tip kontrolü
+npm run format       # Prettier ile biçimlendirir (CI: npm run format:check)
 npm run build        # dist/ (küçültülmüş, ~120 KB gzip)
 npm run e2e          # derlenmiş oyunu Chromium'da baştan sona oynar (önce: npx vite preview --port 4173)
 ```
+
+Toplu biçimlendirme commit'ini `git blame`'de atlamak için: `git config blame.ignoreRevsFile .git-blame-ignore-revs`
 
 ## Mimari
 

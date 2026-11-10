@@ -1,0 +1,4 @@
+# git blame bu commitleri atlar: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Biçimlendirme: Prettier (yalnızca boşluk/satır düzeni)
+3132f9619e1eeec4eec825506f49bcc2120fb40d
