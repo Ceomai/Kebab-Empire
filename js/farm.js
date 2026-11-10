@@ -1,6 +1,6 @@
 /* Kebab Empire — besi çiftliği */
 (function () {
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const { clamp } = KE.U;
   KE.farmKinds = (G) => Object.keys(KE.FARM).filter((k) => !KE.FARM[k].modes || KE.FARM[k].modes.includes(G.mode));
   KE.farmCost = (G) => Math.round(KE.FARM_COST * G.priceIndex / 1000) * 1000;
   KE.buyFarm = function (G) {

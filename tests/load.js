@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 const root = path.resolve(import.meta.dirname, '..', 'js');
-export function loadGame(files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save'], opts = {}) {
+export function loadGame(files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save'], opts = {}) {
   const store = {};
   const ctx = { console, Intl, Math, Date, JSON, setTimeout, clearTimeout,
     localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { if (opts.quota != null && String(v).length > opts.quota) throw new Error('QuotaExceededError'); store[k] = String(v); }, removeItem: (k) => { delete store[k]; } } };

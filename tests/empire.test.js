@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { loadGame, newGame, playDays } from './load.js';
 
 describe('oyun sonu: imparatorluk', () => {
-  const files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
   const ready = (KE, G) => { ['besiktepe', 'sultanpazari', 'kulealti', 'bostansahil', 'merterli', 'kampustepe'].forEach((d) => KE.openBranch(G, d)); G.branches.slice(0, KE.EMPIRE.crowns).forEach((b) => { b.champions = 1; }); G.reputation = KE.EMPIRE.reputation + 5; G.cash = 2 * KE.empirePrice(G); G.era = 4; };
   it('şartlar tamamlanmadan satın alınamaz', () => {
     const { KE } = loadGame(files);

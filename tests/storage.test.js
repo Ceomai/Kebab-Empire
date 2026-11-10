@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { loadGame, newGame } from './load.js';
 
-const FILES = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+const FILES = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
 describe('kayıt boyutu ve depolama', () => {
   it('defter kırpılır ama ömür boyu toplamlar korunur, kayıt büyümez', () => {
     const { KE } = loadGame(FILES);

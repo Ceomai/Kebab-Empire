@@ -1,7 +1,7 @@
 /* 365 günlük denge simülasyonu: basit bir oyuncu politikasıyla aylık özet */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', 'js') + '/';
-function load() { const ctx = { console, Intl, Math, Date, JSON }; ctx.window = ctx; vm.createContext(ctx); for (const f of ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative']) vm.runInContext(fs.readFileSync(root + f + '.js', 'utf8'), ctx, { filename: f }); return ctx.KE; }
+function load() { const ctx = { console, Intl, Math, Date, JSON }; ctx.window = ctx; vm.createContext(ctx); for (const f of ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative']) vm.runInContext(fs.readFileSync(root + f + '.js', 'utf8'), ctx, { filename: f }); return ctx.KE; }
 const DAYS = +(process.env.DAYS || 365);
 for (const mode of (process.env.MODES || 'doner,kebap').split(',')) for (const farm of (process.env.FARM === '0' ? [false] : [false, true])) {
   const KE = load();

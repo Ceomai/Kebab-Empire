@@ -1,7 +1,6 @@
 /* Kebab Empire — anlatı: gün sonu günlüğü, mahalle gazetesi, olay kartları, karakter repliği */
 (function () {
-  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const { clamp, pick } = KE.U;
   const pname = (G, pid) => { const m = KE.MODES[G.mode]; const p = m.products.find((x) => x.id === pid); return p ? p.name : m.drink.name; };
   const clock = (min) => { const h = KE.OPEN_HOUR + Math.floor(min / 60), m = min % 60; return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
   KE.clock = clock;

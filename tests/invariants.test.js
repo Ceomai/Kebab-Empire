@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { loadGame, newGame } from './load.js';
 
-const FILES = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+const FILES = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
 /* Oyuncu hiç dokunmadan 100 gün: değişmez kurallar her gün tutmalı */
 function run(mode, seed, days, check) {
   const { KE } = loadGame(FILES);

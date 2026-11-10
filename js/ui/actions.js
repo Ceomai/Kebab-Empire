@@ -112,9 +112,9 @@
     if (document.querySelector('.tz2')) H.renderTezgah();
   };
   A.setPos = (d) => {
-    const s = KE.G.staff.find((x) => x.id === d.id);
-    if (!s) return;
-    const b = KE.G.branches.find((x) => x.id === s.branchId);
+    const s = KE.staffById(KE.G, d.id);
+    const b = s && KE.branchById(KE.G, s.branchId);
+    if (!b) return;
     const wasAuto = b.autoStaff && KE.G.phase === 'service';
     KE.act(KE.G, 'setPos', s.id, d.p);
     if (wasAuto) UI.toast('Görevleri elle ayarladın; otomatik ekip yönetimi kapatıldı.');
@@ -165,7 +165,7 @@
     H.renderTezgah(); UI.sceneTick();
   }
   A.pst = (d) => station(KE.act(KE.G, 'pst', d.s), d.s);
-  A.setMain = (d) => { if (KE.setMainBranch(KE.G, d.id)) { const b = KE.G.branches.find((x) => x.id === d.id); UI.toast(`${b.name} artık ana şube. Tezgâh görevleri burada çıkar.`, 'good'); UI.render(); } };
+  A.setMain = (d) => { if (KE.setMainBranch(KE.G, d.id)) { const b = KE.branchById(KE.G, d.id); UI.toast(`${b.name} artık ana şube. Tezgâh görevleri burada çıkar.`, 'good'); UI.render(); } };
   A.psel = (d) => { KE.act(KE.G, 'psel', +d.i); KE.SND.play('click'); H.renderTezgah(); };
   A.step = (d) => station(KE.act(KE.G, 'pstep', d.l));
   A.midChoice = (d) => {
@@ -234,7 +234,8 @@
     UI.render();
   };
   A.topUpToday = (d) => {
-    const b = d && d.id ? KE.G.branches.find((x) => x.id === d.id) : B();
+    const b = d && d.id ? KE.branchById(KE.G, d.id) : B();
+    if (!b) return;
     const c = KE.topUpToday(KE.G, b);
     UI.toast(c > 0 ? `${b.name}: bugünün ihtiyacı tamamlandı (${KE.tl(c)}).` : 'Stok bugüne zaten yetiyor.');
     UI.render();
@@ -259,16 +260,19 @@
     KE.haptic('light');
     UI.toast(r.msg, 'good'); UI.render();
   };
-  A.raise = (d) => { const r = KE.raiseStaff(KE.G, KE.G.staff.find((x) => x.id === d.id)); UI.toast(r.msg, r.ok ? 'good' : 'bad'); if (r.ok) UI.render(); };
-  A.promote = (d) => { KE.G.flags.promoted = true; const s = KE.G.staff.find((x) => x.id === d.id); s.role = 'usta'; s.pos = 'ocak'; s.name = s.name.replace(/^Çırak /, '') + (s.name.includes('Usta') ? '' : ' Usta'); s.wage = Math.max(s.wage, KE.wageFor(s.spec, 'usta')); s.morale = clamp(s.morale + 25, 0, 100); s.mentorId = null; KE.checkGoals(KE.G).forEach((g) => UI.toast('Hedef tamamlandı: ' + g.name, 'gold')); UI.toast(`${s.name} artık usta!`, 'gold'); UI.render(); };
+  A.raise = (d) => { const s = KE.staffById(KE.G, d.id); if (!s) return; const r = KE.raiseStaff(KE.G, s); UI.toast(r.msg, r.ok ? 'good' : 'bad'); if (r.ok) UI.render(); };
+  A.promote = (d) => { const s = KE.staffById(KE.G, d.id); if (!s) return; KE.G.flags.promoted = true; s.role = 'usta'; s.pos = 'ocak'; s.name = s.name.replace(/^Çırak /, '') + (s.name.includes('Usta') ? '' : ' Usta'); s.wage = Math.max(s.wage, KE.wageFor(s.spec, 'usta')); s.morale = clamp(s.morale + 25, 0, 100); s.mentorId = null; KE.checkGoals(KE.G).forEach((g) => UI.toast('Hedef tamamlandı: ' + g.name, 'gold')); UI.toast(`${s.name} artık usta!`, 'gold'); UI.render(); };
   A.pickMentor = (d) => {
-    const s = KE.G.staff.find((x) => x.id === d.id);
-    const ustas = KE.branchStaff(KE.G, KE.G.branches.find((x) => x.id === s.branchId)).filter((x) => x.role === 'usta');
+    const s = KE.staffById(KE.G, d.id);
+    const sb = s && KE.branchById(KE.G, s.branchId);
+    if (!sb) return;
+    const ustas = KE.branchStaff(KE.G, sb).filter((x) => x.role === 'usta');
     if (!ustas.length) { UI.toast('Bu şubede çırağa öğretecek usta yok.', 'bad'); return; }
     UI.picker(`${s.name} kimin yanında yetişsin?`, 'Çırak, mentorünün uzmanlıklarını her gün biraz öğrenir.', [{ id: null, label: 'Mentor yok', sub: 'Kendi başına öğrensin', sel: !s.mentorId }].concat(ustas.map((u) => ({ id: u.id, label: u.name, sub: `Öğretme ${Math.round(u.teach * 100)} · ${Object.entries(u.spec).map(([p, v]) => pn(p) + ' ★' + v).join(', ')}`, art: `<span class="avatar">${KE.portrait(KE.staffLook(u), { mood: 'happy' })}</span>`, sel: s.mentorId === u.id }))), (o) => { s.mentorId = o.id; if (o.id) UI.toast(`${s.name} artık ${KE.ek(o.label, 'in')} yanında.`, 'good'); UI.render(); });
   };
   A.pickTransfer = (d) => {
-    const s = KE.G.staff.find((x) => x.id === d.id);
+    const s = KE.staffById(KE.G, d.id);
+    if (!s) return;
     UI.picker(`${s.name} hangi şubede çalışsın?`, null, KE.G.branches.map((b) => { const ch = KE.canHire(KE.G, b, s.role, s.id); return { id: b.id, label: b.name, disabled: b.id !== s.branchId && !ch.ok, sub: `${KE.district(b).name} · ${KE.STAFF_GROUPS[ch.group].name} ${ch.used}/${ch.cap}${b.id !== s.branchId && !ch.ok ? ' · dolu' : ''}`, art: `<span class="pick-store">${KE.ART.storefront('', '#d7263d', true)}</span>`, sel: b.id === s.branchId }; }), (o) => {
       if (o.id === s.branchId) return;
       s.branchId = o.id; s.mentorId = null; s.pos = KE.POSITIONS[s.role][0];
@@ -277,7 +281,8 @@
     });
   };
   A.fire = (d) => {
-    const s = KE.G.staff.find((x) => x.id === d.id);
+    const s = KE.staffById(KE.G, d.id);
+    if (!s) return;
     UI.modal(`<div class="mhead"><h2>${esc(s.name)} işten çıkarılsın mı?</h2><p>İki haftalık brüt ücret ödenir: <b>${KE.tl(KE.severance(s))}</b>. Ekibin geri kalanının morali biraz düşer.</p></div><div class="acts"><button class="btn ghost" data-a="closeModal">Vazgeç</button><button class="btn red" data-a="doFire" data-id="${s.id}">İşten çıkar</button></div>`, { confirm: true });
   };
   A.doFire = (d) => {
@@ -304,7 +309,7 @@
   };
   A.loan = (d) => { const r = KE.takeLoan(KE.G, +d.amt, +d.m); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
   A.payoff = (d) => { const r = KE.payoffLoan(KE.G, +d.i); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
-  A.hygiene = (d) => { const r = KE.deepClean(KE.G, KE.G.branches.find((x) => x.id === d.id)); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
+  A.hygiene = (d) => { const b = KE.branchById(KE.G, d.id); if (!b) return; const r = KE.deepClean(KE.G, b); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
   A.campaign = (d) => { const r = KE.startCampaign(KE.G, B(), d.id); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'good'); UI.render(); };
   A.openBranch = (d) => { const b = KE.openBranch(KE.G, d.d); KE.haptic('light'); track('branch_open', { district: d.d, day: KE.G.day }); KE.G.activeBranch = b.id; KE.checkGoals(KE.G); UI.toast(`${b.name} açıldı! Şimdi usta ve ekip al.`, 'gold'); UI.render(); };
   A.central = () => { const r = KE.buildCentralKitchen(KE.G); if (!r.ok) { refused(r); return; } UI.toast(r.msg, 'gold'); UI.render(); };
@@ -318,7 +323,7 @@
   /* fiyat 5 ₺ ile piyasanın 3 katı arasında kalır */
   const priceClamp = (pid, v) => { const M = MODE(); const p = M.products.concat([M.drink]).find((x) => x.id === pid); const cap = p ? Math.round(KE.marketPrice(KE.G, p) * 3 / 5) * 5 : v; return Math.max(5, Math.min(cap, v)); };
   C.priceSet = (el) => { const v = parseInt(String(el.value).replace(/\D/g, '').slice(0, 9), 10); if (v > 0) { const c = priceClamp(el.dataset.p, v); B().prices[el.dataset.p] = c; if (c !== v) UI.toast(c < v ? 'Fiyat en fazla piyasanın 3 katı olabilir.' : 'Fiyat en az 5 ₺ olabilir.'); } UI.render(); };
-  C.autoStaff = (el) => { const b = KE.G.branches.find((x) => x.id === el.dataset.b); KE.act(KE.G, 'autoStaff', b.id, el.checked); UI.toast(el.checked ? 'Otomatik ekip yönetimi açık.' : 'Ekibi artık sen yönetiyorsun.'); };
+  C.autoStaff = (el) => { const b = KE.branchById(KE.G, el.dataset.b); if (!b) return; KE.act(KE.G, 'autoStaff', b.id, el.checked); UI.toast(el.checked ? 'Otomatik ekip yönetimi açık.' : 'Ekibi artık sen yönetiyorsun.'); };
   C.farmAuto = (el) => { KE.G.farm.auto = el.checked; UI.render(); };
 
   document.addEventListener('click', (e) => {
@@ -348,7 +353,7 @@
   const snapNow = () => { strMemo = { g: KE.G, seq: UI.mutSeq, s: JSON.stringify(KE.G) }; return strMemo.s; };
   const gameStr = () => (strMemo.g === KE.G && strMemo.seq === UI.mutSeq ? strMemo.s : snapNow());
   function snap(el) {
-    const who = el.dataset.a === 'boardDrop' && KE.G.staff.find((x) => x.id === UI.crewPick);
+    const who = el.dataset.a === 'boardDrop' && KE.staffById(KE.G, UI.crewPick);
     const label = who ? who.name + ' → ' + KE.POS_NAMES[el.dataset.p] : String(el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 36);
     UI.undo = { g: snapNow(), label, day: KE.G.day, cash: KE.G.cash };
   }
@@ -503,8 +508,8 @@
     if (why) UI.toast('Durdum: ' + why);
   };
   A.donate = (d) => { const r = KE.donate(KE.G, d.id); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } const c = KE.CHARITY.find((x) => x.id === d.id); track('donate', { id: d.id, level: r.level, day: KE.G.day }); UI.toast(`${c.name}: seviye ${r.level}. Mahalle bunu konuşacak.`, 'gold'); UI.render(); };
-  A.buyRes = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); const r = KE.buyReservation(KE.G, b); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('reservation', { day: KE.G.day }); UI.toast(`${b.name}: rezervasyon defteri hazır.`, 'gold'); UI.render(); };
-  A.toggleRes = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); if (!b || KE.G.phase !== 'morning') return; b.resOn = !KE.resOn(b); UI.toast(b.resOn ? `${b.name}: bugün rezervasyonla çalışıyor.` : `${b.name}: rezervasyon kapalı, kapı herkese açık.`); UI.render(); };
+  A.buyRes = (d) => { const b = KE.branchById(KE.G, d.id); if (!b) return; const r = KE.buyReservation(KE.G, b); if (!r.ok) { UI.toast(r.msg, 'bad'); return; } track('reservation', { day: KE.G.day }); UI.toast(`${b.name}: rezervasyon defteri hazır.`, 'gold'); UI.render(); };
+  A.toggleRes = (d) => { const b = KE.branchById(KE.G, d.id); if (!b || KE.G.phase !== 'morning') return; b.resOn = !KE.resOn(b); UI.toast(b.resOn ? `${b.name}: bugün rezervasyonla çalışıyor.` : `${b.name}: rezervasyon kapalı, kapı herkese açık.`); UI.render(); };
   /* ---------- Haftanın yarışı ---------- */
   const RACE_BEST = 'kebab-empire-race-best';
   const raceBest = () => { try { return JSON.parse(localStorage.getItem(RACE_BEST) || '{}'); } catch (e) { return {}; } };
@@ -556,7 +561,7 @@
     return true;
   };
   A.raceDone = () => { KE.SAVE.clearRace(); KE.G = null; UI.closeModal(); UI.go('title'); };
-  A.toggleManaged = (d) => { const b = KE.G.branches.find((x) => x.id === d.id); if (!b) return; b.managed = b.managed === false; UI.toast(b.managed ? `${b.name}: müdür sabah stok ve fiyatı kendisi ayarlayacak.` : `${b.name}: sabah ayarları artık sende.`); UI.render(); };
+  A.toggleManaged = (d) => { const b = KE.branchById(KE.G, d.id); if (!b) return; b.managed = b.managed === false; UI.toast(b.managed ? `${b.name}: müdür sabah stok ve fiyatı kendisi ayarlayacak.` : `${b.name}: sabah ayarları artık sende.`); UI.render(); };
   A.signature = () => {
     const G = KE.G;
     const cur = G.signature && !G.signature.family ? G.signature : null;

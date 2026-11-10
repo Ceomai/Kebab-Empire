@@ -2,7 +2,7 @@
    Kullanım: node scripts/ab-test.cjs [gün] [mod,mod] [tohum sayısı] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', 'js') + '/';
-function load() { const ctx = { console, Intl, Math, Date, JSON }; ctx.window = ctx; vm.createContext(ctx); for (const f of ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative']) vm.runInContext(fs.readFileSync(root + f + '.js', 'utf8'), ctx, { filename: f }); return ctx.KE; }
+function load() { const ctx = { console, Intl, Math, Date, JSON }; ctx.window = ctx; vm.createContext(ctx); for (const f of ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative']) vm.runInContext(fs.readFileSync(root + f + '.js', 'utf8'), ctx, { filename: f }); return ctx.KE; }
 const DAYS = +(process.argv[2] || 60), MODES = (process.argv[3] || 'doner,kebap').split(','), SEEDS = +(process.argv[4] || 3);
 const hire = (KE, G, role) => { const w = KE.randomWorker(G, role); w.branchId = G.branches[0].id; G.staff.push(w); };
 const VARIANTS = {

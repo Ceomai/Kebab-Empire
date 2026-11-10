@@ -12,10 +12,7 @@
   let stream = mulberry32(1);
   KE.RNG = { seed: (G, tag) => { stream = mulberry32(mix(G.seed || 1, G.day, tag)); }, raw: (n) => { stream = mulberry32(n); } };
   KE.rand = () => stream();
-  const rnd = (a, b) => a + KE.rand() * (b - a);
-  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const MODE = (G) => KE.MODES[G.mode];
+  const { clamp, rnd, pick, mode: MODE, prod: prodOf } = KE.U;
   KE.STAR_NEED = [0, 40, 120, 300, 650, 1300];
   KE.MINUTES = (KE.CLOSE_HOUR - KE.OPEN_HOUR) * 60;
   KE.MINUTE_MS = 400; // 1× hızda bir oyun dakikası
@@ -486,7 +483,6 @@
     };
   };
 
-  const prodOf = (G, pid) => MODE(G).products.find((x) => x.id === pid);
   function availableProducts(G, b) { return MODE(G).products.filter((p) => KE.canMake(G, b, p)); }
 
   function chooseType(G, b, hour) {

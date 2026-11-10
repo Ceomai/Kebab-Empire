@@ -2,7 +2,7 @@
 (function () {
   const UI = KE.UI, H = UI.H, SCREENS = UI.SCREENS, A = UI.A, C = UI.C;
   const { esc, IC, MODE, B, prod, pn, stars, roleName, bar, moodCls, avatar, queueModal, npc, donut, track } = H;
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const { clamp } = KE.U;
 
   /* ---------- Dükkân ---------- */
   SCREENS.shop = () => KE.G.phase === 'morning' ? morningView() : serviceView();
@@ -128,7 +128,7 @@
     const col = /** @type {any} */ (e.target).closest && /** @type {any} */ (e.target).closest('.cb-col'); if (!col) return;
     e.preventDefault();
     const id = e.dataTransfer.getData('text/plain') || UI.crewPick; UI.crewPick = null;
-    const s = KE.G.staff.find((x) => x.id === id);
+    const s = KE.staffById(KE.G, id);
     if (s && KE.POSITIONS[s.role].includes(col.dataset.col) && s.pos !== col.dataset.col) { UI.snapUndo(s.name + ' → ' + KE.POS_NAMES[col.dataset.col]); A.setPos({ id, p: col.dataset.col }); UI.undoChip(); } else refreshCrew();
   });
   function crewPanel(b, live) {
@@ -402,7 +402,7 @@
     const S0 = KE.G.lastSummary;
     const rule = UI.todayRule || KE.G.tipRule;
     const tab = UI.closeTab && S0.branches[UI.closeTab] ? UI.closeTab : KE.G.activeBranch;
-    const b = KE.G.branches.find((x) => x.id === tab);
+    const b = KE.branchById(KE.G, tab);
     const sum = S0.branches[b.id], S = sum.stats;
     const prods = Object.entries(S.byProduct).sort((a, c) => c[1] - a[1]);
     const maxP = Math.max(1, ...prods.map((x) => x[1]));
@@ -580,7 +580,7 @@
     const e = KE.G.pendingEvent;
     if (!e) return;
     let look, name;
-    if (e.whoStaff) { const s = KE.G.staff.find((x) => x.id === e.whoStaff); if (s) { look = KE.staffLook(s); name = s.name; } }
+    if (e.whoStaff) { const s = KE.staffById(KE.G, e.whoStaff); if (s) { look = KE.staffLook(s); name = s.name; } }
     if (!look && e.who && KE.CAST[e.who]) { look = KE.CAST[e.who].look; name = KE.CAST[e.who].name; }
     if (!look) { look = KE.CAST.ayse.look; name = 'Ayşe Teyze'; }
     UI.modal(`<div class="evcard"><div class="ev-fig">${KE.figure(look, { mood: 'neutral', label: name })}</div><div class="stack"><span class="kicker ${e.rival ? 'rv' : ''}">${e.rival ? `${IC('fire')}Rakip hamlesi ${e.rival}/${KE.RIVAL_ARC.length}` : e.story ? `${IC('heart')}Müdavim hikâyesi` : 'Olay'} · ${esc(name)}</span><h2>${esc(e.title)}</h2><p class="lead">${esc(e.text)}</p>

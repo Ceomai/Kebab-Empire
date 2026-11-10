@@ -19,6 +19,7 @@ import '@fontsource/kalam/latin-400.css';
 import '@fontsource/kalam/latin-ext-400.css';
 import '../css/style.css';
 import '../js/data.js';
+import '../js/util.js';
 import '../js/brand.js';
 import '../js/calendar.js';
 import '../js/characters.js';

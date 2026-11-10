@@ -5,7 +5,7 @@
   /** @type {any} */
   const S = KE.SCENE = {};
   const A = () => KE.ART;
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const { clamp } = KE.U;
   /* İki yerleşim: geniş ekran (16:9) ve dikey telefon (3:4). Dikeyde mutfak üstte tam genişlikte,
      salon altta, kasa kuyruğu sağ kenarda; varlıklar 1,6 kat büyük (bkz. .st-virt). */
   function landTables(n) {

@@ -11,7 +11,6 @@
   /* yüzde, dile göre: TR "%74", EN "74%", DE "74 %"; v yüzde değeri (74), sign: işaretli (+12%) */
   const pfmts = {};
   KE.pct = (v, sign, d) => { const k = KE.locale() + (sign ? 's' : '') + (d || 0); const f = pfmts[k] || (pfmts[k] = new Intl.NumberFormat(KE.locale(), { style: 'percent', maximumFractionDigits: d || 0, minimumFractionDigits: d || 0, signDisplay: sign ? 'exceptZero' : 'auto' })); return f.format((+v || 0) / 100); };
-  KE.clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   /* ---------- Takvim: 1. gün = 2 Mart 2026 Pazartesi ---------- */
   const START = Date.UTC(2026, 2, 2);

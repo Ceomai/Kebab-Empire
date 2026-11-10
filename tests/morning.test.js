@@ -234,7 +234,7 @@ describe('sabah ekonomisi: belediye, ajans, merkezi mutfak', () => {
 });
 
 describe('sıralama zinciri: kredi erken kapatma', () => {
-  const files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
   const dayRun = (KE, G) => { KE.startService(G); let n = 0; while (!KE.allDone(G) && n++ < 2000) KE.tickAll(G); KE.finishService(G); const log = G.dayLog.slice(); KE.finalizeDay(G, 'esit'); const c = { day: G.day - 1, served: 0, revenue: 0, reputation: G.reputation }; Object.values(G.lastSummary.branches).forEach((b) => { c.served += b.stats.served; c.revenue += b.stats.revenue; }); return { log, claim: c }; };
   const env = (KE, G) => JSON.parse(JSON.stringify(KE.SAVE.envelope(G)));
   /* zarfı aç, değiştir, yeniden mühürle (sağlama toplamı tutsun: kötü niyetli istemci de bunu yapabilir) */
@@ -285,7 +285,7 @@ describe('sıralama zinciri: kredi erken kapatma', () => {
 
 describe('verifyChain günü bir kez oynatır', () => {
   it('end durumu verifyDay ile aynı gün sonudur', () => {
-    const files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+    const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
     const { KE } = loadGame(files);
     const G = playDays(KE, KE.newGame({ mode: 'kebap', district: 'kulealti', master: KE.MASTER_TEMPLATES.kebap[0], owner: 'T', shopName: 'T', seed: 43 }), 0);
     const m = JSON.parse(JSON.stringify(KE.SAVE.envelope(G)));

@@ -52,7 +52,7 @@ describe('takvim', () => {
 
 describe('uzaktan ayar', () => {
   it('yalnızca beyaz listedeki ve geçerli değerleri uygular', () => {
-    const { KE } = loadGame(['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'config']);
+    const { KE } = loadGame(['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'config']);
     KE.CONFIG.apply({ version: 5, econYears: { 2027: { asgariBrut: 42000, gvDilim: [[250000, 0.15], [null, 0.4]] } }, trafficMul: { doner: 99 }, evil: 'x' });
     expect(KE.CAL.econYear(2027).asgariBrut).toBe(42000);
     expect(KE.CAL.econYear(2027).gvDilim[1][0]).toBe(Infinity);

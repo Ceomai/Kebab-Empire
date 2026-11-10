@@ -10,7 +10,7 @@
   UI.screen = 'title'; UI.params = {};
   const app = () => document.getElementById('app');
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const clamp = KE.clamp;
+  const { clamp } = KE.U;
   const IC = (n, c) => KE.ART.icon(n, c);
   UI.ng = {};
   const MODE = () => KE.MODES[KE.G ? KE.G.mode : UI.ng.mode];

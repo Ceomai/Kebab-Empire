@@ -2,10 +2,7 @@
    rezervasyon defteri ve haftalık yarış. Motor (sim.js) bunları KE üzerinden çağırır. */
 (function () {
   const KE = window.KE;
-  const rnd = (a, b) => a + KE.rand() * (b - a);
-  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const MODE = (G) => KE.MODES[G.mode];
+  const { clamp, rnd, pick, mode: MODE } = KE.U;
   const mix = KE.mix;
 
   /* ---------- Gün ortası kararları ----------

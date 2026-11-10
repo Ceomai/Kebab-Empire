@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { loadGame, newGame } from './load.js';
 
 describe('talebe göre sabah siparişi', () => {
-  const files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
   it('kampanya sabahı tahmini büyütür, eksik çıkar ve tamamlanınca kapanır', () => {
     const { KE } = loadGame(files);
     const G = newGame(KE);
@@ -39,7 +39,7 @@ describe('talebe göre sabah siparişi', () => {
 });
 
 describe('sabah stok tahmini (kontrol listesi)', () => {
-  const files = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+  const files = ['data', 'util', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
   it('ilk gün sabah siparişi tamam görünse de gerçekçi tahmin eksik bulur; bol stokla tamamdır; motor durumu değişmez', () => {
     const { KE } = loadGame(files);
     const G = newGame(KE);

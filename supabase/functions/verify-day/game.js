@@ -452,6 +452,33 @@ KE.STEP_STATION = {
 KE.stepStation = (label) => KE.STEP_STATION[label] || 'servis';
 
 
+// ---- js/util.js ----
+/* Kebab Empire — ortak yardımcılar (KE.U)
+   Motor ve arayüz dosyalarının hepsi buradakileri kullanır; aynı küçük işlevler dosya dosya yeniden yazılmaz.
+   DİKKAT — rastgelelik kaynağı: KE.U.rnd ve KE.U.pick oyunun tohumlu akışından (KE.rand, js/sim/rng.js) çeker;
+   oyun sonucunu etkileyen her karar bunlarla verilir. Yalnızca görünüşü etkileyen seçimler (kıyafet, saç rengi…)
+   tohumsuz Math.random kullanır (bkz. characters.js pickCosmetic), yoksa yeniden oynatma bozulur. */
+window.KE = window.KE || {};
+(function () {
+  /** v değerini [a, b] aralığına sıkıştırır */
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  KE.U = {
+    clamp,
+    /** [a, b) aralığında tohumlu rastgele sayı */
+    rnd: (a, b) => a + KE.rand() * (b - a),
+    /** dizinin tohumlu rastgele bir elemanı */
+    pick: (a) => a[Math.floor(KE.rand() * a.length)],
+    /** oyunun mod verisi (döner / kebap) */
+    mode: (G) => KE.MODES[G.mode],
+    /** ürün kimliğinden ürün verisi */
+    prod: (G, pid) => KE.MODES[G.mode].products.find((x) => x.id === pid)
+  };
+  /* Kimlikten şube / çalışan: bulunamazsa null döner (eski ya da silinmiş kimlik hata fırlatmasın) */
+  KE.branchById = (G, id) => (G && G.branches.find((x) => x.id === id)) || null;
+  KE.staffById = (G, id) => (G && G.staff.find((x) => x.id === id)) || null;
+})();
+
+
 // ---- js/calendar.js ----
 /* Kebab Empire — takvim: dini ve resmî bayramlar, Ramazan, iftar saati, yıllık ekonomi ayarları.
    Hiçbir tarih elle yazılmaz: hicri tarihler tablo usulü (aritmetik) hicri takvimden, iftar saati
@@ -568,7 +595,8 @@ KE.stepStation = (label) => KE.STEP_STATION[label] || 'servis';
    Çizgi dili: yarı saydam koyu kahve kontur, yumuşak ten gölgesi, saçta parlama. */
 (function () {
   let uid = 0;
-  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  /* görünüş seçimi: tohumsuz Math.random (oyun sonucunu etkilemez, yeniden oynatmaya girmez) */
+  const pickCosmetic = (a) => a[Math.floor(Math.random() * a.length)];
   const shade = (hex, amt) => {
     const n = parseInt(hex.slice(1), 16);
     let r = (n >> 16) + amt, g = ((n >> 8) & 255) + amt, b = (n & 255) + amt;
@@ -790,34 +818,34 @@ KE.stepStation = (label) => KE.STEP_STATION[label] || 'servis';
     const male = gender === 'e';
     const l = {
       gender, age,
-      skin: pick(KE.SKINS),
-      hairColor: age === 'yasli' ? pick(['#9e9e9e', '#bdbdbd', '#d0d0d0']) : pick(KE.HAIR_COLORS.slice(0, 5)),
-      hair: male ? pick(age === 'yasli' ? ['kel', 'kisa', 'kel'] : ['kisa', 'dalgali', 'yan', 'kisa']) : pick(['uzun', 'topuz', 'uzun', 'dalgali']),
-      facial: male ? pick(age === 'genc' ? ['none', 'none', 'kirli', 'biyik'] : ['biyik', 'gurbiyik', 'sakal', 'kirli', 'none']) : 'none',
+      skin: pickCosmetic(KE.SKINS),
+      hairColor: age === 'yasli' ? pickCosmetic(['#9e9e9e', '#bdbdbd', '#d0d0d0']) : pickCosmetic(KE.HAIR_COLORS.slice(0, 5)),
+      hair: male ? pickCosmetic(age === 'yasli' ? ['kel', 'kisa', 'kel'] : ['kisa', 'dalgali', 'yan', 'kisa']) : pickCosmetic(['uzun', 'topuz', 'uzun', 'dalgali']),
+      facial: male ? pickCosmetic(age === 'genc' ? ['none', 'none', 'kirli', 'biyik'] : ['biyik', 'gurbiyik', 'sakal', 'kirli', 'none']) : 'none',
       glasses: Math.random() < (age === 'yasli' ? 0.45 : 0.15),
-      head: 'none', outfit: 'tisort', outfitColor: pick(['#c0392b', '#2471a3', '#229954', '#d68910', '#7d3c98', '#1abc9c', '#34495e']),
-      accent: pick(['#f4d03f', '#fdfefe', '#ec7063', '#5dade2'])
+      head: 'none', outfit: 'tisort', outfitColor: pickCosmetic(['#c0392b', '#2471a3', '#229954', '#d68910', '#7d3c98', '#1abc9c', '#34495e']),
+      accent: pickCosmetic(['#f4d03f', '#fdfefe', '#ec7063', '#5dade2'])
     };
-    l.pants = pick(['#2e3b4e', '#3d4b5c', '#4a3b2f', '#22313f', '#5b6770', '#1f4e79']);
-    if (!male && age !== 'genc' && Math.random() < 0.5) { l.skirt = true; l.skirtColor = pick(['#5b2c6f', '#1a5276', '#7b241c', '#4d5656', '#145a32']); }
-    if (!male && Math.random() < 0.45) { l.head = 'basortusu'; l.scarf = pick(['#8e44ad', '#16a085', '#c0392b', '#2e86c1', '#d35400', '#784212', '#1f618d', '#b7950b']); }
+    l.pants = pickCosmetic(['#2e3b4e', '#3d4b5c', '#4a3b2f', '#22313f', '#5b6770', '#1f4e79']);
+    if (!male && age !== 'genc' && Math.random() < 0.5) { l.skirt = true; l.skirtColor = pickCosmetic(['#5b2c6f', '#1a5276', '#7b241c', '#4d5656', '#145a32']); }
+    if (!male && Math.random() < 0.45) { l.head = 'basortusu'; l.scarf = pickCosmetic(['#8e44ad', '#16a085', '#c0392b', '#2e86c1', '#d35400', '#784212', '#1f618d', '#b7950b']); }
     return Object.assign(l, extra || {});
   };
 
   KE.customerLook = function (type) {
     const r = Math.random();
-    let gender = r < 0.55 ? 'e' : 'k', age = pick(['genc', 'orta', 'orta', 'yasli']);
+    let gender = r < 0.55 ? 'e' : 'k', age = pickCosmetic(['genc', 'orta', 'orta', 'yasli']);
     if (type === 'ogrenci' || type === 'gece') age = 'genc';
     if (type === 'isci') gender = Math.random() < 0.9 ? 'e' : 'k';
     const l = KE.randomLook(gender, age);
     switch (type) {
-      case 'ogrenci': l.outfit = pick(['tisort', 'mont', 'tisort']); l.print = true; if (l.head === 'none' && Math.random() < 0.3) { l.head = 'bone'; l.hatColor = pick(['#2471a3', '#c0392b', '#1e8449', '#212f3d']); } break;
-      case 'beyaz': l.outfit = pick(['takim', 'gomlek']); l.outfitColor = pick(['#1b2631', '#2e4053', '#5d6d7e', '#aed6f1', '#fdfefe']); l.accent = pick(['#922b21', '#1f618d', '#7d3c98']); l.glasses = Math.random() < 0.35; break;
-      case 'aile': l.outfit = pick(['gomlek', 'hirka', 'tisort']); l.age = age === 'genc' ? 'orta' : age; break;
-      case 'gurme': l.outfit = pick(['gomlek', 'takim']); l.glasses = true; l.outfitColor = pick(['#4a235a', '#0e6655', '#6e2c00', '#1b2631']); l.neckScarf = Math.random() < 0.5 ? '#c0392b' : null; break;
-      case 'turist': l.skin = pick(['#f5dcc4', '#f3d2b3', '#e8b98f', '#8a5634', '#c68b5c']); l.hairColor = pick(['#e3c16f', '#b5651d', '#2b1d14', '#d4a76a']); if (l.head === 'basortusu') l.head = 'none'; if (Math.random() < 0.5) { l.head = 'gunes'; l.hatColor = pick(['#f5cba7', '#fdebd0', '#d5f5e3']); } l.camera = Math.random() < 0.6; l.outfit = pick(['tisort', 'gomlek']); l.outfitColor = pick(['#48c9b0', '#f5b041', '#5dade2', '#f1948a']); break;
+      case 'ogrenci': l.outfit = pickCosmetic(['tisort', 'mont', 'tisort']); l.print = true; if (l.head === 'none' && Math.random() < 0.3) { l.head = 'bone'; l.hatColor = pickCosmetic(['#2471a3', '#c0392b', '#1e8449', '#212f3d']); } break;
+      case 'beyaz': l.outfit = pickCosmetic(['takim', 'gomlek']); l.outfitColor = pickCosmetic(['#1b2631', '#2e4053', '#5d6d7e', '#aed6f1', '#fdfefe']); l.accent = pickCosmetic(['#922b21', '#1f618d', '#7d3c98']); l.glasses = Math.random() < 0.35; break;
+      case 'aile': l.outfit = pickCosmetic(['gomlek', 'hirka', 'tisort']); l.age = age === 'genc' ? 'orta' : age; break;
+      case 'gurme': l.outfit = pickCosmetic(['gomlek', 'takim']); l.glasses = true; l.outfitColor = pickCosmetic(['#4a235a', '#0e6655', '#6e2c00', '#1b2631']); l.neckScarf = Math.random() < 0.5 ? '#c0392b' : null; break;
+      case 'turist': l.skin = pickCosmetic(['#f5dcc4', '#f3d2b3', '#e8b98f', '#8a5634', '#c68b5c']); l.hairColor = pickCosmetic(['#e3c16f', '#b5651d', '#2b1d14', '#d4a76a']); if (l.head === 'basortusu') l.head = 'none'; if (Math.random() < 0.5) { l.head = 'gunes'; l.hatColor = pickCosmetic(['#f5cba7', '#fdebd0', '#d5f5e3']); } l.camera = Math.random() < 0.6; l.outfit = pickCosmetic(['tisort', 'gomlek']); l.outfitColor = pickCosmetic(['#48c9b0', '#f5b041', '#5dade2', '#f1948a']); break;
       case 'isci': l.outfit = 'reflektif'; if (Math.random() < 0.6 && l.head !== 'basortusu') l.head = 'baret'; break;
-      case 'gece': l.outfit = pick(['mont', 'tisort']); l.outfitColor = pick(['#17202a', '#512e5f', '#7b241c', '#0b5345']); l.print = true; break;
+      case 'gece': l.outfit = pickCosmetic(['mont', 'tisort']); l.outfitColor = pickCosmetic(['#17202a', '#512e5f', '#7b241c', '#0b5345']); l.print = true; break;
     }
     return l;
   };
@@ -898,7 +926,6 @@ KE.huyOf = function (s) {
   /* yüzde, dile göre: TR "%74", EN "74%", DE "74 %"; v yüzde değeri (74), sign: işaretli (+12%) */
   const pfmts = {};
   KE.pct = (v, sign, d) => { const k = KE.locale() + (sign ? 's' : '') + (d || 0); const f = pfmts[k] || (pfmts[k] = new Intl.NumberFormat(KE.locale(), { style: 'percent', maximumFractionDigits: d || 0, minimumFractionDigits: d || 0, signDisplay: sign ? 'exceptZero' : 'auto' })); return f.format((+v || 0) / 100); };
-  KE.clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
   /* ---------- Takvim: 1. gün = 2 Mart 2026 Pazartesi ---------- */
   const START = Date.UTC(2026, 2, 2);
@@ -1073,10 +1100,7 @@ KE.huyOf = function (s) {
   let stream = mulberry32(1);
   KE.RNG = { seed: (G, tag) => { stream = mulberry32(mix(G.seed || 1, G.day, tag)); }, raw: (n) => { stream = mulberry32(n); } };
   KE.rand = () => stream();
-  const rnd = (a, b) => a + KE.rand() * (b - a);
-  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const MODE = (G) => KE.MODES[G.mode];
+  const { clamp, rnd, pick, mode: MODE, prod: prodOf } = KE.U;
   KE.STAR_NEED = [0, 40, 120, 300, 650, 1300];
   KE.MINUTES = (KE.CLOSE_HOUR - KE.OPEN_HOUR) * 60;
   KE.MINUTE_MS = 400; // 1× hızda bir oyun dakikası
@@ -1547,7 +1571,6 @@ KE.huyOf = function (s) {
     };
   };
 
-  const prodOf = (G, pid) => MODE(G).products.find((x) => x.id === pid);
   function availableProducts(G, b) { return MODE(G).products.filter((p) => KE.canMake(G, b, p)); }
 
   function chooseType(G, b, hour) {
@@ -2485,10 +2508,7 @@ KE.huyOf = function (s) {
    rezervasyon defteri ve haftalık yarış. Motor (sim.js) bunları KE üzerinden çağırır. */
 (function () {
   const KE = window.KE;
-  const rnd = (a, b) => a + KE.rand() * (b - a);
-  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const MODE = (G) => KE.MODES[G.mode];
+  const { clamp, rnd, pick, mode: MODE } = KE.U;
   const mix = KE.mix;
 
   /* ---------- Gün ortası kararları ----------
@@ -2633,10 +2653,7 @@ KE.huyOf = function (s) {
    amiral dükkân, toplu siparişler), vakıf ve haftalık meydan okuma. */
 (function () {
   const KE = window.KE;
-  const rnd = (a, b) => a + KE.rand() * (b - a);
-  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
-  const MODE = (G) => KE.MODES[G.mode];
+  const { clamp, rnd, pick, mode: MODE } = KE.U;
   const mix = KE.mix;
 
   /* ---------- Oyun sonu: imparatorluk ---------- */
@@ -2950,7 +2967,7 @@ KE.huyOf = function (s) {
 // ---- js/farm.js ----
 /* Kebab Empire — besi çiftliği */
 (function () {
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const { clamp } = KE.U;
   KE.farmKinds = (G) => Object.keys(KE.FARM).filter((k) => !KE.FARM[k].modes || KE.FARM[k].modes.includes(G.mode));
   KE.farmCost = (G) => Math.round(KE.FARM_COST * G.priceIndex / 1000) * 1000;
   KE.buyFarm = function (G) {
@@ -3036,8 +3053,7 @@ KE.huyOf = function (s) {
 // ---- js/narrative.js ----
 /* Kebab Empire — anlatı: gün sonu günlüğü, mahalle gazetesi, olay kartları, karakter repliği */
 (function () {
-  const pick = (a) => a[Math.floor(KE.rand() * a.length)];
-  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const { clamp, pick } = KE.U;
   const pname = (G, pid) => { const m = KE.MODES[G.mode]; const p = m.products.find((x) => x.id === pid); return p ? p.name : m.drink.name; };
   const clock = (min) => { const h = KE.OPEN_HOUR + Math.floor(min / 60), m = min % 60; return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
   KE.clock = clock;

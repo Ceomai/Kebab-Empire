@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import { loadGame, playDays } from './load.js';
 const { validateBrand } = createRequire(import.meta.url)('../scripts/brand-validate.cjs');
 
-const FILES = ['data', 'brand', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+const FILES = ['data', 'util', 'brand', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
 const demo = JSON.parse(fs.readFileSync(new URL('../brands/usta-durum.json', import.meta.url), 'utf8'));
 
 describe('marka ayarı', () => {
@@ -56,7 +56,7 @@ describe('marka ayarı', () => {
     expect(K3.BRAND.swap('"Lüks Kebap"ı geç')).toBe('"Lüks Kebap Plus"u geç');
   });
   it('satır içi logo <img> olarak çizilir (sayfaya HTML eklenmez)', () => {
-    const { KE } = loadGame(['data', 'brand', 'art'], { globals: { __BRAND__: Object.assign({}, demo, { logoUrl: null, logoSvg: '<svg xmlns="http://www.w3.org/2000/svg"><meta http-equiv="refresh"></svg>' }) } });
+    const { KE } = loadGame(['data', 'util', 'brand', 'art'], { globals: { __BRAND__: Object.assign({}, demo, { logoUrl: null, logoSvg: '<svg xmlns="http://www.w3.org/2000/svg"><meta http-equiv="refresh"></svg>' }) } });
     const html = KE.ART.logo();
     expect(html.startsWith('<img class="logo-mark" src="data:image/svg+xml')).toBe(true);
     expect(html).not.toMatch(/<meta|<svg/);
