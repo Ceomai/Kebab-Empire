@@ -41,7 +41,7 @@
     const M = G.mid; const L = M && G.live && G.live[M.bid];
     if (!M || M.choice != null || !L) return null;
     M.choice = i; M.at = L.minute;
-    const b = G.branches.find((x) => x.id === M.bid);
+    const b = /** @type {Branch} */ (G.branches.find((x) => x.id === M.bid));
     const pay = (/** @type {number} */ c) => { G.cash -= c; KE.addExtra(G, 'other', c); };
     if (M.id === 'otobus' && i === 0) L.boost = { until: L.minute + 30, mult: 2.2 };
     if (M.id === 'ariza') {
@@ -127,7 +127,7 @@
     const n = Number(week.slice(-2));
     const mode = n % 2 ? 'kebap' : 'doner';
     const masters = KE.MASTER_TEMPLATES[mode].filter((t) => t.role !== 'cirak');
-    return { week, seed: h + 1, mode, district: KE.DISTRICTS.at((n * 3) % KE.DISTRICTS.length).id, master: (n * 5) % masters.length };
+    return { week, seed: h + 1, mode, district: /** @type {District} */ (KE.DISTRICTS.at((n * 3) % KE.DISTRICTS.length)).id, master: (n * 5) % masters.length };
   };
   KE.newRace = function (week, owner) {
     const R = KE.raceSetup(week);

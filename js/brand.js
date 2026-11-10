@@ -41,7 +41,7 @@
   };
   B.swap = (s) => {
     if (!B.swaps.length || !s) return s;
-    for (const [a, b, re] of B.swaps) if (s.indexOf(a) >= 0) s = s.replace(re, (/** @type {string} */ m, /** @type {string} */ q, /** @type {string} */ ap, /** @type {string} */ suf) => reSuffix(b, q, ap, suf));
+    for (const [a, b, re] of /** @type {[string, string, RegExp][]} */ (B.swaps)) if (s.indexOf(a) >= 0) s = s.replace(re, (/** @type {string} */ m, /** @type {string} */ q, /** @type {string} */ ap, /** @type {string} */ suf) => reSuffix(b, q, ap, suf));
     return s;
   };
   /* metin alanları tek dil ("...") ya da dile göre ({ tr, en, de }) yazılabilir */

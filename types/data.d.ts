@@ -136,7 +136,7 @@ interface Tier { name: string; mul: number; quality: number; desc: string }
 interface StaffGroup { name: string; roles: string[]; up: EquipKey | null }
 
 /** Karakter görünüşü (KE.randomLook, KE.portrait) */
-interface Look { gender?: string; age?: string; skin?: string; hairColor?: string; hair?: string; [k: string]: any }
+interface Look { gender: string; age: string; skin: string; hairColor: string; hair: string; [k: string]: any }
 
 /** Sabit hikâye karakteri (KE.CAST) */
 interface CastMember { name: string; role: string; look: Look }
@@ -162,7 +162,8 @@ interface GameEvent {
   who: string | null;
   /** seçilme ağırlığı */
   w: number | ((G: Game) => number);
-  when?: (G: Game) => boolean;
+  /** doğruluk değeri olarak okunur */
+  when?: (G: Game) => unknown;
   build: (G: Game) => EventCard;
   mode?: string; arc?: boolean;
   /** müdavim hikâyesi: müdavim kimliği ve adım */

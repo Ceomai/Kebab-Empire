@@ -112,6 +112,6 @@
     const { r, G } = replayDay(clone(morningEnv), log, todayRule, claim);
     if (!r.ok) return r;
     // gün sonu durumu (ertesi sabah, oyuncu müdahalesinden önce): doğrulamada oynatılan günün kendisi
-    return Object.assign(r, { end: KE.SAVE.envelope(G) });
+    return Object.assign(r, { end: KE.SAVE.envelope(/** @type {Game} */ (G)) });
   };
 })();

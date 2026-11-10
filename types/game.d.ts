@@ -122,9 +122,9 @@ interface PlayerSlot {
   step: number;
   errors: number;
   start: number;
-  burnt?: number;
-  /** süreli istasyon ('ates' | 'fritoz') */
-  fst?: string;
+  burnt: number;
+  /** süreli istasyon ('ates' | 'fritoz'); boşsa null */
+  fst?: string | null;
   [k: string]: any;
 }
 
@@ -228,7 +228,7 @@ interface DaySummary {
 interface DayResult { levelUps: any[]; quits: any[]; branches: Record<string, any>; [k: string]: any }
 
 /** Süreli etki (G.mods): KE.modVal anahtarın çarpanlarını çarpar */
-interface Mod { key: string; mult: number; days?: number; label?: string; [k: string]: any }
+interface Mod { key: string; mult: number; days: number; label?: string; [k: string]: any }
 
 /** Müdavimin gönül durumu (G.regulars) */
 interface RegularState { loyalty: number; visits: number; [k: string]: any }

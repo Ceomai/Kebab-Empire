@@ -13,7 +13,7 @@
     G.phase = 'service';
     G.live = {};
     G.branches.forEach((b) => {
-      const L = G.live[b.id] = KE.newLive(G, b);
+      const L = /** @type {Record<string, Live>} */ (G.live)[b.id] = KE.newLive(G, b);
       if (!KE.branchStaff(G, b).some(KE.isCook)) { L.done = true; L.closed = true; }
     });
   };
@@ -38,7 +38,7 @@
   /* Saat başına müşteri tipi ağırlıkları (zar atmaz). Servis bunu kullanır; sabah stok tahmini de aynısını okur.
      day verilirse o günün hafta sonu/özel gün etkisiyle hesaplanır (varsayılan bugün). */
   KE.typeWeights = function (G, b, hour, day) {
-    const d = KE.district(b);
+    const d = /** @type {District} */ (KE.district(b));
     const mode = MODE(G);
     const D = day == null ? G.day : day;
     const sp = KE.specialDay(D), wkEnd = KE.isWeekend(D);
@@ -72,7 +72,7 @@
       const w = favs.map((_, i) => 3 - i); let r = KE.rand() * w.reduce((a, x) => a + x, 0);
       for (let i = 0; i < favs.length; i++) { if ((r -= w[i]) <= 0) { p = favs[i]; break; } }
     }
-    if (!p && G.signature && KE.rand() < 0.08 * G.signature.level) p = avail.find((x) => x.id === G.signature.pid) || null;
+    if (!p && G.signature && KE.rand() < 0.08 * G.signature.level) p = avail.find((x) => x.id === /** @type {NonNullable<Game['signature']>} */ (G.signature).pid) || null;
     if (!p) p = pick(avail);
     if (!KE.hasStock(b, p, count)) {
       const alt = avail.filter((x) => KE.hasStock(b, x, count));
@@ -86,21 +86,21 @@
     const avail = availableProducts(G, b), out = /** @type {NumMap} */ ({});
     if (!avail.length) return out;
     avail.forEach((p) => { out[p.id] = 0; });
-    const favs = (MODE(G).favorites[type] || []).map((id) => avail.find((p) => p.id === id)).filter(Boolean);
+    const favs = /** @type {Product[]} */ ((MODE(G).favorites[type] || []).map((id) => avail.find((p) => p.id === id)).filter(Boolean));
     let rest = 1;
     if (favs.length) {
       const w = favs.map((_, i) => 3 - i), ws = w.reduce((a, x) => a + x, 0);
       favs.forEach((p, i) => { out[p.id] += 0.72 * w[i] / ws; });
       rest = 0.28;
     }
-    const sig = G.signature && avail.find((x) => x.id === G.signature.pid);
-    if (sig) { const q = Math.min(1, 0.08 * G.signature.level); out[sig.id] += rest * q; rest *= 1 - q; }
+    const sig = G.signature && avail.find((x) => x.id === /** @type {NonNullable<Game['signature']>} */ (G.signature).pid);
+    if (sig) { const q = Math.min(1, 0.08 * /** @type {NonNullable<Game['signature']>} */ (G.signature).level); out[sig.id] += rest * q; rest *= 1 - q; }
     avail.forEach((p) => { out[p.id] += rest / avail.length; });
     return out;
   };
   /* bir müşteri grubunun ortalama kişi sayısı (spawn: grup tipinde %55 ihtimalle [a,b] aralığında yuvarlanmış) */
   KE.groupMean = (type) => { const g = KE.CUSTOMER_TYPES[type].group; return g ? 0.45 + 0.55 * (g[0] + g[1]) / 2 : 1; };
-  function lose(/** @type {Live} */ L, /** @type {Customer} */ c, /** @type {string} */ reason, /** @type {string} */ text) {
+  function lose(/** @type {Live} */ L, /** @type {Customer} */ c, /** @type {string} */ reason, /** @type {string | null} */ text) {
     L.stats.lost += c.count; L.stats[reason] += c.count;
     if (c.regular && KE.G && KE.G.regulars) { const r = KE.G.regulars[c.regular]; r.loyalty = Math.max(0, r.loyalty - 2); (L.stats.regulars = L.stats.regulars || []).push({ id: c.regular, gain: -2 }); }
     if (text) L.fx.push({ t: 'bad', cid: c.id, text });
@@ -148,16 +148,16 @@
     }
   }
   function spawnRegular(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {string} */ rid) {
-    const R = KE.REGULARS.find((x) => x.id === rid);
+    const R = /** @type {Regular} */ (KE.REGULARS.find((x) => x.id === rid));
     const st = G.regulars[rid];
     const ct = KE.CUSTOMER_TYPES[R.type];
     const count = st.loyalty >= 5 ? 2 : 1;
-    let p = KE.MODES[G.mode].products.find((x) => x.id === R.fav[G.mode]);
+    let p = /** @type {Product | null | undefined} */ (KE.MODES[G.mode].products.find((x) => x.id === R.fav[G.mode]));
     if (!p || !KE.canMake(G, b, p) || !KE.hasStock(b, p, count)) { const ch = chooseProduct(G, b, R.type, count); p = ch.p; }
     if (!p) return;
     /* müdavim de fiyata bakar: piyasanın iki katından pahalıysa o gün gelmez, gönlü biraz kırılır */
     if (b.prices[p.id] / KE.marketPrice(G, p) > 2) { st.loyalty = Math.max(0, st.loyalty - 1); return; }
-    const look = R.look || KE.CAST[R.cast].look;
+    const look = R.look || KE.CAST[/** @type {string} */ (R.cast)].look;
     const id = L.nextId++;
     L.stats.arrivals += count;
     L.custs[id] = { id, type: R.type, count, look, arrive: L.minute, pid: p.id, price: b.prices[p.id], ratio: 1, state: 'queue', wait: 0, takeaway: false,
@@ -204,7 +204,7 @@
     if (tr.grumpy && s.morale < 40) q -= 1.2;
     if (s.morale < 30) q -= 0.5;
     if (s.energy < 20) q -= 0.4;
-    if (G.farm && G.farm.bonus && Object.keys(prodOf(G, pid).ing).some((k) => G.farm.bonus[k])) q += 0.25;
+    if (G.farm && G.farm.bonus && Object.keys(/** @type {Product} */ (prodOf(G, pid)).ing).some((k) => /** @type {FarmState} */ (G.farm).bonus[k])) q += 0.25;
     return clamp(q, 0, 6);
   }
 
@@ -218,19 +218,19 @@
       const waiting = L.tickets.filter((t) => t.state === 'wait' && !(pfree && L.minute - t.created < 2));
       let best = /** @type {Ticket | null} */ (null), score = -1e9;
       waiting.slice(0, 5).forEach((t, i) => {
-        const p = prodOf(G, t.pid), star = s.spec[t.pid] || 0;
+        const p = /** @type {Product} */ (prodOf(G, t.pid)), star = s.spec[t.pid] || 0;
         if (p.requiresSpec && star < 1) return;
         const sc = star * 2 - i * 1.4 + (L.minute - t.created) / 4;
         if (sc > score) { score = sc; best = t; }
       });
       if (!best) return null;
-      const p = prodOf(G, best.pid);
+      const p = /** @type {Product} */ (prodOf(G, best.pid));
       if (!KE.hasStock(b, p, best.count)) {
         if (L.stats.stockouts[p.id] == null) L.stats.stockouts[p.id] = L.minute;
         cancelTicket(G, b, L, best, p.name + ' bitti!');
         return null;
       }
-      Object.entries(p.ing).forEach(([k, q]) => { b.stock[k] -= q * best.count; });
+      Object.entries(p.ing).forEach(([k, q]) => { b.stock[k] -= q * /** @type {Ticket} */ (best).count; });
       best.state = 'cook'; best.cook = s.id;
       return T('cook', best.id, p.prep * (1 + 0.45 * (best.count - 1)));
     }
@@ -285,7 +285,7 @@
       if (!t) return;
       t.state = 'ready'; t.readyAt = L.minute; t.q = cookQuality(G, b, s, t.pid); t.cookName = s.name; t.cookId = s.id;
       const tr = /** @type {Partial<Trait>} */ (KE.TRAITS[s.trait] || {});
-      const p = prodOf(G, t.pid);
+      const p = /** @type {Product} */ (prodOf(G, t.pid));
       KE.gainXp(s, t.pid, t.count * (1 + (tr.xp || 0)) * (p.requiresSpec && !s.spec[t.pid] ? 0 : 1));
       s.servedToday += t.count; s.servedTotal += t.count;
       L.fx.push({ t: 'ready', sid: s.id, pid: t.pid });
@@ -293,12 +293,12 @@
       const c = L.custs[task.ref];
       if (!c) return;
       const qi = L.queue.indexOf(c.id); if (qi > -1) L.queue.splice(qi, 1);
-      const p = prodOf(G, c.pid);
+      const p = /** @type {Product} */ (prodOf(G, c.pid));
       if (!KE.hasStock(b, p, c.count)) {
         const alt = availableProducts(G, b).filter((x) => KE.hasStock(b, x, c.count));
         if (L.stats.stockouts[p.id] == null) L.stats.stockouts[p.id] = L.minute;
         if (!alt.length) { lose(L, c, 'lostStock', p.name + ' kalmamış!'); removeCust(L, c, false); return; }
-        c.pid = pick(alt).id; c.price = b.prices[c.pid]; c.ratio = c.price / KE.marketPrice(G, prodOf(G, c.pid));
+        c.pid = pick(alt).id; c.price = b.prices[c.pid]; c.ratio = c.price / KE.marketPrice(G, /** @type {Product} */ (prodOf(G, c.pid)));
       }
       const drinks = KE.rand() < MODE(G).drinkRate ? c.count : 0;
       if (drinks) Object.entries(MODE(G).drink.ing).forEach(([k, q]) => { b.stock[k] = Math.max(0, (b.stock[k] || 0) - q * drinks); });
@@ -339,7 +339,7 @@
   }
 
   /* Müşteriye yemeği ver: memnuniyet ve itibar */
-  function serveCustomer(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {Customer} */ c, /** @type {Ticket} */ t, /** @type {Staff | null | undefined} */ server) {
+  function serveCustomer(/** @type {Game} */ G, /** @type {Branch} */ b, /** @type {Live} */ L, /** @type {Customer} */ c, /** @type {Ticket} */ t, /** @type {Staff} */ server) {
     const mode = MODE(G);
     const ct = KE.CUSTOMER_TYPES[c.type];
     const S = L.stats;
@@ -369,7 +369,7 @@
     if (t.cookId === 'player') S.playerServed += c.count;
     L.fx.push({ t: 'served', cid: c.id, sat, match, text: match ? 'Ellerine sağlık!' : sat > 84 ? 'Harika!' : sat > 62 ? 'Güzel' : sat > 45 ? 'İdare eder' : 'Bir daha gelmem' });
     if (c.regular) {
-      const R = KE.REGULARS.find((x) => x.id === c.regular), r = G.regulars[c.regular];
+      const R = /** @type {Regular} */ (KE.REGULARS.find((x) => x.id === c.regular)), r = G.regulars[c.regular];
       const gain = sat > 84 ? 2 : sat > 66 ? 1 : sat < 52 ? -2 : 0;
       const before = r.loyalty;
       r.loyalty = clamp(r.loyalty + gain, 0, 10); r.visits++;
@@ -504,15 +504,15 @@
   KE.tickAll = function (G) {
     const M = G.mid;
     if (M && M.choice == null) {
-      const L = G.live[M.bid];
+      const L = /** @type {Record<string, Live>} */ (G.live)[M.bid];
       if (L && L.minute >= M.minute + KE.MID_WAIT) {
         /* süre doldu: müdürü olan şubede kararı müdür verir (en iyi seçenek), yoksa güvenli seçenek */
-        const D = KE.MIDS.find((x) => x.id === M.id), b = G.branches.find((x) => x.id === M.bid);
+        const D = /** @type {MidEvent} */ (KE.MIDS.find((x) => x.id === M.id)), b = G.branches.find((x) => x.id === M.bid);
         const mgr = b && KE.branchStaff(G, b).some((s) => s.role === 'mudur');
         KE.resolveMid(G, mgr ? D.mgr : D.def); if (mgr) M.byMgr = true;
       }
     }
-    G.branches.forEach((b) => { const L = G.live[b.id]; if (L) KE.tick(G, b, L); });
+    G.branches.forEach((b) => { const L = /** @type {Record<string, Live>} */ (G.live)[b.id]; if (L) KE.tick(G, b, L); });
   };
-  KE.allDone = (G) => G.branches.every((b) => !G.live[b.id] || G.live[b.id].done);
+  KE.allDone = (G) => G.branches.every((b) => !/** @type {Record<string, Live>} */ (G.live)[b.id] || /** @type {Record<string, Live>} */ (G.live)[b.id].done);
 })();

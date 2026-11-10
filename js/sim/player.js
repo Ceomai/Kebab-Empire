@@ -23,14 +23,14 @@
     const t = L.tickets.find((x) => x.id === sl.tid);
     if (t && t.state === 'cook' && t.cook === 'player') {
       t.state = 'wait'; t.cook = null;
-      if (sl.step === 0 && sl.fire == null) { const p = prodOf(G, t.pid); Object.entries(p.ing).forEach(([k, q]) => { b.stock[k] = (b.stock[k] || 0) + q * t.count; }); }
+      if (sl.step === 0 && sl.fire == null) { const p = /** @type {Product} */ (prodOf(G, t.pid)); Object.entries(p.ing).forEach(([k, q]) => { b.stock[k] = (b.stock[k] || 0) + q * t.count; }); }
     }
     const P = L.player;
     P.slots.splice(P.slots.indexOf(sl), 1);
   }
   KE.playerToggle = function (G, on) {
-    const b = G.branches.find((x) => x.id === G.activeBranch);
-    const L = G.live[b.id];
+    const b = /** @type {Branch} */ (G.branches.find((x) => x.id === G.activeBranch));
+    const L = /** @type {Record<string, Live>} */ (G.live)[b.id];
     const P = L.player;
     on = !!on;
     if (on === !!P.active) return;
@@ -40,14 +40,14 @@
     syncSelectedSlot(P);
   };
   KE.playerTake = function (G) {
-    const b = G.branches.find((x) => x.id === G.activeBranch);
-    const L = G.live[b.id];
+    const b = /** @type {Branch} */ (G.branches.find((x) => x.id === G.activeBranch));
+    const L = /** @type {Record<string, Live>} */ (G.live)[b.id];
     const P = L.player;
     /* eli boşsa hemen fiş gelir; ikinci/üçüncü fiş yalnızca son 2 dakikada istasyona dokunan (hızlı çalışan) oyuncuya */
     if (!P.active || slotsOf(P).length >= KE.playerCap(G, b) || P.afk || (slotsOf(P).length && L.minute - (P.tap || 0) > 2)) return null;
     const t = L.tickets.find((x) => x.state === 'wait' && !x.noPlayer);
     if (!t) return null;
-    const p = prodOf(G, t.pid);
+    const p = /** @type {Product} */ (prodOf(G, t.pid));
     if (!KE.hasStock(b, p, t.count)) return null;
     Object.entries(p.ing).forEach(([k, q]) => { b.stock[k] -= q * t.count; });
     t.state = 'cook'; t.cook = 'player';
@@ -58,7 +58,7 @@
     return t;
   };
   KE.playerSelect = function (G, i) {
-    const P = G.live[G.activeBranch].player;
+    const P = /** @type {Record<string, Live>} */ (G.live)[G.activeBranch].player;
     if (Number.isInteger(i) && i >= 0 && i < slotsOf(P).length) P.sel = i;
     syncSelectedSlot(P);
   };
@@ -68,7 +68,7 @@
   KE.TIMED = { ates: (p) => KE.fireTimes(p), fritoz: () => ({ cook: 3, grace: 4 }) };
   const timedOf = (/** @type {PlayerSlot} */ sl, /** @type {Product | undefined} */ p) => KE.TIMED[sl.fst || 'ates'](p || { prep: 4 });
   /* menü siparişinde ürünün tarifine "Patates" (fritöz) eklenir */
-  KE.ticketSteps = (G, t) => { const p = prodOf(G, t.pid); return t.menu ? p.steps.concat(['Patates']) : p.steps; };
+  KE.ticketSteps = (G, t) => { const p = /** @type {Product} */ (prodOf(G, t.pid)); return t.menu ? p.steps.concat(['Patates']) : p.steps; };
   /* Özel fişler oyuncunun aldığı anda belirlenir (fiş numarası ve güne göre, rastgelelik yok: yeniden oynatılır).
      Menü: + patates, bitince menü bahşişi. Acele: hızlı biterse acele bahşişi. Gurme müşteri: hatasız biterse itibar. */
   function flagTicket(/** @type {Game} */ G, /** @type {Live} */ L, /** @type {Ticket} */ t) {
@@ -131,8 +131,8 @@
   }
   /** İstasyona dokun: sonuç { ok, done?, fire?, wait?, burnt? } */
   KE.playerStation = function (G, st) {
-    const b = G.branches.find((x) => x.id === G.activeBranch);
-    const L = G.live[b.id];
+    const b = /** @type {Branch} */ (G.branches.find((x) => x.id === G.activeBranch));
+    const L = /** @type {Record<string, Live>} */ (G.live)[b.id];
     const P = L.player;
     const sl = slotsOf(P);
     if (!P.active || !KE.STATIONS.some((x) => x.id === st)) return { ok: false, none: true };
@@ -153,7 +153,7 @@
       if (burnt) s.burnt++;
       s.fire = null; s.fst = null; s.step++; s.touch = L.minute;
       P.sel = i;
-      if (t && s.step >= KE.ticketSteps(G, t).length) { finishSlot(G, b, L, s, p, t); syncSelectedSlot(P); return { ok: true, done: true, burnt }; }
+      if (t && s.step >= KE.ticketSteps(G, t).length) { finishSlot(G, b, L, s, /** @type {Product} */ (p), t); syncSelectedSlot(P); return { ok: true, done: true, burnt }; }
       syncSelectedSlot(P);
       return { ok: true, burnt };
     }
@@ -162,7 +162,7 @@
       if (s.fire != null) continue;
       const t = L.tickets.find((x) => x.id === s.tid);
       if (!t) continue;
-      const p = prodOf(G, t.pid), steps = KE.ticketSteps(G, t);
+      const p = /** @type {Product} */ (prodOf(G, t.pid)), steps = KE.ticketSteps(G, t);
       if (KE.stepStation(steps[s.step]) !== st) continue;
       P.sel = i; s.touch = L.minute;
       if (KE.TIMED[st]) { s.fst = st; s.fire = L.minute + KE.TIMED[st](p).cook; syncSelectedSlot(P); return { ok: true, fire: true }; }

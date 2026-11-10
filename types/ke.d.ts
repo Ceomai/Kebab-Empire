@@ -8,6 +8,9 @@
 /** Sabah eylemi gibi ok/msg döndüren doğrulama sonucu (js/verify.js) */
 interface VerifyResult { ok: boolean; note?: string; [k: string]: any }
 
+/** Haftalık toplu sipariş teklifi (KE.contractOffers) */
+interface ContractOffer { id: string; kind: string; name: string; who: string; pid: string; qty: number; pay: number; cost: number; morale: number }
+
 /** İmparatorluk şartı (KE.empireStatus); ok ve p hesaplanınca eklenir */
 interface EmpireReq { id: string; label: string; have: number; need: number; money?: boolean; ok?: boolean; p?: number }
 
@@ -371,7 +374,7 @@ interface KENamespace {
   equip: <K extends EquipKey>(G: Game, b: Branch, k: K) => ModeEquipment[K]['levels'][number];
   tableCount: (G: Game, b: Branch) => number;
   stations: (G: Game, b: Branch) => number;
-  ambience: (G: Game, b: Branch) => { score: number; concept: { style: string; name: string; power?: number } | null };
+  ambience: (G: Game, b: Branch) => { score: number; concept: { style: string; name: string; power: number } | null };
   isLocked: (G: Game, p: Product) => boolean;
   canMake: (G: Game, b: Branch, p: Product) => boolean;
   hasStock: (b: Branch, p: Drink, count: number) => boolean;
@@ -456,6 +459,7 @@ interface KENamespace {
   resolveMid: (G: Game, i: number) => any;
   courierMul: (G: Game) => number;
   courierNeed: (G: Game, b: Branch) => { cost: number; items: Record<string, number> };
+  /** acil kurye; şube yoksa (b undefined) ya da servis bitmişse 0 */
   courier: (G: Game, b: Branch) => any;
   RESERVATION: { cost: number; era: number };
   resOn: (b: Branch | null | undefined) => boolean;
@@ -484,11 +488,12 @@ interface KENamespace {
   advanceEra: (G: Game) => Era[];
   placeOpen: (G: Game, id: string) => boolean;
   placesOfEra: (n: number) => string[];
-  signatureCost: (G: Game) => number;
+  /** son seviyedeyse null */
+  signatureCost: (G: Game) => number | null;
   startSignature: (G: Game, pid: string) => ActionResult;
   flagshipCost: (G: Game) => number;
   buildFlagship: (G: Game, bid: string) => ActionResult;
-  contractOffers: (G: Game) => { id: string; kind: string; name: string; who: string; pid: string; qty: number; pay: number; cost: number; morale: number }[];
+  contractOffers: (G: Game) => ContractOffer[];
   contractTaken: (G: Game) => boolean;
   acceptContract: (G: Game, id: string, bid: string) => ActionResult;
   makeWeekly: (G: Game) => void;
@@ -523,7 +528,8 @@ interface KENamespace {
   upgradePen: (G: Game, kind: string) => void;
   batchYield: (G: Game, kind: string, count: number) => Record<string, number>;
   slaughter: (G: Game, kind: string) => { heads: number; got: Record<string, number> };
-  farmDay: (G: Game) => { feed: number; done: any[] };
+  /** çiftlik yoksa null */
+  farmDay: (G: Game) => { feed: number; done: any[] } | null;
   farmCostPerKg: (G: Game, kind: string) => number;
 
   // ---- js/narrative.js ----
@@ -531,10 +537,12 @@ interface KENamespace {
   writeJournal: (G: Game, S0: any, out?: any) => string;
   writeNews: (G: Game) => { day: number; date: string; issue: number; headlines: any[] };
   canRaise: (G: Game, s: Staff) => boolean;
-  raiseBlock: (G: Game, s: Staff) => string;
+  /** zam verilemiyorsa nedeni, verilebiliyorsa null */
+  raiseBlock: (G: Game, s: Staff) => string | null;
   raiseStaff: (G: Game, s: Staff) => ActionResult;
   RIVAL_ARC: [string, number, number][];
-  rivalNext: (G: Game) => { id: string; step: number; of: number; due: boolean; day: number; era: number } | null;
+  /** due: hamle bugün gelebilir mi (doğruluk değeri) */
+  rivalNext: (G: Game) => { id: string; step: number; of: number; due: unknown; day: number; era: number } | null;
   EVENTS: GameEvent[];
   rollEvent: (G: Game) => any;
   resolveEvent: (G: Game, idx: number) => string;

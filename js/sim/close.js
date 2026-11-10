@@ -3,7 +3,7 @@
   const { clamp, mode: MODE, prod: prodOf } = KE.U;
   /* ---------- Servis sonu: kalan dakikaları hızla oynat, fire ve tüketimi hesapla ---------- */
   KE.fastForward = function (G) {
-    if (G.live[G.activeBranch] && G.live[G.activeBranch].player.active) KE.playerToggle(G, false);
+    if (/** @type {Record<string, Live>} */ (G.live)[G.activeBranch] && /** @type {Record<string, Live>} */ (G.live)[G.activeBranch].player.active) KE.playerToggle(G, false);
     let guard = 0;
     while (!KE.allDone(G) && guard++ < 1200) KE.tickAll(G);
   };
@@ -13,7 +13,7 @@
     /** @type {DaySummary} */
     const summary = { day: G.day, branches: {} };
     G.branches.forEach((b) => {
-      const L = G.live[b.id];
+      const L = /** @type {Record<string, Live>} */ (G.live)[b.id];
       const S = L.stats;
       const st = KE.branchStaff(G, b);
       const cold = KE.equip(G, b, 'cold');
@@ -116,7 +116,7 @@
       if (s.servedToday > limit * 1.6) dm -= 5; else if (s.servedToday > limit) dm -= 2;
       if (s.minEnergy < 10) dm -= 6; else if (s.minEnergy < 25) dm -= 3; else if (s.minEnergy > 55) dm += 1;
       b.decor.forEach((id) => { const d = KE.DECOR.find((x) => x.id === id); if (d && d.morale) dm += d.morale * 0.5; });
-      dm += KE.COSTUMES.find((x) => x.id === s.costume).morale * 0.06;
+      dm += /** @type {Costume} */ (KE.COSTUMES.find((x) => x.id === s.costume)).morale * 0.06;
       if (amb.concept && s.costume !== 'temel') dm += 0.6;
       if (G.payLate) dm -= 3;
       if (dm < 0 && tr.moraleStable) dm *= 1 - tr.moraleStable;
@@ -290,7 +290,7 @@
       const bar = Math.round(Math.min(86, (G.mode === 'kebap' ? 68 : 72) + G.rival.power * 0.08) + (G.rival.district === b.district ? 4 : 0) - (b.flagship ? 3 : 0));
       const won = served >= 250 && sat >= bar;
       if (won) { b.championUntil = G.day + 30; b.champions = (b.champions || 0) + 1; G.flags.champ = true; if (repWins++ < 3) G.reputation = clamp(G.reputation + 1, 0, 100); }
-      return { id: b.id, name: b.name, district: KE.district(b).name, sat, bar, won, served };
+      return { id: b.id, name: b.name, district: /** @type {District} */ (KE.district(b)).name, sat, bar, won, served };
     });
   };
 })();

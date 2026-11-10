@@ -7,7 +7,7 @@
 
   /* ---------- Gün sonu günlüğü ---------- */
   KE.writeJournal = function (G, S0, out) {
-    const b = G.branches.find((x) => x.id === G.activeBranch);
+    const b = /** @type {Branch} */ (G.branches.find((x) => x.id === G.activeBranch));
     const sum = S0.branches[b.id];
     const S = sum.stats;
     const st = KE.branchStaff(G, b);
@@ -59,7 +59,7 @@
     else if (sat > 60) h.push({ title: `${b.name} istikrarlı bir hafta geçirdi`, body: `Haftalık ciro ${KE.tl(rev)}. Esnaf, dükkânın kendini toparladığını söylüyor.` });
     else h.push({ title: `${b.name} zorlu bir hafta geçirdi`, body: 'Müşteriler bekleme sürelerinden ve fiyatlardan şikâyetçi. Esnaf "Toparlanırlar" diyor.' });
     const champ = G.branches.find((x) => x.championUntil && x.championUntil - G.day >= 23);
-    if (champ) h.unshift({ title: `${KE.ek(KE.district(champ).name, 'in')} şampiyonu: ${champ.name}`, body: '"Lüks Kebap" bu ay semtte geride kaldı. Komşular kutlamaya pide getirdi.' });
+    if (champ) h.unshift({ title: `${KE.ek(/** @type {District} */ (KE.district(champ)).name, 'in')} şampiyonu: ${champ.name}`, body: '"Lüks Kebap" bu ay semtte geride kaldı. Komşular kutlamaya pide getirdi.' });
     const praised = KE.REGULARS.find((R) => G.regulars && G.regulars[R.id] && G.regulars[R.id].praised > G.day - 7);
     if (praised) h.push({ title: `${praised.name}: "Şehrin en güzel sofrası"`, body: `${praised.type === 'turist' ? 'Şehre her gelişinde uğrayan' : 'Yıllardır müdavim olan'} ${praised.name}, dükkânı herkese öneriyor.` });
     const st5 = G.staff.find((s) => Object.values(s.spec).some((v) => v >= 5));
@@ -93,7 +93,8 @@
   /* ---------- Olay kartları ---------- */
   /** @type {GameEvent[]} */
   const ev = [];
-  const branch = (/** @type {Game} */ G) => G.branches.find((x) => x.id === G.activeBranch);
+  /* etkin şube: oyunda her zaman vardır */
+  const branch = (/** @type {Game} */ G) => /** @type {Branch} */ (G.branches.find((x) => x.id === G.activeBranch));
   const staffOf = (/** @type {Game} */ G) => KE.branchStaff(G, branch(G));
   /* Zam: kişi başı 60 günde bir, rol tavanını aşmadan */
   /** @type {Record<string, number>} */
@@ -122,9 +123,9 @@
     build: (G) => { const s = staffOf(G).filter((x) => x.role === 'usta' && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
       return { title: `${KE.ek(s.name, 'e')} rakipten teklif!`, text: `"Lüks Kebap" sahibi Cüneyt Bey, ${KE.ek(s.name, 'e')} %30 daha fazla maaş teklif etmiş. Usta kararsız görünüyor ve seninle konuşmak istiyor.`, ctx: { sid: s.id },
         choices: [
-          { label: 'Maaşına %15 zam yap', desc: 'Moral +22, maaş +%15', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); raise(G, x, 1.15); x.morale = clamp(x.morale + 22, 0, 100); return `${x.name} kaldı: "Bu dükkân benim de dükkânım."`; } },
-          { label: 'Oturup gönlünü al', desc: '%55 ihtimalle kalır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); if (KE.rand() < 0.55) { x.morale = clamp(x.morale + 10, 0, 100); return `Uzun bir çay sohbeti işe yaradı. ${x.name} kalıyor.`; } G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} teşekkür edip rakibe geçti. Ocağın başı boş kaldı.`; } },
-          { label: 'Gitmek isteyen gider', desc: 'Usta ayrılır', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} ayrıldı. Usta pazarında yeni birini bulmalısın.`; } }
+          { label: 'Maaşına %15 zam yap', desc: 'Moral +22, maaş +%15', run: (G, c) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); raise(G, x, 1.15); x.morale = clamp(x.morale + 22, 0, 100); return `${x.name} kaldı: "Bu dükkân benim de dükkânım."`; } },
+          { label: 'Oturup gönlünü al', desc: '%55 ihtimalle kalır', run: (G, c) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); if (KE.rand() < 0.55) { x.morale = clamp(x.morale + 10, 0, 100); return `Uzun bir çay sohbeti işe yaradı. ${x.name} kalıyor.`; } G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} teşekkür edip rakibe geçti. Ocağın başı boş kaldı.`; } },
+          { label: 'Gitmek isteyen gider', desc: 'Usta ayrılır', run: (G, c) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); G.staff = G.staff.filter((y) => y.id !== x.id); G.rival.power += 8; return `${x.name} ayrıldı. Usta pazarında yeni birini bulmalısın.`; } }
         ] }; } });
 
   ev.push({ id: 'denetim', who: 'bulent', w: 1,
@@ -157,8 +158,8 @@
     build: (G) => { const s = staffOf(G).filter((x) => x.morale < 62 && G.day - x.hiredDay > 10 && canRaise(G, x)).sort((a, c) => a.morale - c.morale)[0];
       return { title: `${s.name} zam istiyor`, text: `${s.name}: "Patron, kira arttı, mutfak masrafı arttı. Bir el atabilir misin?" Brüt maaşı şu an ${KE.tl(s.wage)}.`, ctx: { sid: s.id }, who: s,
         choices: [
-          { label: '%10 zam yap', desc: 'Moral +18', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); raise(G, x, 1.1); x.morale = clamp(x.morale + 18, 0, 100); return `${x.name}: "Sağ ol patron, hakkını helal et."`; } },
-          { label: 'Şimdilik olmaz', desc: 'Moral −10', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale - 10, 0, 100); return `${x.name} başını öne eğdi: "Anladım."`; } }
+          { label: '%10 zam yap', desc: 'Moral +18', run: (G, c) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); raise(G, x, 1.1); x.morale = clamp(x.morale + 18, 0, 100); return `${x.name}: "Sağ ol patron, hakkını helal et."`; } },
+          { label: 'Şimdilik olmaz', desc: 'Moral −10', run: (G, c) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); x.morale = clamp(x.morale - 10, 0, 100); return `${x.name} başını öne eğdi: "Anladım."`; } }
         ] }; } });
 
   ev.push({ id: 'etZammi', who: 'riza', w: 1,
@@ -181,12 +182,12 @@
     build: (G) => { const cooks = staffOf(G).filter(KE.isCook); const u = cooks.find((s) => KE.huyOf(s) === 'izinci') || cooks.sort((a, c) => a.morale - c.morale)[0];
       return { title: `${u.name} izin istiyor`, text: `${u.name} önlüğünü katlarken lafı dolandırdı: "Patron, memlekette kızımın nişanı var. Bugün bir çıkabilsem..."`, ctx: { sid: u.id }, who: u,
         choices: [
-          { label: 'Git, gönlün rahat olsun', desc: 'Bugün çalışmaz; morali +15', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale + 15, 0, 100); x.pos = 'mola'; x.offDay = G.day; return `${x.name} elini öptü: "Sağ ol patron, bunu unutmam."`; } },
-          { label: 'Bugün olmaz, kalabalık var', desc: 'Çalışır ama morali −8', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale - 8, 0, 100); return `${x.name} başını salladı, ama bütün gün suratı asık.`; } }
+          { label: 'Git, gönlün rahat olsun', desc: 'Bugün çalışmaz; morali +15', run: (G, ctx) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === ctx.sid)); x.morale = clamp(x.morale + 15, 0, 100); x.pos = 'mola'; x.offDay = G.day; return `${x.name} elini öptü: "Sağ ol patron, bunu unutmam."`; } },
+          { label: 'Bugün olmaz, kalabalık var', desc: 'Çalışır ama morali −8', run: (G, ctx) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === ctx.sid)); x.morale = clamp(x.morale - 8, 0, 100); return `${x.name} başını salladı, ama bütün gün suratı asık.`; } }
         ] }; } });
   ev.push({ id: 'ustaKavga', who: null, w: 1.0,
     when: (G) => staffOf(G).some((s) => s.role === 'cirak' && s.mentorId),
-    build: (G) => { const c = staffOf(G).find((s) => s.role === 'cirak' && s.mentorId); const m = G.staff.find((x) => x.id === c.mentorId) || c;
+    build: (G) => { const c = /** @type {Staff} */ (staffOf(G).find((s) => s.role === 'cirak' && s.mentorId)); const m = G.staff.find((x) => x.id === c.mentorId) || c;
       return { title: 'Mutfakta gerginlik', text: `${m.name} ile çırağı ${c.name} sabah sabah atıştı. "Bana bıçak tutmayı öğretmiyor, bulaşık yaptırıyor!" diyor ${c.name.split(' ').slice(-1)[0]}.`, ctx: { sid: c.id, mid: m.id }, who: m,
         choices: [
           { label: 'İkisini çaya oturt', desc: 'İkisinin de morali +5', run: (G, ctx) => { [ctx.sid, ctx.mid].forEach((id) => { const x = G.staff.find((y) => y.id === id); if (x) x.morale = clamp(x.morale + 5, 0, 100); }); return 'Bir demlik çay bitti, iki taraf da biraz yumuşadı. Usta bıçağı çırağa uzattı.'; } },
@@ -200,17 +201,17 @@
     build: (G) => { const u = tempted(G).sort((a, c) => Number(KE.huyOf(c) === 'hirsli') - Number(KE.huyOf(a) === 'hirsli') || Math.max(...Object.values(c.spec)) - Math.max(...Object.values(a.spec)))[0];
       return { title: `${KE.ek(u.name, 'e')} göz koyan var`, text: `Karşı sokaktaki otelin şefi ${KE.ek(u.name, 'i')} yemeğe çıkarmış. "Bana iki katını veriyorlar patron, ama ben buraya alıştım..." diyor.`, ctx: { sid: u.id }, who: u,
         choices: [
-          { label: '%15 zam yap', desc: 'Maaş +%15, moral +12', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.wage = Math.round(x.wage * 1.15 / 100) * 100; x.morale = clamp(x.morale + 12, 0, 100); return `${x.name} gülümsedi: "Bu dükkânın ekmeğini yedim, bir yere gitmem."`; } },
-          { label: 'Gönlünü al, zam yok', desc: 'Moral −6; morali 35\'in altına inerse kaçabilir', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale - 6, 0, 100); return `${x.name} "Peki" dedi, ama aklı otelde.`; } }
+          { label: '%15 zam yap', desc: 'Maaş +%15, moral +12', run: (G, ctx) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === ctx.sid)); x.wage = Math.round(x.wage * 1.15 / 100) * 100; x.morale = clamp(x.morale + 12, 0, 100); return `${x.name} gülümsedi: "Bu dükkânın ekmeğini yedim, bir yere gitmem."`; } },
+          { label: 'Gönlünü al, zam yok', desc: 'Moral −6; morali 35\'in altına inerse kaçabilir', run: (G, ctx) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === ctx.sid)); x.morale = clamp(x.morale - 6, 0, 100); return `${x.name} "Peki" dedi, ama aklı otelde.`; } }
         ] }; } });
 
   ev.push({ id: 'cirakHata', who: null, w: 0.8,
     when: (G) => staffOf(G).some((s) => s.role === 'cirak'),
-    build: (G) => { const c = staffOf(G).find((s) => s.role === 'cirak');
+    build: (G) => { const c = /** @type {Staff} */ (staffOf(G).find((s) => s.role === 'cirak'));
       return { title: `${c.name} bir tepsi yaktı`, text: `${c.name} dalgınlıkla ${G.mode === 'doner' ? 'pilav tenceresini' : 'bir şiş dolusu kebabı'} yaktı. Mutfak duman içinde, herkes sana bakıyor.`, ctx: { sid: c.id }, who: c,
         choices: [
-          { label: 'Ustanın yanına ver, öğret', desc: 'En iyi usta mentor olur, moral +4', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); const m = staffOf(G).filter((s) => s.role === 'usta').sort((a, c) => c.teach - a.teach)[0]; if (m) { x.mentorId = m.id; x.morale = clamp(x.morale + 4, 0, 100); return `${m.name} çırağın omzuna dokundu: "Gel bakalım, ${G.mode === 'doner' ? 'yaprak böyle kesilir' : 'köz böyle okunur'}."`; } return 'Ortada öğretecek usta yok. Bir usta işe al.'; } },
-          { label: 'Sert uyar', desc: 'Moral −10, hata payı düşer', run: (G, ctx) => { const x = G.staff.find((y) => y.id === ctx.sid); x.morale = clamp(x.morale - 10, 0, 100); x.consistency = Math.min(0.95, x.consistency + 0.05); return `${x.name} kızardı, bir daha olmayacağına söz verdi.`; } }
+          { label: 'Ustanın yanına ver, öğret', desc: 'En iyi usta mentor olur, moral +4', run: (G, ctx) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === ctx.sid)); const m = staffOf(G).filter((s) => s.role === 'usta').sort((a, c) => c.teach - a.teach)[0]; if (m) { x.mentorId = m.id; x.morale = clamp(x.morale + 4, 0, 100); return `${m.name} çırağın omzuna dokundu: "Gel bakalım, ${G.mode === 'doner' ? 'yaprak böyle kesilir' : 'köz böyle okunur'}."`; } return 'Ortada öğretecek usta yok. Bir usta işe al.'; } },
+          { label: 'Sert uyar', desc: 'Moral −10, hata payı düşer', run: (G, ctx) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === ctx.sid)); x.morale = clamp(x.morale - 10, 0, 100); x.consistency = Math.min(0.95, x.consistency + 0.05); return `${x.name} kızardı, bir daha olmayacağına söz verdi.`; } }
         ] }; } });
 
   ev.push({ id: 'macGunu', who: null, w: 0.7, mode: 'doner',
@@ -286,8 +287,8 @@
     build: (G) => { const s = staffOf(G).filter(KE.isCook).sort((a, c) => a.energy - c.energy)[0];
       return { title: `${s.name} hastalandı`, text: `${s.name} sabah ateşler içinde geldi: "Bir şeyim yok usta, çalışırım." Sesi kısık, gözleri yorgun.`, ctx: { sid: s.id }, who: s,
         choices: [
-          { label: 'Eve gönder, dinlensin', desc: 'Bugün ustasız çalışırsın, moral +10', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale + 10, 0, 100); x.pos = 'mola'; G.mods.push({ key: 'traffic:' + branch(G).id, mult: 0.85, days: 1, label: 'Usta hasta' }); return `${x.name} gönülsüzce gitti. Ertesi gün turp gibi döndü.`; } },
-          { label: 'Bugün idare etsin', desc: 'Moral −8, kalite düşebilir', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale - 8, 0, 100); x.energy = Math.min(x.energy, 55); return `${x.name} gün boyu öksürerek çalıştı. Ekip biraz kırgın.`; } }
+          { label: 'Eve gönder, dinlensin', desc: 'Bugün ustasız çalışırsın, moral +10', run: (G, c) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); x.morale = clamp(x.morale + 10, 0, 100); x.pos = 'mola'; G.mods.push({ key: 'traffic:' + branch(G).id, mult: 0.85, days: 1, label: 'Usta hasta' }); return `${x.name} gönülsüzce gitti. Ertesi gün turp gibi döndü.`; } },
+          { label: 'Bugün idare etsin', desc: 'Moral −8, kalite düşebilir', run: (G, c) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); x.morale = clamp(x.morale - 8, 0, 100); x.energy = Math.min(x.energy, 55); return `${x.name} gün boyu öksürerek çalıştı. Ekip biraz kırgın.`; } }
         ] }; } });
 
   ev.push({ id: 'kiraArtisi', who: 'zeynep', w: 0.45, when: (G) => G.day > 40,
@@ -366,8 +367,8 @@
     build: (G) => { const s = staffOf(G).filter(KE.isCook).sort((a, c) => Number(c.role === 'usta') - Number(a.role === 'usta') || c.morale - a.morale)[0];
       return { title: `${KE.ek(s.name, 'in')} yeni tarif fikri`, text: `${s.name}: "Memleketin usulü bir sos denesek? Bir hafta tadım yaparız, beğenilirse menüde kalır."`, ctx: { sid: s.id }, who: s,
         choices: [
-          { label: 'Dene, malzemesini al', desc: `${KE.tl(P(G, 4000))}, usta morali +15, 7 gün gurme +%40`, run: (G, c) => { pay(G, P(G, 4000)); const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale + 15, 0, 100); G.mods.push({ key: 'type:gurme', mult: 1.4, days: 7, label: 'Yeni sos' }); return 'Sos tuttu! Gurmeler tarifini soruyor, usta sır vermiyor.'; } },
-          { label: 'Klasikten şaşmayalım', desc: 'Usta morali −5', run: (G, c) => { const x = G.staff.find((y) => y.id === c.sid); x.morale = clamp(x.morale - 5, 0, 100); return 'Usta "Peki" dedi ama biraz bozuldu.'; } }
+          { label: 'Dene, malzemesini al', desc: `${KE.tl(P(G, 4000))}, usta morali +15, 7 gün gurme +%40`, run: (G, c) => { pay(G, P(G, 4000)); const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); x.morale = clamp(x.morale + 15, 0, 100); G.mods.push({ key: 'type:gurme', mult: 1.4, days: 7, label: 'Yeni sos' }); return 'Sos tuttu! Gurmeler tarifini soruyor, usta sır vermiyor.'; } },
+          { label: 'Klasikten şaşmayalım', desc: 'Usta morali −5', run: (G, c) => { const x = /** @type {Staff} */ (G.staff.find((y) => y.id === c.sid)); x.morale = clamp(x.morale - 5, 0, 100); return 'Usta "Peki" dedi ama biraz bozuldu.'; } }
         ] }; } });
 
   ev.push({ id: 'kermes', who: 'ayse', w: 0.5,
@@ -423,11 +424,11 @@
         ] }; } });
 
   ev.push({ id: 'rk_tac', who: 'rakip', w: 0, arc: true,
-    build: (G) => { const b = G.branches.find((x) => x.championUntil) || branch(G); const d = KE.district(b);
+    build: (G) => { const b = G.branches.find((x) => x.championUntil) || branch(G); const d = /** @type {District} */ (KE.district(b));
       return { title: `${KE.ek(d.name, 'de')} taç savaşı`, text: `"Lüks Kebap" ${KE.ek(d.name, 'de')}ki şubesine yeni bir şef ve mermer salon getirdi. Hedefleri belli: bu ay semtin tacını senden almak.`, ctx: { bid: b.id },
         choices: [
-          { label: 'Semtte lezzet festivali düzenle', desc: `${KE.tl(P(G, 40000))}, 14 gün şube müşterisi +%25, itibar +2`, run: (G, c) => { pay(G, P(G, 40000)); G.mods.push({ key: 'traffic:' + c.bid, mult: 1.25, days: 14, label: 'Lezzet festivali' }); rep(G, 2); G.rival.district = KE.district(G.branches.find((x) => x.id === c.bid)).id; duel(G, true, 6); return 'Festival üç gün sürdü; semtin bütün sofraları bizim dükkândan doldu.'; } },
-          { label: 'Müdavimlerine güven', desc: 'Sadık müdavimin çoksa taç kalır', run: (G, c) => { G.rival.district = KE.district(G.branches.find((x) => x.id === c.bid)).id; const loyal = Object.values(G.regulars || {}).filter((r) => r.loyalty >= 6).length; if (loyal >= 2) { duel(G, true, 8); return 'Ayşe Teyze kapıda nöbet tutar gibi: "Bizim dükkân burası." Müdavimler kımıldamadı.'; } duel(G, false, 14); return 'Müdavimlerin azdı; yenilik merakı ağır bastı. Çıta yükseldi.'; } }
+          { label: 'Semtte lezzet festivali düzenle', desc: `${KE.tl(P(G, 40000))}, 14 gün şube müşterisi +%25, itibar +2`, run: (G, c) => { pay(G, P(G, 40000)); G.mods.push({ key: 'traffic:' + c.bid, mult: 1.25, days: 14, label: 'Lezzet festivali' }); rep(G, 2); G.rival.district = /** @type {District} */ (KE.district(/** @type {Branch} */ (G.branches.find((x) => x.id === c.bid)))).id; duel(G, true, 6); return 'Festival üç gün sürdü; semtin bütün sofraları bizim dükkândan doldu.'; } },
+          { label: 'Müdavimlerine güven', desc: 'Sadık müdavimin çoksa taç kalır', run: (G, c) => { G.rival.district = /** @type {District} */ (KE.district(/** @type {Branch} */ (G.branches.find((x) => x.id === c.bid)))).id; const loyal = Object.values(G.regulars || {}).filter((r) => r.loyalty >= 6).length; if (loyal >= 2) { duel(G, true, 8); return 'Ayşe Teyze kapıda nöbet tutar gibi: "Bizim dükkân burası." Müdavimler kımıldamadı.'; } duel(G, false, 14); return 'Müdavimlerin azdı; yenilik merakı ağır bastı. Çıta yükseldi.'; } }
         ] }; } });
 
   ev.push({ id: 'rk_karalama', who: 'rakip', w: 0, arc: true,
@@ -439,7 +440,7 @@
       ] }) });
 
   ev.push({ id: 'rk_teklif', who: 'rakip', w: 0, arc: true,
-    build: (G) => ({ title: 'Cüneyt Bey zincirini almak istiyor', text: `Cüneyt Bey bir akşam kapıda belirdi, masaya bir zarf koydu: "Bütün şubelerine ${KE.tl(G.branches.reduce((a, b) => a + KE.branchCost(G, KE.district(b)), 0) * 2)} veririm. Yorulmadın mı?"`, ctx: {},
+    build: (G) => ({ title: 'Cüneyt Bey zincirini almak istiyor', text: `Cüneyt Bey bir akşam kapıda belirdi, masaya bir zarf koydu: "Bütün şubelerine ${KE.tl(G.branches.reduce((a, b) => a + KE.branchCost(G, /** @type {District} */ (KE.district(b))), 0) * 2)} veririm. Yorulmadın mı?"`, ctx: {},
       choices: [
         { label: '"Bu ocak satılık değil"', desc: 'Ekip morali +10, rakip öfkelenir', run: (G) => { G.staff.forEach((s) => { s.morale = clamp(s.morale + 10, 0, 100); }); G.flags.rivalRefused = G.day; duel(G, true, 10); return 'Zarfı açmadan geri verdin. Mutfaktan alkış koptu. Cüneyt Bey kapıdan çıkarken "Görüşeceğiz" dedi.'; } },
         { label: '"Asıl ben seni alırım"', desc: 'Son hedefi ilan et, itibar +2', run: (G) => { G.flags.rivalRefused = G.day; rep(G, 2); duel(G, true, 12); return 'Cüneyt Bey güldü, sonra gülmeyi kesti: "O gün gelirse anahtarları kendi elimle veririm." Bütün şehir bu cümleyi konuşuyor.'; } }
@@ -451,7 +452,7 @@
     if (G.flags.empire) return null;
     const st = (G.rival && G.rival.stage) || 0, a = KE.RIVAL_ARC[st];
     if (!a) return null;
-    const e = ev.find((x) => x.id === a[0]);
+    const e = /** @type {GameEvent} */ (ev.find((x) => x.id === a[0]));
     const due = G.day >= a[1] && (G.era || 1) >= a[2] && G.day - ((G.rival && G.rival.last) || 0) >= 18 && (!e.when || e.when(G));
     return { id: a[0], step: st + 1, of: KE.RIVAL_ARC.length, due, day: a[1], era: a[2] };
   };
@@ -514,7 +515,7 @@
     if (G.day < 3) return null;
     const nx = KE.rivalNext(G);
     if (nx && nx.due && KE.rand() < 0.6) {
-      const e = ev.find((x) => x.id === nx.id);
+      const e = /** @type {GameEvent} */ (ev.find((x) => x.id === nx.id));
       const card = e.build(G);
       G.eventLog.push(e.id); G.rival.stage = nx.step; G.rival.last = G.day;
       return { id: e.id, who: e.who, title: card.title, text: card.text, ctx: card.ctx, whoStaff: card.who ? card.who.id : null, rival: nx.step, choices: card.choices.map((c) => ({ label: c.label, desc: c.desc })) };
@@ -535,7 +536,7 @@
     KE.RNG.seed(G, 'event' + idx);
     const pe = G.pendingEvent;
     if (!pe) return '';
-    const e = ev.find((x) => x.id === pe.id);
+    const e = /** @type {GameEvent} */ (ev.find((x) => x.id === pe.id));
     let card;
     try { card = e.build(G); } catch (err) { card = null; }
     let msg = '';

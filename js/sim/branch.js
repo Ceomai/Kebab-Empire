@@ -4,7 +4,7 @@
   const MODE = KE.U.mode;
   /* ---------- Şube ---------- */
   KE.makeBranch = function (G, districtId) {
-    const d = KE.DISTRICTS.find((x) => x.id === districtId);
+    const d = /** @type {District} */ (KE.DISTRICTS.find((x) => x.id === districtId));
     const mode = MODE(G);
     /** @type {Branch} */
     const b = {
@@ -34,13 +34,13 @@
   KE.ambience = function (G, b) {
     let a = 0; const styles = /** @type {Record<string, number>} */ ({});
     b.decor.forEach((id) => { const d = KE.DECOR.find((x) => x.id === id); if (!d) return; a += d.ambience; if (d.style !== 'personel') styles[d.style] = (styles[d.style] || 0) + 1; });
-    /** @type {{ style: string; name: string; power?: number } | null} */
+    /** @type {{ style: string; name: string; power: number } | null} */
     let concept = null;
     const top = Object.entries(styles).sort((x, y) => y[1] - x[1])[0];
     if (top && top[1] >= 3) {
       /** @type {Record<string, string>} */
       const names = { geleneksel: G.mode === 'kebap' ? 'Otantik Ocakbaşı' : 'Esnaf Lokantası Ruhu', sokak: 'Sokak Lezzeti', modern: 'Modern Büfe', 'lüks': 'Lüks Salon' };
-      concept = { style: top[0], name: names[top[0]] };
+      concept = /** @type {{ style: string; name: string; power: number }} */ ({ style: top[0], name: names[top[0]] });
       const st = KE.branchStaff(G, b);
       const costumed = st.filter((s) => s.costume !== 'temel').length;
       const yoresel = st.filter((s) => s.costume === 'yoresel').length;
@@ -70,7 +70,7 @@
   KE.charityLv = (G, id) => (G.charity && G.charity[id]) || 0;
   KE.priceTolerance = (G, b) => 1.02 + (G.stars || 0) * 0.03 + KE.charityLv(G, 'okul') * 0.01 + Math.max(0, G.reputation - 50) / 400 + (G.signature && !G.signature.family ? G.signature.level * 0.04 : 0) + (b && b.flagship ? 0.1 : 0);
   KE.expectedCustomers = function (G, b) {
-    const d = KE.district(b);
+    const d = /** @type {District} */ (KE.district(b));
     const mode = MODE(G);
     const repF = 0.45 + G.reputation / 100 * 0.9;
     const amb = KE.ambience(G, b);

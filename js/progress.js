@@ -70,7 +70,7 @@
   };
 
   KE.openBranch = function (G, districtId) {
-    const d = KE.DISTRICTS.find((x) => x.id === districtId);
+    const d = /** @type {District} */ (KE.DISTRICTS.find((x) => x.id === districtId));
     const cost = KE.branchCost(G, d);
     const b = KE.makeBranch(G, districtId);
     G.branches.push(b);
@@ -151,7 +151,8 @@
     const wk = weekOf(G), prods = MODE(G).products.filter((p) => !KE.isLocked(G, p)), b0 = G.branches[0];
     /** @type {Record<string, number>} */
     const seen = {};
-    return [0, 1, 2, 3].map((i) => {
+    /* aynı türden ikinci teklif null olur ve süzülür */
+    return /** @type {ContractOffer[]} */ ([0, 1, 2, 3].map((i) => {
       const h = mix(G.seed, wk, 'ct', i);
       const k = KE.CONTRACT_KINDS[h % KE.CONTRACT_KINDS.length];
       if (seen[k.id]) return null; seen[k.id] = 1;
@@ -160,7 +161,7 @@
       const pay = Math.round(qty * KE.marketPrice(G, p) * 1.5 / 1000) * 1000;
       const cost = Math.round(qty * KE.productCost(G, b0, p) / 1000) * 1000;
       return { id: wk + '-' + i, kind: k.id, name: k.name, who: k.who, pid: p.id, qty, pay, cost, morale: k.morale };
-    }).filter(Boolean).slice(0, 3);
+    }).filter(Boolean).slice(0, 3));
   };
   KE.contractTaken = (G) => G.contractWeek === weekOf(G);
   KE.acceptContract = function (G, id, bid) {
@@ -184,7 +185,7 @@
     const k = kinds[mix(G.seed, G.day, 'wk') % kinds.length];
     const target = { served: Math.round(exp * 0.95 / 10) * 10, match: Math.max(10, Math.round(exp * 0.09)), player: Math.max(6, left * 3), tips: Math.round(exp * 18 * G.priceIndex / 500) * 500, sat: 82 }[k.kind];
     const reward = Math.round(30000 * G.priceIndex * (1 + 0.3 * (open.length - 1)) / 1000) * 1000;
-    G.weekly = { start: G.day, kind: k.kind, target, text: k.text.replace('{t}', k.kind === 'tips' ? KE.tl(target) : String(target)), reward, value: 0, done: false, acc: { served: 0, match: 0, player: 0, tips: 0, satS: 0, satN: 0 } };
+    G.weekly = { start: G.day, kind: k.kind, target, text: k.text.replace('{t}', k.kind === 'tips' ? KE.tl(/** @type {number} */ (target)) : String(target)), reward, value: 0, done: false, acc: { served: 0, match: 0, player: 0, tips: 0, satS: 0, satN: 0 } };
   };
 
   /* ---------- Sabah ekonomisi: işe alma, kıyafet, ekipman, dekor, hijyen, reklam, merkezi mutfak ----------
@@ -226,7 +227,7 @@
     const s = G.workers.find((x) => x.id === id);
     if (!s) return { ok: false };
     const ch = KE.canHire(G, b, s.role);
-    if (!ch.ok) return { ok: false, msg: `${KE.STAFF_GROUPS[ch.group].name} kadrosu dolu: ${ch.used}/${ch.cap}`, hint: ch.hint };
+    if (!ch.ok) return { ok: false, msg: `${KE.STAFF_GROUPS[/** @type {string} */ (ch.group)].name} kadrosu dolu: ${ch.used}/${ch.cap}`, hint: ch.hint };
     s.branchId = b.id; s.hiredDay = G.day;
     G.staff.push(s); G.workers = G.workers.filter((x) => x.id !== s.id);
     return { ok: true, msg: `${s.name} işe başladı.`, staff: s };
@@ -350,7 +351,7 @@
     if (G.cash < cost) return { ok: false, msg: NO_CASH };
     G.cash -= cost; KE.addExtra(G, 'ads', cost);
     if (c.sign) { b.signBoost = 1.06; return { ok: true, msg: 'Yeni tabela gece gündüz parlıyor.', cost }; }
-    c.mods.forEach(([k, m]) => G.mods.push({ key: k, mult: m, days: c.days, label: c.name, camp: c.id }));
+    /** @type {[string, number][]} */ (c.mods).forEach(([k, m]) => G.mods.push({ key: k, mult: m, days: c.days, label: c.name, camp: c.id }));
     if (c.rep) { const best = Math.max(...MODE(G).products.map((p) => KE.bestStar(G, b, p.id))); G.reputation = clamp(G.reputation + (best >= 4 ? 4 : 1), 0, 100); }
     return { ok: true, msg: `${c.name} başladı.`, cost };
   };
@@ -378,7 +379,7 @@
   KE.quickWeekOpen = (G) => G.branches.length >= KE.DISTRICTS.length;
 
   /* ---------- Vakıf ve sponsorluk ---------- */
-  KE.charityCost = (G, id) => { const c = KE.CHARITY.find((x) => x.id === id), lv = KE.charityLv(G, id); return lv >= c.cost.length ? null : Math.round(c.cost.at(lv) * G.priceIndex / 10000) * 10000; };
+  KE.charityCost = (G, id) => { const c = /** @type {Charity} */ (KE.CHARITY.find((x) => x.id === id)), lv = KE.charityLv(G, id); return lv >= c.cost.length ? null : Math.round(/** @type {number} */ (c.cost.at(lv)) * G.priceIndex / 10000) * 10000; };
   KE.donate = function (G, id) {
     if ((G.era || 1) < 3) return { ok: false, msg: 'Vakıf 3. dönemde açılır.' };
     if (G.phase !== 'morning') return { ok: false, msg: 'Bağış sabah yapılır.' };

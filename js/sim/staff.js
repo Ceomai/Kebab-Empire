@@ -27,10 +27,10 @@
     const age = o.age || pick(['genc', 'orta', 'orta', 'yasli']);
     /** @type {Staff} */
     const s = {
-      id, name: o.name, role: o.role, region: o.region || pick(Object.keys(KE.REGIONS)), gender, age,
+      id, name: o.name, role: /** @type {string} */ (o.role), region: o.region || pick(Object.keys(KE.REGIONS)), gender, age,
       spec: Object.assign({}, o.spec || {}), xp: {}, speed: o.speed || 1, quality: o.quality || 0.8, consistency: o.consistency || 0.8,
       waste: o.waste || 0.6, teach: o.teach || 0.5, friendly: o.friendly || rnd(0.4, 0.9), skill: o.skill || rnd(0.4, 0.9),
-      trait: o.trait || null, wage: o.wage || KE.wageFor(o.spec || {}, o.role), morale: o.morale || 66, costume: 'temel',
+      trait: o.trait || null, wage: o.wage || KE.wageFor(o.spec || {}, /** @type {string} */ (o.role)), morale: o.morale || 66, costume: 'temel',
       branchId: o.branchId, look: o.look || KE.randomLook(gender, age), cumBase: 0, tipsMonth: 0, tipsTotal: 0, hiredDay: G.day,
       mentorId: null, servedToday: 0, servedTotal: 0, energy: 100, pos: null, task: null
     };
@@ -59,7 +59,7 @@
   KE.staffCaps = (G, b) => KE.staffCapsAt(G, b, b.equipment);
   /** Bu şubede bu rolden biri daha çalışabilir mi? { ok, group, used, cap, hint } */
   KE.canHire = function (G, b, role, exceptId) {
-    const group = KE.staffGroup(role);
+    const group = /** @type {string} */ (KE.staffGroup(role));
     const cap = KE.staffCaps(G, b)[group];
     const used = KE.branchStaff(G, b).filter((s) => s.id !== exceptId && KE.staffGroup(s.role) === group).length;
     const g = KE.STAFF_GROUPS[group];
@@ -106,7 +106,7 @@
       name: first, role, gender, age: role === 'mudur' ? pick(['orta', 'yasli']) : pick(['genc', 'genc', 'orta']),
       speed: rnd(0.8, 1.25), friendly: rnd(0.3, 1), skill: rnd(0.3, 1), trait: pick(['sohbet', 'hizli', 'sabirli', 'huysuz', null, null])
     });
-    const base = KE.ROLES[role].baseWage;
+    const base = /** @type {number} */ (KE.ROLES[role].baseWage);
     s.wage = Math.max(KE.ECON.asgariBrut, Math.round(base * (0.85 + (role === 'mudur' ? s.skill : s.friendly) * 0.3) / 500) * 500);
     return s;
   };

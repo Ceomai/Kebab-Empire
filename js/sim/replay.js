@@ -14,12 +14,12 @@
     pst: (G, st) => KE.playerStation(G, st),
     psel: (G, i) => KE.playerSelect(G, i),
     mid: (G, i) => KE.resolveMid(G, i),
-    courier: (G, bid) => KE.courier(G, G.branches.find((x) => x.id === bid))
+    courier: (G, bid) => KE.courier(G, /** @type {Branch} */ (G.branches.find((x) => x.id === bid)))
   };
   /* servis saati: kapalı (ustasız) şubenin dakikası 0'da kalır, açık olanlardan okunur */
   /* günü bitmiş şubenin saati durur; günlük dakikası hâlâ çalışan bir şubeden okunmalı, yoksa gün sonundaki
      hamleler yeniden oynatmada erken uygulanır */
-  const clockL = (/** @type {Game} */ G) => { const ls = G.branches.map((b) => G.live[b.id]).filter((L) => L && !L.closed); return ls.find((L) => !L.done) || ls[0] || G.live[G.branches[0].id]; };
+  const clockL = (/** @type {Game} */ G) => { const ls = G.branches.map((b) => /** @type {Record<string, Live>} */ (G.live)[b.id]).filter((L) => L && !L.closed); return ls.find((L) => !L.done) || ls[0] || /** @type {Record<string, Live>} */ (G.live)[G.branches[0].id]; };
   KE.act = function (G, a, ...x) {
     const L = G.phase === 'service' && G.live ? clockL(G) : null;
     const m = L ? L.minute : 0;

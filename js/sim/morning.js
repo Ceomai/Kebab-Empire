@@ -159,7 +159,7 @@
       }
       items.push({ k, need, have, outHour, risk, hourly: per, hourlyVar: vr });
     });
-    const short = items.filter((x) => x.outHour != null).sort((a, c) => a.outHour - c.outHour || c.risk - a.risk);
+    const short = items.filter((x) => x.outHour != null).sort((a, c) => /** @type {number} */ (a.outHour) - /** @type {number} */ (c.outHour) || c.risk - a.risk);
     return { customers: KE.forecastCustomers(G, b), top: top ? top.id : null, products: tot, drinks: byHour.reduce((a, x) => a + x.drinks, 0), items, short, ok: !short.length };
   };
   KE.topUpToday = function (G, b) {
@@ -189,7 +189,7 @@
     const openB = G.branches.filter((b) => KE.branchStaff(G, b).some(KE.isCook));
     if (openB.length) KE.REGULARS.forEach((r) => {
       const st = G.regulars[r.id];
-      if (KE.rand() < 0.3 + st.loyalty * 0.04) G.regularVisits.push({ rid: r.id, branchId: openB[st.visits % openB.length === 0 ? 0 : Math.floor(KE.rand() * openB.length)].id, minute: 60 + Math.floor(KE.rand() * 600) });
+      if (KE.rand() < 0.3 + st.loyalty * 0.04) /** @type {any[]} */ (G.regularVisits).push({ rid: r.id, branchId: openB[st.visits % openB.length === 0 ? 0 : Math.floor(KE.rand() * openB.length)].id, minute: 60 + Math.floor(KE.rand() * 600) });
     });
     G.staff.forEach((s) => { s.energy = 100; s.task = null; if (s.prevPos) { s.pos = s.prevPos; delete s.prevPos; } if (!KE.POSITIONS[s.role].includes(s.pos) || s.pos === 'mola') s.pos = KE.POSITIONS[s.role][0]; });
     /* ekip bu hafta hangi bahşiş kuralını istiyor */

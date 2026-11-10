@@ -110,7 +110,7 @@
     const branches = G.branches.map((b) => {
       const bd = days.filter((d) => d.branchId === b.id);
       const bs = (/** @type {(d: any) => number} */ f) => bd.reduce((a, d) => a + (f(d) || 0), 0);
-      const staffCost = payroll.filter((p) => G.staff.find((s) => s.id === p.id).branchId === b.id).reduce((a, p) => a + p.total, 0);
+      const staffCost = payroll.filter((p) => /** @type {Staff} */ (G.staff.find((s) => s.id === p.id)).branchId === b.id).reduce((a, p) => a + p.total, 0);
       const rent = b.rent;
       const util = KE.utilities(G, b);
       const rev = bs((d) => d.revenue), pur = bs((d) => d.purchases);
