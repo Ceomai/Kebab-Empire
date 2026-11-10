@@ -16,9 +16,11 @@ describe('takvim', () => {
   it('hicri aylar 29–30 gün, Ramazanlar art arda 354–355 gün arayla', () => {
     for (let hy = 1449; hy <= 1470; hy++) {
       const len = (KE.CAL.monthStart(hy, 10) - KE.CAL.monthStart(hy, 9)) / 864e5;
-      expect(len).toBeGreaterThanOrEqual(29); expect(len).toBeLessThanOrEqual(30);
+      expect(len).toBeGreaterThanOrEqual(29);
+      expect(len).toBeLessThanOrEqual(30);
       const gap = (KE.CAL.monthStart(hy + 1, 9) - KE.CAL.monthStart(hy, 9)) / 864e5;
-      expect(gap).toBeGreaterThanOrEqual(353); expect(gap).toBeLessThanOrEqual(356);
+      expect(gap).toBeGreaterThanOrEqual(353);
+      expect(gap).toBeLessThanOrEqual(356);
     }
   });
   it('bir yılda iki Ramazan başlangıcı olabilir (2030)', () => {
@@ -52,8 +54,38 @@ describe('takvim', () => {
 
 describe('uzaktan ayar', () => {
   it('yalnızca beyaz listedeki ve geçerli değerleri uygular', () => {
-    const { KE } = loadGame(['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'config']);
-    KE.CONFIG.apply({ version: 5, econYears: { 2027: { asgariBrut: 42000, gvDilim: [[250000, 0.15], [null, 0.4]] } }, trafficMul: { doner: 99 }, evil: 'x' });
+    const { KE } = loadGame([
+      'data',
+      'util',
+      'calendar',
+      'characters',
+      'economy',
+      'sim/rng',
+      'sim/staff',
+      'sim/branch',
+      'sim/morning',
+      'sim/service',
+      'sim/player',
+      'sim/close',
+      'sim/replay',
+      'midday',
+      'progress',
+      'config'
+    ]);
+    KE.CONFIG.apply({
+      version: 5,
+      econYears: {
+        2027: {
+          asgariBrut: 42000,
+          gvDilim: [
+            [250000, 0.15],
+            [null, 0.4]
+          ]
+        }
+      },
+      trafficMul: { doner: 99 },
+      evil: 'x'
+    });
     expect(KE.CAL.econYear(2027).asgariBrut).toBe(42000);
     expect(KE.CAL.econYear(2027).gvDilim[1][0]).toBe(Infinity);
     expect(KE.MODES.doner.trafficMul).not.toBe(99);

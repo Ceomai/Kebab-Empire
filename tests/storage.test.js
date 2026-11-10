@@ -1,17 +1,42 @@
 import { describe, it, expect } from 'vitest';
 import { loadGame, newGame } from './load.js';
 
-const FILES = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+const FILES = [
+  'data',
+  'util',
+  'calendar',
+  'characters',
+  'economy',
+  'sim/rng',
+  'sim/staff',
+  'sim/branch',
+  'sim/morning',
+  'sim/service',
+  'sim/player',
+  'sim/close',
+  'sim/replay',
+  'midday',
+  'progress',
+  'farm',
+  'narrative',
+  'save',
+  'verify'
+];
 describe('kayıt boyutu ve depolama', () => {
   it('defter kırpılır ama ömür boyu toplamlar korunur, kayıt büyümez', () => {
     const { KE } = loadGame(FILES);
     const G = newGame(KE);
-    let rev = 0, served = 0;
+    let rev = 0,
+      served = 0;
     const sizes = [];
     for (let d = 1; d <= 260; d++) {
       if (G.pendingEvent) KE.resolveEvent(G, 0);
-      KE.startService(G); KE.finishService(G);
-      Object.values(G.lastSummary.branches).forEach((b) => { rev += b.stats.revenue; served += b.stats.served; });
+      KE.startService(G);
+      KE.finishService(G);
+      Object.values(G.lastSummary.branches).forEach((b) => {
+        rev += b.stats.revenue;
+        served += b.stats.served;
+      });
       KE.finalizeDay(G);
       if (d === 130 || d === 260) sizes.push(JSON.stringify(KE.SAVE.envelope(G)).length);
     }
@@ -31,7 +56,9 @@ describe('kayıt boyutu ve depolama', () => {
   it('bozuk ana kayıt yedekten açılır, ikisi de bozuksa null döner (çökmez)', () => {
     const { KE, store } = loadGame(FILES);
     const G = newGame(KE);
-    KE.SAVE.write(G); G.day = 2; KE.SAVE.write(G);
+    KE.SAVE.write(G);
+    G.day = 2;
+    KE.SAVE.write(G);
     store[KE.SAVE.KEY] = '{bozuk';
     const r = KE.SAVE.read();
     expect(r.from).toBe('backup');
@@ -48,13 +75,15 @@ describe('iki sekme / eski kopya', () => {
     const { KE } = loadGame(FILES);
     const G = newGame(KE);
     const old = JSON.parse(JSON.stringify(G));
-    G.day = 5; expect(KE.SAVE.write(G)).toBe(true);
+    G.day = 5;
+    expect(KE.SAVE.write(G)).toBe(true);
     expect(KE.SAVE.write(old)).toBe(false);
     expect(KE.SAVE.lastError).toBe('stale');
     expect(KE.SAVE.read().game.day).toBe(5);
     KE.SAVE.allowRewind = true;
     expect(KE.SAVE.write(old)).toBe(true);
     expect(KE.SAVE.read().game.day).toBe(1);
-    const other = newGame(KE); expect(KE.SAVE.write(other)).toBe(true);
+    const other = newGame(KE);
+    expect(KE.SAVE.write(other)).toBe(true);
   });
 });

@@ -4,21 +4,22 @@ Son güncelleme: 6 Kasım 2026. Bu dosya, mağaza yüklemesi için depoda hazır
 
 ## Depoda hazır olanlar
 
-| Konu | Durum |
-|---|---|
-| Android hedef API | **36 (Android 16)**: Play'in 31 Ağustos 2026'dan beri yeni uygulamalar ve güncellemeler için istediği seviye. Capacitor 8'e geçildi. |
-| Android kenardan kenara ekran | Android 15+ zorunlu kenardan kenara düzen için Capacitor `adjustMarginsForEdgeToEdge: auto` açık: durum çubuğu ve gezinme çubuğu oyunun üstüne binmez. |
-| Play paketi (AAB) | CI, imza sırları tanımlıysa her ana dal gönderiminde imzalı `kebab-empire.aab` üretir (Actions → çalışma → Artifacts). |
-| iOS projesi | `ios/` Capacitor 8 (Swift Package Manager). Simge ve açılış görseli oyunun logosu. `ITSAppUsesNonExemptEncryption = false` (ihracat sorusu çıkmaz). CI her gönderimde imzasız simülatör derlemesiyle projenin derlendiğini doğrular. |
-| Gizlilik politikası | https://ceomai.github.io/Kebab-Empire/privacy.html (TR/EN/DE). Oyun içinden de bağlantı var. |
-| Hesap/veri silme | Oyun içinde Menü → Hesap ve gizlilik → bulut verilerini sil (Apple'ın hesap silme kuralı ve Play'in veri silme sorusu için). |
-| Yedekleme | Uygulama içinde tarayıcı indirmesi çalışmadığı için yedek, kopyalanabilir kod olarak verilir; geri yüklemede yapıştırılır. |
-| iOS en düşük sürüm | iOS 16 (oyunun kullandığı CSS özellikleri için) |
-| Ekran görüntüleri | `store/tr/` (ve `node scripts/store-assets.cjs en` ile `store/en/`): Play telefon 1080×1920, App Store iPhone 6,9" 1320×2868, iPad 13" 2064×2752, Play öne çıkan görsel 1024×500. |
+| Konu                          | Durum                                                                                                                                                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Android hedef API             | **36 (Android 16)**: Play'in 31 Ağustos 2026'dan beri yeni uygulamalar ve güncellemeler için istediği seviye. Capacitor 8'e geçildi.                                                                                                 |
+| Android kenardan kenara ekran | Android 15+ zorunlu kenardan kenara düzen için Capacitor `adjustMarginsForEdgeToEdge: auto` açık: durum çubuğu ve gezinme çubuğu oyunun üstüne binmez.                                                                               |
+| Play paketi (AAB)             | CI, imza sırları tanımlıysa her ana dal gönderiminde imzalı `kebab-empire.aab` üretir (Actions → çalışma → Artifacts).                                                                                                               |
+| iOS projesi                   | `ios/` Capacitor 8 (Swift Package Manager). Simge ve açılış görseli oyunun logosu. `ITSAppUsesNonExemptEncryption = false` (ihracat sorusu çıkmaz). CI her gönderimde imzasız simülatör derlemesiyle projenin derlendiğini doğrular. |
+| Gizlilik politikası           | https://ceomai.github.io/Kebab-Empire/privacy.html (TR/EN/DE). Oyun içinden de bağlantı var.                                                                                                                                         |
+| Hesap/veri silme              | Oyun içinde Menü → Hesap ve gizlilik → bulut verilerini sil (Apple'ın hesap silme kuralı ve Play'in veri silme sorusu için).                                                                                                         |
+| Yedekleme                     | Uygulama içinde tarayıcı indirmesi çalışmadığı için yedek, kopyalanabilir kod olarak verilir; geri yüklemede yapıştırılır.                                                                                                           |
+| iOS en düşük sürüm            | iOS 16 (oyunun kullandığı CSS özellikleri için)                                                                                                                                                                                      |
+| Ekran görüntüleri             | `store/tr/` (ve `node scripts/store-assets.cjs en` ile `store/en/`): Play telefon 1080×1920, App Store iPhone 6,9" 1320×2868, iPad 13" 2064×2752, Play öne çıkan görsel 1024×500.                                                    |
 
 ## Senin yapman gerekenler
 
 ### Google Play
+
 1. **Play Console hesabı** aç (tek seferlik 25 $). Kişisel hesaplarda yayından önce 12 test kullanıcısıyla 14 günlük kapalı test istenebilir; Console ne isterse onu izle.
 2. **Yükleme anahtarı (keystore) oluştur** — kendi bilgisayarında, Java kurulu ise:
    ```bash
@@ -32,6 +33,7 @@ Son güncelleme: 6 Kasım 2026. Bu dosya, mağaza yüklemesi için depoda hazır
 5. Play Console'da uygulamayı oluştur, AAB'yi yükle ve aşağıdaki formları doldur.
 
 ### App Store
+
 1. **Apple Developer Program** (yıllık 99 $) ve bir **Mac + güncel Xcode** gerekiyor; iOS uygulaması yalnızca Xcode'dan imzalanıp yüklenebilir. Apple, App Store'a yüklenen derlemelerin güncel SDK ile yapılmasını istiyor (2026 itibarıyla Xcode 26 / iOS 26 SDK); yüklemeden önce App Store Connect'teki güncel şartı kontrol et. CI'daki Xcode 16.4 yalnızca derleme denetimi içindir.
 2. Mac'te: `npm ci && npm run cap:sync && npx cap open ios` (`cap:sync` derler, kaynak eşlemelerini pakete koymaz ve iOS projesine kopyalar). Mac'te `.env` dosyasında Supabase ayarı **olmasın**; olursa uygulama bulut özelliklerini açar ve gizlilik etiketlerini buna göre değiştirmen gerekir.
 3. Xcode'da: App hedefi → Signing & Capabilities → takımını seç (Bundle ID `com.ceomai.kebabempire`). Product → Archive → Distribute App → App Store Connect.
@@ -54,6 +56,7 @@ Son güncelleme: 6 Kasım 2026. Bu dosya, mağaza yüklemesi için depoda hazır
 ## Mağaza metinleri
 
 **Kısa açıklama (Play, en çok 80 karakter)**
+
 - TR: Döner dükkânından imparatorluğa: tezgâhta pişir, ekibini yönet, şubeler aç.
 - EN: From one döner shop to an empire: cook at the counter, run a crew, expand.
 
@@ -88,6 +91,7 @@ Over the days your cooks learn, regulars return and a rival chain makes its move
 ## Gerçek cihazda son kontrol (yüklemeden önce önerilir)
 
 Bu ortamda emülatör ya da gerçek cihaz yok; şunları bir Android telefonda ve (Mac'te) bir iPhone simülatöründe dene:
+
 - Durum çubuğu ve alt gezinme çubuğu üst çubuğu ya da tezgâh panelini örtüyor mu
 - Geri tuşu: pencereleri kapatıyor, ekranlar arasında haritaya dönüyor, haritada uygulamadan çıkıyor
 - Uygulamayı arka plana alıp dönünce oyun duruyor ve kaldığı yerden devam ediyor

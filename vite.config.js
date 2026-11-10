@@ -6,8 +6,17 @@ import { createRequire } from 'node:module';
 const { loadBrand } = createRequire(import.meta.url)('./scripts/brand-validate.cjs');
 const BRAND_ID = process.env.BRAND || 'default';
 const BRAND = loadBrand(BRAND_ID);
-const APP = Object.assign({ name: BRAND.gameName || 'Kebab Empire', themeColor: '#d7263d', background: '#ece2cb', description: 'Döner ve kebap işletme oyunu' }, BRAND.app || {});
-const attr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const APP = Object.assign(
+  {
+    name: BRAND.gameName || 'Kebab Empire',
+    themeColor: '#fffaf0',
+    background: '#ece2cb',
+    description: 'Döner ve kebap işletme oyunu'
+  },
+  BRAND.app || {}
+);
+const attr = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 /* markalı derlemede index.html: sekme başlığı, ana ekran adı (iOS) ve tema rengi */
 const brandHtml = {
   name: 'brand-html',

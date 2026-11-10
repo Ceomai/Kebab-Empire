@@ -19,13 +19,21 @@ import '@fontsource/kalam/latin-400.css';
 import '@fontsource/kalam/latin-ext-400.css';
 import '../css/style.css';
 import '../js/data.js';
+import '../js/util.js';
 import '../js/brand.js';
 import '../js/calendar.js';
 import '../js/characters.js';
 import '../js/art.js';
 import '../js/sound.js';
 import '../js/economy.js';
-import '../js/sim.js';
+import '../js/sim/rng.js';
+import '../js/sim/staff.js';
+import '../js/sim/branch.js';
+import '../js/sim/morning.js';
+import '../js/sim/service.js';
+import '../js/sim/player.js';
+import '../js/sim/close.js';
+import '../js/sim/replay.js';
 import '../js/midday.js';
 import '../js/progress.js';
 import '../js/farm.js';
@@ -48,14 +56,61 @@ import { registerSW } from 'virtual:pwa-register';
 
 KE.CONTACT = import.meta.env.VITE_CONTACT_EMAIL || '';
 
-KE.CLOUD.init().finally(() => { KE.CONFIG.load(); if (KE.UI.checkCloud) KE.UI.checkCloud(); });
+KE.CLOUD.init().finally(() => {
+  KE.CONFIG.load();
+  if (KE.UI.checkCloud) KE.UI.checkCloud();
+});
 if (KE.I18N.preferred() !== 'tr') KE.I18N.set(KE.I18N.preferred());
 else if (KE.BRAND && KE.BRAND.swaps.length) KE.I18N.set('tr'); /* markalı sürüm: Türkçede de ad değişimi */
 
 /* servis çalışanı yalnızca web sürümünde: uygulamanın dosyaları zaten cihazda, güncellemeyi mağaza yapar */
-const native = (() => { try { const C = /** @type {any} */ (window).Capacitor; return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } })();
-if (!native) registerSW({
-  immediate: true,
-  onNeedRefresh() { if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Yeni sürüm hazır. Sayfayı yenileyince yüklenecek.'); },
-  onOfflineReady() { if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Oyun artık internetsiz de açılır.'); }
-});
+const native = (() => {
+  try {
+    const C = /** @type {any} */ (window).Capacitor;
+    return !!(C && C.isNativePlatform && C.isNativePlatform());
+  } catch (e) {
+    return false;
+  }
+})();
+/* Android geri tuşu: pencere kapat → geri git → çıkış onayı (ayrıntı: KE.UI.handleBack). Eklenti yalnızca uygulamada yüklenir. */
+if (native)
+  import('@capacitor/app')
+    .then(({ App }) => {
+      KE.UI.nativeExit = () => App.exitApp();
+      App.addListener('backButton', () => KE.UI.handleBack());
+    })
+    .catch(() => {
+      /* eklenti yoksa varsayılan davranış */
+    });
+/* Dokunsal geri bildirim (KE.haptic): uygulamada yerel titreşim motoru; tarayıcıda navigator.vibrate kullanılır */
+if (native)
+  import('@capacitor/haptics')
+    .then(({ Haptics, ImpactStyle, NotificationType }) => {
+      const NOTE = {
+        success: NotificationType.Success,
+        warning: NotificationType.Warning,
+        error: NotificationType.Error
+      };
+      KE.UI.nativeHaptics = (kind) => {
+        const p = NOTE[kind]
+          ? Haptics.notification({ type: NOTE[kind] })
+          : Haptics.impact({ style: kind === 'medium' ? ImpactStyle.Medium : ImpactStyle.Light });
+        if (p && p.catch)
+          p.catch(() => {
+            /* titreşim yoksa sessiz */
+          });
+      };
+    })
+    .catch(() => {
+      /* eklenti yoksa tarayıcı yolu */
+    });
+if (!native)
+  registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Yeni sürüm hazır. Sayfayı yenileyince yüklenecek.');
+    },
+    onOfflineReady() {
+      if (window.KE && KE.UI && KE.UI.toast) KE.UI.toast('Oyun artık internetsiz de açılır.');
+    }
+  });

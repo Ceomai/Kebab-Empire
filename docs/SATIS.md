@@ -14,14 +14,14 @@ Amaç: oyunun zincire özel sürümünü (bkz. `docs/MARKA.md`) **ücretli pilot
 
 ## 2. Nereden bulunur
 
-| Kaynak | Ne yaparsın |
-|---|---|
-| Google Haritalar | Büyük şehirlerde "döner", "dürüm", "kebap" ara. Aynı adla 5+ şubesi olanları listeye al. |
-| Yemek siparişi uygulamaları | Aynı markanın kaç şubesi listelendiğine bak. Şube sayısı ve yayıldığı şehirler hakkında hızlı fikir verir. |
-| Franchise dernekleri ve fuarları | Franchise veren markalar büyüme ve pazarlama odaklıdır. Dernek üye listeleri ve fuar katılımcı listeleri iyi kaynaktır. |
-| LinkedIn | Marka adı ile "pazarlama müdürü", "marka müdürü", "dijital pazarlama" ara. Karar vericiyi buradan bul. |
-| Instagram | Markanın hesabındaki iletişim bilgisi; ayrıca hangi ajansla çalıştıklarını gönderilerdeki etiketlerden görebilirsin. |
-| Reklam ve dijital ajanslar | Restoran markalarıyla çalışan ajanslar oyunu kendi müşterilerine "kampanya fikri" olarak götürebilir. Ajansa gelir payı teklif et. |
+| Kaynak                           | Ne yaparsın                                                                                                                        |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Google Haritalar                 | Büyük şehirlerde "döner", "dürüm", "kebap" ara. Aynı adla 5+ şubesi olanları listeye al.                                           |
+| Yemek siparişi uygulamaları      | Aynı markanın kaç şubesi listelendiğine bak. Şube sayısı ve yayıldığı şehirler hakkında hızlı fikir verir.                         |
+| Franchise dernekleri ve fuarları | Franchise veren markalar büyüme ve pazarlama odaklıdır. Dernek üye listeleri ve fuar katılımcı listeleri iyi kaynaktır.            |
+| LinkedIn                         | Marka adı ile "pazarlama müdürü", "marka müdürü", "dijital pazarlama" ara. Karar vericiyi buradan bul.                             |
+| Instagram                        | Markanın hesabındaki iletişim bilgisi; ayrıca hangi ajansla çalıştıklarını gönderilerdeki etiketlerden görebilirsin.               |
+| Reklam ve dijital ajanslar       | Restoran markalarıyla çalışan ajanslar oyunu kendi müşterilerine "kampanya fikri" olarak götürebilir. Ajansa gelir payı teklif et. |
 
 **Hedef liste (tablo sütunları):** Marka · şehir · şube sayısı · sipariş sitesi/uygulaması var mı · Instagram takipçisi · karar verici (ad, unvan, LinkedIn) · e-posta/telefon · ilk temas tarihi · durum (ulaşıldı / cevap / demo / teklif / pilot / kaybedildi) · not.
 
@@ -81,13 +81,13 @@ Amaç: oyunun zincire özel sürümünü (bkz. `docs/MARKA.md`) **ücretli pilot
 
 ## 6. Sık itirazlar
 
-| İtiraz | Cevap |
-|---|---|
-| "Kimse indirmez." | Oyunu kampanyanın parçası yapıyoruz: şubede QR, sosyal medya, kupon. Pilotun amacı da bunu düşük maliyetle ölçmek. |
-| "Pahalı." | Sıfırdan bir oyun yaptırmanın küçük bir kısmı; oyun hazır, yalnızca markanıza uyarlanıyor. Pilotla başlayıp sonuca göre devam edebilirsiniz. |
-| "Bakımını kim yapacak?" | Yıllık bakım sözleşmesi: mağaza güncellemeleri, hata düzeltme, kampanya değişiklikleri; yanıt süreleri sözleşmede yazılı. |
-| "Verilerimiz?" | Oyun varsayılan olarak veri toplamıyor. Kupon ya da sadakat entegrasyonu istenirse KVKK sözleşmesiyle, sizin sorumluluğunuzda kurulur. |
-| "Ajansımızla konuşalım." | Memnuniyetle; ajansınızla birlikte çalışabilir, onlara da kampanya malzemesi sağlayabilirim. |
+| İtiraz                   | Cevap                                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Kimse indirmez."        | Oyunu kampanyanın parçası yapıyoruz: şubede QR, sosyal medya, kupon. Pilotun amacı da bunu düşük maliyetle ölçmek.                           |
+| "Pahalı."                | Sıfırdan bir oyun yaptırmanın küçük bir kısmı; oyun hazır, yalnızca markanıza uyarlanıyor. Pilotla başlayıp sonuca göre devam edebilirsiniz. |
+| "Bakımını kim yapacak?"  | Yıllık bakım sözleşmesi: mağaza güncellemeleri, hata düzeltme, kampanya değişiklikleri; yanıt süreleri sözleşmede yazılı.                    |
+| "Verilerimiz?"           | Oyun varsayılan olarak veri toplamıyor. Kupon ya da sadakat entegrasyonu istenirse KVKK sözleşmesiyle, sizin sorumluluğunuzda kurulur.       |
+| "Ajansımızla konuşalım." | Memnuniyetle; ajansınızla birlikte çalışabilir, onlara da kampanya malzemesi sağlayabilirim.                                                 |
 
 ## 7. Teklif yapısı (rakamları her zincire göre ayarla)
 

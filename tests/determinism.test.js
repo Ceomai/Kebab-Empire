@@ -13,7 +13,10 @@ function playWithActions(KE, G) {
     if (m >= 200 && m < 320) {
       const L = G.live[G.activeBranch];
       if (L.player.tid == null) KE.act(G, 'ptake');
-      else { const t = L.tickets.find((x) => x.id === L.player.tid); KE.act(G, 'pstep', KE.ticketSteps(G, t)[L.player.step]); }
+      else {
+        const t = L.tickets.find((x) => x.id === L.player.tid);
+        KE.act(G, 'pstep', KE.ticketSteps(G, t)[L.player.step]);
+      }
     }
     if (m === 320) KE.act(G, 'ptoggle', false);
     if (m === 400) KE.act(G, 'setPos', st[0].id, 'kasa');
@@ -22,12 +25,30 @@ function playWithActions(KE, G) {
   KE.finishService(G);
   return G.lastSummary;
 }
-const key = (S) => Object.values(S.branches).map((b) => [b.stats.served, b.stats.lost, Math.round(b.stats.revenue), Math.round(b.stats.tips), b.stats.playerServed]);
+const key = (S) =>
+  Object.values(S.branches).map((b) => [
+    b.stats.served,
+    b.stats.lost,
+    Math.round(b.stats.revenue),
+    Math.round(b.stats.tips),
+    b.stats.playerServed
+  ]);
 
 describe('tohumlu simülasyon', () => {
   it('aynı tohum ve aynı hamlelerle gün birebir aynı biter', () => {
     const { KE } = loadGame();
-    const G = playDays(KE, KE.newGame({ mode: 'doner', district: 'kadiceşme', master: KE.MASTER_TEMPLATES.doner[0], owner: 'T', shopName: 'T', seed: 12345 }), 3);
+    const G = playDays(
+      KE,
+      KE.newGame({
+        mode: 'doner',
+        district: 'kadiceşme',
+        master: KE.MASTER_TEMPLATES.doner[0],
+        owner: 'T',
+        shopName: 'T',
+        seed: 12345
+      }),
+      3
+    );
     if (G.pendingEvent) KE.resolveEvent(G, 0);
     const morning = clone(Object.assign({}, G, { live: null }));
     const S1 = playWithActions(KE, G);
@@ -38,7 +59,22 @@ describe('tohumlu simülasyon', () => {
     expect(key(S2)).toEqual(key(S1));
   });
   it('aynı tohumla iki ayrı oyun aynı ilerler; farklı tohum farklı', () => {
-    const run = (seed) => { const { KE } = loadGame(); const G = playDays(KE, KE.newGame({ mode: 'kebap', district: 'kulealti', master: KE.MASTER_TEMPLATES.kebap[0], owner: 'T', shopName: 'T', seed }), 5); return [Math.round(G.cash), G.reputation.toFixed(3)]; };
+    const run = (seed) => {
+      const { KE } = loadGame();
+      const G = playDays(
+        KE,
+        KE.newGame({
+          mode: 'kebap',
+          district: 'kulealti',
+          master: KE.MASTER_TEMPLATES.kebap[0],
+          owner: 'T',
+          shopName: 'T',
+          seed
+        }),
+        5
+      );
+      return [Math.round(G.cash), G.reputation.toFixed(3)];
+    };
     expect(run(777)).toEqual(run(777));
     expect(run(777)).not.toEqual(run(778));
   });

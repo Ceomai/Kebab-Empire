@@ -18,6 +18,6 @@ yalnızca hatayı düzeltmektir (meşru menfaat).
 
 **Nerede tutulur?** Supabase altyapısında, Avrupa Birliği (Frankfurt) bölgesinde.
 
-**Haklarım.** Oyunda *Menü → Hesap ve gizlilik → Bütün verilerimi sil* ile bulut kaydını, sonuçlarını,
+**Haklarım.** Oyunda _Menü → Hesap ve gizlilik → Bütün verilerimi sil_ ile bulut kaydını, sonuçlarını,
 ölçümlerini ve anonim hesabını kalıcı olarak silebilirsin. Rızalarını aynı ekrandan istediğin zaman
 geri alabilirsin. Sorular için: oyunun yayın sayfasındaki iletişim adresi (`VITE_CONTACT_EMAIL`). Kullanım koşulları: `docs/KULLANIM.md`.

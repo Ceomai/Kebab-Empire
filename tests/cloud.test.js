@@ -5,9 +5,20 @@ const calls = [];
 const table = (name) => {
   const q = {
     _name: name,
-    upsert: (row) => { calls.push(['upsert', name, row]); return Promise.resolve({ error: null }); },
-    insert: (row) => { calls.push(['insert', name, row]); const p = Promise.resolve({ error: null }); p.select = () => ({ single: () => Promise.resolve({ data: { id: 7 }, error: null }) }); return p; },
-    select: () => q, eq: () => q, order: () => q, limit: () => Promise.resolve({ data: [{ display_name: 'Deniz', revenue: 1, is_me: true }] }),
+    upsert: (row) => {
+      calls.push(['upsert', name, row]);
+      return Promise.resolve({ error: null });
+    },
+    insert: (row) => {
+      calls.push(['insert', name, row]);
+      const p = Promise.resolve({ error: null });
+      p.select = () => ({ single: () => Promise.resolve({ data: { id: 7 }, error: null }) });
+      return p;
+    },
+    select: () => q,
+    eq: () => q,
+    order: () => q,
+    limit: () => Promise.resolve({ data: [{ display_name: 'Deniz', revenue: 1, is_me: true }] }),
     maybeSingle: () => Promise.resolve({ data: null })
   };
   return q;
@@ -16,12 +27,24 @@ vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
     auth: {
       getSession: () => Promise.resolve({ data: { session: null } }),
-      signInAnonymously: () => { calls.push(['anon']); return Promise.resolve({ data: { user: { id: 'u1' } }, error: null }); },
-      updateUser: () => Promise.resolve({ error: null }), signOut: () => Promise.resolve({})
+      signInAnonymously: () => {
+        calls.push(['anon']);
+        return Promise.resolve({ data: { user: { id: 'u1' } }, error: null });
+      },
+      updateUser: () => Promise.resolve({ error: null }),
+      signOut: () => Promise.resolve({})
     },
     from: table,
-    rpc: (n) => { calls.push(['rpc', n]); return Promise.resolve({ error: null }); },
-    functions: { invoke: (n, o) => { calls.push(['invoke', n, o.body]); return Promise.resolve({ data: { ok: true } }); } }
+    rpc: (n) => {
+      calls.push(['rpc', n]);
+      return Promise.resolve({ error: null });
+    },
+    functions: {
+      invoke: (n, o) => {
+        calls.push(['invoke', n, o.body]);
+        return Promise.resolve({ data: { ok: true } });
+      }
+    }
   })
 }));
 
@@ -49,14 +72,28 @@ describe('bulut istemcisi', () => {
     expect(calls.some((c) => c[0] === 'anon')).toBe(true);
     const prof = calls.find((c) => c[1] === 'profiles');
     expect(prof[2]).toMatchObject({ id: 'u1', display_name: 'Deniz', consent_analytics: false });
-    C.track('screen', {}); await C.flushEvents();
+    C.track('screen', {});
+    await C.flushEvents();
     expect(calls.some((c) => c[1] === 'events')).toBe(false);
     await C.setConsent({ cloud: true, analytics: true, name: 'Deniz' });
-    C.track('screen', { s: 'map' }); await C.flushEvents();
+    C.track('screen', { s: 'map' });
+    await C.flushEvents();
     expect(calls.find((c) => c[1] === 'events')[2][0]).toMatchObject({ name: 'screen', user_id: 'u1' });
   });
   it('gün sonucunu yazar ve doğrulamayı çağırır', async () => {
-    const r = await C.submitDay({ saveId: 'g', day: 3, month: '2026-03', mode: 'doner', district: 'kadiceşme', served: 90, revenue: 33000.4, reputation: 31.27, morning: { v: 3 }, todayRule: 'esit', log: [] });
+    const r = await C.submitDay({
+      saveId: 'g',
+      day: 3,
+      month: '2026-03',
+      mode: 'doner',
+      district: 'kadiceşme',
+      served: 90,
+      revenue: 33000.4,
+      reputation: 31.27,
+      morning: { v: 3 },
+      todayRule: 'esit',
+      log: []
+    });
     expect(r).toEqual({ ok: true });
     const ins = calls.find((c) => c[1] === 'day_results')[2];
     expect(ins).toMatchObject({ user_id: 'u1', revenue: 33000, reputation: 31.3, served: 90 });

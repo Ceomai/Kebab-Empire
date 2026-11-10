@@ -1,0 +1,14 @@
+Oyun her gün sonunda bu cihaza kaydedilir.	The game saves to this device at the end of every day.	Das Spiel wird am Ende jedes Tages auf diesem Gerät gespeichert.
+Zam için {0} gün daha	{0} more days until a raise	Noch {0} Tage bis zur Gehaltserhöhung
+Tavan maaşta	At the wage cap	Am Gehaltslimit
+{0} zam · Zam için {1} gün daha	{0} raise · {1} more days until a raise	{0} Gehaltserhöhung · noch {1} Tage
+{0} zam · Tavan maaşta	{0} raise · at the wage cap	{0} Gehaltserhöhung · am Gehaltslimit
+{0}: Zam için {1} gün daha.	{0}: {1} more days until a raise.	{0}: Noch {1} Tage bis zur Gehaltserhöhung.
+{0}: Tavan maaşta.	{0}: Already at the wage cap.	{0}: Bereits am Gehaltslimit.
+Çalışan bulunamadı.	Employee not found.	Mitarbeiter nicht gefunden.
+Bağlanılamadı.	Couldn't connect.	Keine Verbindung.
+Tekrar dene	Try again	Erneut versuchen
+Buluta bağlanılamadı.	Couldn't connect to the cloud.	Keine Verbindung zur Cloud.
+Buluta bağlanılamadı. Tekrar dene.	Couldn't connect to the cloud. Try again.	Keine Verbindung zur Cloud. Versuch es erneut.
+Buluta yazılamadı. Bağlantı gelince yeniden denenecek.	Couldn't save to the cloud. It will retry when you're back online.	Speichern in der Cloud fehlgeschlagen. Es wird erneut versucht, sobald eine Verbindung besteht.
+Yükleniyor…	Loading…	Wird geladen…

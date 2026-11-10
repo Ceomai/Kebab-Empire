@@ -1,7 +1,27 @@
 import { describe, it, expect } from 'vitest';
 import { loadGame, newGame, playDays } from './load.js';
 
-const FILES = ['data', 'calendar', 'characters', 'economy', 'sim', 'midday', 'progress', 'farm', 'narrative', 'save', 'verify'];
+const FILES = [
+  'data',
+  'util',
+  'calendar',
+  'characters',
+  'economy',
+  'sim/rng',
+  'sim/staff',
+  'sim/branch',
+  'sim/morning',
+  'sim/service',
+  'sim/player',
+  'sim/close',
+  'sim/replay',
+  'midday',
+  'progress',
+  'farm',
+  'narrative',
+  'save',
+  'verify'
+];
 /* gün ortası olayı çıkan bir sabaha kadar oyna */
 function dayWithMid(KE) {
   const G = playDays(KE, newGame(KE), 4);
@@ -10,7 +30,9 @@ function dayWithMid(KE) {
     const probe = JSON.parse(JSON.stringify(G));
     KE.pickMid(probe);
     if (probe.mid) return G;
-    KE.startService(G); KE.finishService(G); KE.finalizeDay(G, 'esit');
+    KE.startService(G);
+    KE.finishService(G);
+    KE.finalizeDay(G, 'esit');
   }
   return null;
 }
@@ -32,15 +54,21 @@ describe('gün ortası kararları ve acil kurye', () => {
     const G = dayWithMid(KE);
     expect(G).not.toBeNull();
     const env = JSON.parse(JSON.stringify(KE.SAVE.envelope(G)));
-    Object.keys(G.branches[0].stock).forEach((k) => { G.branches[0].stock[k] *= 0.5; });
-    env.game = JSON.parse(JSON.stringify(G)); env.sum = null;
+    Object.keys(G.branches[0].stock).forEach((k) => {
+      G.branches[0].stock[k] *= 0.5;
+    });
+    env.game = JSON.parse(JSON.stringify(G));
+    env.sum = null;
     play(KE, G, 0, true);
     expect(G.mid.choice).toBe(0);
     const log = G.dayLog.slice();
     expect(log.some((e) => e.a === 'mid')).toBe(true);
     KE.finalizeDay(G, 'esit');
     const claim = { day: env.game.day, served: 0, revenue: 0, reputation: G.reputation };
-    Object.values(G.lastSummary.branches).forEach((b) => { claim.served += b.stats.served; claim.revenue += b.stats.revenue; });
+    Object.values(G.lastSummary.branches).forEach((b) => {
+      claim.served += b.stats.served;
+      claim.revenue += b.stats.revenue;
+    });
     const { KE: SRV } = loadGame(FILES);
     expect(SRV.verifyDay(env, log, 'esit', claim).ok).toBe(true);
   });
@@ -58,7 +86,9 @@ describe('gün ortası kararları ve acil kurye', () => {
     if (G.pendingEvent) KE.resolveEvent(G, 0);
     const b = G.branches[0];
     KE.startService(G);
-    Object.keys(b.stock).forEach((k) => { b.stock[k] = 0; });
+    Object.keys(b.stock).forEach((k) => {
+      b.stock[k] = 0;
+    });
     const need = KE.courierNeed(G, b);
     const cash = G.cash;
     expect(KE.courier(G, b)).toBeCloseTo(need.cost, 0);

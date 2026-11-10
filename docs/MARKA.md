@@ -25,26 +25,27 @@ npm run brand default
 
 ## Alanlar
 
-| Alan | Ne yapar | Örnek |
-|---|---|---|
-| `id` | Dosya adıyla aynı olmalı | `"usta-durum"` |
-| `gameName` | Oyunun adı: sekme başlığı, başlık ekranındaki tabela, metinlerde "Kebab Empire" geçen her yer | `"Usta Dürüm Oyunu"` |
-| `nameParts` | Başlık ekranındaki iki renkli büyük yazı ve üst çubuk | `["Usta", "Dürüm"]` |
-| `tagline` | Başlık ekranındaki şerit (dile göre yazılabilir, aşağıya bak) | `{ "tr": "...", "en": "...", "de": "..." }` |
-| `logoUrl` / `logoSvg` | Logo: dosya yolu (`public/` altına göre) ya da satır içi SVG | `"brands/usta-durum/logo.svg"` |
-| `colors` | Ana renkler: `primary`, `primaryDeep`, `accent`, `accentDeep`, `wine`, `flame`, `mint`, `mintDeep`, `paper`, `ink` | `{ "primary": "#1e6b45" }` |
-| `rival` | Oyundaki rakip zincirin adı (varsayılan "Lüks Kebap") | `"Altın Şiş"` |
-| `shopName` | Dükkân adı sabitlenir; yeni şubeler "Marka Semt" diye adlanır | `"Usta Dürüm"` |
-| `products` | Ürünlerin görünen adları (ürün kimliğine göre) | `{ "et_durum": "Usta Et Dürüm" }` |
-| `promo` | Gün sonu kuponu: `title`, `text`, `code`, `afterDay` (kaçıncı günden sonra), `needGoals` (günün bütün hedefleri tamamlanınca; isteğe bağlı tezgâh bonus hedefi sayılmaz), `url`, `urlLabel`, `terms` | bkz. örnek dosya |
-| `orderUrl`, `orderLabel` | Menüde "Sipariş ver" bağlantısı (zincirin sipariş sitesi, yalnızca `https://`) | `"https://..."` |
-| `app` | Uygulama: `id` (paket kimliği, örn. `com.zincir.oyun`), `name`, `themeColor`, `background`, `description` | bkz. örnek dosya |
+| Alan                     | Ne yapar                                                                                                                                                                                             | Örnek                                       |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `id`                     | Dosya adıyla aynı olmalı                                                                                                                                                                             | `"usta-durum"`                              |
+| `gameName`               | Oyunun adı: sekme başlığı, başlık ekranındaki tabela, metinlerde "Kebab Empire" geçen her yer                                                                                                        | `"Usta Dürüm Oyunu"`                        |
+| `nameParts`              | Başlık ekranındaki iki renkli büyük yazı ve üst çubuk                                                                                                                                                | `["Usta", "Dürüm"]`                         |
+| `tagline`                | Başlık ekranındaki şerit (dile göre yazılabilir, aşağıya bak)                                                                                                                                        | `{ "tr": "...", "en": "...", "de": "..." }` |
+| `logoUrl` / `logoSvg`    | Logo: dosya yolu (`public/` altına göre) ya da satır içi SVG                                                                                                                                         | `"brands/usta-durum/logo.svg"`              |
+| `colors`                 | Ana renkler: `primary`, `primaryDeep`, `accent`, `accentDeep`, `wine`, `flame`, `mint`, `mintDeep`, `paper`, `ink`                                                                                   | `{ "primary": "#1e6b45" }`                  |
+| `rival`                  | Oyundaki rakip zincirin adı (varsayılan "Lüks Kebap")                                                                                                                                                | `"Altın Şiş"`                               |
+| `shopName`               | Dükkân adı sabitlenir; yeni şubeler "Marka Semt" diye adlanır                                                                                                                                        | `"Usta Dürüm"`                              |
+| `products`               | Ürünlerin görünen adları (ürün kimliğine göre)                                                                                                                                                       | `{ "et_durum": "Usta Et Dürüm" }`           |
+| `promo`                  | Gün sonu kuponu: `title`, `text`, `code`, `afterDay` (kaçıncı günden sonra), `needGoals` (günün bütün hedefleri tamamlanınca; isteğe bağlı tezgâh bonus hedefi sayılmaz), `url`, `urlLabel`, `terms` | bkz. örnek dosya                            |
+| `orderUrl`, `orderLabel` | Menüde "Sipariş ver" bağlantısı (zincirin sipariş sitesi, yalnızca `https://`)                                                                                                                       | `"https://..."`                             |
+| `app`                    | Uygulama: `id` (paket kimliği, örn. `com.zincir.oyun`), `name`, `themeColor`, `background`, `description`                                                                                            | bkz. örnek dosya                            |
 
 **Dile göre metin:** `tagline`, `orderLabel` ve kuponun `title`, `text`, `urlLabel`, `terms` alanları ya tek bir metin ya da `{ "tr": "...", "en": "...", "de": "..." }` olabilir. Oyuncunun dili yoksa Türkçesi gösterilir. Marka adı, slogan ve kupon metinleri oyunun çeviri sözlüğünden geçmez (yani "Usta" İngilizcede "Master" olmaz).
 
 **Türkçe ekler:** Oyun metinlerinde rakip ve oyun adından sonra gelen ekler yeni ada göre kurulur: `"Lüks Kebap"ı` → `"Altın Şiş"i`, `"Kral Döner"i`; `"Lüks Kebap"a` → `"Altın Şiş"e`.
 
 **Denetim:** Derleme (`npm run build`) ve `npm run brand` marka dosyasını denetler, hatalıysa durur ve nedenini yazar:
+
 - `id` dosya adıyla aynı; yalnızca küçük harf, rakam ve tire.
 - `gameName` zorunlu. Metinlerde `<` ve `>` kullanılamaz.
 - Bağlantılar (`orderUrl`, `promo.url`) yalnızca `https://`.
