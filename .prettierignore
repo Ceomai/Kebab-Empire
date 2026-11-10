@@ -1,0 +1,23 @@
+# Üretilen / dışarıdan gelen dosyalar biçimlendirilmez
+node_modules/
+dist/
+dist-*/
+coverage/
+android/
+ios/
+store/
+reports/
+package-lock.json
+*.min.*
+
+# Üretilen çeviri dosyaları (scripts/build-locales.mjs, scripts/collect-extra.cjs)
+public/locales/
+locales_src/
+
+# Üretilen sunucu paketi (scripts/build-edge.mjs)
+supabase/functions/verify-day/game.js
+
+# Betiklerin JSON.stringify ile yeniden yazdığı dosyalar (scripts/brand-apply.cjs)
+capacitor.config.json
+.brand-applied.json
+.brand-backup/
